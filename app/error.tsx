@@ -1,5 +1,5 @@
-'use client'
+'use client';
 
-export default function ErrorOMG () {
-    return <h1>Something broken</h1>
+export default function ErrorOMG() {
+  return <h1>Something broken</h1>;
 }

@@ -1,9 +1,9 @@
-import { Metadata } from "next"
+import { Metadata } from 'next';
 
-export const metadata : Metadata = {
-    title : "Not Found"
-}
+export const metadata: Metadata = {
+  title: 'Not Found',
+};
 
 export default function NotFound() {
-    return <h1>Not Found!</h1>
+  return <h1>Not Found!</h1>;
 }
