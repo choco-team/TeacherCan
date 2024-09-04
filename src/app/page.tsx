@@ -8,6 +8,7 @@ export default function Page() {
       >
         Button
       </button>
+      <div>반갑읍니다.</div>
     </div>
   );
 }
