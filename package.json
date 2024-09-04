@@ -6,7 +6,9 @@
     "dev": "next dev",
     "lint": "next lint",
     "prepare": "husky",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "build": "next build",
+    "start": "next start"
   },
   "author": "",
   "license": "MIT",
