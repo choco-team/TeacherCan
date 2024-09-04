@@ -9,6 +9,7 @@ export default function Page() {
         Button
       </button>
       <div>반갑읍니다.</div>
+      <div>PR 테스트합니다</div>
     </div>
   );
 }
