@@ -1,0 +1,39 @@
+빈 폴더 커밋하기 위한 파일, 삭제 요망
+
+각종 typeScript의 type 정의가 들어가는 곳이다.
+
+type 이름은 의미 있는 명사를 사용하여 첫 단어는 대문자, 카멜케이스로 작성한다.
+
+import { TimeStamp, WithAuthor } from '@/types';
+
+export type Category = 'total' | 'mixed-group' | 'girl-group' | 'boy-group' | 'girl-solo' | 'boy-solo';
+
+export const CATEGORIES: Category[] = ['total', 'mixed-group', 'girl-group', 'boy-group', 'girl-solo', 'boy-solo'];
+
+export interface IdolCore {
+  name: string;
+  category: Category;
+  debutYear: string;
+  endYear?: string;
+  descMelon?: string;
+  descNamu?: string;
+  descVibe?: string;
+  descTitle?: string;
+  youtubeStartsAt?: number;
+  youtubeUrl?: string;
+}
+
+export interface Idol extends IdolCore, WithAuthor, TimeStamp {
+  id: string;
+  comments: {
+    id: string; // 카운트용
+  }[];
+  likes: {
+    id: string; // 카운트용
+  }[];
+}
+
+export interface YearDesc {
+  year: number;
+  desc: string;
+}
