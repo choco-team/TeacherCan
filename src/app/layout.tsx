@@ -9,10 +9,15 @@ export const metadata: Metadata = {
 };
 
 const pretendard = localFont({
-  src: '../../public/assets/fonts/PretendardVariable.woff2',
+  src: '../assets/fonts/pretendard-variable.woff2',
   display: 'swap',
   weight: '45 920',
   variable: '--font-pretendard',
+});
+
+const byeolbichhaneul = localFont({
+  src: '../assets/fonts/hakgyoansim-byeolbichhaneul-B.woff',
+  variable: '--font-byeolbichhaneul',
 });
 
 export default function RootLayout({
@@ -21,8 +26,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={pretendard.variable}>
-      <body>{children}</body>
+    <html
+      lang="en"
+      className={`${pretendard.variable} ${byeolbichhaneul.variable}`}
+    >
+      <body>
+        <div className="w-full min-h-screen">{children}</div>
+      </body>
     </html>
   );
 }

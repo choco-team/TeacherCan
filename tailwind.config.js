@@ -1,11 +1,15 @@
-import theme from './src/style/theme';
+import theme from './src/styles/theme';
 
-const { colors } = theme;
+const { colors, keyframes } = theme;
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
-  content: ['./src/app/**/*.{ts,tsx}', './src/components/**/*.{ts,tsx}'],
+  content: [
+    './src/app/**/*.{ts,tsx}',
+    './src/containers/**/*.{ts,tsx}',
+    './src/components/**/*.{ts,tsx}',
+  ],
   theme: {
     extend: {
       colors: {
@@ -38,9 +42,13 @@ module.exports = {
         md: `calc(var(--radius) - 2px)`,
         sm: 'calc(var(--radius) - 4px)',
       },
-      fontFamily: { sans: ['var(--font-pretendard)'] },
+      fontFamily: {
+        sans: ['var(--font-pretendard)'],
+        point: ['var(--font-byeolbichhaneul)'],
+      },
       fontSize: { '2.5xl': '1.75rem', '3.5xl': '2rem' },
       keyframes: {
+        ...keyframes,
         'accordion-down': {
           from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
@@ -53,6 +61,7 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'bounce-in-top': 'bounce-in-top 1.2s both',
       },
     },
   },
