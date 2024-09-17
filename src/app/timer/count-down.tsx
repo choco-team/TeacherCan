@@ -4,6 +4,8 @@
 
 import { useState, useRef, useEffect, ChangeEvent } from 'react'; // Import React hooks and types
 import { Button } from '@/components/ui/button';
+import { Heading2 } from '@/components/ui/Heading';
+import { Input } from '@/components/ui/input';
 // import { Input } from '@/components/ui/input'; // Import custom Input component
 
 export default function Countdown() {
@@ -110,24 +112,20 @@ export default function Countdown() {
       {/* Timer box container */}
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md">
         {/* Title of the countdown timer */}
-        <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200 text-center">
+        <Heading2 className="text-center">Countdown Timer</Heading2>
+        {/* <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200 text-center">
           Countdown Timer
-        </h1>
+        </h1> */}
         {/* Input and set button container */}
-        <div className="flex items-center mb-6">
-          <input
+        <div className="flex items-center justify-center mb-6 space-x-4">
+          <Input
             type="number"
             id="duration"
             placeholder="Enter duration in seconds"
             value={duration}
             onChange={handleDurationChange}
-            className="flex-1 mr-4 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
           />
-          <Button
-            onClick={handleSetDuration}
-            variant="primary-outline"
-            className="text-gray-800 dark:text-gray-200"
-          >
+          <Button onClick={handleSetDuration} variant="primary-outline">
             Set
           </Button>
         </div>
@@ -137,25 +135,13 @@ export default function Countdown() {
         </div>
         {/* Buttons to start, pause, and reset the timer */}
         <div className="flex justify-center gap-4">
-          <Button
-            onClick={handleStart}
-            variant="primary-outline"
-            className="text-gray-800 dark:text-gray-200"
-          >
+          <Button onClick={handleStart} variant="primary-outline">
             {isPaused ? 'Resume' : 'Start'}
           </Button>
-          <Button
-            onClick={handlePause}
-            variant="primary-outline"
-            className="text-gray-800 dark:text-gray-200"
-          >
+          <Button onClick={handlePause} variant="primary-outline">
             Pause
           </Button>
-          <Button
-            onClick={handleReset}
-            variant="primary-outline"
-            className="text-gray-800 dark:text-gray-200"
-          >
+          <Button onClick={handleReset} variant="primary-outline">
             Reset
           </Button>
         </div>
