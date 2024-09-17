@@ -1,16 +1,15 @@
 'use client';
 
 // Enables client-side rendering for this component
-
 import { useState, useRef, useEffect, ChangeEvent } from 'react'; // Import React hooks and types
 import { Button } from '@/components/ui/button';
 import { Heading2 } from '@/components/ui/Heading';
 import { Input } from '@/components/ui/input';
-// import { Input } from '@/components/ui/input'; // Import custom Input component
 
 export default function Countdown() {
-  // State to manage the duration input
-  const [duration, setDuration] = useState<number | string>('');
+  // State to manage the minutes and seconds inputs
+  const [minutes, setMinutes] = useState<number | string>(''); // For minutes input
+  const [seconds, setSeconds] = useState<number | string>(''); // For seconds input
   // State to manage the countdown timer value
   const [timeLeft, setTimeLeft] = useState<number>(0);
   // State to track if the timer is active
@@ -19,37 +18,69 @@ export default function Countdown() {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   // Reference to store the timer ID
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const originalTime = useRef<number>(0);
 
-  // Function to handle setting the duration of the countdown
-  const handleSetDuration = (): void => {
-    if (typeof duration === 'number' && duration > 0) {
-      setTimeLeft(duration); // Set the countdown timer
-      setIsActive(false); // Reset active state
-      setIsPaused(false); // Reset paused state
+  // Function to convert seconds to minutes and seconds
+  const formatTime = (time: number) => {
+    const min = Math.floor(time / 60);
+    const sec = time % 60;
+    setMinutes(min); // Update the minutes
+    setSeconds(sec); // Update the seconds
+  };
+
+  // Function to handle starting the countdown timer
+  const startCountdown = (): void => {
+    const min = Number(minutes);
+    const sec = Number(seconds);
+    if ((min >= 0 || sec >= 0) && (min || sec)) {
+      const totalSeconds = min * 60 + sec;
+      if (!originalTime.current) {
+        originalTime.current = totalSeconds; // Store the original time
+      }
+
+      setTimeLeft(totalSeconds); // Set the countdown timer
+      setIsActive(true); // Set the timer as active
+      setIsPaused(false); // Ensure the timer is not paused
       // Clear any existing timer
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+      // Start the countdown
+      timerRef.current = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 0) {
+            clearInterval(timerRef.current!);
+            formatTime(0);
+            return 0;
+          }
+          const newTime = prevTime - 1;
+          formatTime(newTime);
+
+          return newTime;
+        });
+      }, 1000); // Interval of 1 second
     }
   };
 
-  // Function to start the countdown timer
-  const handleStart = (): void => {
-    if (timeLeft > 0) {
-      setIsActive(true); // Set the timer as active
-      setIsPaused(false); // Unpause the timer if it was paused
-    }
-  };
-
-  // Function to pause the countdown timer
+  // Function to pause or start the countdown timer
   const handlePause = (): void => {
     if (isActive) {
-      setIsPaused(true); // Set the timer as paused
-      setIsActive(false); // Set the timer as inactive
-      // Clear any existing timer
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
+      if (isPaused) {
+        // If the timer is paused, resume it
+        setIsPaused(false); // Set the timer as not paused
+        startCountdown(); // Restart the countdown
+      } else {
+        // If the timer is active, pause it
+        setIsPaused(true); // Set the timer as paused
+        setIsActive(false); // Set the timer as inactive
+        // Clear any existing timer
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+        }
       }
+    } else {
+      // If the timer is not active, start it
+      startCountdown();
     }
   };
 
@@ -57,7 +88,11 @@ export default function Countdown() {
   const handleReset = (): void => {
     setIsActive(false); // Set the timer as inactive
     setIsPaused(false); // Set the timer as not paused
-    setTimeLeft(typeof duration === 'number' ? duration : 0); // Reset the timer to the original duration
+    setTimeLeft(originalTime.current); // Reset the timer to the original duration
+    const min = Math.floor(originalTime.current / 60);
+    const sec = originalTime.current % 60;
+    setMinutes(min); // Update the minutes
+    setSeconds(sec); // Update the seconds
     // Clear any existing timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -66,43 +101,40 @@ export default function Countdown() {
 
   // useEffect hook to manage the countdown interval
   useEffect(() => {
-    // If the timer is active and not paused
-    if (isActive && !isPaused) {
-      // Set an interval to decrease the time left
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prevTime) => {
-          // If time is up, clear the interval
-          if (prevTime <= 1) {
-            clearInterval(timerRef.current!);
-            return 0;
-          }
-          // Decrease the time left by one second
-          return prevTime - 1;
-        });
-      }, 1000); // Interval of 1 second
-    }
     // Cleanup function to clear the interval
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [isActive, isPaused]); // Dependencies array to rerun the effect
+  }, []); // Empty dependency array to run only once
 
-  // Function to format the time left into mm:ss format
-  const formatTime = (time: number): string => {
-    const minutes = Math.floor(time / 60); // Calculate minutes
-    const seconds = time % 60; // Calculate seconds
-    // Return the formatted string
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
-      2,
-      '0',
-    )}`;
+  useEffect(() => {
+    if (timeLeft === 0 && isActive) {
+      setIsActive(false);
+      setIsPaused(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+  }, [timeLeft, isActive]); // timeLeft가 변경될 때마다 실행됩니다.
+
+  // Function to handle changes in the minutes input field
+  const handleMinutesChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const value = Number(e.target.value);
+    if (value >= 0) {
+      // Allow only non-negative values
+      setMinutes(e.target.value); // Update the minutes state
+    }
   };
 
-  // Function to handle changes in the duration input field
-  const handleDurationChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    setDuration(Number(e.target.value) || ''); // Update the duration state
+  // Function to handle changes in the seconds input field
+  const handleSecondsChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const value = Number(e.target.value);
+    if (value >= 0) {
+      // Allow only non-negative values
+      setSeconds(e.target.value); // Update the seconds state
+    }
   };
 
   // JSX return statement rendering the Countdown UI
@@ -113,33 +145,29 @@ export default function Countdown() {
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md">
         {/* Title of the countdown timer */}
         <Heading2 className="text-center">Countdown Timer</Heading2>
-        {/* <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200 text-center">
-          Countdown Timer
-        </h1> */}
-        {/* Input and set button container */}
+        {/* Input fields for minutes and seconds */}
         <div className="flex items-center justify-center mb-6 space-x-4">
           <Input
             type="number"
-            id="duration"
-            placeholder="Enter duration in seconds"
-            value={duration}
-            onChange={handleDurationChange}
+            id="minutes"
+            placeholder="Minutes"
+            value={minutes}
+            onChange={handleMinutesChange}
+            className="w-1/4 text-right"
           />
-          <Button onClick={handleSetDuration} variant="primary-outline">
-            Set
-          </Button>
+          <Input
+            type="number"
+            id="seconds"
+            placeholder="Seconds"
+            value={seconds}
+            onChange={handleSecondsChange}
+            className="w-1/4 text-right"
+          />
         </div>
-        {/* Display the formatted time left */}
-        <div className="text-6xl font-bold text-gray-800 dark:text-gray-200 mb-8 text-center">
-          {formatTime(timeLeft)}
-        </div>
-        {/* Buttons to start, pause, and reset the timer */}
+        {/* Buttons to pause and reset the timer */}
         <div className="flex justify-center gap-4">
-          <Button onClick={handleStart} variant="primary-outline">
-            {isPaused ? 'Resume' : 'Start'}
-          </Button>
           <Button onClick={handlePause} variant="primary-outline">
-            Pause
+            {isPaused || !isActive ? 'Start' : 'Pause'}
           </Button>
           <Button onClick={handleReset} variant="primary-outline">
             Reset
