@@ -1,11 +1,18 @@
-import { Button } from '@/components/ui/Button';
+'use client';
+
+import { Button } from '@/components/ui/button';
 import { Heading1, Heading2 } from '@/components/ui/Heading';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Page() {
+  const router = useRouter();
   return (
     <div className="inline-flex flex-col gap-y-10 p-8">
       <Heading1 className="text-primary">티처캔</Heading1>
       <Heading2>Hello!</Heading2>
+      <Button onClick={() => router.push('/timer')}>Timer</Button>
+      <Link href="/timer">Timer</Link>
       <div className="inline-grid grid-cols-3 gap-2">
         <Button>primary</Button>
         <Button variant="secondary">secondary</Button>
