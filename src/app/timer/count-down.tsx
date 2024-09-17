@@ -153,7 +153,7 @@ export default function Countdown() {
             placeholder="Minutes"
             value={minutes}
             onChange={handleMinutesChange}
-            className="w-1/4 text-right"
+            className="w-1/3 text-right font-bold text-lg"
           />
           <Input
             type="number"
@@ -161,7 +161,7 @@ export default function Countdown() {
             placeholder="Seconds"
             value={seconds}
             onChange={handleSecondsChange}
-            className="w-1/4 text-right"
+            className="w-1/3 text-right font-bold text-lg"
           />
         </div>
         {/* Buttons to pause and reset the timer */}
