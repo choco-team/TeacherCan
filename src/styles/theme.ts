@@ -81,6 +81,45 @@ const theme = {
       '950': '#644525',
     },
   },
+
+  keyframes: {
+    'bounce-in-top': {
+      '0%': {
+        transform: 'translateY(-160px)',
+        animationTimingFunction: 'ease-in',
+        opacity: 0,
+      },
+      '38%': {
+        transform: 'translateY(0)',
+        animationTimingFunction: 'ease-out',
+        opacity: 1,
+      },
+      '55%': {
+        transform: 'translateY(-28px)',
+        animationTimingFunction: 'ease-in',
+      },
+      '72%': {
+        transform: 'translateY(0)',
+        animationTimingFunction: 'ease-out',
+      },
+      '81%': {
+        transform: 'translateY(-10px)',
+        animationTimingFunction: 'ease-in',
+      },
+      '90%': {
+        transform: 'translateY(0)',
+        animationTimingFunction: 'ease-out',
+      },
+      '95%': {
+        transform: 'translateY(-4px)',
+        animationTimingFunction: 'ease-in',
+      },
+      '100%': {
+        transform: 'translateY(0)',
+        animationTimingFunction: 'ease-out',
+      },
+    },
+  },
 };
 
 export default theme;

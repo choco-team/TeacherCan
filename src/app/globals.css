@@ -6,12 +6,11 @@
   :root {
     --radius: 0.5rem;
   }
-}
 
-@layer base {
   * {
     @apply box-border;
   }
+
   body {
     @apply bg-background text-foreground leading-normal whitespace-pre-wrap;
     font-feature-settings:
