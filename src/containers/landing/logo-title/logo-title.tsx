@@ -1,7 +1,7 @@
-import { Heading1 } from '@/components/ui/heading';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
-import { Badge } from '@/components/ui/badge';
+import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
+import { Badge } from '@/components/badge';
 
 function LogoTitle() {
   return (

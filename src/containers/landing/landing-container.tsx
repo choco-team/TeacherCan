@@ -1,7 +1,7 @@
 'use client';
 
-import LogoTitle from '@/components/landing/logo-title';
-import MenuList from '@/components/landing/menu-list';
+import LogoTitle from './logo-title/logo-title';
+import MenuList from './menu-list/menu-list';
 
 function LandingContainer() {
   const handleClickTimerButton = () => {
