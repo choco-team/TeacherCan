@@ -15,7 +15,7 @@ function ActiveLink({ children, href }) {
   // 클릭 핸들러
   const handleClick = (e) => {
     e.preventDefault();
-    window.open(href, '_blank'); // 새 창에서 열기
+    window.open(href, '_blank'); // 새 탭에서 열기
   };
 
   // children이 React 요소일 경우 클릭 이벤트를 props로 전달
