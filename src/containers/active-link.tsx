@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import React from 'react';
-import theme from '@/style/theme';
+import theme from '@/styles/theme';
 
 function ActiveLink({ children, href }) {
   const pathname = usePathname();

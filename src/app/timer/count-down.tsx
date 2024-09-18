@@ -2,9 +2,9 @@
 
 // Enables client-side rendering for this component
 import { useState, useRef, useEffect, ChangeEvent } from 'react'; // Import React hooks and types
-import { Button } from '@/components/ui/button';
-import { Heading2 } from '@/components/ui/Heading';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/components/button';
+import { Heading2 } from '@/components/heading';
+import { Input } from '@/components/input';
 
 export default function Countdown() {
   // State to manage the minutes and seconds inputs
