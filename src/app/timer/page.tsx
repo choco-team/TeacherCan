@@ -1,4 +1,4 @@
-import Countdown from './count-down';
+import Countdown from '../../containers/timer/timer-container';
 
 export const metadata = {
   title: 'Timer',
