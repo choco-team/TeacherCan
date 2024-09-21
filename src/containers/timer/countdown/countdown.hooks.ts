@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, ChangeEvent } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export function useCountdown() {
   const [minutes, setMinutes] = useState<number | string>('');
@@ -86,14 +86,20 @@ export function useCountdown() {
     }
   }, [timeLeft, isActive]);
 
-  const handleMinutesChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const value = Number(e.target.value);
-    if (value >= 0) setMinutes(e.target.value);
+  const handleMinutesChange = (min: number) => {
+    if (min < 0) {
+      return;
+    }
+
+    setMinutes(min);
   };
 
-  const handleSecondsChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const value = Number(e.target.value);
-    if (value >= 0) setSeconds(e.target.value);
+  const handleSecondsChange = (sec: number) => {
+    if (sec < 0) {
+      return;
+    }
+
+    setSeconds(sec);
   };
 
   return {

@@ -27,7 +27,7 @@ export default function Countdown() {
             id="minutes"
             placeholder="Minutes"
             value={minutes}
-            onChange={handleMinutesChange}
+            onChange={(e) => handleMinutesChange(Number(e.target.value))}
             className="w-1/3 text-right font-bold text-lg"
           />
           <Input
@@ -35,7 +35,7 @@ export default function Countdown() {
             id="seconds"
             placeholder="Seconds"
             value={seconds}
-            onChange={handleSecondsChange}
+            onChange={(e) => handleSecondsChange(Number(e.target.value))}
             className="w-1/3 text-right font-bold text-lg"
           />
         </div>
