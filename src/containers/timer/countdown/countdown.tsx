@@ -3,7 +3,9 @@
 import { Button } from '@/components/button';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
+import { Sheet, SheetTrigger } from '@/components/sheet';
 import { useCountdown } from './countdown.hooks';
+import CountdownSetting from '../countdown-setting/countdown-setting';
 
 export default function Countdown() {
   const {
@@ -19,6 +21,12 @@ export default function Countdown() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
+      <Sheet defaultOpen>
+        <SheetTrigger asChild>
+          <Button variant="primary-ghost">설정</Button>
+        </SheetTrigger>
+        <CountdownSetting />
+      </Sheet>
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md">
         <Heading2 className="text-center">Countdown Timer</Heading2>
         <div className="flex items-center justify-center mb-6 space-x-4">
