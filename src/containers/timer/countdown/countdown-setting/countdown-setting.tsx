@@ -18,11 +18,15 @@ export default function CountdownSetting() {
       <SheetHeader>
         <SheetTitle>키운트다운 설정</SheetTitle>
         <SheetDescription>
+          아래에서 카운트다운 설정을 해보세요. 카운트다운이 진행하는 도중에도
+          가능합니다.
+        </SheetDescription>
+        <div>
           <SettingTime />
           <SettingAlarm />
           <SettingMusic />
           <SettingScreenSize />
-        </SheetDescription>
+        </div>
       </SheetHeader>
       <SheetFooter>
         <SheetClose asChild>
