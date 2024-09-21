@@ -1,16 +1,14 @@
-// hooks/useCountdown.ts
 import { useState, useRef, useEffect, ChangeEvent } from 'react';
 
 export function useCountdown() {
-  const [minutes, setMinutes] = useState<number | string>(''); // For minutes input
-  const [seconds, setSeconds] = useState<number | string>(''); // For seconds input
-  const [timeLeft, setTimeLeft] = useState<number>(0); // Countdown timer value
-  const [isActive, setIsActive] = useState<boolean>(false); // Timer active state
-  const [isPaused, setIsPaused] = useState<boolean>(false); // Timer paused state
+  const [minutes, setMinutes] = useState<number | string>('');
+  const [seconds, setSeconds] = useState<number | string>('');
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [isActive, setIsActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const originalTime = useRef<number>(0);
 
-  // Function to format time
   const formatTime = (time: number) => {
     const min = Math.floor(time / 60);
     const sec = time % 60;
@@ -18,7 +16,6 @@ export function useCountdown() {
     setSeconds(sec);
   };
 
-  // Start countdown function
   const startCountdown = (): void => {
     const min = Number(minutes);
     const sec = Number(seconds);
@@ -49,7 +46,6 @@ export function useCountdown() {
     }
   };
 
-  // Handle pause and start
   const handlePause = (): void => {
     if (isActive) {
       if (isPaused) {
@@ -65,7 +61,6 @@ export function useCountdown() {
     }
   };
 
-  // Reset timer
   const handleReset = (): void => {
     setIsActive(false);
     setIsPaused(false);
@@ -77,14 +72,12 @@ export function useCountdown() {
     if (timerRef.current) clearInterval(timerRef.current);
   };
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, []);
 
-  // Auto-reset when timeLeft reaches 0
   useEffect(() => {
     if (timeLeft === 0 && isActive) {
       setIsActive(false);
@@ -93,13 +86,11 @@ export function useCountdown() {
     }
   }, [timeLeft, isActive]);
 
-  // Handle minutes input change
   const handleMinutesChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const value = Number(e.target.value);
     if (value >= 0) setMinutes(e.target.value);
   };
 
-  // Handle seconds input change
   const handleSecondsChange = (e: ChangeEvent<HTMLInputElement>): void => {
     const value = Number(e.target.value);
     if (value >= 0) setSeconds(e.target.value);
