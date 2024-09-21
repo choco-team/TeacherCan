@@ -1,16 +1,15 @@
 import Link from 'next/link';
 import { Button } from '@/components/button';
+import ActiveLink from '@/components/active-link';
 
-interface Props {
-  handleClickTimerButton: () => void;
-}
-
-function MenuList({ handleClickTimerButton }: Props) {
+function MenuList() {
   return (
     <div className="flex gap-x-6">
-      <Button size="lg" onClick={handleClickTimerButton}>
-        타이머
-      </Button>
+      <ActiveLink href="/timer">
+        <Button size="lg" variant="primary-outline">
+          타이머
+        </Button>
+      </ActiveLink>
 
       <Button variant="gray-outline" size="lg" asChild>
         <Link href="https://www.teachercan.com" target="_blank">
