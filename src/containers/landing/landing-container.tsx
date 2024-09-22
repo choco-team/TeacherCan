@@ -1,5 +1,3 @@
-'use client';
-
 import LogoTitle from './logo-title/logo-title';
 import MenuList from './menu-list/menu-list';
 

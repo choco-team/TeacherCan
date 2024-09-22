@@ -1,16 +1,16 @@
 import Link from 'next/link';
 import { Button } from '@/components/button';
-import ActiveLink from '@/components/active-link';
+import PopupLink from '@/components/popup-link';
+import { getDomainURL } from '@/utils/getDomainURL';
 
 function MenuList() {
   return (
     <div className="flex gap-x-6">
-      <ActiveLink href="/timer">
-        <Button size="lg" variant="primary-outline">
+      <Button size="lg" variant="primary-outline" asChild>
+        <PopupLink size={6 / 7} url={`${getDomainURL()}/timer`}>
           타이머
-        </Button>
-      </ActiveLink>
-
+        </PopupLink>
+      </Button>
       <Button variant="gray-outline" size="lg" asChild>
         <Link href="https://www.teachercan.com" target="_blank">
           티처캔 v1
