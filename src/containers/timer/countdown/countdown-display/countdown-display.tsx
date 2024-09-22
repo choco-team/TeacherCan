@@ -1,6 +1,5 @@
 // 지윤쌤
 // 구현이 필요한 기능 목록
-// [ ] 60분에서 넘어가면 시간 단위도 생긴다.
 // [ ] 최대 9시간 59분까지 가능하다.
 
 import { Button } from '@/components/button';
@@ -12,7 +11,7 @@ import {
 } from '../countdown-provider/countdown-provider.hooks';
 
 export default function CountdownDisplay() {
-  const { minutes, seconds, isActive, isPaused } = useCountdownState();
+  const { hours, minutes, seconds, isActive, isPaused } = useCountdownState();
   const { updateMinutes, updateSeconds, handlePause, handleReset } =
     useCountdownAction();
 
@@ -31,6 +30,16 @@ export default function CountdownDisplay() {
       <Heading2 className="text-center">Countdown Timer</Heading2>
       <div className="flex items-center justify-center mb-6 space-x-4">
         <div className="flex flex-col items-center">
+          {(minutes >= 60 || hours > 0) && (
+            <Input
+              type="number"
+              id="hours"
+              value={hours}
+              className="w-full max-w-[120px] text-right font-bold text-lg"
+            />
+          )}
+        </div>
+        <div className="flex flex-col items-center">
           <Button
             onClick={handleIncreaseMinutes}
             variant="primary-ghost"
@@ -42,13 +51,18 @@ export default function CountdownDisplay() {
             type="number"
             id="minutes"
             value={minutes}
+            onFocus={(e) => {
+              if (minutes === 0) {
+                e.target.value = '';
+              }
+            }}
             onChange={(e) => updateMinutes(Number(e.target.value))}
             className="w-full max-w-[120px] text-right font-bold text-lg"
           />
           <Button
             onClick={handleDecreaseMinutes}
             variant="primary-ghost"
-            className="py-1 px-1 text-icon" // 세로 길이 줄이기
+            className="py-1 px-1 text-icon"
           >
             ▼
           </Button>
@@ -59,6 +73,11 @@ export default function CountdownDisplay() {
             type="number"
             id="seconds"
             value={seconds}
+            onFocus={(e) => {
+              if (seconds === 0) {
+                e.target.value = '';
+              }
+            }}
             onChange={(e) => updateSeconds(Number(e.target.value))}
             className="w-full max-w-[120px] text-right font-bold text-lg"
           />
