@@ -1,14 +1,44 @@
-// 승민쌤
+// 'use client';
+
+import { Button } from '@/components/button';
+import { Input } from '@/components/input';
+import {
+  useCountdownMusicAction,
+  useCountdownMusicState,
+} from '../../countdown-music-provider/countdown-music-provider.hooks';
 
 export default function SettingMusic() {
-  // 설정 창이 닫혀있는 경우 해당컴포넌트가 언마운트 되기 때문에 배경음이 들리지 않습니다.
-  // 때문에 CountdownProvider에서 제공하는 useCountdownState의 isActive 상태를 활용하여
-  // CountdownMusicProvider(구현 필요)에서 카운트 다운 뮤직을 관리합니다.
+  const { isUrlError, inputRef, playBtnRef } = useCountdownMusicState();
+  const { onClickGetBtn, onClickPlayBtn } = useCountdownMusicAction();
 
   return (
     <div>
-      <span>배경 음악</span>
-      {/* 아래에 요구사항에 맞는 기능을 구현하세요. */}
+      배경 음악
+      <div className="flex-col">
+        <Input
+          className={
+            isUrlError
+              ? 'w-full border-red-500 animate-bounce border-4'
+              : 'w-full border-4'
+          }
+          ref={inputRef}
+          type="text"
+          defaultValue="https://www.youtube.com/watch?v=rmtNOh6GJW8"
+        />
+        <div>
+          <Button className="w-1/3 mr-1" type="submit" onClick={onClickGetBtn}>
+            가져오기
+          </Button>
+          <Button
+            className="w-1/3"
+            ref={playBtnRef}
+            onClick={onClickPlayBtn}
+            variant="secondary"
+          >
+            재생
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

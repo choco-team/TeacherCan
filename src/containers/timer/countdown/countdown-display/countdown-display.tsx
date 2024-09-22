@@ -11,8 +11,11 @@ import {
   useCountdownAction,
   useCountdownState,
 } from '../countdown-provider/countdown-provider.hooks';
+import { useCountdownMusicState } from '../countdown-music-provider/countdown-music-provider.hooks';
 
 export default function CountdownDisplay() {
+  const { iframeRef } = useCountdownMusicState();
+
   const { minutes, seconds, isActive, isPaused } = useCountdownState();
   const { updateMinutes, updateSeconds, handlePause, handleReset } =
     useCountdownAction();
@@ -46,6 +49,14 @@ export default function CountdownDisplay() {
           Reset
         </Button>
       </div>
+      <iframe
+        className="hidden"
+        title="youtube"
+        ref={iframeRef}
+        width="500"
+        height="50"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      />
     </div>
   );
 }
