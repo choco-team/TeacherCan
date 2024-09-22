@@ -1,16 +1,10 @@
 import { Button } from '@/components/button';
-import { getScreenSize } from '@/utils/getScreenSize';
+import { resizeBrowserSizeByScreen } from './setting-screen-size.utils';
 
 const SCREEN_SIZE = {
   전체화면: 1,
   '1 / 2': 1 / 2,
   '1 / 4': 1 / 4,
-};
-
-const resizeBrowserSizeByScreen = (scale: number) => () => {
-  const { width, height } = getScreenSize();
-
-  window.resizeTo(width * scale, height * scale);
 };
 
 export default function SettingScreenSize() {
