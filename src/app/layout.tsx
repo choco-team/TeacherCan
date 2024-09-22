@@ -6,6 +6,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: '티처캔',
   description: '선생님의 학교생활을 도와요',
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 const pretendard = localFont({
