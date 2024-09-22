@@ -28,8 +28,6 @@ type Props = {
 
 export default function CountdownAlarmProvider({ children }: Props) {
   const [alarmAudio, setAlarmAudio] = useState<HTMLAudioElement>(null);
-  const [userInteracted, setUserInteracted] = useState(false);
-
   const [alarmTimes, setAlarmTimes] = useState<number[]>([0, 10]);
   const { leftTime, isActive } = useCountdownState();
 
@@ -45,10 +43,6 @@ export default function CountdownAlarmProvider({ children }: Props) {
     [alarmTimes],
   );
 
-  const handleUserInteraction = () => {
-    setUserInteracted(true);
-  };
-
   useEffect(() => {
     const alarmBasic = new Audio('/audio/alarm-basic.mp3');
     setAlarmAudio(alarmBasic);
@@ -59,10 +53,11 @@ export default function CountdownAlarmProvider({ children }: Props) {
         alarmAudio.src = '';
       }
     };
-  }, [alarmAudio]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    if (!alarmAudio || !userInteracted || !isActive) {
+    if (!alarmAudio || !isActive) {
       return;
     }
 
@@ -71,17 +66,7 @@ export default function CountdownAlarmProvider({ children }: Props) {
     }
 
     alarmAudio.play();
-  }, [alarmTimes, leftTime, isActive, userInteracted, alarmAudio]);
-
-  useEffect(() => {
-    window.addEventListener('click', handleUserInteraction);
-    window.addEventListener('keydown', handleUserInteraction);
-
-    return () => {
-      window.removeEventListener('click', handleUserInteraction);
-      window.removeEventListener('keydown', handleUserInteraction);
-    };
-  }, []);
+  }, [alarmTimes, leftTime, isActive, alarmAudio]);
 
   const defaultCountdownAlarmStateValue = useMemo(
     () => ({
