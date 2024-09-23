@@ -9,7 +9,8 @@ import {
 } from '../../countdown-music-provider/countdown-music-provider.hooks';
 
 export default function SettingMusic() {
-  const { isUrlError, inputRef, playBtnRef } = useCountdownMusicState();
+  const { isUrlError, inputRef, playBtnRef, defaultValue } =
+    useCountdownMusicState();
   const { onClickGetBtn, onClickPlayBtn, pauseMusic } =
     useCountdownMusicAction();
 
@@ -29,7 +30,7 @@ export default function SettingMusic() {
           }
           ref={inputRef}
           type="text"
-          defaultValue="https://www.youtube.com/watch?v=rmtNOh6GJW8"
+          defaultValue={defaultValue}
         />
         <div className="grid grid-cols-2 gap-2">
           <Button

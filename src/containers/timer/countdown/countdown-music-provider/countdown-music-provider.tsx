@@ -13,6 +13,7 @@ import { useCountdownState } from '../countdown-provider/countdown-provider.hook
 type CountdownMusicState = {
   isPlay: boolean;
   isUrlError: boolean;
+  defaultValue: string;
   inputRef: LegacyRef<HTMLInputElement>;
   iframeRef: LegacyRef<HTMLIFrameElement>;
   playBtnRef: LegacyRef<HTMLButtonElement>;
@@ -36,9 +37,12 @@ type Props = {
 
 export default function CountdownMusicProvider({ children }: Props) {
   const { isActive } = useCountdownState();
-
   const [isPlay, setIsPlay] = useState(false);
   const [isUrlError, setURLError] = useState(false);
+  const [defaultValue, setDefaultValue] = useState(
+    'https://www.youtube.com/watch?v=7uRX00jTSA0',
+  );
+
   const inputRef = useRef<HTMLInputElement>();
   const iframeRef = useRef<HTMLIFrameElement>();
   const playBtnRef = useRef<HTMLButtonElement>();
@@ -61,7 +65,9 @@ export default function CountdownMusicProvider({ children }: Props) {
 
   const onClickGetBtn = useCallback(() => {
     try {
-      const videoId = inputRef.current.value.split('v=')[1].split('&')[0];
+      const inputValue = inputRef.current.value;
+      setDefaultValue(inputValue);
+      const videoId = inputValue.split('v=')[1].split('&')[0];
       iframeRef.current.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&enablejsapi=1`;
       setIsPlay(true);
       playBtnRef.current.innerHTML = '일시정지';
@@ -87,6 +93,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       inputRef,
       iframeRef,
       playBtnRef,
+      defaultValue,
     }),
     [isPlay, isUrlError, inputRef, iframeRef, playBtnRef],
   );
