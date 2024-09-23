@@ -7,16 +7,26 @@ import {
   useCountdownMusicAction,
   useCountdownMusicState,
 } from '../../countdown-music-provider/countdown-music-provider.hooks';
+import { useCountdownState } from '../../countdown-provider/countdown-provider.hooks';
 
 export default function SettingMusic() {
-  const { isUrlError, inputRef, playBtnRef, defaultValue } =
+  const { isPlay, isUrlError, defaultValue, inputRef, playBtnRef, didMount } =
     useCountdownMusicState();
   const { onClickGetBtn, onClickPlayBtn, pauseMusic } =
     useCountdownMusicAction();
+  const { isActive } = useCountdownState();
 
   useEffect(() => {
-    return pauseMusic;
-  }, []);
+    if (didMount.current) {
+      didMount.current = false;
+      if (!isActive) {
+        return pauseMusic;
+      }
+    } else {
+      didMount.current = true;
+    }
+    return null;
+  }, [didMount, isActive, pauseMusic]);
 
   return (
     <div>
@@ -47,7 +57,7 @@ export default function SettingMusic() {
             ref={playBtnRef}
             onClick={onClickPlayBtn}
           >
-            재생
+            {isPlay ? '일시정지' : '재생'}
           </Button>
         </div>
       </div>

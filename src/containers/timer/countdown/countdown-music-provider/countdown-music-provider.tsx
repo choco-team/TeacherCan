@@ -1,6 +1,7 @@
 import {
   createContext,
   LegacyRef,
+  MutableRefObject,
   ReactNode,
   useCallback,
   useEffect,
@@ -17,6 +18,7 @@ type CountdownMusicState = {
   inputRef: LegacyRef<HTMLInputElement>;
   iframeRef: LegacyRef<HTMLIFrameElement>;
   playBtnRef: LegacyRef<HTMLButtonElement>;
+  didMount: MutableRefObject<boolean>;
 };
 
 export const CountdownMusicStateContext =
@@ -46,6 +48,8 @@ export default function CountdownMusicProvider({ children }: Props) {
   const inputRef = useRef<HTMLInputElement>();
   const iframeRef = useRef<HTMLIFrameElement>();
   const playBtnRef = useRef<HTMLButtonElement>();
+
+  const didMount = useRef(false);
 
   useEffect(() => {
     const postMessage = isPlay ? 'playVideo' : 'pauseVideo';
@@ -78,9 +82,8 @@ export default function CountdownMusicProvider({ children }: Props) {
   }, [inputRef, iframeRef]);
 
   const onClickPlayBtn = useCallback(() => {
-    playBtnRef.current.innerHTML = isPlay ? '재생' : '일시정지';
     setIsPlay(!isPlay);
-  }, [isPlay, playBtnRef]);
+  }, [isPlay]);
 
   const pauseMusic = useCallback(() => {
     setIsPlay(false);
@@ -90,12 +93,13 @@ export default function CountdownMusicProvider({ children }: Props) {
     () => ({
       isPlay,
       isUrlError,
+      defaultValue,
       inputRef,
       iframeRef,
       playBtnRef,
-      defaultValue,
+      didMount,
     }),
-    [isPlay, isUrlError, inputRef, iframeRef, playBtnRef],
+    [isPlay, isUrlError, defaultValue, inputRef, iframeRef, playBtnRef],
   );
 
   const defaultCountdownMusicActionValue = useMemo(
