@@ -11,7 +11,7 @@ import {
 } from '../countdown-provider/countdown-provider.hooks';
 
 export default function CountdownDisplay() {
-  const { hours, minutes, seconds, isActive, isPaused } = useCountdownState();
+  const { minutes, seconds, isActive, isPaused } = useCountdownState();
   const { updateMinutes, updateSeconds, handlePause, handleReset } =
     useCountdownAction();
 
@@ -30,11 +30,11 @@ export default function CountdownDisplay() {
       <Heading2 className="text-center">Countdown Timer</Heading2>
       <div className="flex items-center justify-center mb-6 space-x-4">
         <div className="flex flex-col items-center">
-          {(minutes >= 60 || hours > 0) && (
+          {minutes >= 60 && (
             <Input
               type="number"
               id="hours"
-              value={hours}
+              value={Math.floor(minutes / 60)}
               className="w-full max-w-[120px] text-right font-bold text-lg"
             />
           )}
@@ -50,13 +50,17 @@ export default function CountdownDisplay() {
           <Input
             type="number"
             id="minutes"
-            value={minutes}
+            value={minutes % 60}
             onFocus={(e) => {
               if (minutes === 0) {
                 e.target.value = '';
               }
             }}
-            onChange={(e) => updateMinutes(Number(e.target.value))}
+            onChange={(e) =>
+              updateMinutes(
+                Math.floor(minutes / 60) * 60 + Number(e.target.value), // 기존 hours 값 유지 + 변경된 minutes 값
+              )
+            }
             className="w-full max-w-[120px] text-right font-bold text-lg"
           />
           <Button
