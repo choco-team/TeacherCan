@@ -20,7 +20,7 @@ export default function SettingMusic() {
   return (
     <div>
       배경 음악
-      <div className="flex-col">
+      <div className="grid gap-2">
         <Input
           className={
             isUrlError
@@ -31,15 +31,20 @@ export default function SettingMusic() {
           type="text"
           defaultValue="https://www.youtube.com/watch?v=rmtNOh6GJW8"
         />
-        <div>
-          <Button className="w-1/3 mr-1" type="submit" onClick={onClickGetBtn}>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="primary-outline"
+            size="sm"
+            type="submit"
+            onClick={onClickGetBtn}
+          >
             가져오기
           </Button>
           <Button
-            className="w-1/3"
+            variant="primary"
+            size="sm"
             ref={playBtnRef}
             onClick={onClickPlayBtn}
-            variant="secondary"
           >
             재생
           </Button>
