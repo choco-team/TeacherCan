@@ -53,8 +53,6 @@ export default function CountdownDisplay() {
         className="hidden"
         title="youtube"
         ref={iframeRef}
-        width="500"
-        height="50"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       />
     </div>

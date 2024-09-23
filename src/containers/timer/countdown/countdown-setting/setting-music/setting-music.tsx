@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import { useEffect } from 'react';
 import {
   useCountdownMusicAction,
   useCountdownMusicState,
@@ -9,7 +10,12 @@ import {
 
 export default function SettingMusic() {
   const { isUrlError, inputRef, playBtnRef } = useCountdownMusicState();
-  const { onClickGetBtn, onClickPlayBtn } = useCountdownMusicAction();
+  const { onClickGetBtn, onClickPlayBtn, pauseMusic } =
+    useCountdownMusicAction();
+
+  useEffect(() => {
+    return pauseMusic;
+  }, []);
 
   return (
     <div>
