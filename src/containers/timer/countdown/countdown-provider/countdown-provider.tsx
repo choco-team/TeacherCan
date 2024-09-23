@@ -9,7 +9,6 @@ import {
 } from 'react';
 
 type CountdownState = {
-  // hours: number;
   minutes: number;
   seconds: number;
   leftTime: number;
@@ -35,6 +34,7 @@ type Props = {
 };
 
 export default function CountdownProvider({ children }: Props) {
+  const MAX_TIME = 599 * 60 + 59;
   const [leftTime, setLeftTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -112,7 +112,7 @@ export default function CountdownProvider({ children }: Props) {
       const newLefTime =
         (keepPreviousState ? (minutes + min) * 60 : min * 60) + seconds;
 
-      if (newLefTime < 0) {
+      if (newLefTime < 0 || newLefTime > MAX_TIME) {
         return;
       }
 
@@ -127,7 +127,7 @@ export default function CountdownProvider({ children }: Props) {
       const newLefTime =
         minutes * 60 + (keepPreviousState ? seconds + sec : sec);
 
-      if (newLefTime < 0) {
+      if (newLefTime < 0 || newLefTime > MAX_TIME) {
         return;
       }
 
@@ -138,7 +138,6 @@ export default function CountdownProvider({ children }: Props) {
 
   const defaultCountdownStateValue = useMemo(
     () => ({
-      // hours,
       minutes,
       seconds,
       leftTime,

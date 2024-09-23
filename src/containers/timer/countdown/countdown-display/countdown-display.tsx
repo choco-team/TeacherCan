@@ -1,7 +1,3 @@
-// 지윤쌤
-// 구현이 필요한 기능 목록
-// [ ] 최대 9시간 59분까지 가능하다.
-
 import { Button } from '@/components/button';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
@@ -18,11 +14,11 @@ export default function CountdownDisplay() {
   const buttonText = isPaused || !isActive ? 'Start' : 'Pause';
 
   const handleIncreaseMinutes = () => {
-    updateMinutes(1, true); // 1분 증가
+    updateMinutes(1, true);
   };
 
   const handleDecreaseMinutes = () => {
-    updateMinutes(-1, true); // 1분 감소
+    updateMinutes(-1, true);
   };
 
   return (
