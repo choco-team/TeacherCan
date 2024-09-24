@@ -9,6 +9,7 @@ import {
 } from 'react';
 
 type CountdownState = {
+  hours: number;
   minutes: number;
   seconds: number;
   leftTime: number;
@@ -21,6 +22,7 @@ export const CountdownStateContext = createContext<CountdownState | null>(null);
 type CountdownAction = {
   handlePause: () => void;
   handleReset: () => void;
+  updateHours: (_hou: number, keepPreviousState?: boolean) => void;
   updateMinutes: (_min: number, keepPreviousState?: boolean) => void;
   updateSeconds: (_sec: number, keepPreviousState?: boolean) => void;
 };
@@ -41,7 +43,8 @@ export default function CountdownProvider({ children }: Props) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const originalTime = useRef<number>(0);
 
-  const minutes = Math.floor(leftTime / 60);
+  const hours = Math.floor(leftTime / 3600);
+  const minutes = Math.floor((leftTime - hours * 3600) / 60);
   const seconds = Math.floor(leftTime % 60);
 
   const startCountdown = useCallback(() => {
@@ -107,10 +110,33 @@ export default function CountdownProvider({ children }: Props) {
     }
   }, [leftTime, isActive]);
 
+  const updateHours = useCallback(
+    (hou: number, keepPreviousState: boolean = false) => {
+      if (isActive) {
+        return;
+      }
+      const newLeftTime =
+        (keepPreviousState ? (hours + hou) * 3600 : hou * 3600) +
+        minutes * 60 +
+        seconds;
+
+      if (newLeftTime < 0 || newLeftTime > MAX_TIME) {
+        return;
+      }
+      setLeftTime(newLeftTime);
+    },
+    [hours, minutes, seconds],
+  );
+
   const updateMinutes = useCallback(
     (min: number, keepPreviousState: boolean = false) => {
+      if (isActive) {
+        return;
+      }
       const newLefTime =
-        (keepPreviousState ? (minutes + min) * 60 : min * 60) + seconds;
+        hours * 3600 +
+        (keepPreviousState ? (minutes + min) * 60 : min * 60) +
+        seconds;
 
       if (newLefTime < 0 || newLefTime > MAX_TIME) {
         return;
@@ -124,8 +150,11 @@ export default function CountdownProvider({ children }: Props) {
 
   const updateSeconds = useCallback(
     (sec: number, keepPreviousState: boolean = false) => {
+      if (isActive) {
+        return;
+      }
       const newLefTime =
-        minutes * 60 + (keepPreviousState ? seconds + sec : sec);
+        hours * 3600 + minutes * 60 + (keepPreviousState ? seconds + sec : sec);
 
       if (newLefTime < 0 || newLefTime > MAX_TIME) {
         return;
@@ -138,23 +167,25 @@ export default function CountdownProvider({ children }: Props) {
 
   const defaultCountdownStateValue = useMemo(
     () => ({
+      hours,
       minutes,
       seconds,
       leftTime,
       isActive,
       isPaused,
     }),
-    [minutes, seconds, leftTime, isActive, isPaused],
+    [hours, minutes, seconds, leftTime, isActive, isPaused],
   );
 
   const defaultCountdownActionValue = useMemo(
     () => ({
+      updateHours,
       updateMinutes,
       updateSeconds,
       handlePause,
       handleReset,
     }),
-    [updateMinutes, updateSeconds, handlePause, handleReset],
+    [updateHours, updateMinutes, updateSeconds, handlePause, handleReset],
   );
 
   return (
