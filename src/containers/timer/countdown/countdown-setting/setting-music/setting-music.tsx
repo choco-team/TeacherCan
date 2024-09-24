@@ -25,7 +25,7 @@ export default function SettingMusic() {
     } else {
       didMount.current = true;
     }
-    return null;
+    return undefined;
   }, [didMount, isActive, pauseMusic]);
 
   return (
