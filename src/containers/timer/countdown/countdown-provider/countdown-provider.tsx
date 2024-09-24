@@ -36,7 +36,7 @@ type Props = {
 };
 
 export default function CountdownProvider({ children }: Props) {
-  const MAX_TIME = 599 * 60 + 59;
+  const MAX_TIME = 9 * 3600 + 59 * 60 + 59;
   const [leftTime, setLeftTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -139,7 +139,7 @@ export default function CountdownProvider({ children }: Props) {
       setLeftTime(newLefTime);
     },
 
-    [minutes, seconds],
+    [hours, minutes, seconds],
   );
 
   const updateSeconds = useCallback(
@@ -153,7 +153,7 @@ export default function CountdownProvider({ children }: Props) {
 
       setLeftTime(newLefTime);
     },
-    [minutes, seconds],
+    [hours, minutes, seconds],
   );
 
   const defaultCountdownStateValue = useMemo(

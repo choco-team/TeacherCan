@@ -53,11 +53,7 @@ export default function CountdownDisplay() {
             type="number"
             id="minutes"
             value={minutes}
-            onChange={(e) =>
-              updateMinutes(
-                Math.floor(Number(e.target.value)), // 기존 hours 값 유지 + 변경된 minutes 값
-              )
-            }
+            onChange={(e) => updateMinutes(Math.floor(Number(e.target.value)))}
             className="w-full max-w-[120px] text-right font-bold text-lg"
           />
           <Button
