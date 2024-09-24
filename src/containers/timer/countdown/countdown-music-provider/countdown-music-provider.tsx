@@ -12,12 +12,13 @@ import {
 import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
 
 type CountdownMusicState = {
-  isPlay: boolean;
+  isMusicPlay: boolean;
   isUrlError: boolean;
+  isMusicUsed: boolean;
   defaultValue: string;
+  musicTitle: string;
   inputRef: LegacyRef<HTMLInputElement>;
   iframeRef: LegacyRef<HTMLIFrameElement>;
-  playBtnRef: LegacyRef<HTMLButtonElement>;
   didMount: MutableRefObject<boolean>;
 };
 
@@ -26,7 +27,8 @@ export const CountdownMusicStateContext =
 
 type CountdownMusicAction = {
   onClickGetBtn: () => void;
-  onClickPlayBtn: () => void;
+  onClickInsertRemoveBtn: () => void;
+  onClickPlayPauseBtn: () => void;
   pauseMusic: () => void;
 };
 
@@ -39,76 +41,114 @@ type Props = {
 
 export default function CountdownMusicProvider({ children }: Props) {
   const { isActive } = useCountdownState();
-  const [isPlay, setIsPlay] = useState(false);
+  const [isMusicPlay, setIsMusicPlay] = useState(false);
+  const [isMusicUsed, setIsMusicUsed] = useState(false);
   const [isUrlError, setURLError] = useState(false);
+
   const [defaultValue, setDefaultValue] = useState(
     'https://www.youtube.com/watch?v=7uRX00jTSA0',
   );
+  const [musicTitle, setMusicTitle] = useState('');
 
   const inputRef = useRef<HTMLInputElement>();
   const iframeRef = useRef<HTMLIFrameElement>();
-  const playBtnRef = useRef<HTMLButtonElement>();
 
   const didMount = useRef(false);
 
   useEffect(() => {
-    const postMessage = isPlay ? 'playVideo' : 'pauseVideo';
+    const postMessage = isMusicPlay ? 'playVideo' : 'pauseVideo';
     iframeRef.current.contentWindow.postMessage(
       `{"event":"command","func":"${postMessage}"}`,
       '*',
     );
-  }, [isPlay]);
+  }, [isMusicPlay]);
 
   useEffect(() => {
-    if (isActive) {
-      setIsPlay(true);
-    } else {
-      setIsPlay(false);
+    if (!isMusicUsed) {
+      return;
     }
-  }, [isActive]);
+    if (isActive) {
+      setIsMusicPlay(true);
+    } else {
+      setIsMusicPlay(false);
+    }
+  }, [isMusicUsed, isActive]);
 
   const onClickGetBtn = useCallback(() => {
+    if (isActive) {
+      return;
+    }
     try {
       const inputValue = inputRef.current.value;
       setDefaultValue(inputValue);
       const videoId = inputValue.split('v=')[1].split('&')[0];
-      iframeRef.current.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&enablejsapi=1`;
-      setIsPlay(true);
-      playBtnRef.current.innerHTML = '일시정지';
+
+      // 백엔드 api 만들어서 videoId로 유투브 제목 가져오기
+      setMusicTitle(videoId);
+
+      iframeRef.current.src = `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`;
+      setIsMusicUsed(true);
       setURLError(false);
     } catch {
       setURLError(true);
     }
-  }, [inputRef, iframeRef]);
+  }, [isActive, inputRef, iframeRef]);
 
-  const onClickPlayBtn = useCallback(() => {
-    setIsPlay(!isPlay);
-  }, [isPlay]);
+  const onClickInsertRemoveBtn = useCallback(() => {
+    if (musicTitle === '') {
+      return;
+    }
+    if (isMusicUsed) {
+      setIsMusicUsed(false);
+      setIsMusicPlay(false);
+    } else if (isActive) {
+      setIsMusicPlay(true);
+    }
+    setIsMusicUsed(!isMusicUsed);
+  }, [isActive, isMusicUsed, musicTitle]);
+
+  const onClickPlayPauseBtn = useCallback(() => {
+    if (musicTitle === '' || isActive) {
+      return;
+    }
+    setIsMusicPlay(!isMusicPlay);
+  }, [isActive, isMusicPlay, musicTitle]);
 
   const pauseMusic = useCallback(() => {
-    setIsPlay(false);
+    setIsMusicPlay(false);
   }, []);
 
   const defaultCountdownMusicStateValue = useMemo(
     () => ({
-      isPlay,
+      isMusicPlay,
       isUrlError,
+      isMusicUsed,
       defaultValue,
       inputRef,
       iframeRef,
-      playBtnRef,
+      musicTitle,
       didMount,
     }),
-    [isPlay, isUrlError, defaultValue, inputRef, iframeRef, playBtnRef],
+    [
+      isMusicPlay,
+      isUrlError,
+      isMusicUsed,
+      defaultValue,
+      inputRef,
+      iframeRef,
+      musicTitle,
+      didMount,
+    ],
   );
 
   const defaultCountdownMusicActionValue = useMemo(
     () => ({
       onClickGetBtn,
-      onClickPlayBtn,
+      onClickInsertRemoveBtn,
+      onClickPlayPauseBtn,
       pauseMusic,
     }),
-    [onClickGetBtn, onClickPlayBtn, pauseMusic],
+    [onClickGetBtn, onClickInsertRemoveBtn, onClickPlayPauseBtn, pauseMusic],
   );
 
   return (

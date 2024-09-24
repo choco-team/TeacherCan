@@ -14,7 +14,7 @@ import {
 import { useCountdownMusicState } from '../countdown-music-provider/countdown-music-provider.hooks';
 
 export default function CountdownDisplay() {
-  const { iframeRef } = useCountdownMusicState();
+  const { isMusicUsed, iframeRef, musicTitle } = useCountdownMusicState();
 
   const { minutes, seconds, isActive, isPaused } = useCountdownState();
   const { updateMinutes, updateSeconds, handlePause, handleReset } =
@@ -49,6 +49,7 @@ export default function CountdownDisplay() {
           Reset
         </Button>
       </div>
+      <div>배경음악: {isMusicUsed ? musicTitle : ''}</div>
       <iframe
         className="hidden"
         title="youtube"

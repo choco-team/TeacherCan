@@ -10,10 +10,21 @@ import {
 import { useCountdownState } from '../../countdown-provider/countdown-provider.hooks';
 
 export default function SettingMusic() {
-  const { isPlay, isUrlError, defaultValue, inputRef, playBtnRef, didMount } =
-    useCountdownMusicState();
-  const { onClickGetBtn, onClickPlayBtn, pauseMusic } =
-    useCountdownMusicAction();
+  const {
+    isMusicPlay,
+    isMusicUsed,
+    isUrlError,
+    defaultValue,
+    inputRef,
+    didMount,
+    musicTitle,
+  } = useCountdownMusicState();
+  const {
+    onClickGetBtn,
+    onClickInsertRemoveBtn,
+    onClickPlayPauseBtn,
+    pauseMusic,
+  } = useCountdownMusicAction();
   const { isActive } = useCountdownState();
 
   useEffect(() => {
@@ -32,33 +43,61 @@ export default function SettingMusic() {
     <div>
       배경 음악
       <div className="grid gap-2">
-        <Input
-          className={
-            isUrlError
-              ? 'w-full border-red-500 animate-bounce border-4'
-              : 'w-full border-4'
-          }
-          ref={inputRef}
-          type="text"
-          defaultValue={defaultValue}
-        />
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-4 gap-2">
+          <Input
+            className={
+              isUrlError
+                ? 'w-full h-9 border-2 col-span-3 border-red-500 animate-bounce  '
+                : 'w-full h-9 border-2 col-span-3'
+            }
+            ref={inputRef}
+            type="text"
+            defaultValue={defaultValue}
+          />
           <Button
             variant="primary-outline"
             size="sm"
             type="submit"
             onClick={onClickGetBtn}
           >
-            가져오기
+            {isActive ? '실행중..' : '가져오기'}
           </Button>
+        </div>
+        <p
+          className={
+            isMusicUsed
+              ? 'text-center border-2 rounded-lg h-8 text-primary border-primary '
+              : 'text-center border-2 rounded-lg h-8 text-gray-400'
+          }
+        >
+          {musicTitle}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
           <Button
-            variant="primary"
+            variant={isMusicUsed ? 'primary' : 'primary-outline'}
             size="sm"
-            ref={playBtnRef}
-            onClick={onClickPlayBtn}
+            type="submit"
+            onClick={onClickInsertRemoveBtn}
           >
-            {isPlay ? '일시정지' : '재생'}
+            {isMusicUsed ? '음악 빼기' : '음악 넣기'}
           </Button>
+          {isActive ? (
+            <Button
+              variant="primary-outline"
+              size="sm"
+              onClick={onClickPlayPauseBtn}
+            >
+              타이머 실행중..
+            </Button>
+          ) : (
+            <Button
+              variant={isMusicPlay ? 'primary' : 'primary-outline'}
+              size="sm"
+              onClick={onClickPlayPauseBtn}
+            >
+              {isMusicPlay ? '일시정지' : '미리듣기'}
+            </Button>
+          )}
         </div>
       </div>
     </div>
