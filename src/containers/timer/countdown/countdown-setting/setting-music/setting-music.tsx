@@ -54,12 +54,7 @@ export default function SettingMusic() {
             type="text"
             defaultValue={defaultValue}
           />
-          <Button
-            variant="primary-outline"
-            size="sm"
-            type="submit"
-            onClick={onClickGetBtn}
-          >
+          <Button variant="primary-outline" size="sm" onClick={onClickGetBtn}>
             {isActive ? '실행중..' : '가져오기'}
           </Button>
         </div>
@@ -76,11 +71,11 @@ export default function SettingMusic() {
           <Button
             variant={isMusicUsed ? 'primary' : 'primary-outline'}
             size="sm"
-            type="submit"
             onClick={onClickInsertRemoveBtn}
           >
             {isMusicUsed ? '음악 빼기' : '음악 넣기'}
           </Button>
+          {/* jsx 안에 중첩삼항연사자를 넣으니까 husky에서 막아버려서 굳이 이렇게 했습니다. */}
           {isActive ? (
             <Button
               variant="primary-outline"
