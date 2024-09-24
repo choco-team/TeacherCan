@@ -112,9 +112,6 @@ export default function CountdownProvider({ children }: Props) {
 
   const updateHours = useCallback(
     (hou: number, keepPreviousState: boolean = false) => {
-      if (isActive) {
-        return;
-      }
       const newLeftTime =
         (keepPreviousState ? (hours + hou) * 3600 : hou * 3600) +
         minutes * 60 +
@@ -130,9 +127,6 @@ export default function CountdownProvider({ children }: Props) {
 
   const updateMinutes = useCallback(
     (min: number, keepPreviousState: boolean = false) => {
-      if (isActive) {
-        return;
-      }
       const newLefTime =
         hours * 3600 +
         (keepPreviousState ? (minutes + min) * 60 : min * 60) +
@@ -150,9 +144,6 @@ export default function CountdownProvider({ children }: Props) {
 
   const updateSeconds = useCallback(
     (sec: number, keepPreviousState: boolean = false) => {
-      if (isActive) {
-        return;
-      }
       const newLefTime =
         hours * 3600 + minutes * 60 + (keepPreviousState ? seconds + sec : sec);
 
