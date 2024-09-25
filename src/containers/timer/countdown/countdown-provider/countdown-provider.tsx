@@ -118,97 +118,57 @@ export default function CountdownProvider({ children }: Props) {
     }
   }, [leftTime, isActive]);
 
-  const updateTime = useCallback(
-    (hou: number, min: number, sec: number, keepPreviousState: boolean) => {
-      // keepPreviousState가 true일 때, 현재 상태의 시간/분/초를 유지
-      const newLeftTime = keepPreviousState
-        ? (hou + hours) * HOUR_TO_SECONDS +
-          (min + minutes) * MINUTE_TO_SECONDS +
-          (sec + seconds)
-        : hou * HOUR_TO_SECONDS + min * MINUTE_TO_SECONDS + sec;
+  const updateHours = useCallback(
+    (hou: number, keepPreviousState: boolean = false) => {
+      const newLeftTime =
+        (keepPreviousState
+          ? (hours + hou) * HOUR_TO_SECONDS
+          : hou * HOUR_TO_SECONDS) +
+        minutes * MINUTE_TO_SECONDS +
+        seconds;
 
       if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
         return;
       }
-
       setLeftTime(newLeftTime);
     },
     [hours, minutes, seconds],
   );
 
-  // 각 시간, 분, 초 업데이트 함수에서 updateTime 호출
-  const updateHours = useCallback(
-    (hou: number, keepPreviousState: boolean = false) => {
-      updateTime(hou, minutes, seconds, keepPreviousState);
-    },
-    [updateTime, minutes, seconds],
-  );
-
   const updateMinutes = useCallback(
     (min: number, keepPreviousState: boolean = false) => {
-      updateTime(hours, min, seconds, keepPreviousState);
+      const newLefTime =
+        hours * HOUR_TO_SECONDS +
+        (keepPreviousState
+          ? (minutes + min) * MINUTE_TO_SECONDS
+          : min * MINUTE_TO_SECONDS) +
+        seconds;
+
+      if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
+        return;
+      }
+
+      setLeftTime(newLefTime);
     },
-    [updateTime, hours, seconds],
+
+    [hours, minutes, seconds],
   );
 
   const updateSeconds = useCallback(
     (sec: number, keepPreviousState: boolean = false) => {
-      updateTime(hours, minutes, sec, keepPreviousState);
+      const newLefTime =
+        hours * HOUR_TO_SECONDS +
+        minutes * MINUTE_TO_SECONDS +
+        (keepPreviousState ? seconds + sec : sec);
+
+      if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
+        return;
+      }
+
+      setLeftTime(newLefTime);
     },
-    [updateTime, hours, minutes],
+    [hours, minutes, seconds],
   );
-
-  // const updateHours = useCallback(
-  //   (hou: number, keepPreviousState: boolean = false) => {
-  //     const newLeftTime =
-  //       (keepPreviousState
-  //         ? (hours + hou) * HOUR_TO_SECONDS
-  //         : hou * HOUR_TO_SECONDS) +
-  //       minutes * MINUTE_TO_SECONDS +
-  //       seconds;
-
-  //     if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
-  //       return;
-  //     }
-  //     setLeftTime(newLeftTime);
-  //   },
-  //   [hours, minutes, seconds],
-  // );
-
-  // const updateMinutes = useCallback(
-  //   (min: number, keepPreviousState: boolean = false) => {
-  //     const newLefTime =
-  //       hours * HOUR_TO_SECONDS +
-  //       (keepPreviousState
-  //         ? (minutes + min) * MINUTE_TO_SECONDS
-  //         : min * MINUTE_TO_SECONDS) +
-  //       seconds;
-
-  //     if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
-  //       return;
-  //     }
-
-  //     setLeftTime(newLefTime);
-  //   },
-
-  //   [hours, minutes, seconds],
-  // );
-
-  // const updateSeconds = useCallback(
-  //   (sec: number, keepPreviousState: boolean = false) => {
-  //     const newLefTime =
-  //       hours * HOUR_TO_SECONDS +
-  //       minutes * MINUTE_TO_SECONDS +
-  //       (keepPreviousState ? seconds + sec : sec);
-
-  //     if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
-  //       return;
-  //     }
-
-  //     setLeftTime(newLefTime);
-  //   },
-  //   [hours, minutes, seconds],
-  // );
 
   const defaultCountdownStateValue = useMemo(
     () => ({
