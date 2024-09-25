@@ -79,6 +79,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       return;
     }
     try {
+      setIsMusicPlay(false);
       const inputValue = inputRef.current.value;
       setDefaultValue(inputValue);
       const videoId = inputValue.split('v=')[1].split('&')[0];
