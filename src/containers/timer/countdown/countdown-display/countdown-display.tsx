@@ -1,10 +1,10 @@
 import { Button } from '@/components/button';
 import { Heading2 } from '@/components/heading';
-import { Input } from '@/components/input';
 import {
   useCountdownAction,
   useCountdownState,
 } from '../countdown-provider/countdown-provider.hooks';
+import { InputWithoutSpin } from '../countdown-components/countdown-input';
 
 export default function CountdownDisplay() {
   const { hours, minutes, seconds, isActive, isPaused } = useCountdownState();
@@ -31,16 +31,15 @@ export default function CountdownDisplay() {
       <Heading2 className="text-center">Countdown Timer</Heading2>
       <div className="flex items-center justify-center mb-6 space-x-4">
         <div className="flex flex-col items-center">
-          {hours >= 1 && (
-            <Input
-              type="number"
-              id="hours"
-              value={hours}
-              className="w-full max-w-[120px] text-right font-bold text-lg"
-              onChange={(e) => updateHours(Math.floor(Number(e.target.value)))}
-            />
-          )}
+          <InputWithoutSpin
+            type="number"
+            id="hours"
+            value={hours}
+            className="w-full max-w-[120px] text-right font-bold text-lg"
+            onChange={(e) => updateHours(Math.floor(Number(e.target.value)))}
+          />
         </div>
+        <span className="text-lg font-bold">:</span>
         <div className="flex flex-col items-center">
           <Button
             onClick={handleIncreaseMinutes}
@@ -49,7 +48,7 @@ export default function CountdownDisplay() {
           >
             ▲
           </Button>
-          <Input
+          <InputWithoutSpin
             type="number"
             id="minutes"
             value={minutes}
@@ -66,7 +65,7 @@ export default function CountdownDisplay() {
         </div>
         <span className="text-lg font-bold">:</span>
         <div className="flex flex-col items-center">
-          <Input
+          <InputWithoutSpin
             type="number"
             id="seconds"
             value={seconds}
