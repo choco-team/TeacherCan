@@ -58,15 +58,15 @@ export default function SettingMusic() {
             {isActive ? '실행중..' : '가져오기'}
           </Button>
         </div>
-        <p
+        <div
           className={
             isMusicUsed
-              ? 'text-center border-2 rounded-lg h-8 text-primary border-primary '
-              : 'text-center border-2 rounded-lg h-8 text-gray-400'
+              ? 'overflow-x-auto text-center border-2 rounded-lg h-8 text-primary border-primary '
+              : 'overflow-x-auto text-center border-2 rounded-lg h-8 text-gray-400'
           }
         >
           {musicTitle}
-        </p>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <Button
             variant={isMusicUsed ? 'primary' : 'primary-outline'}

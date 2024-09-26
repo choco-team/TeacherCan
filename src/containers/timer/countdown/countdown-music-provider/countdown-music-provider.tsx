@@ -74,20 +74,25 @@ export default function CountdownMusicProvider({ children }: Props) {
     }
   }, [isMusicUsed, isActive]);
 
-  const onClickGetBtn = useCallback(() => {
+  const getMusicTitle = async (videoId) => {
+    const response = await fetch(`http://localhost:3000/api/timer/${videoId}`);
+    const json = await response.json();
+    return json.title;
+  };
+
+  const onClickGetBtn = useCallback(async () => {
     if (isActive) {
       return;
     }
     try {
-      setIsMusicPlay(false);
       const inputValue = inputRef.current.value;
-      setDefaultValue(inputValue);
       const videoId = inputValue.split('v=')[1].split('&')[0];
 
-      // 백엔드 api 만들어서 videoId로 유투브 제목 가져오기
-      setMusicTitle(videoId);
-
+      setDefaultValue(inputValue);
+      setMusicTitle(await getMusicTitle(videoId));
       iframeRef.current.src = `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`;
+
+      setIsMusicPlay(false);
       setIsMusicUsed(true);
       setURLError(false);
     } catch {
