@@ -20,9 +20,9 @@ export default function SettingMusic() {
     musicTitle,
   } = useCountdownMusicState();
   const {
-    onClickGetBtn,
-    onClickInsertRemoveBtn,
-    onClickPlayPauseBtn,
+    getYouTubeMusicURL,
+    toggleMusicUsedState,
+    toggleMusicPlayState,
     pauseMusic,
   } = useCountdownMusicAction();
   const { isActive } = useCountdownState();
@@ -54,7 +54,11 @@ export default function SettingMusic() {
             type="text"
             defaultValue={defaultValue}
           />
-          <Button variant="primary-outline" size="sm" onClick={onClickGetBtn}>
+          <Button
+            variant="primary-outline"
+            size="sm"
+            onClick={getYouTubeMusicURL}
+          >
             {isActive ? '실행중..' : '가져오기'}
           </Button>
         </div>
@@ -71,7 +75,7 @@ export default function SettingMusic() {
           <Button
             variant={isMusicUsed ? 'primary' : 'primary-outline'}
             size="sm"
-            onClick={onClickInsertRemoveBtn}
+            onClick={toggleMusicUsedState}
           >
             {isMusicUsed ? '음악 빼기' : '음악 넣기'}
           </Button>
@@ -80,7 +84,7 @@ export default function SettingMusic() {
             <Button
               variant="primary-outline"
               size="sm"
-              onClick={onClickPlayPauseBtn}
+              onClick={toggleMusicPlayState}
             >
               타이머 실행중..
             </Button>
@@ -88,7 +92,7 @@ export default function SettingMusic() {
             <Button
               variant={isMusicPlay ? 'primary' : 'primary-outline'}
               size="sm"
-              onClick={onClickPlayPauseBtn}
+              onClick={toggleMusicPlayState}
             >
               {isMusicPlay ? '일시정지' : '미리듣기'}
             </Button>

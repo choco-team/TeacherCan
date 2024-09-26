@@ -11,11 +11,9 @@ import {
   useCountdownAction,
   useCountdownState,
 } from '../countdown-provider/countdown-provider.hooks';
-import { useCountdownMusicState } from '../countdown-music-provider/countdown-music-provider.hooks';
+import CountdownMusic from '../countdown-music/countdown-music';
 
 export default function CountdownDisplay() {
-  const { isMusicUsed, iframeRef, musicTitle } = useCountdownMusicState();
-
   const { minutes, seconds, isActive, isPaused } = useCountdownState();
   const { updateMinutes, updateSeconds, handlePause, handleReset } =
     useCountdownAction();
@@ -49,13 +47,7 @@ export default function CountdownDisplay() {
           Reset
         </Button>
       </div>
-      <div>배경음악: {isMusicUsed ? musicTitle : ''}</div>
-      <iframe
-        className="hidden"
-        title="youtube"
-        ref={iframeRef}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      />
+      <CountdownMusic />
     </div>
   );
 }

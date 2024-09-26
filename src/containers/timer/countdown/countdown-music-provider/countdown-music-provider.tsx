@@ -26,9 +26,9 @@ export const CountdownMusicStateContext =
   createContext<CountdownMusicState | null>(null);
 
 type CountdownMusicAction = {
-  onClickGetBtn: () => void;
-  onClickInsertRemoveBtn: () => void;
-  onClickPlayPauseBtn: () => void;
+  getYouTubeMusicURL: () => void;
+  toggleMusicUsedState: () => void;
+  toggleMusicPlayState: () => void;
   pauseMusic: () => void;
 };
 
@@ -43,7 +43,7 @@ export default function CountdownMusicProvider({ children }: Props) {
   const { isActive } = useCountdownState();
   const [isMusicPlay, setIsMusicPlay] = useState(false);
   const [isMusicUsed, setIsMusicUsed] = useState(false);
-  const [isUrlError, setURLError] = useState(false);
+  const [isUrlError, setIsUrlError] = useState(false);
 
   const [defaultValue, setDefaultValue] = useState(
     'https://www.youtube.com/watch?v=7uRX00jTSA0',
@@ -80,7 +80,7 @@ export default function CountdownMusicProvider({ children }: Props) {
     return json.title;
   };
 
-  const onClickGetBtn = useCallback(async () => {
+  const getYouTubeMusicURL = useCallback(async () => {
     if (isActive) {
       return;
     }
@@ -94,13 +94,13 @@ export default function CountdownMusicProvider({ children }: Props) {
 
       setIsMusicPlay(false);
       setIsMusicUsed(true);
-      setURLError(false);
+      setIsUrlError(false);
     } catch {
-      setURLError(true);
+      setIsUrlError(true);
     }
   }, [isActive, inputRef, iframeRef]);
 
-  const onClickInsertRemoveBtn = useCallback(() => {
+  const toggleMusicUsedState = useCallback(() => {
     if (musicTitle === '') {
       return;
     }
@@ -110,14 +110,14 @@ export default function CountdownMusicProvider({ children }: Props) {
     } else if (isActive) {
       setIsMusicPlay(true);
     }
-    setIsMusicUsed(!isMusicUsed);
+    setIsMusicUsed((prev) => !prev);
   }, [isActive, isMusicUsed, musicTitle]);
 
-  const onClickPlayPauseBtn = useCallback(() => {
+  const toggleMusicPlayState = useCallback(() => {
     if (musicTitle === '' || isActive) {
       return;
     }
-    setIsMusicPlay(!isMusicPlay);
+    setIsMusicPlay((prev) => !prev);
   }, [isActive, isMusicPlay, musicTitle]);
 
   const pauseMusic = useCallback(() => {
@@ -149,12 +149,17 @@ export default function CountdownMusicProvider({ children }: Props) {
 
   const defaultCountdownMusicActionValue = useMemo(
     () => ({
-      onClickGetBtn,
-      onClickInsertRemoveBtn,
-      onClickPlayPauseBtn,
+      getYouTubeMusicURL,
+      toggleMusicUsedState,
+      toggleMusicPlayState,
       pauseMusic,
     }),
-    [onClickGetBtn, onClickInsertRemoveBtn, onClickPlayPauseBtn, pauseMusic],
+    [
+      getYouTubeMusicURL,
+      toggleMusicUsedState,
+      toggleMusicPlayState,
+      pauseMusic,
+    ],
   );
 
   return (
