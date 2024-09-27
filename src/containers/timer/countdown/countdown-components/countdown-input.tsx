@@ -8,7 +8,10 @@ export interface InputProps
 }
 
 const InputWithoutSpin = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, onFocus, maxValue = 59, onChange, ...props }, ref) => {
+  (
+    { className, onFocus, maxValue = 59, onChange, readOnly, ...props },
+    ref,
+  ) => {
     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
       e.target.value = '';
       if (onFocus) onFocus(e);
@@ -30,11 +33,13 @@ const InputWithoutSpin = React.forwardRef<HTMLInputElement, InputProps>(
           '[-moz-appearance:textfield]',
           '[&::-webkit-outer-spin-button]:appearance-none',
           '[&::-webkit-inner-spin-button]:appearance-none',
+          readOnly && 'pointer-events-none',
           className,
         )}
         ref={ref}
         onChange={handleChange}
         onFocus={handleFocus}
+        readOnly={readOnly}
         {...props}
       />
     );

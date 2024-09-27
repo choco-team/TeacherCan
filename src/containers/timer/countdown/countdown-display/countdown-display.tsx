@@ -19,10 +19,12 @@ export default function CountdownDisplay() {
   const buttonText = isPaused || !isActive ? 'Start' : 'Pause';
 
   const handleIncreaseMinutes = () => {
+    if (isActive) return;
     updateMinutes(1, true);
   };
 
   const handleDecreaseMinutes = () => {
+    if (isActive) return;
     updateMinutes(-1, true);
   };
 
@@ -37,6 +39,7 @@ export default function CountdownDisplay() {
             value={hours}
             className="w-full max-w-[120px] text-right font-bold text-lg"
             onChange={(e) => updateHours(Math.floor(Number(e.target.value)))}
+            readOnly={isActive}
           />
         </div>
         <span className="text-lg font-bold">:</span>
@@ -54,6 +57,7 @@ export default function CountdownDisplay() {
             value={minutes}
             onChange={(e) => updateMinutes(Math.floor(Number(e.target.value)))}
             className="w-full max-w-[120px] text-right font-bold text-lg"
+            readOnly={isActive}
           />
           <Button
             onClick={handleDecreaseMinutes}
@@ -71,6 +75,7 @@ export default function CountdownDisplay() {
             value={seconds}
             onChange={(e) => updateSeconds(Number(e.target.value))}
             className="w-full max-w-[120px] text-right font-bold text-lg"
+            readOnly={isActive}
           />
         </div>
       </div>
