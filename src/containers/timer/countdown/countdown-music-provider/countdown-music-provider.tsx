@@ -9,12 +9,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
+import {
+  useCountdownAction,
+  useCountdownState,
+} from '../countdown-provider/countdown-provider.hooks';
 
 type CountdownMusicState = {
-  isMusicPlay: boolean;
   isUrlError: boolean;
-  isMusicUsed: boolean;
   defaultValue: string;
   musicTitle: string;
   inputRef: LegacyRef<HTMLInputElement>;
@@ -40,19 +41,15 @@ type Props = {
 };
 
 export default function CountdownMusicProvider({ children }: Props) {
-  const { isActive } = useCountdownState();
-  const [isMusicPlay, setIsMusicPlay] = useState(false);
-  const [isMusicUsed, setIsMusicUsed] = useState(false);
+  const { isActive, isMusicPlay } = useCountdownState();
+  const { setIsMusicUsed, setIsMusicPlay } = useCountdownAction();
   const [isUrlError, setIsUrlError] = useState(false);
-
   const [defaultValue, setDefaultValue] = useState(
     'https://www.youtube.com/watch?v=7uRX00jTSA0',
   );
   const [musicTitle, setMusicTitle] = useState('');
-
   const inputRef = useRef<HTMLInputElement>();
   const iframeRef = useRef<HTMLIFrameElement>();
-
   const didMount = useRef(false);
 
   useEffect(() => {
@@ -62,17 +59,6 @@ export default function CountdownMusicProvider({ children }: Props) {
       '*',
     );
   }, [isMusicPlay]);
-
-  useEffect(() => {
-    if (!isMusicUsed) {
-      return;
-    }
-    if (isActive) {
-      setIsMusicPlay(true);
-    } else {
-      setIsMusicPlay(false);
-    }
-  }, [isMusicUsed, isActive]);
 
   const getMusicTitle = async (videoId) => {
     const response = await fetch(`http://localhost:3000/api/timer/${videoId}`);
@@ -88,63 +74,49 @@ export default function CountdownMusicProvider({ children }: Props) {
       const inputValue = inputRef.current.value;
       const videoId = inputValue.split('v=')[1].split('&')[0];
 
-      setDefaultValue(inputValue);
-      setMusicTitle(await getMusicTitle(videoId));
       iframeRef.current.src = `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`;
 
+      setMusicTitle(await getMusicTitle(videoId));
+      setDefaultValue(inputValue);
       setIsMusicPlay(false);
       setIsMusicUsed(true);
       setIsUrlError(false);
     } catch {
       setIsUrlError(true);
     }
-  }, [isActive, inputRef, iframeRef]);
+  }, [isActive, inputRef, iframeRef, setIsMusicPlay, setIsMusicUsed]);
 
   const toggleMusicUsedState = useCallback(() => {
     if (musicTitle === '') {
       return;
     }
-    if (isMusicUsed) {
-      setIsMusicUsed(false);
-      setIsMusicPlay(false);
-    } else if (isActive) {
-      setIsMusicPlay(true);
+    if (isActive) {
+      setIsMusicPlay((prev) => !prev);
     }
     setIsMusicUsed((prev) => !prev);
-  }, [isActive, isMusicUsed, musicTitle]);
+  }, [isActive, musicTitle, setIsMusicPlay, setIsMusicUsed]);
 
   const toggleMusicPlayState = useCallback(() => {
     if (musicTitle === '' || isActive) {
       return;
     }
     setIsMusicPlay((prev) => !prev);
-  }, [isActive, isMusicPlay, musicTitle]);
+  }, [isActive, musicTitle, setIsMusicPlay]);
 
   const pauseMusic = useCallback(() => {
     setIsMusicPlay(false);
-  }, []);
+  }, [setIsMusicPlay]);
 
   const defaultCountdownMusicStateValue = useMemo(
     () => ({
-      isMusicPlay,
       isUrlError,
-      isMusicUsed,
       defaultValue,
       inputRef,
       iframeRef,
       musicTitle,
       didMount,
     }),
-    [
-      isMusicPlay,
-      isUrlError,
-      isMusicUsed,
-      defaultValue,
-      inputRef,
-      iframeRef,
-      musicTitle,
-      didMount,
-    ],
+    [isUrlError, defaultValue, inputRef, iframeRef, musicTitle, didMount],
   );
 
   const defaultCountdownMusicActionValue = useMemo(

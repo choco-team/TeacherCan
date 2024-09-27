@@ -10,22 +10,15 @@ import {
 import { useCountdownState } from '../../countdown-provider/countdown-provider.hooks';
 
 export default function SettingMusic() {
-  const {
-    isMusicPlay,
-    isMusicUsed,
-    isUrlError,
-    defaultValue,
-    inputRef,
-    didMount,
-    musicTitle,
-  } = useCountdownMusicState();
+  const { isUrlError, defaultValue, inputRef, didMount, musicTitle } =
+    useCountdownMusicState();
   const {
     getYouTubeMusicURL,
     toggleMusicUsedState,
     toggleMusicPlayState,
     pauseMusic,
   } = useCountdownMusicAction();
-  const { isActive } = useCountdownState();
+  const { isActive, isMusicUsed, isMusicPlay } = useCountdownState();
 
   useEffect(() => {
     if (didMount.current) {
@@ -58,8 +51,9 @@ export default function SettingMusic() {
             variant="primary-outline"
             size="sm"
             onClick={getYouTubeMusicURL}
+            disabled={isActive}
           >
-            {isActive ? '실행중..' : '가져오기'}
+            가져오기
           </Button>
         </div>
         <div
@@ -79,12 +73,12 @@ export default function SettingMusic() {
           >
             {isMusicUsed ? '음악 빼기' : '음악 넣기'}
           </Button>
-          {/* jsx 안에 중첩삼항연사자를 넣으니까 husky에서 막아버려서 굳이 이렇게 했습니다. */}
           {isActive ? (
             <Button
               variant="primary-outline"
               size="sm"
               onClick={toggleMusicPlayState}
+              disabled
             >
               타이머 실행중..
             </Button>
