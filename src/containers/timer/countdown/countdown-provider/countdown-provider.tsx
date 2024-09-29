@@ -8,7 +8,15 @@ import {
   useState,
 } from 'react';
 
+import {
+  MAX_TIME,
+  NO_TIME,
+  HOUR_TO_SECONDS,
+  MINUTE_TO_SECONDS,
+} from './countdown-provider.constants';
+
 type CountdownState = {
+  hours: number;
   minutes: number;
   seconds: number;
   leftTime: number;
@@ -21,6 +29,7 @@ export const CountdownStateContext = createContext<CountdownState | null>(null);
 type CountdownAction = {
   handlePause: () => void;
   handleReset: () => void;
+  updateHours: (_hou: number, keepPreviousState?: boolean) => void;
   updateMinutes: (_min: number, keepPreviousState?: boolean) => void;
   updateSeconds: (_sec: number, keepPreviousState?: boolean) => void;
 };
@@ -40,8 +49,11 @@ export default function CountdownProvider({ children }: Props) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const originalTime = useRef<number>(0);
 
-  const minutes = Math.floor(leftTime / 60);
-  const seconds = leftTime % 60;
+  const hours = Math.floor(leftTime / HOUR_TO_SECONDS);
+  const minutes = Math.floor(
+    (leftTime - hours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
+  );
+  const seconds = Math.floor(leftTime % MINUTE_TO_SECONDS);
 
   const startCountdown = useCallback(() => {
     if (leftTime < 1) {
@@ -59,7 +71,7 @@ export default function CountdownProvider({ children }: Props) {
 
     timerRef.current = setInterval(() => {
       setLeftTime((prevTime) => {
-        if (prevTime <= 0) {
+        if (prevTime <= NO_TIME) {
           clearInterval(timerRef.current!);
           return 0;
         }
@@ -99,60 +111,86 @@ export default function CountdownProvider({ children }: Props) {
   }, []);
 
   useEffect(() => {
-    if (leftTime === 0 && isActive) {
+    if (leftTime === NO_TIME && isActive) {
       setIsActive(false);
       setIsPaused(false);
       if (timerRef.current) clearInterval(timerRef.current);
     }
   }, [leftTime, isActive]);
 
+  const updateHours = useCallback(
+    (hou: number, keepPreviousState: boolean = false) => {
+      const newLeftTime =
+        (keepPreviousState
+          ? (hours + hou) * HOUR_TO_SECONDS
+          : hou * HOUR_TO_SECONDS) +
+        minutes * MINUTE_TO_SECONDS +
+        seconds;
+
+      if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
+        return;
+      }
+      setLeftTime(newLeftTime);
+    },
+    [hours, minutes, seconds],
+  );
+
   const updateMinutes = useCallback(
     (min: number, keepPreviousState: boolean = false) => {
       const newLefTime =
-        (keepPreviousState ? (minutes + min) * 60 : min * 60) + seconds;
+        hours * HOUR_TO_SECONDS +
+        (keepPreviousState
+          ? (minutes + min) * MINUTE_TO_SECONDS
+          : min * MINUTE_TO_SECONDS) +
+        seconds;
 
-      if (newLefTime < 0) {
+      if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
         return;
       }
 
       setLeftTime(newLefTime);
     },
-    [minutes, seconds],
+
+    [hours, minutes, seconds],
   );
 
   const updateSeconds = useCallback(
     (sec: number, keepPreviousState: boolean = false) => {
       const newLefTime =
-        minutes * 60 + (keepPreviousState ? seconds + sec : sec);
+        hours * HOUR_TO_SECONDS +
+        minutes * MINUTE_TO_SECONDS +
+        (keepPreviousState ? seconds + sec : sec);
 
-      if (newLefTime < 0) {
+      if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
         return;
       }
 
       setLeftTime(newLefTime);
     },
-    [minutes, seconds],
+    [hours, minutes, seconds],
   );
 
   const defaultCountdownStateValue = useMemo(
     () => ({
+      hours,
       minutes,
       seconds,
       leftTime,
       isActive,
       isPaused,
     }),
-    [minutes, seconds, leftTime, isActive, isPaused],
+    [hours, minutes, seconds, leftTime, isActive, isPaused],
   );
 
   const defaultCountdownActionValue = useMemo(
     () => ({
+      updateHours,
       updateMinutes,
       updateSeconds,
       handlePause,
       handleReset,
     }),
-    [updateMinutes, updateSeconds, handlePause, handleReset],
+    [updateHours, updateMinutes, updateSeconds, handlePause, handleReset],
   );
 
   return (
