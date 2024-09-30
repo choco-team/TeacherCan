@@ -4,6 +4,7 @@ import {
   useCountdownAction,
   useCountdownState,
 } from '../countdown-provider/countdown-provider.hooks';
+import CountdownMusic from '../countdown-music/countdown-music';
 import { InputWithoutSpin } from '../countdown-components/countdown-input';
 
 export default function CountdownDisplay() {
@@ -87,6 +88,7 @@ export default function CountdownDisplay() {
           Reset
         </Button>
       </div>
+      <CountdownMusic />
     </div>
   );
 }

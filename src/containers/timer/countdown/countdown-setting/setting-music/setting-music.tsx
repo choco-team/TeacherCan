@@ -1,14 +1,98 @@
-// 승민쌤
+// 'use client';
+
+import { Button } from '@/components/button';
+import { Input } from '@/components/input';
+import { useEffect } from 'react';
+import {
+  useCountdownMusicAction,
+  useCountdownMusicState,
+} from '../../countdown-music-provider/countdown-music-provider.hooks';
+import { useCountdownState } from '../../countdown-provider/countdown-provider.hooks';
 
 export default function SettingMusic() {
-  // 설정 창이 닫혀있는 경우 해당컴포넌트가 언마운트 되기 때문에 배경음이 들리지 않습니다.
-  // 때문에 CountdownProvider에서 제공하는 useCountdownState의 isActive 상태를 활용하여
-  // CountdownMusicProvider(구현 필요)에서 카운트 다운 뮤직을 관리합니다.
+  const { isUrlError, defaultValue, inputRef, didMount, musicTitle } =
+    useCountdownMusicState();
+  const {
+    getYouTubeMusicURL,
+    toggleMusicUsedState,
+    toggleMusicPlayState,
+    pauseMusic,
+  } = useCountdownMusicAction();
+  const { isActive, isMusicUsed, isMusicPlay } = useCountdownState();
+
+  useEffect(() => {
+    if (didMount.current) {
+      didMount.current = false;
+      if (!isActive) {
+        return pauseMusic;
+      }
+    } else {
+      didMount.current = true;
+    }
+    return undefined;
+  }, [didMount, isActive, pauseMusic]);
 
   return (
     <div>
-      <span>배경 음악</span>
-      {/* 아래에 요구사항에 맞는 기능을 구현하세요. */}
+      배경 음악
+      <div className="grid gap-2">
+        <div className="grid grid-cols-4 gap-2">
+          <Input
+            className={
+              isUrlError
+                ? 'w-full h-9 border-2 col-span-3 border-red-500 animate-bounce  '
+                : 'w-full h-9 border-2 col-span-3'
+            }
+            ref={inputRef}
+            type="text"
+            defaultValue={defaultValue}
+          />
+          <Button
+            variant="primary-outline"
+            size="sm"
+            onClick={getYouTubeMusicURL}
+            disabled={isActive}
+          >
+            가져오기
+          </Button>
+        </div>
+        <div
+          className={
+            isMusicUsed
+              ? 'overflow-x-auto text-center border-2 rounded-lg h-8 text-primary border-primary '
+              : 'overflow-x-auto text-center border-2 rounded-lg h-8 text-gray-400'
+          }
+        >
+          {musicTitle}
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant={isMusicUsed ? 'primary' : 'primary-outline'}
+            size="sm"
+            onClick={toggleMusicUsedState}
+          >
+            {isMusicUsed ? '음악 빼기' : '음악 넣기'}
+          </Button>
+          {isActive ? (
+            <Button
+              variant="primary-outline"
+              size="sm"
+              onClick={toggleMusicPlayState}
+              disabled
+            >
+              타이머 실행중..
+            </Button>
+          ) : (
+            <Button
+              variant={isMusicPlay ? 'primary' : 'primary-outline'}
+              size="sm"
+              onClick={toggleMusicPlayState}
+            >
+              {isMusicPlay ? '일시정지' : '미리듣기'}
+            </Button>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

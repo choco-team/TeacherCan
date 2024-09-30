@@ -1,6 +1,7 @@
 import {
   createContext,
   ReactNode,
+  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -22,6 +23,8 @@ type CountdownState = {
   leftTime: number;
   isActive: boolean;
   isPaused: boolean;
+  isMusicUsed: boolean;
+  isMusicPlay: boolean;
 };
 
 export const CountdownStateContext = createContext<CountdownState | null>(null);
@@ -32,6 +35,8 @@ type CountdownAction = {
   updateHours: (_hou: number, keepPreviousState?: boolean) => void;
   updateMinutes: (_min: number, keepPreviousState?: boolean) => void;
   updateSeconds: (_sec: number, keepPreviousState?: boolean) => void;
+  setIsMusicUsed: (value: SetStateAction<boolean>) => void;
+  setIsMusicPlay: (value: SetStateAction<boolean>) => void;
 };
 
 export const CountdownActionContext = createContext<CountdownAction | null>(
@@ -46,6 +51,9 @@ export default function CountdownProvider({ children }: Props) {
   const [leftTime, setLeftTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMusicUsed, setIsMusicUsed] = useState(false);
+  const [isMusicPlay, setIsMusicPlay] = useState(false);
+
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const originalTime = useRef<number>(0);
 
@@ -64,6 +72,7 @@ export default function CountdownProvider({ children }: Props) {
       originalTime.current = leftTime;
     }
 
+    if (isMusicUsed) setIsMusicPlay(true);
     setIsActive(true);
     setIsPaused(false);
 
@@ -79,7 +88,7 @@ export default function CountdownProvider({ children }: Props) {
         return newTime;
       });
     }, 1000);
-  }, [leftTime]);
+  }, [leftTime, isMusicUsed]);
 
   const handlePause = useCallback(() => {
     if (isActive) {
@@ -88,21 +97,23 @@ export default function CountdownProvider({ children }: Props) {
         startCountdown();
       } else {
         setIsPaused(true);
+        if (isMusicUsed) setIsMusicPlay(false);
         setIsActive(false);
         if (timerRef.current) clearInterval(timerRef.current);
       }
     } else {
       startCountdown();
     }
-  }, [isActive, isPaused, startCountdown]);
+  }, [isActive, isPaused, startCountdown, isMusicUsed]);
 
   const handleReset = useCallback(() => {
+    if (isMusicUsed) setIsMusicPlay(false);
     setIsActive(false);
     setIsPaused(false);
     setLeftTime(originalTime.current);
 
     if (timerRef.current) clearInterval(timerRef.current);
-  }, []);
+  }, [isMusicUsed]);
 
   useEffect(() => {
     return () => {
@@ -178,8 +189,10 @@ export default function CountdownProvider({ children }: Props) {
       leftTime,
       isActive,
       isPaused,
+      isMusicUsed,
+      isMusicPlay,
     }),
-    [hours, minutes, seconds, leftTime, isActive, isPaused],
+    [hours, minutes, seconds, leftTime, isActive, isPaused, isMusicUsed, isMusicPlay],
   );
 
   const defaultCountdownActionValue = useMemo(
@@ -189,8 +202,18 @@ export default function CountdownProvider({ children }: Props) {
       updateSeconds,
       handlePause,
       handleReset,
+      setIsMusicUsed,
+      setIsMusicPlay,
     }),
-    [updateHours, updateMinutes, updateSeconds, handlePause, handleReset],
+    [
+      updateHours, 
+      updateMinutes, 
+      updateSeconds, 
+      handlePause, 
+      handleReset, 
+      setIsMusicUsed,
+      setIsMusicPlay,
+    ],
   );
 
   return (
