@@ -1,14 +1,34 @@
-// 홍동쌤
+import { Button } from '@/components/button';
+import {
+  useCountdownAlarmAction,
+  useCountdownAlarmState,
+} from '../../countdown-alarm-provider/countdown-alarm-provider.hooks';
+
+const ALARM_TIME = {
+  '10분': 600,
+  '5분': 300,
+  '10초': 10,
+  '0초': 0,
+};
 
 export default function SettingAlarm() {
-  // 남은 시간을 바탕으로 10분전, 5분전, 10초전, 종료를 판단하여 종료 알림을 들려줍니다.
-  // 이곳에서 알람 시간을 설정하고 CountdownAlarmProvider에서 Countdown알람음 관리합니다.
-  // CountdownAlarmProvider 구현 필요
+  const { alarmTimes } = useCountdownAlarmState();
+  const { toggleAlarmTime } = useCountdownAlarmAction();
 
   return (
     <div>
       <span>종료 알림</span>
-      {/* 아래에 요구사항에 맞는 기능을 구현하세요. */}
+      <div className="grid grid-cols-4 gap-2">
+        {Object.entries(ALARM_TIME).map(([key, value]) => (
+          <Button
+            key={key}
+            variant={alarmTimes.includes(value) ? 'primary' : 'primary-outline'}
+            onClick={() => toggleAlarmTime(value)}
+          >
+            {key}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }

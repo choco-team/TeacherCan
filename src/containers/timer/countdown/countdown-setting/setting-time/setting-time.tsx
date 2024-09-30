@@ -13,6 +13,7 @@ export default function SettingTime() {
         {SETTING_TIMES.map((time) => (
           <Button
             value={time}
+            key={time}
             variant="primary-outline"
             size="sm"
             onClick={() => updateMinutes(time, true)}

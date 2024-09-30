@@ -12,7 +12,7 @@ function MenuList() {
         </PopupLink>
       </Button>
       <Button variant="gray-outline" size="lg" asChild>
-        <Link href="https://www.teachercan.com" target="_blank">
+        <Link href="https://teacher-browser.netlify.app/" target="_blank">
           티처캔 v1
         </Link>
       </Button>
