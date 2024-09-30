@@ -61,7 +61,9 @@ export default function CountdownMusicProvider({ children }: Props) {
   }, [isMusicPlay]);
 
   const getMusicTitle = async (videoId) => {
-    const response = await fetch(`http://localhost:3000/api/timer/${videoId}`);
+    const response = await fetch(
+      `${window.location.origin}/api/timer/${videoId}`,
+    );
     const json = await response.json();
     return json.title;
   };
