@@ -20,12 +20,10 @@ export default function CountdownDisplay() {
   const buttonText = isPaused || !isActive ? 'Start' : 'Pause';
 
   const handleIncreaseMinutes = () => {
-    if (isActive) return;
     updateMinutes(1, true);
   };
 
   const handleDecreaseMinutes = () => {
-    if (isActive) return;
     updateMinutes(-1, true);
   };
 
