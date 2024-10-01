@@ -22,8 +22,8 @@ export default function Countdown() {
             </Sheet>
             <CountdownDisplay />
           </div>
-        </CountdownMusicProvider>
-      </CountdownAlarmProvider>
+        </CountdownAlarmProvider>
+      </CountdownMusicProvider>
     </CountdownProvider>
   );
 }
