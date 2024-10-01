@@ -28,7 +28,7 @@ type Props = {
 
 export default function CountdownAlarmProvider({ children }: Props) {
   const [alarmAudio, setAlarmAudio] = useState<HTMLAudioElement>(null);
-  const [alarmTimes, setAlarmTimes] = useState<number[]>([0, 10]);
+  const [alarmTimes, setAlarmTimes] = useState<number[]>([0]);
   const { leftTime, isActive } = useCountdownState();
 
   const toggleAlarmTime = useCallback(
