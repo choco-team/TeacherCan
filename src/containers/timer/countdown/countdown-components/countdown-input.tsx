@@ -7,45 +7,25 @@ export interface InputProps
   maxValue?: number;
 }
 
-const InputWithoutSpin = React.forwardRef<HTMLInputElement, InputProps>(
-  (
-    { className, onFocus, maxValue = 59, onChange, readOnly, ...props },
-    ref,
-  ) => {
-    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-      e.target.value = '';
-      if (onFocus) onFocus(e);
-    };
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = Number(e.target.value);
-
-      if (value > maxValue) {
-        e.target.value = maxValue.toString();
-      }
-
-      if (onChange) onChange(e);
-    };
-
+const InputNumberWithoutSpin = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, ...props }, ref) => {
     return (
       <Input
+        type="number"
         className={cn(
           'appearance-none',
           '[-moz-appearance:textfield]',
           '[&::-webkit-outer-spin-button]:appearance-none',
           '[&::-webkit-inner-spin-button]:appearance-none',
-          readOnly && 'pointer-events-none',
           className,
         )}
         ref={ref}
-        onChange={handleChange}
-        onFocus={handleFocus}
-        readOnly={readOnly}
         {...props}
       />
     );
   },
 );
 
-InputWithoutSpin.displayName = 'InputWithoutSpin';
+InputNumberWithoutSpin.displayName = 'InputNumberWithoutSpin';
 
-export { InputWithoutSpin };
+export { InputNumberWithoutSpin };

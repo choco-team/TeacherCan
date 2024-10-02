@@ -14,15 +14,16 @@ import {
   NO_TIME,
   HOUR_TO_SECONDS,
   MINUTE_TO_SECONDS,
+  MAX_TIME_INPUT,
 } from './countdown-provider.constants';
 
 type CountdownState = {
   hours: number;
   minutes: number;
   seconds: number;
+  setupTime: number;
   leftTime: number;
   isActive: boolean;
-  isPaused: boolean;
   isMusicUsed: boolean;
   isMusicPlay: boolean;
 };
@@ -30,7 +31,9 @@ type CountdownState = {
 export const CountdownStateContext = createContext<CountdownState | null>(null);
 
 type CountdownAction = {
+  handleStart: () => void;
   handlePause: () => void;
+  handleStop: () => void;
   handleReset: () => void;
   updateHours: (_hou: number, keepPreviousState?: boolean) => void;
   updateMinutes: (_min: number, keepPreviousState?: boolean) => void;
@@ -50,12 +53,11 @@ type Props = {
 export default function CountdownProvider({ children }: Props) {
   const [leftTime, setLeftTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [isMusicUsed, setIsMusicUsed] = useState(false);
   const [isMusicPlay, setIsMusicPlay] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const originalTime = useRef<number>(0);
+  const setupTimeRef = useRef<number>(0);
 
   const hours = Math.floor(leftTime / HOUR_TO_SECONDS);
   const minutes = Math.floor(
@@ -63,18 +65,17 @@ export default function CountdownProvider({ children }: Props) {
   );
   const seconds = Math.floor(leftTime % MINUTE_TO_SECONDS);
 
-  const startCountdown = useCallback(() => {
+  const handleStart = useCallback(() => {
     if (leftTime < 1) {
       return;
     }
 
-    if (!originalTime.current) {
-      originalTime.current = leftTime;
+    if (!setupTimeRef.current) {
+      setupTimeRef.current = leftTime;
     }
 
     if (isMusicUsed) setIsMusicPlay(true);
     setIsActive(true);
-    setIsPaused(false);
 
     if (timerRef.current) clearInterval(timerRef.current);
 
@@ -91,29 +92,31 @@ export default function CountdownProvider({ children }: Props) {
   }, [leftTime, isMusicUsed]);
 
   const handlePause = useCallback(() => {
-    if (isActive) {
-      if (isPaused) {
-        setIsPaused(false);
-        startCountdown();
-      } else {
-        setIsPaused(true);
-        if (isMusicUsed) setIsMusicPlay(false);
-        setIsActive(false);
-        if (timerRef.current) clearInterval(timerRef.current);
-      }
-    } else {
-      startCountdown();
-    }
-  }, [isActive, isPaused, startCountdown, isMusicUsed]);
+    if (!isActive) return;
 
-  const handleReset = useCallback(() => {
     if (isMusicUsed) setIsMusicPlay(false);
     setIsActive(false);
-    setIsPaused(false);
-    setLeftTime(originalTime.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+  }, [isActive, isMusicUsed]);
+
+  const handleStop = useCallback(() => {
+    if (isMusicUsed) setIsMusicPlay(false);
+    setIsActive(false);
+    if (setupTimeRef.current) {
+      setLeftTime(setupTimeRef.current);
+      setupTimeRef.current = NO_TIME;
+    }
 
     if (timerRef.current) clearInterval(timerRef.current);
   }, [isMusicUsed]);
+
+  const handleReset = useCallback(() => {
+    if (setupTimeRef.current) {
+      setupTimeRef.current = NO_TIME;
+    }
+
+    setLeftTime(NO_TIME);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -124,23 +127,26 @@ export default function CountdownProvider({ children }: Props) {
   useEffect(() => {
     if (leftTime === NO_TIME && isActive) {
       setIsActive(false);
-      setIsPaused(false);
       if (timerRef.current) clearInterval(timerRef.current);
     }
   }, [leftTime, isActive]);
 
   const updateHours = useCallback(
     (hou: number, keepPreviousState: boolean = false) => {
+      let newHour = hou;
+      if (hou > MAX_TIME_INPUT.HOUR) newHour = MAX_TIME_INPUT.HOUR;
+
       const newLeftTime =
         (keepPreviousState
-          ? (hours + hou) * HOUR_TO_SECONDS
-          : hou * HOUR_TO_SECONDS) +
+          ? (hours + newHour) * HOUR_TO_SECONDS
+          : newHour * HOUR_TO_SECONDS) +
         minutes * MINUTE_TO_SECONDS +
         seconds;
 
       if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
         return;
       }
+
       setLeftTime(newLeftTime);
     },
     [hours, minutes, seconds],
@@ -148,18 +154,21 @@ export default function CountdownProvider({ children }: Props) {
 
   const updateMinutes = useCallback(
     (min: number, keepPreviousState: boolean = false) => {
-      const newLefTime =
+      let newMinute = min;
+      if (min > MAX_TIME_INPUT.MINUTE) newMinute = MAX_TIME_INPUT.MINUTE;
+
+      const newLeftTime =
         hours * HOUR_TO_SECONDS +
         (keepPreviousState
-          ? (minutes + min) * MINUTE_TO_SECONDS
-          : min * MINUTE_TO_SECONDS) +
+          ? (minutes + newMinute) * MINUTE_TO_SECONDS
+          : newMinute * MINUTE_TO_SECONDS) +
         seconds;
 
-      if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
+      if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
         return;
       }
 
-      setLeftTime(newLefTime);
+      setLeftTime(newLeftTime);
     },
 
     [hours, minutes, seconds],
@@ -167,16 +176,19 @@ export default function CountdownProvider({ children }: Props) {
 
   const updateSeconds = useCallback(
     (sec: number, keepPreviousState: boolean = false) => {
-      const newLefTime =
+      let newSecond = sec;
+      if (sec > MAX_TIME_INPUT.SECOND) newSecond = MAX_TIME_INPUT.SECOND;
+
+      const newLeftTime =
         hours * HOUR_TO_SECONDS +
         minutes * MINUTE_TO_SECONDS +
-        (keepPreviousState ? seconds + sec : sec);
+        (keepPreviousState ? seconds + newSecond : newSecond);
 
-      if (newLefTime < NO_TIME || newLefTime > MAX_TIME) {
+      if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
         return;
       }
 
-      setLeftTime(newLefTime);
+      setLeftTime(newLeftTime);
     },
     [hours, minutes, seconds],
   );
@@ -186,13 +198,22 @@ export default function CountdownProvider({ children }: Props) {
       hours,
       minutes,
       seconds,
+      setupTime: setupTimeRef.current,
       leftTime,
       isActive,
-      isPaused,
       isMusicUsed,
       isMusicPlay,
     }),
-    [hours, minutes, seconds, leftTime, isActive, isPaused, isMusicUsed, isMusicPlay],
+    [
+      hours,
+      minutes,
+      seconds,
+      setupTimeRef,
+      leftTime,
+      isActive,
+      isMusicUsed,
+      isMusicPlay,
+    ],
   );
 
   const defaultCountdownActionValue = useMemo(
@@ -200,17 +221,21 @@ export default function CountdownProvider({ children }: Props) {
       updateHours,
       updateMinutes,
       updateSeconds,
+      handleStart,
       handlePause,
+      handleStop,
       handleReset,
       setIsMusicUsed,
       setIsMusicPlay,
     }),
     [
-      updateHours, 
-      updateMinutes, 
-      updateSeconds, 
-      handlePause, 
-      handleReset, 
+      updateHours,
+      updateMinutes,
+      updateSeconds,
+      handleStart,
+      handlePause,
+      handleStop,
+      handleReset,
       setIsMusicUsed,
       setIsMusicPlay,
     ],
