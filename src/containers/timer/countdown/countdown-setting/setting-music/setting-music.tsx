@@ -1,8 +1,24 @@
-// 'use client';
-
+import { useFormContext } from 'react-hook-form';
+import { MusicIcon } from 'lucide-react';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/form';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import { useEffect } from 'react';
+import { Switch } from '@/components/switch';
+import { SheetSubTitle } from '@/components/sheet';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/collapsible';
+import { cn } from '@/styles/utils';
+import { Label } from '@/components/label';
 import {
   useCountdownMusicAction,
   useCountdownMusicState,
@@ -10,89 +26,77 @@ import {
 import { useCountdownState } from '../../countdown-provider/countdown-provider.hooks';
 
 export default function SettingMusic() {
-  const { isUrlError, defaultValue, inputRef, didMount, musicTitle } =
-    useCountdownMusicState();
-  const {
-    getYouTubeMusicURL,
-    toggleMusicUsedState,
-    toggleMusicPlayState,
-    pauseMusic,
-  } = useCountdownMusicAction();
-  const { isActive, isMusicUsed, isMusicPlay } = useCountdownState();
-
-  useEffect(() => {
-    if (didMount.current) {
-      didMount.current = false;
-      if (!isActive) {
-        return pauseMusic;
-      }
-    } else {
-      didMount.current = true;
-    }
-    return undefined;
-  }, [didMount, isActive, pauseMusic]);
+  const { isActive, isMusicUsed } = useCountdownState();
+  const { musicTitle } = useCountdownMusicState();
+  const { getYoutubeMusicURL, toggleMusicUsed } = useCountdownMusicAction();
+  const form = useFormContext();
 
   return (
-    <div>
-      배경 음악
-      <div className="grid gap-2">
-        <div className="grid grid-cols-4 gap-2">
-          <Input
-            className={
-              isUrlError
-                ? 'w-full h-9 border-2 col-span-3 border-red-500 animate-bounce  '
-                : 'w-full h-9 border-2 col-span-3'
-            }
-            ref={inputRef}
-            type="text"
-            defaultValue={defaultValue}
+    <Collapsible open={isMusicUsed} className="space-y-4">
+      <Label className="flex items-center justify-between gap-x-2">
+        <SheetSubTitle>
+          <MusicIcon />
+          배경 음악
+        </SheetSubTitle>
+
+        <CollapsibleTrigger asChild>
+          <Switch
+            checked={isMusicUsed}
+            data-state={isMusicUsed ? 'checked' : 'unchecked'}
+            className="bg-inherit"
+            onClick={toggleMusicUsed}
           />
-          <Button
-            variant="primary-outline"
-            size="sm"
-            onClick={getYouTubeMusicURL}
-            disabled={isActive}
+        </CollapsibleTrigger>
+      </Label>
+
+      <CollapsibleContent className={cn('space-y-4')}>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(() =>
+              getYoutubeMusicURL(form.getValues('youtubeUrl')),
+            )}
+            className="space-y-4"
           >
-            가져오기
-          </Button>
-        </div>
+            <FormField
+              control={form.control}
+              name="youtubeUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormDescription>
+                    유튜브 동영상 URL을 입력해주세요.
+                  </FormDescription>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="https://www.youtube.com/watch?v=7uRX00jTSA0"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              disabled={isActive || !form.getValues('youtubeUrl')}
+              variant="primary-outline"
+            >
+              {isActive ? '타이머 실행 중···' : '가져오기'}
+            </Button>
+          </form>
+        </Form>
+      </CollapsibleContent>
+
+      {musicTitle && (
         <div
-          className={
-            isMusicUsed
-              ? 'overflow-x-auto text-center border-2 rounded-lg h-8 text-primary border-primary '
-              : 'overflow-x-auto text-center border-2 rounded-lg h-8 text-gray-400'
-          }
+          className={cn(
+            'px-3 py-2 rounded-lg bg-primary-50 text-sm',
+            isMusicUsed ? 'text-primary' : 'text-primary/50',
+          )}
         >
           {musicTitle}
         </div>
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant={isMusicUsed ? 'primary' : 'primary-outline'}
-            size="sm"
-            onClick={toggleMusicUsedState}
-          >
-            {isMusicUsed ? '음악 빼기' : '음악 넣기'}
-          </Button>
-          {isActive ? (
-            <Button
-              variant="primary-outline"
-              size="sm"
-              onClick={toggleMusicPlayState}
-              disabled
-            >
-              타이머 실행중..
-            </Button>
-          ) : (
-            <Button
-              variant={isMusicPlay ? 'primary' : 'primary-outline'}
-              size="sm"
-              onClick={toggleMusicPlayState}
-            >
-              {isMusicPlay ? '일시정지' : '미리듣기'}
-            </Button>
-          )}
-        </div>
-      </div>
-    </div>
+      )}
+    </Collapsible>
   );
 }
