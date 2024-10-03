@@ -5,12 +5,18 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/button';
 import { SheetSubTitle } from '@/components/sheet';
-import { useCountdownAction } from '../../countdown-provider/countdown-provider.hooks';
+import { Label } from '@/components/label';
+import { Switch } from '@/components/switch';
+import {
+  useCountdownAction,
+  useCountdownState,
+} from '../../countdown-provider/countdown-provider.hooks';
 
 const SETTING_TIMES = [5, 10, -5, -10] as const;
 
 export default function SettingTime() {
-  const { updateMinutes } = useCountdownAction();
+  const { isHourUsed } = useCountdownState();
+  const { updateMinutes, toggleHourUsed } = useCountdownAction();
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -33,6 +39,10 @@ export default function SettingTime() {
           </Button>
         ))}
       </div>
+      <Label className="flex items-center justify-between gap-x-2">
+        <span>1시간 이상 사용</span>
+        <Switch checked={isHourUsed} onClick={toggleHourUsed} />
+      </Label>
     </div>
   );
 }

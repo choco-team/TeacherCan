@@ -25,6 +25,7 @@ type CountdownState = {
   setupTime: number;
   leftTime: number;
   isActive: boolean;
+  isHourUsed: boolean;
   isMusicUsed: boolean;
   iframeRef: MutableRefObject<HTMLIFrameElement>;
   musicAnimationRef: LottieRef;
@@ -42,6 +43,7 @@ type CountdownAction = {
   updateSeconds: (_sec: number, keepPreviousState?: boolean) => void;
   setIsMusicUsed: (value: SetStateAction<boolean>) => void;
   toggleMusicPlay: (to: 'on' | 'off') => void;
+  toggleHourUsed: () => void;
 };
 
 export const CountdownActionContext = createContext<CountdownAction | null>(
@@ -55,6 +57,7 @@ type Props = {
 export default function CountdownProvider({ children }: Props) {
   const [leftTime, setLeftTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const [isHourUsed, setIsHourUsed] = useState(false);
   const [isMusicUsed, setIsMusicUsed] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -67,6 +70,11 @@ export default function CountdownProvider({ children }: Props) {
     (leftTime - hours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
   );
   const seconds = Math.floor(leftTime % MINUTE_TO_SECONDS);
+
+  const toggleHourUsed = () => {
+    if (isHourUsed) setLeftTime((prev) => prev - hours * HOUR_TO_SECONDS);
+    setIsHourUsed((prev) => !prev);
+  };
 
   const toggleMusicPlay = (to: 'on' | 'off') => {
     const isToPlay = to === 'on';
@@ -219,6 +227,7 @@ export default function CountdownProvider({ children }: Props) {
       setupTime: setupTimeRef.current,
       leftTime,
       isActive,
+      isHourUsed,
       isMusicUsed,
       iframeRef,
       musicAnimationRef,
@@ -230,6 +239,7 @@ export default function CountdownProvider({ children }: Props) {
       setupTimeRef,
       leftTime,
       isActive,
+      isHourUsed,
       isMusicUsed,
       iframeRef,
       musicAnimationRef,
@@ -247,6 +257,7 @@ export default function CountdownProvider({ children }: Props) {
       handleReset,
       setIsMusicUsed,
       toggleMusicPlay,
+      toggleHourUsed,
     }),
     [
       updateHours,
@@ -258,6 +269,7 @@ export default function CountdownProvider({ children }: Props) {
       handleReset,
       setIsMusicUsed,
       toggleMusicPlay,
+      toggleHourUsed,
     ],
   );
 

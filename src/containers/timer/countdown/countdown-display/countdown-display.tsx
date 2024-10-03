@@ -22,7 +22,7 @@ import {
 import Colon from './colon';
 
 const timeInputClassName =
-  'p-6 pt-10 max-w-96 h-auto rounded-3xl bg-white read-only:border-transparent read-only:bg-body read-only:focus-visible:ring-transparent text-end text-[13rem] font-medium font-number leading-none tracking-wide';
+  'p-6 pt-10 max-w-96 h-auto rounded-3xl bg-white read-only:border-body read-only:bg-body read-only:pointer-events-none text-end text-[13rem] font-medium font-number leading-none tracking-wide';
 const timerButtonClassName = 'size-32 rounded-full';
 const timerButtonIconClassName = 'size-20 fill-inherit';
 
@@ -30,7 +30,7 @@ const formatTimeToTwoDigits = (time: number) =>
   time.toString().padStart(2, '0');
 
 export default function CountdownDisplay() {
-  const { hours, minutes, seconds, setupTime, leftTime, isActive } =
+  const { hours, minutes, seconds, setupTime, leftTime, isActive, isHourUsed } =
     useCountdownState();
   const {
     updateHours,
@@ -68,19 +68,23 @@ export default function CountdownDisplay() {
       <Heading1 className="text-center [&]:text-7xl">타이머</Heading1>
 
       <div className="flex items-center gap-x-4">
-        <div className="flex flex-col items-center">
-          <InputNumberWithoutSpin
-            value={hours}
-            className={timeInputClassName}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              updateHours(Math.floor(Number(event.target.value)))
-            }
-            onFocus={handleFocus}
-            onBlur={handleBlur(hours)}
-            readOnly={isActive}
-          />
-        </div>
-        <Colon />
+        {isHourUsed && (
+          <>
+            <div className="flex flex-col items-center">
+              <InputNumberWithoutSpin
+                value={hours}
+                className={timeInputClassName}
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  updateHours(Math.floor(Number(event.target.value)))
+                }
+                onFocus={handleFocus}
+                onBlur={handleBlur(hours)}
+                readOnly={isActive}
+              />
+            </div>
+            <Colon />
+          </>
+        )}
         <div className="flex flex-col items-center gap-y-4">
           <Button
             size="icon"
