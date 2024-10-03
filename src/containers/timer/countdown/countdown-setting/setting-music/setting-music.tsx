@@ -124,11 +124,13 @@ export default function SettingMusic() {
       />
 
       {title && (
-        <div className="flex items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-gray-100">
+        <div className="flex items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
           <p
             className={cn(
               'text-sm line-clamp-1',
-              isMusicUsed ? 'text-text' : 'text-text/50',
+              isMusicUsed
+                ? 'text-muted-foreground'
+                : 'text-muted-foreground/50',
             )}
           >
             {title}

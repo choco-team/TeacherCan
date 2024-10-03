@@ -17,11 +17,15 @@ module.exports = {
         border: colors.gray[200],
         input: colors.gray[200],
         ring: colors.gray[400],
-        background: colors.beige[100],
+        background: colors.white,
         foreground: colors.gray[900],
         text: colors.gray[700],
         disabled: colors.gray[300],
         destructive: colors.red,
+        body: {
+          DEFAULT: colors.beige[100],
+          foreground: colors.gray[950],
+        },
         muted: {
           DEFAULT: colors.gray[100],
           foreground: colors.gray[500],
