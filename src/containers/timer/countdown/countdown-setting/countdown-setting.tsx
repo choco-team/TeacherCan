@@ -1,9 +1,7 @@
-import { Button } from '@/components/button';
+import { Info as InfoIcon } from 'lucide-react';
 import {
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '@/components/sheet';
@@ -16,23 +14,21 @@ export default function CountdownSetting() {
   return (
     <SheetContent>
       <SheetHeader>
-        <SheetTitle>키운트다운 설정</SheetTitle>
-        <SheetDescription>
-          아래에서 카운트다운 설정을 해보세요. 카운트다운이 진행하는 도중에도
-          가능합니다.
+        <SheetTitle>타이머 설정</SheetTitle>
+        <SheetDescription className="mt-4">
+          <span className="flex items-center gap-x-1">
+            <InfoIcon className="size-4 text-secondary" />
+            타이머 실행 중에도 설정을 변경할 수 있어요.
+          </span>
         </SheetDescription>
-        <div>
-          <SettingTime />
-          <SettingAlarm />
-          <SettingMusic />
-          <SettingScreenSize />
-        </div>
       </SheetHeader>
-      <SheetFooter>
-        <SheetClose asChild>
-          <Button type="submit">Save changes</Button>
-        </SheetClose>
-      </SheetFooter>
+
+      <div className="space-y-12 py-10">
+        <SettingTime />
+        <SettingAlarm />
+        <SettingMusic />
+        <SettingScreenSize />
+      </div>
     </SheetContent>
   );
 }
