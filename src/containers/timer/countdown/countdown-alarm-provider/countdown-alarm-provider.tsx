@@ -16,7 +16,7 @@ export const CountdownAlarmStateContext =
   createContext<CountdownAlarmState | null>(null);
 
 type CountdownAlarmAction = {
-  toggleAlarmTime: (_num: number) => void;
+  toggleAlarmTime: (num: number) => () => void;
 };
 
 export const CountdownAlarmActionContext =
@@ -32,7 +32,7 @@ export default function CountdownAlarmProvider({ children }: Props) {
   const { leftTime, isActive } = useCountdownState();
 
   const toggleAlarmTime = useCallback(
-    (num: number) => {
+    (num: number) => () => {
       if (alarmTimes.includes(num)) {
         setAlarmTimes((prev) => prev.filter((time) => time !== num));
         return;
@@ -66,6 +66,7 @@ export default function CountdownAlarmProvider({ children }: Props) {
     }
 
     alarmAudio.play();
+    if (leftTime === 0) setAlarmTimes([0]);
   }, [alarmTimes, leftTime, isActive, alarmAudio]);
 
   const defaultCountdownAlarmStateValue = useMemo(

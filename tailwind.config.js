@@ -19,6 +19,8 @@ module.exports = {
         ring: colors.gray[400],
         background: colors.beige[100],
         foreground: colors.gray[900],
+        text: colors.gray[700],
+        disabled: colors.gray[300],
         destructive: colors.red,
         muted: {
           DEFAULT: colors.gray[100],
@@ -45,6 +47,7 @@ module.exports = {
       fontFamily: {
         sans: ['var(--font-pretendard)'],
         point: ['var(--font-byeolbichhaneul)'],
+        number: ['var(--font-pyeongtaek-anbo)'],
       },
       fontSize: { '2.5xl': '1.75rem', '3.5xl': '2rem' },
       keyframes: {
@@ -57,10 +60,20 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'collapsible-content-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-collapsible-content-height' },
+        },
+        'collapsible-content-up': {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: '0' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'collapsible-content-down': 'collapsible-content-down 0.3s ease-out',
+        'collapsible-content-up': 'collapsible-content-up 0.3s ease-out',
         'bounce-in-top': 'bounce-in-top 1.2s both',
       },
     },

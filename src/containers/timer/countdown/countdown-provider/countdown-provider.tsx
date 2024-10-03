@@ -1,14 +1,15 @@
 import {
   createContext,
-  ReactNode,
-  SetStateAction,
+  type MutableRefObject,
+  type ReactNode,
+  type SetStateAction,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-
+import type { LottieRef, LottieRefCurrentProps } from 'lottie-react';
 import {
   MAX_TIME,
   NO_TIME,
@@ -25,7 +26,8 @@ type CountdownState = {
   leftTime: number;
   isActive: boolean;
   isMusicUsed: boolean;
-  isMusicPlay: boolean;
+  iframeRef: MutableRefObject<HTMLIFrameElement>;
+  musicAnimationRef: LottieRef;
 };
 
 export const CountdownStateContext = createContext<CountdownState | null>(null);
@@ -39,7 +41,7 @@ type CountdownAction = {
   updateMinutes: (_min: number, keepPreviousState?: boolean) => void;
   updateSeconds: (_sec: number, keepPreviousState?: boolean) => void;
   setIsMusicUsed: (value: SetStateAction<boolean>) => void;
-  setIsMusicPlay: (value: SetStateAction<boolean>) => void;
+  toggleMusicPlay: (to: 'on' | 'off') => void;
 };
 
 export const CountdownActionContext = createContext<CountdownAction | null>(
@@ -54,16 +56,33 @@ export default function CountdownProvider({ children }: Props) {
   const [leftTime, setLeftTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isMusicUsed, setIsMusicUsed] = useState(false);
-  const [isMusicPlay, setIsMusicPlay] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const setupTimeRef = useRef<number>(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const musicAnimationRef = useRef<LottieRefCurrentProps | null>(null);
 
   const hours = Math.floor(leftTime / HOUR_TO_SECONDS);
   const minutes = Math.floor(
     (leftTime - hours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
   );
   const seconds = Math.floor(leftTime % MINUTE_TO_SECONDS);
+
+  const toggleMusicPlay = (to: 'on' | 'off') => {
+    const isToPlay = to === 'on';
+
+    const postMessage = isToPlay ? 'playVideo' : 'pauseVideo';
+    iframeRef.current.contentWindow.postMessage(
+      `{"event":"command","func":"${postMessage}"}`,
+      '*',
+    );
+
+    if (isToPlay) {
+      musicAnimationRef.current.play();
+    } else {
+      musicAnimationRef.current.pause();
+    }
+  };
 
   const handleStart = useCallback(() => {
     if (leftTime < 1) {
@@ -74,8 +93,8 @@ export default function CountdownProvider({ children }: Props) {
       setupTimeRef.current = leftTime;
     }
 
-    if (isMusicUsed) setIsMusicPlay(true);
     setIsActive(true);
+    if (isMusicUsed) toggleMusicPlay('on');
 
     if (timerRef.current) clearInterval(timerRef.current);
 
@@ -92,16 +111,14 @@ export default function CountdownProvider({ children }: Props) {
   }, [leftTime, isMusicUsed]);
 
   const handlePause = useCallback(() => {
-    if (!isActive) return;
-
-    if (isMusicUsed) setIsMusicPlay(false);
     setIsActive(false);
+    if (isMusicUsed) toggleMusicPlay('off');
     if (timerRef.current) clearInterval(timerRef.current);
   }, [isActive, isMusicUsed]);
 
   const handleStop = useCallback(() => {
-    if (isMusicUsed) setIsMusicPlay(false);
     setIsActive(false);
+    if (isMusicUsed) toggleMusicPlay('off');
     if (setupTimeRef.current) {
       setLeftTime(setupTimeRef.current);
       setupTimeRef.current = NO_TIME;
@@ -127,6 +144,7 @@ export default function CountdownProvider({ children }: Props) {
   useEffect(() => {
     if (leftTime === NO_TIME && isActive) {
       setIsActive(false);
+      if (isMusicUsed) toggleMusicPlay('off');
       if (timerRef.current) clearInterval(timerRef.current);
     }
   }, [leftTime, isActive]);
@@ -193,7 +211,7 @@ export default function CountdownProvider({ children }: Props) {
     [hours, minutes, seconds],
   );
 
-  const defaultCountdownStateValue = useMemo(
+  const defaultCountdownStateValue = useMemo<CountdownState>(
     () => ({
       hours,
       minutes,
@@ -202,7 +220,8 @@ export default function CountdownProvider({ children }: Props) {
       leftTime,
       isActive,
       isMusicUsed,
-      isMusicPlay,
+      iframeRef,
+      musicAnimationRef,
     }),
     [
       hours,
@@ -212,11 +231,12 @@ export default function CountdownProvider({ children }: Props) {
       leftTime,
       isActive,
       isMusicUsed,
-      isMusicPlay,
+      iframeRef,
+      musicAnimationRef,
     ],
   );
 
-  const defaultCountdownActionValue = useMemo(
+  const defaultCountdownActionValue = useMemo<CountdownAction>(
     () => ({
       updateHours,
       updateMinutes,
@@ -226,7 +246,7 @@ export default function CountdownProvider({ children }: Props) {
       handleStop,
       handleReset,
       setIsMusicUsed,
-      setIsMusicPlay,
+      toggleMusicPlay,
     }),
     [
       updateHours,
@@ -237,7 +257,7 @@ export default function CountdownProvider({ children }: Props) {
       handleStop,
       handleReset,
       setIsMusicUsed,
-      setIsMusicPlay,
+      toggleMusicPlay,
     ],
   );
 

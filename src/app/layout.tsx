@@ -23,6 +23,11 @@ const byeolbichhaneul = localFont({
   variable: '--font-byeolbichhaneul',
 });
 
+const pyeongtaek = localFont({
+  src: '../assets/fonts/pyeongtaek-anbo-regular.woff',
+  variable: '--font-pyeongtaek-anbo',
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -31,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${byeolbichhaneul.variable}`}
+      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable}`}
     >
       <body>
         <div className="w-full min-h-screen">{children}</div>

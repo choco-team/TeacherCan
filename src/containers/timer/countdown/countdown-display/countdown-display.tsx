@@ -8,21 +8,21 @@ import {
   RotateCcwIcon,
 } from 'lucide-react';
 import { Button } from '@/components/button';
-import { Heading2 } from '@/components/heading';
+import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
 import {
   useCountdownAction,
   useCountdownState,
 } from '../countdown-provider/countdown-provider.hooks';
-import CountdownMusic from '../countdown-music/countdown-music';
 import { InputNumberWithoutSpin } from '../countdown-components/countdown-input';
 import {
   MINUTE_TO_SECONDS,
   NO_TIME,
 } from '../countdown-provider/countdown-provider.constants';
+import Colon from './colon';
 
 const timeInputClassName =
-  'max-w-[256px] h-auto rounded-3xl text-end text-[128px] font-bold';
+  'p-6 pt-10 max-w-96 h-auto rounded-3xl text-end text-[13rem] font-medium font-number leading-none tracking-wide';
 const timerButtonClassName = 'size-32 rounded-full';
 const timerButtonIconClassName = 'size-20 fill-inherit';
 
@@ -43,6 +43,7 @@ export default function CountdownDisplay() {
   } = useCountdownAction();
 
   const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
+    if (isActive) return;
     // eslint-disable-next-line no-param-reassign
     event.target.value = '';
   };
@@ -63,10 +64,10 @@ export default function CountdownDisplay() {
   };
 
   return (
-    <div className="flex flex-col gap-y-10">
-      <Heading2 className="text-center">타이머</Heading2>
+    <div className="flex flex-col gap-y-12">
+      <Heading1 className="text-center [&]:text-7xl">타이머</Heading1>
 
-      <div className="flex items-center gap-x-4">
+      <div className="flex items-center gap-x-6">
         <div className="flex flex-col items-center">
           <InputNumberWithoutSpin
             value={hours}
@@ -79,7 +80,7 @@ export default function CountdownDisplay() {
             readOnly={isActive}
           />
         </div>
-        <span className="text-lg font-bold">:</span>
+        <Colon />
         <div className="flex flex-col items-center gap-y-4">
           <Button
             size="icon"
@@ -109,7 +110,7 @@ export default function CountdownDisplay() {
             <ChevronDownIcon />
           </Button>
         </div>
-        <span className="text-lg font-bold">:</span>
+        <Colon />
         <div className="flex flex-col items-center">
           <InputNumberWithoutSpin
             value={formatTimeToTwoDigits(seconds)}
@@ -169,7 +170,6 @@ export default function CountdownDisplay() {
           </Button>
         )}
       </div>
-      <CountdownMusic />
     </div>
   );
 }

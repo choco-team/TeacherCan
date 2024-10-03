@@ -7,7 +7,7 @@ export function Heading1({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h1
-      className={`scroll-m-20 text-3.5xl font-extrabold lg:text-4xl${className ? ` ${className}` : ''}`}
+      className={`scroll-m-20 text-4xl font-extrabold ${className ? ` ${className}` : ''}`}
       {...props}
     >
       {children}
