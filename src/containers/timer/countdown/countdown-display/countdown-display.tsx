@@ -1,4 +1,4 @@
-import type { ChangeEvent, FocusEvent } from 'react';
+import { useState, type ChangeEvent, type FocusEvent } from 'react';
 import {
   ChevronUpIcon,
   ChevronDownIcon,
@@ -8,6 +8,7 @@ import {
   RotateCcwIcon,
 } from 'lucide-react';
 import { Button } from '@/components/button';
+import { Input } from '@/components/input';
 import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
 import {
@@ -26,10 +27,14 @@ const timeInputClassName =
 const timerButtonClassName = 'size-32 rounded-full';
 const timerButtonIconClassName = 'size-20 fill-inherit';
 
+const TIMER_NAME_MAX_LENGTH = 20;
+
 const formatTimeToTwoDigits = (time: number) =>
   time.toString().padStart(2, '0');
 
 export default function CountdownDisplay() {
+  const [timerName, setTimerName] = useState('');
+
   const { hours, minutes, seconds, setupTime, leftTime, isActive, isHourUsed } =
     useCountdownState();
   const {
@@ -41,6 +46,12 @@ export default function CountdownDisplay() {
     handleStop,
     handleReset,
   } = useCountdownAction();
+
+  const handleChangeTimerName = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    if (value.length > TIMER_NAME_MAX_LENGTH) return;
+    setTimerName(value);
+  };
 
   const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
     if (isActive) return;
@@ -64,8 +75,20 @@ export default function CountdownDisplay() {
   };
 
   return (
-    <div className="flex flex-col gap-y-12">
-      <Heading1 className="text-center [&]:text-7xl">타이머</Heading1>
+    <div className="flex flex-col items-center gap-y-12 w-full px-8 pt-6 pb-12">
+      {isActive ? (
+        <Heading1 className="pt-5 h-28 [&]:text-7xl">{timerName}</Heading1>
+      ) : (
+        <Input
+          type="text"
+          value={timerName}
+          maxLength={TIMER_NAME_MAX_LENGTH}
+          readOnly={isActive}
+          placeholder="타이머 이름"
+          className="max-w-7xl h-28 rounded-2xl text-center text-7xl font-extrabold"
+          onChange={handleChangeTimerName}
+        />
+      )}
 
       <div className="flex items-center gap-x-4">
         {isHourUsed && (
