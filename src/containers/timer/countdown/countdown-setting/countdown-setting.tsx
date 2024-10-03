@@ -23,7 +23,7 @@ export default function CountdownSetting() {
         </SheetDescription>
       </SheetHeader>
 
-      <div className="space-y-12 py-12">
+      <div className="space-y-12 py-10">
         <SettingTime />
         <SettingAlarm />
         <SettingMusic />

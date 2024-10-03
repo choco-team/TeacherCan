@@ -31,6 +31,7 @@ const buttonVariants = cva(
           'text-primary fill-primary underline-offset-4 hover:underline active:text-primary-600 active:fill-primary-600',
       },
       size: {
+        xs: 'h-6 rounded-sm px-2 text-xs',
         sm: 'h-9 rounded-md px-3',
         md: 'h-10 px-4 py-2',
         lg: 'min-w-28 h-11 rounded-md px-8 font-semibold',

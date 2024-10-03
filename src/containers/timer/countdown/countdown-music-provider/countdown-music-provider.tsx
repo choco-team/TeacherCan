@@ -14,7 +14,10 @@ import {
 } from '../countdown-provider/countdown-provider.hooks';
 
 type CountdownMusicState = {
-  musicTitle: string;
+  music: {
+    videoId: string;
+    title: string;
+  };
 };
 
 export const CountdownMusicStateContext =
@@ -39,9 +42,12 @@ const formSchema = z.object({
 });
 
 export default function CountdownMusicProvider({ children }: Props) {
-  const [musicTitle, setMusicTitle] = useState('');
+  const [music, setMusic] = useState({
+    videoId: '',
+    title: '',
+  });
 
-  const { isActive, isMusicUsed, iframeRef } = useCountdownState();
+  const { isActive, isMusicUsed } = useCountdownState();
   const { setIsMusicUsed, toggleMusicPlay } = useCountdownAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,10 +70,9 @@ export default function CountdownMusicProvider({ children }: Props) {
     async (url: string) => {
       try {
         const videoId = url.split('v=')[1].split('&')[0];
+        const title = await getMusicTitle(videoId);
+        setMusic({ title, videoId });
 
-        iframeRef.current.src = `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`;
-
-        setMusicTitle(await getMusicTitle(videoId));
         toggleMusicPlay('off');
         setIsMusicUsed(true);
       } catch (error) {
@@ -76,20 +81,20 @@ export default function CountdownMusicProvider({ children }: Props) {
         });
       }
     },
-    [isActive, iframeRef, toggleMusicPlay, setIsMusicUsed],
+    [isActive, toggleMusicPlay, setIsMusicUsed],
   );
 
   const toggleMusicUsed = useCallback(() => {
     const prevUsedState = isMusicUsed;
     if (isActive) toggleMusicPlay(prevUsedState ? 'off' : 'on');
     setIsMusicUsed((prev) => !prev);
-  }, [isActive, musicTitle, isMusicUsed, setIsMusicUsed]);
+  }, [isMusicUsed, isActive]);
 
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(
     () => ({
-      musicTitle,
+      music,
     }),
-    [musicTitle],
+    [music],
   );
 
   const defaultCountdownMusicActionValue = useMemo<CountdownMusicAction>(

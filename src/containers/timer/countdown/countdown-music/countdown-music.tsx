@@ -6,14 +6,16 @@ import { useCountdownState } from '../countdown-provider/countdown-provider.hook
 
 export default function CountdownMusic() {
   const { isMusicUsed, iframeRef, musicAnimationRef } = useCountdownState();
-  const { musicTitle } = useCountdownMusicState();
+  const {
+    music: { videoId, title },
+  } = useCountdownMusicState();
 
   return (
     <>
       <div
         className={cn(
           'absolute left-8 bottom-8 flex items-center gap-x-4 text-lg text-text',
-          (!isMusicUsed || !iframeRef.current?.src) && 'hidden',
+          (!isMusicUsed || !videoId) && 'hidden',
         )}
       >
         <Lottie
@@ -22,12 +24,17 @@ export default function CountdownMusic() {
           autoPlay={false}
           className="w-10"
         />
-        {musicTitle}
+        {title}
       </div>
       <iframe
         className="hidden"
         title="youtube"
         ref={iframeRef}
+        src={
+          videoId
+            ? `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`
+            : undefined
+        }
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       />
     </>

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MusicIcon } from 'lucide-react';
 import {
@@ -26,10 +27,31 @@ import {
 import { useCountdownState } from '../../countdown-provider/countdown-provider.hooks';
 
 export default function SettingMusic() {
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const previewIframeRef = useRef<HTMLIFrameElement>(null);
+
   const { isActive, isMusicUsed } = useCountdownState();
-  const { musicTitle } = useCountdownMusicState();
+  const {
+    music: { videoId, title },
+  } = useCountdownMusicState();
   const { getYoutubeMusicURL, toggleMusicUsed } = useCountdownMusicAction();
   const form = useFormContext();
+
+  console.log(previewIframeRef.current?.src);
+
+  const togglePreviewPlay = (isToPlay: boolean) => {
+    const postMessage = isToPlay ? 'playVideo' : 'stopVideo';
+    previewIframeRef.current.contentWindow.postMessage(
+      `{"event":"command","func":"${postMessage}"}`,
+      '*',
+    );
+
+    setIsPlayingPreview(isToPlay);
+  };
+
+  useEffect(() => {
+    if (isActive && isPlayingPreview) setIsPlayingPreview(false);
+  }, []);
 
   return (
     <Collapsible open={isMusicUsed} className="space-y-4">
@@ -65,36 +87,60 @@ export default function SettingMusic() {
                   <FormDescription>
                     유튜브 동영상 URL을 입력해주세요.
                   </FormDescription>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="https://www.youtube.com/watch?v=7uRX00jTSA0"
-                      {...field}
-                    />
-                  </FormControl>
+                  <div className="flex items-center gap-x-2">
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="https://www.youtube.com/watch?v=7uRX00jTSA0"
+                        {...field}
+                      />
+                    </FormControl>
+                    <Button
+                      type="submit"
+                      disabled={isActive || !form.getValues('youtubeUrl')}
+                      variant="primary-outline"
+                    >
+                      {isActive ? '타이머 실행 중···' : '가져오기'}
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-              disabled={isActive || !form.getValues('youtubeUrl')}
-              variant="primary-outline"
-            >
-              {isActive ? '타이머 실행 중···' : '가져오기'}
-            </Button>
           </form>
         </Form>
       </CollapsibleContent>
 
-      {musicTitle && (
-        <div
-          className={cn(
-            'px-3 py-2 rounded-lg bg-primary-50 text-sm',
-            isMusicUsed ? 'text-primary' : 'text-primary/50',
-          )}
-        >
-          {musicTitle}
+      <iframe
+        ref={previewIframeRef}
+        title="preview"
+        className="hidden"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        src={
+          videoId
+            ? `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`
+            : undefined
+        }
+      />
+
+      {title && (
+        <div className="flex items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-gray-100">
+          <p
+            className={cn(
+              'text-sm line-clamp-1',
+              isMusicUsed ? 'text-text' : 'text-text/50',
+            )}
+          >
+            {title}
+          </p>
+          <Button
+            variant="primary-ghost"
+            size="xs"
+            disabled={isActive}
+            onClick={() => togglePreviewPlay(!isPlayingPreview)}
+          >
+            {isPlayingPreview ? '정지' : '미리듣기'}
+          </Button>
         </div>
       )}
     </Collapsible>
