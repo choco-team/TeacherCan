@@ -1,5 +1,7 @@
+import QRCode from './generator/generator';
+
 function QrCodeContainer() {
-  return <div>QrCode</div>;
+  return <QRCode />;
 }
 
 export default QrCodeContainer;
