@@ -32,7 +32,7 @@ function QRCodeDownloader() {
   };
 
   return (
-    <div className="flex justify-center mt-4">
+    <div>
       <Button
         onClick={downloadQRCode}
         variant="gray-ghost"
