@@ -1,26 +1,25 @@
 'use client';
 
-'use client';
-
 import { useState, useRef, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 
-function DynamicQRCodeGenerator({ setQrCodeRef }) {
+function DynamicQRCodeGenerator({ setQrCodeValue, setQrCodeRef }) {
   const [inputValue, setInputValue] = useState('');
-  const svgRef = useRef(null);
+  const qrRef = useRef(null);
 
   const handleChange = (e) => {
     setInputValue(e.target.value);
+    setQrCodeValue(e.target.value);
   };
 
   useEffect(() => {
-    if (svgRef.current) {
-      setQrCodeRef(svgRef.current);
+    if (qrRef.current) {
+      setQrCodeRef(qrRef.current);
     }
-  }, [inputValue, setQrCodeRef]);
+  }, [inputValue]);
 
   return (
     <div>
@@ -36,7 +35,7 @@ function DynamicQRCodeGenerator({ setQrCodeRef }) {
       />
       {inputValue ? (
         <div className="flex justify-center">
-          <div ref={svgRef}>
+          <div ref={qrRef}>
             <QRCodeSVG value={inputValue} width={200} height={200} />
           </div>
         </div>
