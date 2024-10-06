@@ -1,17 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 
-function DynamicQRCodeGenerator({ setQrCodeValue, setQrCodeRef }) {
-  const [inputValue, setInputValue] = useState('');
+function DynamicQRCodeGenerator({ setQrCodeValue, setQrCodeRef, qrCodeValue }) {
   const qrRef = useRef(null);
-
   const handleChange = (e) => {
-    setInputValue(e.target.value);
     setQrCodeValue(e.target.value);
   };
 
@@ -19,7 +16,7 @@ function DynamicQRCodeGenerator({ setQrCodeValue, setQrCodeRef }) {
     if (qrRef.current) {
       setQrCodeRef(qrRef.current);
     }
-  }, [inputValue]);
+  }, [qrCodeValue]);
 
   return (
     <div>
@@ -28,15 +25,15 @@ function DynamicQRCodeGenerator({ setQrCodeValue, setQrCodeRef }) {
       </Heading2>
       <Input
         type="text"
-        value={inputValue}
+        value={qrCodeValue}
         onChange={handleChange}
         placeholder="주소를 입력하세요"
         className="p-2 border border-gray-300 rounded-lg mb-8"
       />
-      {inputValue ? (
+      {qrCodeValue ? (
         <div className="flex justify-center">
           <div ref={qrRef}>
-            <QRCodeSVG value={inputValue} width={200} height={200} />
+            <QRCodeSVG value={qrCodeValue} width={200} height={200} />
           </div>
         </div>
       ) : (

@@ -16,6 +16,7 @@ function QRCode() {
         <DynamicQRCodeGenerator
           setQrCodeValue={setQrCodeValue}
           setQrCodeRef={setQrCodeRef}
+          qrCodeValue={qrCodeValue}
         />
         <div className="flex justify-center mt-8">
           <QRCodeDownloader />
