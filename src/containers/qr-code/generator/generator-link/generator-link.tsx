@@ -6,7 +6,7 @@ import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 
-function DynamicQRCodeGenerator({ setQrCodeValue, setQrCodeRef, qrCodeValue }) {
+function QRCodeLink({ setQrCodeValue, setQrCodeRef, qrCodeValue }) {
   const qrRef = useRef(null);
   const handleChange = (e) => {
     setQrCodeValue(e.target.value);
@@ -49,4 +49,4 @@ function DynamicQRCodeGenerator({ setQrCodeValue, setQrCodeRef, qrCodeValue }) {
   );
 }
 
-export default DynamicQRCodeGenerator;
+export default QRCodeLink;

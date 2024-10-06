@@ -1,36 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/button';
 import { ZoomIn } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import Modal from '../generator-components/generator-modal';
+import { Button } from '@/components/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/dialog';
 
-function QRCodeExtansion({ qrCodeValue }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => setIsModalOpen(true);
-  const handleCloseModal = () => setIsModalOpen(false);
-
+function QRCodeExpansion({ qrCodeValue }) {
   return (
     <div>
-      <Button
-        variant="gray-ghost"
-        className="size:icon"
-        onClick={handleOpenModal}
-      >
-        <ZoomIn width={30} height={30} />
-      </Button>
-
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-        <div className="flex justify-center">
-          {qrCodeValue && (
-            <QRCodeSVG value={qrCodeValue} width={300} height={300} />
-          )}
-        </div>
-      </Modal>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="gray-ghost">
+            <ZoomIn width={30} height={30} />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <div className="flex justify-center">
+            {qrCodeValue && (
+              <QRCodeSVG value={qrCodeValue} width={300} height={300} />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-export default QRCodeExtansion;
+export default QRCodeExpansion;
