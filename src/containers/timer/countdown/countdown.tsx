@@ -15,7 +15,7 @@ export default function Countdown() {
     <CountdownProvider>
       <CountdownMusicProvider>
         <CountdownAlarmProvider>
-          <div className="relative flex flex-col items-center justify-center h-screen bg-body">
+          <div className="relative flex flex-col items-center justify-center min-h-screen bg-body">
             <CountdownDisplay />
             <CountdownMusic />
 

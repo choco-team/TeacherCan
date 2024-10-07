@@ -75,7 +75,7 @@ export default function CountdownDisplay() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-y-12 w-full px-8 pt-6 pb-12">
+    <div className="flex flex-col items-center gap-y-12 w-full px-8 pt-12 pb-20">
       {isActive ? (
         <Heading1 className="pt-5 h-28 [&]:text-7xl">{timerName}</Heading1>
       ) : (
