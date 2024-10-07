@@ -35,10 +35,19 @@ type Props = {
   children: ReactNode;
 };
 
+const YOUTUBE_URL_INVALID_MESSAGE = '유튜브 동영상 URL을 다시 확인해주세요.';
+
 const formSchema = z.object({
-  youtubeUrl: z.string().regex(/(v=)\S+/g, {
-    message: '유튜브 동영상 URL을 다시 확인해주세요.',
-  }),
+  youtubeUrl: z
+    .string()
+    .regex(/(v=)\S+/g, {
+      message: YOUTUBE_URL_INVALID_MESSAGE,
+    })
+    .or(
+      z.string().regex(/(youtu.be\/)\S+/g, {
+        message: YOUTUBE_URL_INVALID_MESSAGE,
+      }),
+    ),
 });
 
 export default function CountdownMusicProvider({ children }: Props) {
@@ -69,7 +78,16 @@ export default function CountdownMusicProvider({ children }: Props) {
   const getYoutubeMusicURL = useCallback(
     async (url: string) => {
       try {
-        const videoId = url.split('v=')[1].split('&')[0];
+        let videoId = '';
+
+        if (url.includes('youtube.com')) {
+          // 주소창 URL
+          [videoId] = url.split('v=')[1].split('&');
+        } else if (url.includes('youtu.be')) {
+          // 공유 URL
+          [videoId] = url.split('youtu.be/')[1].split('?');
+        }
+
         const title = await getMusicTitle(videoId);
         setMusic({ title, videoId });
 
@@ -81,14 +99,14 @@ export default function CountdownMusicProvider({ children }: Props) {
         });
       }
     },
-    [isActive, toggleMusicPlay, setIsMusicUsed],
+    [toggleMusicPlay, setIsMusicUsed, form],
   );
 
   const toggleMusicUsed = useCallback(() => {
     const prevUsedState = isMusicUsed;
     if (isActive) toggleMusicPlay(prevUsedState ? 'off' : 'on');
     setIsMusicUsed((prev) => !prev);
-  }, [isMusicUsed, isActive]);
+  }, [isMusicUsed, isActive, toggleMusicPlay, setIsMusicUsed]);
 
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(
     () => ({
