@@ -6,6 +6,7 @@ import QRCodeLink from './generator-link/generator-link';
 import QRCodeDownloader from './generator-download/generator-downloader';
 import QRCodeClipboard from './generator-clipboard/generator-clipboard';
 import QRCodeExpansion from './generator-expansion/generator-expansion';
+import QRSavedLinks from './generator-savelink/generator-savelink';
 
 function QRCode() {
   const [qrCodeValue, setQrCodeValue] = useState('');
@@ -23,6 +24,7 @@ function QRCode() {
           <QRCodeDownloader />
           <QRCodeClipboard qrCodeRef={qrCodeRef} />
           <QRCodeExpansion qrCodeValue={qrCodeValue} />
+          <QRSavedLinks qrCodeValue={qrCodeValue} />
         </div>
       </div>
     </div>
