@@ -2,13 +2,14 @@
 
 import { Button } from '@/components/button';
 import { Sheet, SheetTrigger } from '@/components/sheet';
-import { SettingsIcon } from 'lucide-react';
+import { ExpandIcon, SettingsIcon } from 'lucide-react';
 import CountdownProvider from './countdown-provider/countdown-provider';
 import CountdownMusicProvider from './countdown-music-provider/countdown-music-provider';
 import CountdownAlarmProvider from './countdown-alarm-provider/countdown-alarm-provider';
 import CountdownSetting from './countdown-setting/countdown-setting';
 import CountdownDisplay from './countdown-display/countdown-display';
 import CountdownMusic from './countdown-music/countdown-music';
+import { resizeBrowserSizeByScreen } from './countdown-setting/setting-screen-size/setting-screen-size.utils';
 
 export default function Countdown() {
   return (
@@ -23,11 +24,19 @@ export default function Countdown() {
               <SheetTrigger asChild>
                 <Button
                   variant="primary-ghost"
-                  className="fixed top-5 right-5 size-16 p-3 rounded-full"
+                  className="fixed max-sm:top-2 max-sm:right-2 top-4 right-4 max-sm:size-6 max-sm:p-1 size-12 lg:size-20 p-2 lg:p-3 rounded-full"
                 >
-                  <SettingsIcon className="size-16" />
+                  <SettingsIcon className="max-sm:size-4 size-8 lg:size-16" />
                 </Button>
               </SheetTrigger>
+
+              <Button
+                variant="primary-ghost"
+                className="sm:hidden fixed top-2 right-10 size-6 p-1 rounded-full"
+                onClick={resizeBrowserSizeByScreen(1)}
+              >
+                <ExpandIcon className="size-4" />
+              </Button>
 
               <CountdownSetting />
             </Sheet>

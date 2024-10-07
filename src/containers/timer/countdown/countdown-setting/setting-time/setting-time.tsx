@@ -24,7 +24,7 @@ export default function SettingTime() {
         <AlarmClockPlusIcon />
         시간 증감
       </SheetSubTitle>
-      <div className="flex gap-x-2">
+      <div className="max-sm:grid max-sm:grid-cols-2 sm:flex gap-2">
         {SETTING_TIMES.map((time) => (
           <Button
             value={time}

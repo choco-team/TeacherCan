@@ -16,14 +16,14 @@ export default function CountdownSetting() {
       <SheetHeader>
         <SheetTitle>타이머 설정</SheetTitle>
         <SheetDescription className="mt-4">
-          <span className="flex items-center gap-x-1">
-            <InfoIcon className="size-4 text-secondary" />
+          <span className="flex gap-x-1 text-start">
+            <InfoIcon className="mt-0.5 size-4 text-secondary" />
             타이머 실행 중에도 설정을 변경할 수 있어요.
           </span>
         </SheetDescription>
       </SheetHeader>
 
-      <div className="space-y-12 py-10">
+      <div className="space-y-10 py-10">
         <SettingTime />
         <SettingAlarm />
         <SettingMusic />

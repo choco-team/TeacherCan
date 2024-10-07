@@ -14,7 +14,7 @@ export default function CountdownMusic() {
     <>
       <div
         className={cn(
-          'absolute left-8 bottom-8 flex items-center gap-x-4 text-lg text-text',
+          'max-md:hidden absolute left-4 bottom-4 lg:left-8 lg:bottom-8 flex items-center gap-x-2 lg:gap-x-4',
           (!isMusicUsed || !videoId) && 'hidden',
         )}
       >
@@ -22,9 +22,9 @@ export default function CountdownMusic() {
           lottieRef={musicAnimationRef}
           animationData={musicWaveAnimation}
           autoPlay={false}
-          className="w-10"
+          className="w-6 lg:w-10"
         />
-        {title}
+        <span className="text-xs lg:text-lg text-text">{title}</span>
       </div>
       <iframe
         className="hidden"

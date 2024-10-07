@@ -37,8 +37,6 @@ export default function SettingMusic() {
   const { getYoutubeMusicURL, toggleMusicUsed } = useCountdownMusicAction();
   const form = useFormContext();
 
-  console.log(previewIframeRef.current?.src);
-
   const togglePreviewPlay = (isToPlay: boolean) => {
     const postMessage = isToPlay ? 'playVideo' : 'stopVideo';
     previewIframeRef.current.contentWindow.postMessage(
@@ -51,7 +49,8 @@ export default function SettingMusic() {
 
   useEffect(() => {
     if (isActive && isPlayingPreview) setIsPlayingPreview(false);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive]);
 
   return (
     <Collapsible open={isMusicUsed} className="space-y-4">

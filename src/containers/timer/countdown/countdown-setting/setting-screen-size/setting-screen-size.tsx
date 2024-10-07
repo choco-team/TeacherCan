@@ -29,13 +29,15 @@ export default function SettingScreenSize() {
           className="h-14"
           onClick={resizeBrowserSizeByScreen(SCREEN_SIZE.HALF)}
         >
-          <div className="grid grid-cols-2 gap-1">
-            <div className="w-6 h-4 border border-primary bg-primary" />
-            {Array.from({ length: 3 })
-              .map((_, index) => index)
-              .map((index) => (
-                <div key={index} className="w-6 h-4 border border-primary" />
-              ))}
+          <div className="grid grid-cols-2 gap-px sm:gap-1">
+            <div className="w-3.5 h-2.5 sm:w-6 sm:h-4 border border-primary bg-primary" />
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                className="w-3.5 h-2.5 sm:w-6 sm:h-4 border border-primary"
+              />
+            ))}
           </div>
         </Button>
         <Button
@@ -44,12 +46,14 @@ export default function SettingScreenSize() {
           onClick={resizeBrowserSizeByScreen(SCREEN_SIZE.QUARTER)}
         >
           <div className="grid grid-cols-4 gap-px">
-            <div className="w-3 h-2 border border-primary bg-primary" />
-            {Array.from({ length: 15 })
-              .map((_, index) => index)
-              .map((index) => (
-                <div key={index} className="w-3 h-2 border border-primary" />
-              ))}
+            <div className="w-1.5 h-1 sm:w-3 sm:h-2 border border-primary bg-primary" />
+            {Array.from({ length: 15 }).map((_, index) => (
+              <div
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                className="w-1.5 h-1 sm:w-3 sm:h-2 border border-primary"
+              />
+            ))}
           </div>
         </Button>
       </div>
