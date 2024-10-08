@@ -46,10 +46,10 @@ function QRSavedLinks({
   }, [qrCodeValue]);
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 flex justify-center flex-wrap ">
       {savedLinks.map((link) => (
         <Badge
-          className="mr-2 ml-2 cursor-pointer truncate max-w-xs"
+          className="mr-2 ml-2 mt-2 cursor-pointer truncate max-w-xs"
           onClick={() => handleBadgeClick(link)}
         >
           {link}
