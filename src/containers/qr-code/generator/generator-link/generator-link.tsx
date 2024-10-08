@@ -5,15 +5,19 @@ import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 
-function QRCodeLink({ setQrCodeValue, setQrCodeRef, qrCodeValue }) {
+function QRCodeLink({
+  setQrCodeValue,
+  setQrCodeRef,
+  qrCodeValue,
+  isGenerated,
+  setIsGenerated,
+}) {
   const qrRef = useRef(null);
   const [newQrCodeValue, setNewQRCodeValue] = useState([]);
-  const [isGenerated, setIsGenerated] = useState(false);
 
   const handleChange = (e) => {
     setNewQRCodeValue(e.target.value);
     setIsGenerated(false);
-    setQrCodeValue([]);
   };
 
   const handleGenerate = () => {
@@ -56,7 +60,7 @@ function QRCodeLink({ setQrCodeValue, setQrCodeRef, qrCodeValue }) {
           </div>
         </div>
       )}
-      {!isGenerated && !qrCodeValue && (
+      {!isGenerated && (
         <div className="flex justify-center">
           <TeacherCanLogo
             width="200"

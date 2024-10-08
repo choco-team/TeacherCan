@@ -11,6 +11,7 @@ import QRSavedLinks from './generator-savelink/generator-savelink';
 function QRCode() {
   const [qrCodeValue, setQrCodeValue] = useState('');
   const [qrCodeRef, setQrCodeRef] = useState(null);
+  const [isGenerated, setIsGenerated] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
@@ -19,12 +20,20 @@ function QRCode() {
           setQrCodeValue={setQrCodeValue}
           setQrCodeRef={setQrCodeRef}
           qrCodeValue={qrCodeValue}
+          isGenerated={isGenerated}
+          setIsGenerated={setIsGenerated}
         />
         <div className="flex justify-center mt-8">
           <QRCodeDownloader />
           <QRCodeClipboard qrCodeRef={qrCodeRef} />
           <QRCodeExpansion qrCodeValue={qrCodeValue} />
-          <QRSavedLinks qrCodeValue={qrCodeValue} />
+        </div>
+        <div>
+          <QRSavedLinks
+            qrCodeValue={qrCodeValue}
+            setIsGenerated={setIsGenerated}
+            setQrCodeValue={setQrCodeValue}
+          />
         </div>
       </div>
     </div>

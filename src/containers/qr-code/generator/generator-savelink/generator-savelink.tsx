@@ -1,17 +1,38 @@
 import { useState, useEffect } from 'react';
+import { Badge } from '@/components/badge';
 
-function QRSavedLinks({ qrCodeValue }: { qrCodeValue: string }): JSX.Element {
+function QRSavedLinks({
+  qrCodeValue,
+  setQrCodeValue,
+  setIsGenerated,
+}: {
+  qrCodeValue: string;
+  setQrCodeValue: (value: string) => void;
+  setIsGenerated: (value: boolean) => void;
+}): JSX.Element {
   const [savedLinks, setSavedLinks] = useState<string[]>([]);
 
   const saveLink = (newLink: string) => {
-    if (!savedLinks.includes(newLink)) {
-      setSavedLinks([...savedLinks, newLink]);
-      localStorage.setItem(
-        'qr_codes',
-        JSON.stringify([...savedLinks, newLink]),
-      );
+    if (newLink && !savedLinks.includes(newLink)) {
+      const newSavedLinks = [...savedLinks];
+      if (newSavedLinks.length === 3) {
+        newSavedLinks.shift();
+      }
+      newSavedLinks.push(newLink);
+      setSavedLinks(newSavedLinks);
     }
   };
+
+  const handleBadgeClick = (link: string) => {
+    setQrCodeValue(link);
+    setIsGenerated(true);
+  };
+
+  useEffect(() => {
+    if (savedLinks.length > 0) {
+      localStorage.setItem('qr_codes', JSON.stringify(savedLinks));
+    }
+  }, [savedLinks]);
 
   useEffect(() => {
     const storedLinks = localStorage.getItem('qr_codes');
@@ -25,13 +46,15 @@ function QRSavedLinks({ qrCodeValue }: { qrCodeValue: string }): JSX.Element {
   }, [qrCodeValue]);
 
   return (
-    <div>
-      <h2>저장된 QR 코드 링크</h2>
-      <ul>
-        {savedLinks.map((link) => (
-          <li key={link}>{link}</li>
-        ))}
-      </ul>
+    <div className="mt-4">
+      {savedLinks.map((link) => (
+        <Badge
+          className="mr-2 ml-2 cursor-pointer truncate max-w-xs"
+          onClick={() => handleBadgeClick(link)}
+        >
+          {link}
+        </Badge>
+      ))}
     </div>
   );
 }
