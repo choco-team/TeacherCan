@@ -35,10 +35,22 @@ type Props = {
   children: ReactNode;
 };
 
+const YOUTUBE_URL_ERROR_MESSAGE = {
+  INVALID_INPUT: '유튜브 동영상 URL을 다시 확인해주세요.',
+  API_ERROR: '동영상을 찾지 못했어요. 다시 시도해주세요.',
+} as const;
+
 const formSchema = z.object({
-  youtubeUrl: z.string().regex(/(v=)\S+/g, {
-    message: '유튜브 동영상 URL을 다시 확인해주세요.',
-  }),
+  youtubeUrl: z
+    .string()
+    .regex(/(v=)\S+/g, {
+      message: YOUTUBE_URL_ERROR_MESSAGE.INVALID_INPUT,
+    })
+    .or(
+      z.string().regex(/(youtu.be\/)\S+/g, {
+        message: YOUTUBE_URL_ERROR_MESSAGE.INVALID_INPUT,
+      }),
+    ),
 });
 
 export default function CountdownMusicProvider({ children }: Props) {
@@ -69,7 +81,16 @@ export default function CountdownMusicProvider({ children }: Props) {
   const getYoutubeMusicURL = useCallback(
     async (url: string) => {
       try {
-        const videoId = url.split('v=')[1].split('&')[0];
+        let videoId = '';
+
+        if (url.includes('youtube.com')) {
+          // 주소창 URL
+          [videoId] = url.split('v=')[1].split('&');
+        } else if (url.includes('youtu.be')) {
+          // 공유 URL
+          [videoId] = url.split('youtu.be/')[1].split('?');
+        }
+
         const title = await getMusicTitle(videoId);
         setMusic({ title, videoId });
 
@@ -77,18 +98,18 @@ export default function CountdownMusicProvider({ children }: Props) {
         setIsMusicUsed(true);
       } catch (error) {
         form.setError('youtubeUrl', {
-          message: '동영상을 찾지 못했어요. 다시 시도해주세요.',
+          message: YOUTUBE_URL_ERROR_MESSAGE.API_ERROR,
         });
       }
     },
-    [isActive, toggleMusicPlay, setIsMusicUsed],
+    [toggleMusicPlay, setIsMusicUsed, form],
   );
 
   const toggleMusicUsed = useCallback(() => {
     const prevUsedState = isMusicUsed;
     if (isActive) toggleMusicPlay(prevUsedState ? 'off' : 'on');
     setIsMusicUsed((prev) => !prev);
-  }, [isMusicUsed, isActive]);
+  }, [isMusicUsed, isActive, toggleMusicPlay, setIsMusicUsed]);
 
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(
     () => ({

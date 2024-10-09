@@ -32,7 +32,7 @@ export default function SettingAlarm() {
       </Label>
       <div className="flex flex-col gap-y-2">
         <h4 className="text-text font-semibold">미리 알림</h4>
-        <div className="flex gap-x-4">
+        <div className="max-sm:grid grid-cols-2 sm:flex items-center gap-2">
           {ALARM_TIMES.map((time) => (
             <Label key={time} className="flex-1 flex items-center gap-x-1.5">
               <Checkbox
