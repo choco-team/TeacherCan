@@ -13,9 +13,9 @@ function QRCodeLink({
   setIsGenerated,
 }) {
   const qrRef = useRef(null);
-  const [newQrCodeValue, setNewQRCodeValue] = useState([]);
+  const [newQrCodeValue, setNewQRCodeValue] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewQRCodeValue(e.target.value);
     setIsGenerated(false);
   };

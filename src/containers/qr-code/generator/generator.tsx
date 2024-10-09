@@ -3,12 +3,12 @@
 import { useState } from 'react';
 
 import QRCodeLink from './generator-link/generator-link';
-import QRCodeDownloader from './generator-download/generator-downloader';
+import QRCodeDownloader from './generator-downloader/generator-downloader';
 import QRCodeClipboard from './generator-clipboard/generator-clipboard';
 import QRCodeExpansion from './generator-expansion/generator-expansion';
-import QRSavedLinks from './generator-savelink/generator-savelink';
+import QRSavedLinks from './generator-savelink/generator-savedlink';
 
-function QRCode() {
+function QRCodeGenerator() {
   const [qrCodeValue, setQrCodeValue] = useState('');
   const [qrCodeRef, setQrCodeRef] = useState(null);
   const [isGenerated, setIsGenerated] = useState(false);
@@ -40,4 +40,4 @@ function QRCode() {
   );
 }
 
-export default QRCode;
+export default QRCodeGenerator;
