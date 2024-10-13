@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
@@ -7,12 +7,11 @@ import { Button } from '@/components/button';
 
 function QRCodeGenerator({
   setQrCodeValue,
-  setQrCodeRef,
+  qrCodeRef,
   qrCodeValue,
   isGenerated,
   setIsGenerated,
 }) {
-  const qrRef = useRef(null);
   const [newQrCodeValue, setNewQRCodeValue] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,12 +23,6 @@ function QRCodeGenerator({
     setQrCodeValue(newQrCodeValue);
     setIsGenerated(true);
   };
-
-  useEffect(() => {
-    if (qrRef.current) {
-      setQrCodeRef(qrRef.current);
-    }
-  }, [isGenerated]);
 
   return (
     <div>
@@ -50,7 +43,7 @@ function QRCodeGenerator({
       </div>
       {isGenerated && (
         <div className="flex justify-center">
-          <div ref={qrRef}>
+          <div ref={qrCodeRef}>
             <QRCodeSVG
               value={qrCodeValue}
               width={200}

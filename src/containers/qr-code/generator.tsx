@@ -10,7 +10,6 @@ function QRCode({
   qrCodeValue,
   setQrCodeValue,
   qrCodeRef,
-  setQrCodeRef,
   isGenerated,
   setIsGenerated,
 }) {
@@ -19,7 +18,7 @@ function QRCode({
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md">
         <QRCodeGenerator
           setQrCodeValue={setQrCodeValue}
-          setQrCodeRef={setQrCodeRef}
+          qrCodeRef={qrCodeRef}
           qrCodeValue={qrCodeValue}
           isGenerated={isGenerated}
           setIsGenerated={setIsGenerated}

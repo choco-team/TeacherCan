@@ -5,10 +5,10 @@ import { ClipboardCopy } from 'lucide-react';
 
 function QRCodeClipboard({ qrCodeRef }) {
   const copyQRCodeToClipboard = async () => {
-    if (!qrCodeRef) return;
+    if (!qrCodeRef.current) return;
 
     try {
-      const svgElement = qrCodeRef.querySelector('svg');
+      const svgElement = qrCodeRef.current.querySelector('svg');
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const svgData = new XMLSerializer().serializeToString(svgElement);
