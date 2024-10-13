@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import QRCode from './generator';
+import QRCode from './qr-code';
 
 function QrCodeContainer() {
   const [qrCodeValue, setQrCodeValue] = useState('');
