@@ -1,22 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import QRCodeGenerator from './qr-code-generator/qr-code-generator';
+import QRCodeDownloader from './qr-code-downloader/qr-code-downloader';
+import QRCodeClipboard from './qr-code-clipboard/qr-code-clipboard';
+import QRCodeExpansion from './qr-code-expansion/qr-code-expansion';
+import QRSavedLinks from './qr-code-savelink/qr-code-savelink';
 
-import QRCodeLink from './generator-link/generator-link';
-import QRCodeDownloader from './generator-downloader/generator-downloader';
-import QRCodeClipboard from './generator-clipboard/generator-clipboard';
-import QRCodeExpansion from './generator-expansion/generator-expansion';
-import QRSavedLinks from './generator-savelink/generator-savedlink';
-
-function QRCodeGenerator() {
-  const [qrCodeValue, setQrCodeValue] = useState('');
-  const [qrCodeRef, setQrCodeRef] = useState(null);
-  const [isGenerated, setIsGenerated] = useState(false);
-
+function QRCode({
+  qrCodeValue,
+  setQrCodeValue,
+  qrCodeRef,
+  setQrCodeRef,
+  isGenerated,
+  setIsGenerated,
+}) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md">
-        <QRCodeLink
+        <QRCodeGenerator
           setQrCodeValue={setQrCodeValue}
           setQrCodeRef={setQrCodeRef}
           qrCodeValue={qrCodeValue}
@@ -40,4 +41,4 @@ function QRCodeGenerator() {
   );
 }
 
-export default QRCodeGenerator;
+export default QRCode;

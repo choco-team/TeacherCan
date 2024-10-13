@@ -5,7 +5,7 @@ import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 
-function QRCodeLink({
+function QRCodeGenerator({
   setQrCodeValue,
   setQrCodeRef,
   qrCodeValue,
@@ -73,4 +73,4 @@ function QRCodeLink({
   );
 }
 
-export default QRCodeLink;
+export default QRCodeGenerator;
