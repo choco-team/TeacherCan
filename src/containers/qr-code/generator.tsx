@@ -24,7 +24,7 @@ function QRCode({
           setIsGenerated={setIsGenerated}
         />
         <div className="flex justify-center mt-8">
-          <QRCodeDownloader />
+          <QRCodeDownloader qrCodeRef={qrCodeRef} />
           <QRCodeClipboard qrCodeRef={qrCodeRef} />
           <QRCodeExpansion qrCodeValue={qrCodeValue} />
         </div>
