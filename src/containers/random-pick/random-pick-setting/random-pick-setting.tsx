@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from '@/components/sheet';
 import { Switch } from '@/components/switch';
+import SettingPickType from './setting-pick-type/setting-pick-type';
 
 export default function RandomPickSetting() {
   return (
@@ -21,19 +22,7 @@ export default function RandomPickSetting() {
       </SheetHeader>
 
       <div className="space-y-6 py-10">
-        <div className="flex flex-col gap-y-4">
-          <SheetSubTitle>번호/이름 입력</SheetSubTitle>
-          <div className="flex items-center gap-2">
-            <Label className="flex-1 flex items-center gap-x-1.5">
-              <Checkbox />
-              번호
-            </Label>
-            <Label className="flex-1 flex items-center gap-x-1.5">
-              <Checkbox />
-              이름
-            </Label>
-          </div>
-        </div>
+        <SettingPickType />
         <div>
           <Label className="flex items-center justify-between gap-x-2">
             <SheetSubTitle>결과 바로 보기</SheetSubTitle>
