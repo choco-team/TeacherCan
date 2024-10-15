@@ -11,7 +11,7 @@ function QrCodeContainer() {
   const [qrCodeValue, setQrCodeValue] = useState('');
   const [isGenerated, setIsGenerated] = useState(false);
   const [qrCodeName, setQrCodeName] = useState('');
-  const qrCodeRef = useRef(null);
+  const qrCodeRef = useRef<HTMLDivElement>(null);
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 w-full max-w-md">
