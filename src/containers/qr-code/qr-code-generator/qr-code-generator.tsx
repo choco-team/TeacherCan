@@ -19,6 +19,10 @@ function QRCodeGenerator({
     setIsGenerated(false);
   };
 
+  const handleFocus = () => {
+    setNewQRCodeValue('');
+  };
+
   const handleGenerate = () => {
     setQrCodeValue(newQrCodeValue);
     setIsGenerated(true);
@@ -34,6 +38,7 @@ function QRCodeGenerator({
           type="text"
           value={newQrCodeValue}
           onChange={handleChange}
+          onFocus={handleFocus}
           placeholder="주소를 입력하세요"
           className="flex-grow mr-4"
         />
