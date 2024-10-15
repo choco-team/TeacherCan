@@ -1,24 +1,18 @@
-import { useState } from 'react';
 import { Checkbox } from '@/components/checkbox';
 import { Label } from '@/components/label';
 import { SheetDescription, SheetSubTitle } from '@/components/sheet';
 import { BookUserIcon, InfoIcon } from 'lucide-react';
 import SettingStudentName from '../setting-student-name/setting-student-name';
 import SettingStudentNumber from '../setting-student-number/setting-student-number';
-
-const PICK_TYPES = [
-  {
-    type: 'number',
-    label: '번호',
-  },
-  {
-    type: 'name',
-    label: '이름',
-  },
-] as const;
+import {
+  useRandomPickAction,
+  useRandomPickState,
+} from '../../random-pick-provider/random-pick-provider.hooks';
+import { PICK_TYPES } from '../../random-pick-provider/random-pick-provider.constants';
 
 export default function SettingPickType() {
-  const [pickType, setPickType] = useState<'number' | 'name'>('number');
+  const { pickType } = useRandomPickState();
+  const { selectPickType } = useRandomPickAction();
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -38,13 +32,13 @@ export default function SettingPickType() {
             <Checkbox
               value={type}
               checked={pickType === type}
-              onClick={() => setPickType(type)}
+              onClick={() => selectPickType(type)}
             />
             {label}
           </Label>
         ))}
       </div>
-      {pickType === 'name' ? <SettingStudentName /> : <SettingStudentNumber />}
+      {pickType === 'names' ? <SettingStudentName /> : <SettingStudentNumber />}
     </div>
   );
 }

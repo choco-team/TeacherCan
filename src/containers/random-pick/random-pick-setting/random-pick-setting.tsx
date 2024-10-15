@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from '@/components/button';
 import { SheetContent, SheetHeader, SheetTitle } from '@/components/sheet';
 import SettingPickType from './setting-pick-type/setting-pick-type';

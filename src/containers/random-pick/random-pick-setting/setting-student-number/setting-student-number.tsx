@@ -10,7 +10,10 @@ import {
 } from '@/components/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useState } from 'react';
+import {
+  useRandomPickAction,
+  useRandomPickState,
+} from '../../random-pick-provider/random-pick-provider.hooks';
 
 const formSchema = z.object({
   number: z.coerce
@@ -23,29 +26,23 @@ const formSchema = z.object({
     }),
 });
 
-const INIT_STUDENT_NUMBERS = '[1, 2, 3]';
-
 export default function SettingStudentNumber() {
-  const [studentNumbers, setStudentNumbers] = useState<number[]>(
-    JSON.parse(
-      localStorage.getItem('random-pick-number') ?? INIT_STUDENT_NUMBERS,
-    ),
-  );
+  const { pickList } = useRandomPickState();
+  const { modifyPickList } = useRandomPickAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      number: pickList.numbers.length,
+    },
   });
 
   const onSubmit = ({ number }: z.infer<typeof formSchema>) => {
-    const newStudentNumber = Array.from({ length: number }).map(
-      (_, index) => index + 1,
+    const newStudentNumbers = Array.from({ length: number }).map((_, index) =>
+      String(index + 1),
     );
 
-    setStudentNumbers(newStudentNumber);
-    localStorage.setItem(
-      'random-pick-number',
-      JSON.stringify(newStudentNumber),
-    );
+    modifyPickList('numbers', newStudentNumbers);
   };
 
   return (
@@ -58,11 +55,7 @@ export default function SettingStudentNumber() {
             <>
               <div className="flex gap-x-4">
                 <FormControl>
-                  <Input
-                    type="number"
-                    defaultValue={studentNumbers.length}
-                    {...field}
-                  />
+                  <Input type="number" {...field} />
                 </FormControl>
                 <Button type="submit">생성</Button>
               </div>

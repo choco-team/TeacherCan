@@ -10,7 +10,10 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Textarea } from '@/components/textarea';
-import { useState } from 'react';
+import {
+  useRandomPickAction,
+  useRandomPickState,
+} from '../../random-pick-provider/random-pick-provider.hooks';
 
 const formSchema = z.object({
   names: z.preprocess(
@@ -37,20 +40,19 @@ const formSchema = z.object({
   ),
 });
 
-const INIT_STUDENT_NAMES = '["학생1", "학생2", "학생3"]';
-
 export default function SettingStudentName() {
-  const [studentNames, setStudentNames] = useState<string[]>(
-    JSON.parse(localStorage.getItem('random-pick-names') ?? INIT_STUDENT_NAMES),
-  );
+  const { pickList } = useRandomPickState();
+  const { modifyPickList } = useRandomPickAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      names: pickList.names,
+    },
   });
 
   const onSubmit = ({ names }: z.infer<typeof formSchema>) => {
-    setStudentNames(names);
-    localStorage.setItem('random-pick-names', JSON.stringify(names));
+    modifyPickList('names', names);
   };
 
   return (
@@ -65,7 +67,6 @@ export default function SettingStudentName() {
                 <div className="flex gap-x-4">
                   <FormControl>
                     <Textarea
-                      defaultValue={studentNames}
                       className="min-h-[120px]"
                       placeholder="학생 이름 입력"
                       {...field}
