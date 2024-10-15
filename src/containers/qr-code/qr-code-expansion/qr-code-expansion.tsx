@@ -5,7 +5,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/dialog';
 
-function QRCodeExpansion({ qrCodeValue }) {
+function QRCodeExpansion({ qrCodeValue, qrCodeName }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -17,6 +17,13 @@ function QRCodeExpansion({ qrCodeValue }) {
         <div className="flex justify-center">
           {qrCodeValue && (
             <QRCodeSVG value={qrCodeValue} width={300} height={300} />
+          )}
+        </div>
+        <div className="flex justify-center">
+          {qrCodeName && (
+            <p className="text-center mt-2 text-lg font-semibold w-full">
+              {qrCodeName}
+            </p>
           )}
         </div>
       </DialogContent>

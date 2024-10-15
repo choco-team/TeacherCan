@@ -1,23 +1,29 @@
-import { useRef, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 
-function QRCodeLink({
+function QRCodeGenerator({
   setQrCodeValue,
-  setQrCodeRef,
+  qrCodeRef,
   qrCodeValue,
+  qrCodeName,
+  setQrCodeName,
   isGenerated,
   setIsGenerated,
 }) {
-  const qrRef = useRef(null);
   const [newQrCodeValue, setNewQRCodeValue] = useState('');
+  // const [newQRCodeName, setNewQRCodeName] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewQRCodeValue(e.target.value);
     setIsGenerated(false);
+  };
+
+  const handleQRLinkFocus = () => {
+    setNewQRCodeValue('');
   };
 
   const handleGenerate = () => {
@@ -25,11 +31,13 @@ function QRCodeLink({
     setIsGenerated(true);
   };
 
-  useEffect(() => {
-    if (qrRef.current) {
-      setQrCodeRef(qrRef.current);
-    }
-  }, [isGenerated]);
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQrCodeName(e.target.value);
+  };
+
+  const handleQRNameFocus = () => {
+    setQrCodeName('');
+  };
 
   return (
     <div>
@@ -41,22 +49,39 @@ function QRCodeLink({
           type="text"
           value={newQrCodeValue}
           onChange={handleChange}
+          onFocus={handleQRLinkFocus}
           placeholder="주소를 입력하세요"
-          className="flex-grow mr-4"
+          className="flex-grow mr-4 w-3/4"
         />
         <Button onClick={handleGenerate} className="w-1/4">
           QR 코드 생성
         </Button>
       </div>
+      <div className="flex justify-center mt-4">
+        <Input
+          type="text"
+          value={qrCodeName}
+          onChange={handleNameChange}
+          onFocus={handleQRNameFocus}
+          placeholder="QR 코드 이름을 입력하세요"
+          className="flex-grow w-3/4"
+        />
+      </div>
       {isGenerated && (
         <div className="flex justify-center">
-          <div ref={qrRef}>
+          <div ref={qrCodeRef}>
             <QRCodeSVG
               value={qrCodeValue}
               width={200}
               height={200}
               className="mt-8"
+              fgColor="green"
             />
+            {qrCodeName && (
+              <p className="text-center mt-2 text-lg font-semibold w-full">
+                {qrCodeName}
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -73,4 +98,4 @@ function QRCodeLink({
   );
 }
 
-export default QRCodeLink;
+export default QRCodeGenerator;

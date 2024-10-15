@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/badge';
 
+export type QRSaveLinksProps = {
+  qrCodeValue: string;
+  setQrCodeValue: (value: string) => void;
+  setIsGenerated: (value: boolean) => void;
+};
+
 function QRSavedLinks({
   qrCodeValue,
   setQrCodeValue,
   setIsGenerated,
-}: {
-  qrCodeValue: string;
-  setQrCodeValue: (value: string) => void;
-  setIsGenerated: (value: boolean) => void;
-}): JSX.Element {
+}: QRSaveLinksProps): JSX.Element {
   const [savedLinks, setSavedLinks] = useState<string[]>([]);
 
   const saveLink = (newLink: string) => {
