@@ -5,7 +5,7 @@ import QRCodeGenerator from './qr-code-generator/qr-code-generator';
 import QRCodeDownloader from './qr-code-downloader/qr-code-downloader';
 import QRCodeClipboard from './qr-code-clipboard/qr-code-clipboard';
 import QRCodeExpansion from './qr-code-expansion/qr-code-expansion';
-import QRSavedLinks from './qr-code-savelink/qr-code-savelink';
+// import QRSavedLinks from './qr-code-savelink/qr-code-savelink';
 
 function QrCodeContainer() {
   const [qrCodeValue, setQrCodeValue] = useState('');
@@ -30,11 +30,11 @@ function QrCodeContainer() {
           <QRCodeExpansion qrCodeValue={qrCodeValue} qrCodeName={qrCodeName} />
         </div>
         <div>
-          <QRSavedLinks
+          {/* <QRSavedLinks
             qrCodeValue={qrCodeValue}
             setIsGenerated={setIsGenerated}
             setQrCodeValue={setQrCodeValue}
-          />
+          /> */}
         </div>
       </div>
     </div>
