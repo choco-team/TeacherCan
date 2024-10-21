@@ -1,9 +1,16 @@
-import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
-import { Button } from '@/components/button';
+import { useCallback, useState, CSSProperties } from 'react';
+import { ClipLoader } from 'react-spinners';
+import debounce from './qr-code-generator-debounce';
+
+const override: CSSProperties = {
+  display: 'block',
+  margin: '0 auto',
+  borderColor: 'red',
+};
 
 function QRCodeGenerator({
   setQrCodeValue,
@@ -14,21 +21,27 @@ function QRCodeGenerator({
   isGenerated,
   setIsGenerated,
 }) {
-  const [newQrCodeValue, setNewQRCodeValue] = useState('');
-  // const [newQRCodeName, setNewQRCodeName] = useState('');
+  const [newValue, setNewValue] = useState('');
+  const [loading, setLoading] = useState(false);
+  const debounceGenerate = useCallback(
+    debounce((value: string) => {
+      setIsGenerated(true);
+      setQrCodeValue(value);
+      setQrCodeName('');
+      setLoading(false);
+    }, 1000),
+    [],
+  );
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewQRCodeValue(e.target.value);
-    setIsGenerated(false);
-  };
-
-  const handleQRLinkFocus = () => {
-    setNewQRCodeValue('');
-  };
-
-  const handleGenerate = () => {
-    setQrCodeValue(newQrCodeValue);
-    setIsGenerated(true);
+  const handleGenerate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setNewValue(value);
+    setLoading(true);
+    if (value.trim()) {
+      debounceGenerate(value);
+    } else {
+      setIsGenerated(false);
+    }
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,15 +60,11 @@ function QRCodeGenerator({
       <div className="flex justify-center">
         <Input
           type="text"
-          value={newQrCodeValue}
-          onChange={handleChange}
-          onFocus={handleQRLinkFocus}
+          value={newValue}
+          onChange={handleGenerate}
           placeholder="주소를 입력하세요"
-          className="flex-grow mr-4 w-3/4"
+          className="flex-grow w-3/4"
         />
-        <Button onClick={handleGenerate} className="w-1/4">
-          QR 코드 생성
-        </Button>
       </div>
       <div className="flex justify-center mt-4">
         <Input
@@ -67,7 +76,18 @@ function QRCodeGenerator({
           className="flex-grow w-3/4"
         />
       </div>
-      {isGenerated && (
+      <div className="flex justify-center mt-4">
+        <ClipLoader
+          color="#E50915"
+          loading={loading}
+          cssOverride={override}
+          size={80}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+
+      {isGenerated && !loading && (
         <div className="flex justify-center">
           <div ref={qrCodeRef}>
             <QRCodeSVG
@@ -85,7 +105,7 @@ function QRCodeGenerator({
           </div>
         </div>
       )}
-      {!isGenerated && (
+      {!isGenerated && !loading && (
         <div className="flex justify-center">
           <TeacherCanLogo
             width="200"
