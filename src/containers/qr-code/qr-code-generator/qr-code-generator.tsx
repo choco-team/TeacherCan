@@ -3,7 +3,6 @@ import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 import { useCallback, useState, CSSProperties } from 'react';
-// import { Loader } from 'lucide-react';
 import { ClipLoader } from 'react-spinners';
 import debounce from './qr-code-generator-debounce';
 
@@ -37,8 +36,12 @@ function QRCodeGenerator({
   const handleGenerate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setNewValue(value);
-    debounceGenerate(value);
     setLoading(true);
+    if (value.trim()) {
+      debounceGenerate(value);
+    } else {
+      setIsGenerated(false);
+    }
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
