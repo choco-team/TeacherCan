@@ -2,9 +2,16 @@ import { QRCodeSVG } from 'qrcode.react';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
-import { useCallback, useState } from 'react';
-import { Loader } from 'lucide-react';
+import { useCallback, useState, CSSProperties } from 'react';
+// import { Loader } from 'lucide-react';
+import { ClipLoader } from 'react-spinners';
 import debounce from './qr-code-generator-debounce';
+
+const override: CSSProperties = {
+  display: 'block',
+  margin: '0 auto',
+  borderColor: 'red',
+};
 
 function QRCodeGenerator({
   setQrCodeValue,
@@ -66,11 +73,17 @@ function QRCodeGenerator({
           className="flex-grow w-3/4"
         />
       </div>
-      {loading && (
-        <div className="flex justify-center">
-          <Loader width={100} height={100} className="mt-8" />
-        </div>
-      )}
+      <div className="flex justify-center mt-4">
+        <ClipLoader
+          color="#E50915"
+          loading={loading}
+          cssOverride={override}
+          size={80}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+
       {isGenerated && !loading && (
         <div className="flex justify-center">
           <div ref={qrCodeRef}>
