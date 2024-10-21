@@ -3,6 +3,7 @@ import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Heading2 } from '@/components/heading';
 import { Input } from '@/components/input';
 import { useCallback, useState } from 'react';
+import { Loader } from 'lucide-react';
 import debounce from './qr-code-generator-debounce';
 
 function QRCodeGenerator({
@@ -15,11 +16,13 @@ function QRCodeGenerator({
   setIsGenerated,
 }) {
   const [newValue, setNewValue] = useState('');
+  const [loading, setLoading] = useState(false);
   const debounceGenerate = useCallback(
     debounce((value: string) => {
       setIsGenerated(true);
       setQrCodeValue(value);
       setQrCodeName('');
+      setLoading(false);
     }, 1000),
     [],
   );
@@ -28,6 +31,7 @@ function QRCodeGenerator({
     const { value } = e.target;
     setNewValue(value);
     debounceGenerate(value);
+    setLoading(true);
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +66,12 @@ function QRCodeGenerator({
           className="flex-grow w-3/4"
         />
       </div>
-      {isGenerated && (
+      {loading && (
+        <div className="flex justify-center">
+          <Loader width={100} height={100} className="mt-8" />
+        </div>
+      )}
+      {isGenerated && !loading && (
         <div className="flex justify-center">
           <div ref={qrCodeRef}>
             <QRCodeSVG
@@ -80,7 +89,7 @@ function QRCodeGenerator({
           </div>
         </div>
       )}
-      {!isGenerated && (
+      {!isGenerated && !loading && (
         <div className="flex justify-center">
           <TeacherCanLogo
             width="200"
