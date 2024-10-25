@@ -47,7 +47,7 @@ export default function SettingStudentName() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      names: pickList.names,
+      names: pickList.names.map((name) => name.value),
     },
   });
 

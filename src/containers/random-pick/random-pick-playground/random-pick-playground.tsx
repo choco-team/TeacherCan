@@ -1,0 +1,37 @@
+import { Input } from '@/components/input';
+import { Button } from '@/components/button';
+import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
+import Card from './playground-card/playground-card';
+import { useRandomPickPlaygroundAction } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+import PlaygroundModal from './playgrund-modal/playground-modal';
+
+const RANDOM_PICK_NAME_MAX_LENGTH = 20;
+
+export default function PlayGround() {
+  const { pickList, pickType } = useRandomPickState();
+  const { openModal } = useRandomPickPlaygroundAction();
+
+  return (
+    <div className="flex flex-col p-4">
+      <PlaygroundModal />
+      <div className="flex flex-row">
+        <Input
+          type="text"
+          maxLength={RANDOM_PICK_NAME_MAX_LENGTH}
+          placeholder="랜덤뽑기 이름"
+          className="max-w-sm h-10 text-4xl rounded-xl text-center font-extrabold"
+        />
+        <Button onClick={openModal}>뽑기</Button>
+      </div>
+      <div className="grid grid-cols-7 gap-4 p-4">
+        {pickList[pickType].map((asd) =>
+          asd.isPicked ? (
+            <Card key={asd.value} title="당첨" />
+          ) : (
+            <Card key={asd.value} title={asd.value} />
+          ),
+        )}
+      </div>
+    </div>
+  );
+}

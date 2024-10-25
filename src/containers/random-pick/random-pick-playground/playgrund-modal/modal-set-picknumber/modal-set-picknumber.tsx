@@ -1,0 +1,73 @@
+import { useRandomPickPlaygroundAction } from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+import { Button } from '@/components/button';
+import { X as XIcon } from 'lucide-react';
+import { Input } from '@/components/input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormMessage,
+} from '@/components/form';
+
+const formSchema = z.object({
+  number: z.coerce
+    .number()
+    .min(1, {
+      message: '최소 인원은 1명입니다.',
+    })
+    .max(30, {
+      message: '최대 인원은 30명입니다.',
+    }),
+});
+
+export default function SetPickNumberModal() {
+  const { closeModal, executePick } = useRandomPickPlaygroundAction();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      number: 1,
+    },
+  });
+
+  const onSubmit = ({ number }: z.infer<typeof formSchema>) => {
+    executePick(number);
+  };
+
+  return (
+    <>
+      <div className="flex flex-row justify-between mb-8">
+        <h1>당첨 개수 설정</h1>
+        <button type="button" onClick={closeModal}>
+          <XIcon className="size-6" />
+        </button>
+      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <FormField
+            control={form.control}
+            name="number"
+            render={({ field }) => (
+              <>
+                <div className="flex gap-x-4">
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <Button type="submit">뽑기</Button>
+                </div>
+                <FormDescription>
+                  1 ~ 30 사이의 숫자를 입력하고 뽑기 버튼을 누르세요.
+                </FormDescription>
+                <FormMessage />
+              </>
+            )}
+          />
+        </form>
+      </Form>
+    </>
+  );
+}

@@ -16,8 +16,13 @@ import {
 type SortSelectedStudentType =
   (typeof SORT_SELECTED_STUDENT_TYPES)[number]['type'];
 
+type InnerPickListType = {
+  value: string;
+  isPicked: boolean;
+};
+
 type PickType = (typeof PICK_TYPES)[number]['type'];
-type PickListType = Record<PickType, string[]>;
+type PickListType = Record<PickType, InnerPickListType[]>;
 type OptionsType = {
   isHideResult: boolean;
   isExcludingSelected: boolean;
@@ -68,8 +73,8 @@ export default function RandomPickProvider({
   const defaultRandomPickStateValue = {
     pickType,
     pickList: {
-      names,
-      numbers,
+      names: names.map((name) => ({ value: name, isPicked: false })),
+      numbers: numbers.map((number) => ({ value: number, isPicked: false })),
     },
     options,
   };
