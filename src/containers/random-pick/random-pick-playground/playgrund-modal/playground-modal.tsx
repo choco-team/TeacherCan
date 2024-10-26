@@ -4,6 +4,7 @@ import { useRandomPickPlaygroundState } from '../../random-pick-playground-provi
 
 import SetPickNumberModal from './modal-set-picknumber/modal-set-picknumber';
 import ResultModal from './modal-result/modal-result';
+import { MODAL_STATE_TYPES } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.constans';
 
 const customModalStyles: ReactModal.Styles = {
   overlay: {
@@ -32,18 +33,21 @@ const customModalStyles: ReactModal.Styles = {
 };
 
 export default function PlaygroundModal() {
-  const { isModalOpen, isResultModal } = useRandomPickPlaygroundState();
+  const { modalState } = useRandomPickPlaygroundState();
   const onRequestClose = useCallback(() => {}, []);
   return (
     <Modal
-      isOpen={isModalOpen}
+      isOpen={modalState !== MODAL_STATE_TYPES.noModal}
       onRequestClose={onRequestClose}
       style={customModalStyles}
       ariaHideApp={false}
       contentLabel="Pop up Message"
       shouldCloseOnOverlayClick={false}
     >
-      {isResultModal ? <ResultModal /> : <SetPickNumberModal />}
+      {modalState === MODAL_STATE_TYPES.setPickNumberModal && (
+        <SetPickNumberModal />
+      )}
+      {modalState === MODAL_STATE_TYPES.resultMoal && <ResultModal />}
     </Modal>
   );
 }

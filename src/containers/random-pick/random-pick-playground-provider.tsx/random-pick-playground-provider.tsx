@@ -1,11 +1,17 @@
 import {
   createContext,
+  Dispatch,
   PropsWithChildren,
+  SetStateAction,
   useCallback,
   useRef,
   useState,
 } from 'react';
 import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
+import { MODAL_STATE_TYPES } from './random-pick-playground-provider.constans';
+
+type ModalStateType =
+  (typeof MODAL_STATE_TYPES)[keyof typeof MODAL_STATE_TYPES];
 
 type WinnersType = {
   id: string;
@@ -13,24 +19,22 @@ type WinnersType = {
 };
 
 type RandomPickPlaygroundState = {
-  isModalOpen: boolean;
   numberOfPick: number;
-  isResultModal: boolean;
   winners: WinnersType[];
   forceRender: number;
   temporaryPickList: string[];
+  modalState: ModalStateType;
 };
 
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
 
 type RandomPickPlaygroundAction = {
-  openModal: () => void;
-  closeModal: () => void;
+  selectModalState: Dispatch<SetStateAction<ModalStateType>>;
   runPick: (newNumberOfPick?: number) => void;
   resetPick: () => void;
   handleCardFlip: (id: string) => void;
-  mixTemporaryPickList: () => NodeJS.Timeout;
+  mixTemporaryPickList: (newTemporaryPickList: string[]) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -39,12 +43,14 @@ export const RandomPickPlaygroundActionContext =
 export default function RandomPickPlaygroundProvider({
   children,
 }: PropsWithChildren<{}>) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [numberOfPick, setNumberOfPick] = useState(1);
-  const [isResultModal, setIsResultModal] = useState(false);
   const [winners, setWinners] = useState<WinnersType[]>([]);
   const [forceRender, setForceRender] = useState(1);
   const [temporaryPickList, setTemporaryPickList] = useState([]);
+
+  const [modalState, setModalState] = useState<ModalStateType>(
+    MODAL_STATE_TYPES.noModal,
+  );
   const numberOfWinner = useRef(0);
 
   const {
@@ -54,12 +60,11 @@ export default function RandomPickPlaygroundProvider({
   } = useRandomPickState();
 
   const defaultRandomPickPlaygroundStateValue = {
-    isModalOpen,
     numberOfPick,
-    isResultModal,
     winners,
     forceRender,
     temporaryPickList,
+    modalState,
   };
 
   const excludingSelectedPick = useCallback(
@@ -101,13 +106,7 @@ export default function RandomPickPlaygroundProvider({
   );
 
   const defaultRandomPickPlaygroundActionValue = {
-    openModal: () => {
-      setIsModalOpen(true);
-    },
-    closeModal: () => {
-      setIsModalOpen(false);
-      setIsResultModal(false);
-    },
+    selectModalState: setModalState,
     runPick: (newNumberOfPick?: number) => {
       // 뽑기 가능 한지 검증하기 / 경고문구 표현할 방법 연구해야함
       const pickListLength = pickList[pickType].length;
@@ -122,7 +121,7 @@ export default function RandomPickPlaygroundProvider({
       let countNum = numberOfPick;
       if (newNumberOfPick) {
         setNumberOfPick(newNumberOfPick);
-        setIsResultModal(true);
+        setModalState(MODAL_STATE_TYPES.resultMoal);
         countNum = newNumberOfPick;
       }
       // '뽑힌학생 제외' 옵션에 따라 뽑기 실행
@@ -152,14 +151,10 @@ export default function RandomPickPlaygroundProvider({
         ),
       );
     },
-    mixTemporaryPickList: () => {
-      const newTemporaryPickList = pickList[pickType].map((e) => e.value);
-      return setInterval(() => {
-        setTemporaryPickList(
-          newTemporaryPickList.sort(() => Math.random() - 0.5),
-        );
-        setForceRender((prev) => prev * -1);
-      }, 100);
+    mixTemporaryPickList: (newTemporaryPickList: string[]) => {
+      setTemporaryPickList(
+        newTemporaryPickList.sort(() => Math.random() - 0.5),
+      );
     },
   };
 
