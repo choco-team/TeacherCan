@@ -2,13 +2,18 @@ import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
 import Card from './playground-card/playground-card';
-import { useRandomPickPlaygroundAction } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+import {
+  useRandomPickPlaygroundAction,
+  useRandomPickPlaygroundState,
+} from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 import PlaygroundModal from './playgrund-modal/playground-modal';
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
 export default function PlayGround() {
   const { pickList, pickType } = useRandomPickState();
+  const { forceRender } = useRandomPickPlaygroundState();
+
   const { openModal } = useRandomPickPlaygroundAction();
 
   return (
@@ -23,7 +28,7 @@ export default function PlayGround() {
         />
         <Button onClick={openModal}>뽑기</Button>
       </div>
-      <div className="grid grid-cols-7 gap-4 p-4">
+      <div key={forceRender} className="grid grid-cols-7 gap-4 p-4">
         {pickList[pickType].map((asd) =>
           asd.isPicked ? (
             <Card key={asd.value} title="당첨" />

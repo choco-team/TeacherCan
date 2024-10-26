@@ -10,14 +10,12 @@ import Card from '../../playground-card/playground-card';
 export default function ResultModal() {
   const { pickList, pickType } = useRandomPickState();
   const { winners, numberOfPick } = useRandomPickPlaygroundState();
-  const { closeModal, executePick } = useRandomPickPlaygroundAction();
+  const { closeModal, runPick } = useRandomPickPlaygroundAction();
 
   return (
     <div>
       <div className="flex justify-between mb-4">
-        <Button onClick={() => executePick()}>
-          다시뽑기 ({numberOfPick}명)
-        </Button>
+        <Button onClick={() => runPick()}>다시뽑기 ({numberOfPick}명)</Button>
         <button type="button" onClick={closeModal}>
           <XIcon className="size-6" />
         </button>

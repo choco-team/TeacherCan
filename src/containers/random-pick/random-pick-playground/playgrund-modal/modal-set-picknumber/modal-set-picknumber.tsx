@@ -25,7 +25,7 @@ const formSchema = z.object({
 });
 
 export default function SetPickNumberModal() {
-  const { closeModal, executePick } = useRandomPickPlaygroundAction();
+  const { closeModal, runPick } = useRandomPickPlaygroundAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,7 +35,7 @@ export default function SetPickNumberModal() {
   });
 
   const onSubmit = ({ number }: z.infer<typeof formSchema>) => {
-    executePick(number);
+    runPick(number);
   };
 
   return (
