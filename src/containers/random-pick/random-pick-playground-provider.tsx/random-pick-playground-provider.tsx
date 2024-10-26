@@ -4,6 +4,7 @@ import {
   PropsWithChildren,
   SetStateAction,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -34,7 +35,6 @@ type RandomPickPlaygroundAction = {
   runPick: (newNumberOfPick?: number) => void;
   resetPick: () => void;
   handleCardFlip: (id: string) => void;
-  mixTemporaryPickList: (newTemporaryPickList: string[]) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -52,12 +52,28 @@ export default function RandomPickPlaygroundProvider({
     MODAL_STATE_TYPES.noModal,
   );
   const numberOfWinner = useRef(0);
+  const cardMixRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     pickType,
     pickList,
     options: { isExcludingSelected },
   } = useRandomPickState();
+
+  useEffect(() => {
+    setTemporaryPickList(pickList[pickType].map((e) => e.value));
+  }, [pickList]);
+
+  useEffect(() => {
+    if (modalState === MODAL_STATE_TYPES.setPickNumberModal) {
+      cardMixRef.current = setInterval(() => {
+        setTemporaryPickList((prev) => prev.sort(() => Math.random() - 0.5));
+        setForceRender((prev) => prev * -1);
+      }, 100);
+    } else {
+      clearInterval(cardMixRef.current);
+    }
+  }, [modalState]);
 
   const defaultRandomPickPlaygroundStateValue = {
     numberOfPick,
@@ -149,11 +165,6 @@ export default function RandomPickPlaygroundProvider({
             ? { ...winner, isflipped: !winner.isflipped }
             : winner,
         ),
-      );
-    },
-    mixTemporaryPickList: (newTemporaryPickList: string[]) => {
-      setTemporaryPickList(
-        newTemporaryPickList.sort(() => Math.random() - 0.5),
       );
     },
   };

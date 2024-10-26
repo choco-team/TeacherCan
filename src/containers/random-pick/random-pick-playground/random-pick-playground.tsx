@@ -7,14 +7,15 @@ import {
   useRandomPickPlaygroundState,
 } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 import PlaygroundModal from './playgrund-modal/playground-modal';
-import MixedCard from './playground-mixed-card/playground-mixed-card';
+// import MixedCard from './playground-mixed-card/playground-mixed-card';
 import { MODAL_STATE_TYPES } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.constans';
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
 export default function PlayGround() {
   const { pickList, pickType } = useRandomPickState();
-  const { forceRender, modalState } = useRandomPickPlaygroundState();
+  const { forceRender, modalState, temporaryPickList } =
+    useRandomPickPlaygroundState();
 
   const { selectModalState } = useRandomPickPlaygroundAction();
 
@@ -43,7 +44,8 @@ export default function PlayGround() {
               <Card key={card.value} title={card.value} />
             ),
           )}
-        {modalState === 'setPickNumberModal' && <MixedCard />}
+        {modalState === 'setPickNumberModal' &&
+          temporaryPickList.map((value) => <Card key={value} title={value} />)}
         {modalState === 'resultMoal' &&
           pickList[pickType].map((card) => (
             <Card key={card.value} title={card.value} />
