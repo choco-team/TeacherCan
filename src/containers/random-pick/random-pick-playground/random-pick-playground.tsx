@@ -13,10 +13,13 @@ import { MODAL_STATE_TYPES } from '../random-pick-playground-provider.tsx/random
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
 export default function PlayGround() {
-  const { pickList, pickType } = useRandomPickState();
+  const {
+    pickList,
+    pickType,
+    options: { placeSelectedStudent },
+  } = useRandomPickState();
   const { forceRender, modalState, temporaryPickList } =
     useRandomPickPlaygroundState();
-
   const { selectModalState } = useRandomPickPlaygroundAction();
 
   return (
@@ -35,8 +38,28 @@ export default function PlayGround() {
           뽑기
         </Button>
       </div>
+      {modalState === MODAL_STATE_TYPES.noModal &&
+        placeSelectedStudent === 'separate' && (
+          <div>
+            <div className="grid grid-cols-7 gap-4 p-4">
+              {pickList[pickType].map(
+                (card) =>
+                  !card.isPicked && (
+                    <Card key={card.value} title={card.value} />
+                  ),
+              )}
+            </div>
+            <div className="grid grid-cols-7 gap-4 p-4">
+              {pickList[pickType].map(
+                (card) =>
+                  card.isPicked && <Card key={card.value} title="당첨" />,
+              )}
+            </div>
+          </div>
+        )}
       <div key={forceRender} className="grid grid-cols-7 gap-4 p-4">
-        {modalState === 'noModal' &&
+        {modalState === MODAL_STATE_TYPES.noModal &&
+          placeSelectedStudent === 'none' &&
           pickList[pickType].map((card) =>
             card.isPicked ? (
               <Card key={card.value} title="당첨" />
@@ -44,9 +67,9 @@ export default function PlayGround() {
               <Card key={card.value} title={card.value} />
             ),
           )}
-        {modalState === 'setPickNumberModal' &&
+        {modalState === MODAL_STATE_TYPES.setPickNumberModal &&
           temporaryPickList.map((value) => <Card key={value} title={value} />)}
-        {modalState === 'resultMoal' &&
+        {modalState === MODAL_STATE_TYPES.resultMoal &&
           pickList[pickType].map((card) => (
             <Card key={card.value} title={card.value} />
           ))}

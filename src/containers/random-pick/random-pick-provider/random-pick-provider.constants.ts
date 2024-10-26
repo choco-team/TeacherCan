@@ -12,17 +12,13 @@ export const PICK_TYPES = [
   },
 ] as const;
 
-export const SORT_SELECTED_STUDENT_TYPES = [
+export const PLACE_SELECTED_STUDENT_TYPES = [
   {
     type: 'none',
     label: '없음',
   },
   {
-    type: 'front',
-    label: '앞으로',
-  },
-  {
-    type: 'back',
-    label: '뒤로',
+    type: 'separate',
+    label: '분리',
   },
 ] as const;

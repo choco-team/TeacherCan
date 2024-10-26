@@ -3,7 +3,7 @@ import { Label } from '@/components/label';
 import { SheetDescription, SheetSubTitle } from '@/components/sheet';
 import { Switch } from '@/components/switch';
 import { InfoIcon, Settings2Icon } from 'lucide-react';
-import { SORT_SELECTED_STUDENT_TYPES } from '../../random-pick-provider/random-pick-provider.constants';
+import { PLACE_SELECTED_STUDENT_TYPES } from '../../random-pick-provider/random-pick-provider.constants';
 import {
   useRandomPickAction,
   useRandomPickState,
@@ -11,7 +11,7 @@ import {
 
 export default function SettingOptions() {
   const {
-    options: { isExcludingSelected, isHideResult, sortSelectedStudent },
+    options: { isExcludingSelected, isHideResult, placeSelectedStudent },
   } = useRandomPickState();
   const { changeOption } = useRandomPickAction();
 
@@ -52,13 +52,13 @@ export default function SettingOptions() {
       <div className="flex flex-col gap-y-3">
         <span className="text-sm">뽑힌 학생 정렬</span>
         <div className="max-sm:grid grid-cols-2 sm:flex items-center gap-2">
-          {SORT_SELECTED_STUDENT_TYPES.map(({ type, label }) => (
+          {PLACE_SELECTED_STUDENT_TYPES.map(({ type, label }) => (
             <Label key={type} className="flex-1 flex items-center gap-x-1.5">
               <Checkbox
-                checked={sortSelectedStudent === type}
+                checked={placeSelectedStudent === type}
                 onClick={() =>
                   changeOption(() => ({
-                    sortSelectedStudent: type,
+                    placeSelectedStudent: type,
                   }))
                 }
               />
