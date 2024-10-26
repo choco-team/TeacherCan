@@ -80,7 +80,25 @@ module.exports = {
         'collapsible-content-up': 'collapsible-content-up 0.3s ease-out',
         'bounce-in-top': 'bounce-in-top 1.2s both',
       },
+      transform: {
+        'rotate-y-180': 'rotateY(180deg)',
+      },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    function ({ addUtilities }) {
+      addUtilities({
+        '.rotate-y-180': {
+          transform: 'rotateY(180deg)',
+        },
+        '.backface-hidden': {
+          backfaceVisibility: 'hidden',
+        },
+        '.perspective-1000': {
+          perspective: '1000px',
+        },
+      });
+    },
+  ],
 };

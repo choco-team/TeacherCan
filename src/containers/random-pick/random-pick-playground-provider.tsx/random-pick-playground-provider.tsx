@@ -7,11 +7,16 @@ import {
 } from 'react';
 import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
 
+type WinnersType = {
+  id: number;
+  isflipped: boolean;
+};
+
 type RandomPickPlaygroundState = {
   isModalOpen: boolean;
   numberOfPick: number;
   isResultModal: boolean;
-  winners: number[];
+  winners: WinnersType[];
   forceRender: number;
 };
 
@@ -23,6 +28,7 @@ type RandomPickPlaygroundAction = {
   closeModal: () => void;
   runPick: (newNumberOfPick?: number) => void;
   resetPick: () => void;
+  handleCardFlip: (id: number) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -34,7 +40,7 @@ export default function RandomPickPlaygroundProvider({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [numberOfPick, setNumberOfPick] = useState(1);
   const [isResultModal, setIsResultModal] = useState(false);
-  const [winners, setWinners] = useState([]);
+  const [winners, setWinners] = useState<WinnersType[]>([]);
   const [forceRender, setForceRender] = useState(1);
   const numberOfWinner = useRef(0);
 
@@ -60,7 +66,7 @@ export default function RandomPickPlaygroundProvider({
         const n = Math.floor(Math.random() * pickList[pickType].length);
         if (!pickList[pickType][n].isPicked) {
           pickList[pickType][n].isPicked = true;
-          newWinners.push(n);
+          newWinners.push({ id: n, isflipped: false });
           count -= 1;
           numberOfWinner.current += 1;
         }
@@ -81,7 +87,7 @@ export default function RandomPickPlaygroundProvider({
             numberOfWinner.current += 1;
           }
           pickList[pickType][n].isPicked = true;
-          newWinners.push(n);
+          newWinners.push({ id: n, isflipped: false });
           count -= 1;
         }
       }
@@ -99,7 +105,7 @@ export default function RandomPickPlaygroundProvider({
       setIsResultModal(false);
     },
     runPick: (newNumberOfPick?: number) => {
-      // 뽑기 가능 한지 검증하기 경고문구 표현할 방법 연구해야함
+      // 뽑기 가능 한지 검증하기 / 경고문구 표현할 방법 연구해야함
       const pickListLength = pickList[pickType].length;
       if (
         pickListLength - numberOfWinner.current <
@@ -108,7 +114,7 @@ export default function RandomPickPlaygroundProvider({
         // alert(`${pickListLength - numberOfWinner.current}명 남았습니다.`);
         return;
       }
-      // 당첨 개수 설정
+      // 당첨 개수, 모달 설정
       let countNum = numberOfPick;
       if (newNumberOfPick) {
         setNumberOfPick(newNumberOfPick);
@@ -132,6 +138,15 @@ export default function RandomPickPlaygroundProvider({
       numberOfWinner.current = 0;
       // pickList가 state가 아니라서 강제로 리렌더링시킴
       setForceRender((prev) => prev * -1);
+    },
+    handleCardFlip: (id: number) => {
+      setWinners((prevWinners) =>
+        prevWinners.map((winner) =>
+          winner.id === id
+            ? { ...winner, isflipped: !winner.isflipped }
+            : winner,
+        ),
+      );
     },
   };
 
