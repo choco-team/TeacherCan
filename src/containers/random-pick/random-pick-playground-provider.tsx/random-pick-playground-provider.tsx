@@ -8,7 +8,7 @@ import {
 import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
 
 type WinnersType = {
-  id: number;
+  id: string;
   isflipped: boolean;
 };
 
@@ -18,6 +18,7 @@ type RandomPickPlaygroundState = {
   isResultModal: boolean;
   winners: WinnersType[];
   forceRender: number;
+  temporaryPickList: string[];
 };
 
 export const RandomPickPlaygroundStateContext =
@@ -28,7 +29,8 @@ type RandomPickPlaygroundAction = {
   closeModal: () => void;
   runPick: (newNumberOfPick?: number) => void;
   resetPick: () => void;
-  handleCardFlip: (id: number) => void;
+  handleCardFlip: (id: string) => void;
+  mixTemporaryPickList: () => NodeJS.Timeout;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -42,6 +44,7 @@ export default function RandomPickPlaygroundProvider({
   const [isResultModal, setIsResultModal] = useState(false);
   const [winners, setWinners] = useState<WinnersType[]>([]);
   const [forceRender, setForceRender] = useState(1);
+  const [temporaryPickList, setTemporaryPickList] = useState([]);
   const numberOfWinner = useRef(0);
 
   const {
@@ -56,6 +59,7 @@ export default function RandomPickPlaygroundProvider({
     isResultModal,
     winners,
     forceRender,
+    temporaryPickList,
   };
 
   const excludingSelectedPick = useCallback(
@@ -139,7 +143,7 @@ export default function RandomPickPlaygroundProvider({
       // pickList가 state가 아니라서 강제로 리렌더링시킴
       setForceRender((prev) => prev * -1);
     },
-    handleCardFlip: (id: number) => {
+    handleCardFlip: (id: string) => {
       setWinners((prevWinners) =>
         prevWinners.map((winner) =>
           winner.id === id
@@ -147,6 +151,15 @@ export default function RandomPickPlaygroundProvider({
             : winner,
         ),
       );
+    },
+    mixTemporaryPickList: () => {
+      const newTemporaryPickList = pickList[pickType].map((e) => e.value);
+      return setInterval(() => {
+        setTemporaryPickList(
+          newTemporaryPickList.sort(() => Math.random() - 0.5),
+        );
+        setForceRender((prev) => prev * -1);
+      }, 100);
     },
   };
 

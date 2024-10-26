@@ -7,12 +7,14 @@ import {
   useRandomPickPlaygroundState,
 } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 import PlaygroundModal from './playgrund-modal/playground-modal';
+import MixedCard from './playground-mixed-card/playground-mixed-card';
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
 export default function PlayGround() {
   const { pickList, pickType } = useRandomPickState();
-  const { forceRender } = useRandomPickPlaygroundState();
+  const { forceRender, isModalOpen, isResultModal } =
+    useRandomPickPlaygroundState();
 
   const { openModal } = useRandomPickPlaygroundAction();
 
@@ -29,13 +31,29 @@ export default function PlayGround() {
         <Button onClick={openModal}>뽑기</Button>
       </div>
       <div key={forceRender} className="grid grid-cols-7 gap-4 p-4">
-        {pickList[pickType].map((asd) =>
-          asd.isPicked ? (
-            <Card key={asd.value} title="당첨" />
-          ) : (
-            <Card key={asd.value} title={asd.value} />
-          ),
-        )}
+        {
+          // 첫화면
+          !isModalOpen &&
+            pickList[pickType].map((card) =>
+              card.isPicked ? (
+                <Card key={card.value} title="당첨" />
+              ) : (
+                <Card key={card.value} title={card.value} />
+              ),
+            )
+        }
+        {
+          // 당첨개수 설정 모달 일 때
+          isModalOpen && !isResultModal && <MixedCard />
+        }
+        {
+          // 결과 모달 일 때
+          isModalOpen &&
+            isResultModal &&
+            pickList[pickType].map((card) => (
+              <Card key={card.value} title={card.value} />
+            ))
+        }
       </div>
     </div>
   );
