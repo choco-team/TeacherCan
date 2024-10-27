@@ -28,11 +28,7 @@ function QrCodeContainer() {
           <QRCodeDownloader qrCodeRef={qrCodeRef} qrCodeName={qrCodeName} />
           <QRCodeClipboard qrCodeRef={qrCodeRef} qrCodeName={qrCodeName} />
           <QRCodeExpansion qrCodeValue={qrCodeValue} qrCodeName={qrCodeName} />
-          <QRCodePrinter
-            qrCodeValue={qrCodeValue}
-            qrCodeRef={qrCodeRef}
-            qrCodeName={qrCodeName}
-          />
+          <QRCodePrinter qrCodeRef={qrCodeRef} qrCodeName={qrCodeName} />
         </div>
         <div />
       </div>
