@@ -3,8 +3,21 @@ import { Button } from '@/components/button';
 import { PrinterCheck } from 'lucide-react';
 import { useState } from 'react';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from '@/components/dialog';
+import { Input } from '@/components/input';
+import { Label } from '@/components/label';
+
 function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
-  const [gridSize, setGridSize] = useState(12); // 기본값은 12개
+  const [gridSize, setGridSize] = useState(12);
 
   const gridConfigs = {
     1: { columns: 1, rows: 1 },
@@ -66,46 +79,69 @@ function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
 
   return (
     <div>
-      <Button onClick={printQRCode} variant="gray-ghost" className="size:icon">
-        <PrinterCheck width={30} height={30} />
-      </Button>
-      <div>
-        <label>
-          <input
-            type="radio"
-            name="gridSize"
-            value="1"
-            checked={gridSize === 1}
-            onChange={() => setGridSize(1)}
-          />{' '}
-          1개
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="gridSize"
-            value="12"
-            checked={gridSize === 12}
-            onChange={() => setGridSize(12)}
-          />{' '}
-          12개
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="gridSize"
-            value="30"
-            checked={gridSize === 30}
-            onChange={() => setGridSize(30)}
-          />{' '}
-          30개
-        </label>
-      </div>
       <div style={{ display: 'none' }} ref={qrCodeRef}>
-        <div ref={qrCodeRef}>
-          <QRCodeCanvas value={qrCodeValue} size={256} />
-        </div>
+        <QRCodeCanvas value={qrCodeValue} size={256} />
       </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="gray-ghost" className="size:icon">
+            <PrinterCheck width={30} height={30} />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>프린트 설정</DialogTitle>
+            <DialogDescription>QR 코드 개수를 선택하세요.</DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-center mt-4">
+            <Label className="mr-4">
+              <Input
+                type="radio"
+                name="gridSize"
+                value="1"
+                checked={gridSize === 1}
+                onChange={() => setGridSize(1)}
+                className="w-8 h-8 mr-4"
+              />
+              <span className="text-lg my-1">1개</span>
+            </Label>
+            <Label className="mr-4">
+              <Input
+                type="radio"
+                name="gridSize"
+                value="12"
+                checked={gridSize === 12}
+                onChange={() => setGridSize(12)}
+                className="w-8 h-8 mr-4"
+              />
+              <span className="text-lg my-1">12개</span>
+            </Label>
+            <Label>
+              <Input
+                type="radio"
+                name="gridSize"
+                value="30"
+                checked={gridSize === 30}
+                onChange={() => setGridSize(30)}
+                className="w-8 h-8 mr-4"
+              />
+              <span className="text-lg my-1">30개</span>
+            </Label>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                onClick={printQRCode}
+                variant="gray-ghost"
+                className="size:icon"
+              >
+                확인
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
