@@ -1,8 +1,9 @@
+'use client';
+
 import { QRCodeCanvas } from 'qrcode.react';
 import { Button } from '@/components/button';
 import { PrinterCheck } from 'lucide-react';
 import { useState } from 'react';
-
 import {
   Dialog,
   DialogContent,
@@ -27,16 +28,13 @@ function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
 
   const printQRCode = () => {
     if (!qrCodeRef.current) return;
-
     const svgElement = qrCodeRef.current.querySelector('svg');
     if (!svgElement) {
       console.error('출력할 이미지를 찾을 수 없습니다.');
       return;
     }
-
     const svgData = new XMLSerializer().serializeToString(svgElement);
     const imgSrc = `data:image/svg+xml;base64,${btoa(svgData)}`;
-
     const { columns, rows } = gridConfigs[gridSize];
     const printHTML = `
       <html>
@@ -48,33 +46,26 @@ function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
             .qr-name { margin-top: 5px; font-size: 12px; text-align: center; }
           </style>
         </head>
-        <body>
+        <body onload="window.print(); window.close();">
           <h2>${qrCodeName || 'QR Codes'}</h2>
           <div class="grid-container">
             ${Array(columns * rows)
               .fill(
-                `
-              <div>
-                <img src="${imgSrc}" alt="QR Code" />
-                <div class="qr-name">${qrCodeName}</div>
-              </div>
-            `,
+                `<div>
+                  <img src="${imgSrc}" alt="QR Code" />
+                  <div class="qr-name">${qrCodeName}</div>
+                </div>`,
               )
               .join('')}
           </div>
         </body>
       </html>
     `;
-
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
     printWindow.document.open();
     printWindow.document.write(printHTML);
     printWindow.document.close();
-    printWindow.onload = () => {
-      printWindow.print();
-      printWindow.close();
-    };
   };
 
   return (
@@ -93,7 +84,6 @@ function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
             <DialogTitle>프린트 설정</DialogTitle>
             <DialogDescription>QR 코드 개수를 선택하세요.</DialogDescription>
           </DialogHeader>
-
           <div className="flex justify-center mt-4">
             <Label className="mr-4">
               <Input
