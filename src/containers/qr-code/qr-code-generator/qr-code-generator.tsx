@@ -44,7 +44,6 @@ function QRCodeGenerator({
     debounce((value: string) => {
       setIsGenerated(true);
       setQrCodeValue(value);
-      setQrCodeName('');
       setLoading(false);
     }, 500),
     [],
@@ -63,10 +62,6 @@ function QRCodeGenerator({
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQrCodeName(e.target.value);
-  };
-
-  const handleQRNameFocus = () => {
-    setQrCodeName('');
   };
 
   return (
@@ -89,7 +84,6 @@ function QRCodeGenerator({
           type="text"
           value={qrCodeName}
           onChange={handleNameChange}
-          onFocus={handleQRNameFocus}
           placeholder="QR 코드 이름을 입력하세요"
           className="flex-grow w-3/4"
         />
