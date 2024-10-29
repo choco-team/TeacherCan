@@ -67,8 +67,9 @@ export default function RandomPickPlaygroundProvider({
   useEffect(() => {
     if (modalState === MODAL_STATE_TYPES.setPickNumberModal) {
       cardMixRef.current = setInterval(() => {
-        setTemporaryPickList((prev) => prev.sort(() => Math.random() - 0.5));
-        setForceRender((prev) => prev * -1);
+        setTemporaryPickList((prev) =>
+          [...prev].sort(() => Math.random() - 0.5),
+        );
       }, 100);
     } else {
       clearInterval(cardMixRef.current);
