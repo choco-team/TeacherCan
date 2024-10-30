@@ -25,8 +25,8 @@ type RandomPickPlaygroundState = {
   forceRender: number;
   temporaryPickList: string[];
   modalState: ModalStateType;
+  maxNumberOfPick: number;
 };
-
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
 
@@ -62,7 +62,7 @@ export default function RandomPickPlaygroundProvider({
 
   useEffect(() => {
     setTemporaryPickList(pickList[pickType].map((e) => e.value));
-  }, [pickList]);
+  }, [pickList, pickType]);
 
   useEffect(() => {
     if (modalState === MODAL_STATE_TYPES.setPickNumberModal) {
@@ -82,6 +82,9 @@ export default function RandomPickPlaygroundProvider({
     forceRender,
     temporaryPickList,
     modalState,
+    maxNumberOfPick: isExcludingSelected
+      ? pickList[pickType].length - numberOfWinner.current
+      : pickList[pickType].length,
   };
 
   const excludingSelectedPick = useCallback(
@@ -125,15 +128,6 @@ export default function RandomPickPlaygroundProvider({
   const defaultRandomPickPlaygroundActionValue = {
     selectModalState: setModalState,
     runPick: (newNumberOfPick?: number) => {
-      // 뽑기 가능 한지 검증하기 / 경고문구 표현할 방법 연구해야함
-      const pickListLength = pickList[pickType].length;
-      if (
-        pickListLength - numberOfWinner.current <
-        (newNumberOfPick || numberOfPick)
-      ) {
-        // alert(`${pickListLength - numberOfWinner.current}명 남았습니다.`);
-        return;
-      }
       // 당첨 개수, 모달 설정
       let countNum = numberOfPick;
       if (newNumberOfPick) {

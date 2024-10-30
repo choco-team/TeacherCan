@@ -1,4 +1,7 @@
-import { useRandomPickPlaygroundAction } from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+import {
+  useRandomPickPlaygroundAction,
+  useRandomPickPlaygroundState,
+} from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 import { Button } from '@/components/button';
 import { X as XIcon } from 'lucide-react';
 import { Input } from '@/components/input';
@@ -14,19 +17,20 @@ import {
 } from '@/components/form';
 import { MODAL_STATE_TYPES } from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider.constans';
 
-const formSchema = z.object({
-  number: z.coerce
-    .number()
-    .min(1, {
-      message: '최소 인원은 1명입니다.',
-    })
-    .max(30, {
-      message: '최대 인원은 30명입니다.',
-    }),
-});
-
 export default function SetPickNumberModal() {
   const { selectModalState, runPick } = useRandomPickPlaygroundAction();
+  const { maxNumberOfPick } = useRandomPickPlaygroundState();
+
+  const formSchema = z.object({
+    number: z.coerce
+      .number()
+      .min(1, {
+        message: '최소 인원은 1명입니다.',
+      })
+      .max(maxNumberOfPick, {
+        message: `남은 인원은 ${maxNumberOfPick}명입니다.`,
+      }),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,7 +68,9 @@ export default function SetPickNumberModal() {
                   <Button type="submit">뽑기</Button>
                 </div>
                 <FormDescription>
-                  1 ~ 30 사이의 숫자를 입력하고 뽑기 버튼을 누르세요.
+                  {maxNumberOfPick === 0
+                    ? '남은 학생이 없습니다.'
+                    : `1 ~ ${maxNumberOfPick} 사이의 숫자를 입력하고 뽑기 버튼을 누르세요.`}
                 </FormDescription>
                 <FormMessage />
               </>
