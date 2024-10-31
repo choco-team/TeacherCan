@@ -52,7 +52,10 @@ export default function SettingStudentName() {
   });
 
   const onSubmit = ({ names }: z.infer<typeof formSchema>) => {
-    modifyPickList('names', names);
+    modifyPickList(
+      'names',
+      names.map((name) => ({ value: name, isPicked: false, isUsed: false })),
+    );
   };
 
   return (

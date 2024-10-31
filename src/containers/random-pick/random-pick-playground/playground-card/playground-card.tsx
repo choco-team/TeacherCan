@@ -1,5 +1,7 @@
-import { Button } from '@/components/button';
-
 export default function Card({ title }) {
-  return <Button disabled>{title}</Button>;
+  return (
+    <div className="h-10 bg-primary text-white flex items-center justify-center rounded-lg">
+      {title}
+    </div>
+  );
 }

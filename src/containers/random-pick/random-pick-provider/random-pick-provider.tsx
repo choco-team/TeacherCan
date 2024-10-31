@@ -19,6 +19,7 @@ export type PlaceSelectedStudentType =
 type InnerPickListType = {
   value: string;
   isPicked: boolean;
+  isUsed: boolean;
 };
 
 type PickType = (typeof PICK_TYPES)[number]['type'];
@@ -41,7 +42,10 @@ export const RandomPickStateContext = createContext<RandomPickState | null>(
 
 type RandomPickAction = {
   selectPickType: Dispatch<SetStateAction<PickType>>;
-  modifyPickList: (pickType: PickType, modifiedPickList: string[]) => void;
+  modifyPickList: (
+    pickType: PickType,
+    modifiedPickList: InnerPickListType[],
+  ) => void;
   changeOption: (
     changedOption: (prev: OptionsType) => Partial<OptionsType>,
   ) => void;
@@ -73,8 +77,8 @@ export default function RandomPickProvider({
   const defaultRandomPickStateValue = {
     pickType,
     pickList: {
-      names: names.map((name) => ({ value: name, isPicked: false })),
-      numbers: numbers.map((number) => ({ value: number, isPicked: false })),
+      names,
+      numbers,
     },
     options,
   };
@@ -83,7 +87,7 @@ export default function RandomPickProvider({
     selectPickType: setPickType,
     modifyPickList: (
       incomingPickType: PickType,
-      modifiedPickList: string[],
+      modifiedPickList: InnerPickListType[],
     ) => {
       if (incomingPickType === 'names') {
         setNames(modifiedPickList);

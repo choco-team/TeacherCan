@@ -38,8 +38,16 @@ export default function SettingStudentNumber() {
   });
 
   const onSubmit = ({ number }: z.infer<typeof formSchema>) => {
-    const newStudentNumbers = Array.from({ length: number }).map((_, index) =>
-      String(index + 1),
+    // const newStudentNumbers = Array.from({ length: number }).map((_, index) =>
+    //   String(index + 1),
+    // );
+
+    const newStudentNumbers = Array.from({ length: number }).map(
+      (_, index) => ({
+        value: String(index + 1),
+        isPicked: false,
+        isUsed: false,
+      }),
     );
 
     modifyPickList('numbers', newStudentNumbers);
