@@ -47,7 +47,6 @@ function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
           </style>
         </head>
         <body onload="window.print(); window.close();">
-          <h2>${qrCodeName || 'QR Codes'}</h2>
           <div class="grid-container">
             ${Array(columns * rows)
               .fill(
@@ -85,38 +84,35 @@ function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
             <DialogDescription>QR 코드 개수를 선택하세요.</DialogDescription>
           </DialogHeader>
           <div className="flex justify-center mt-4">
-            <Label className="mr-4">
+            <Label className="m-6">
               <Input
                 type="radio"
                 name="gridSize"
                 value="1"
                 checked={gridSize === 1}
                 onChange={() => setGridSize(1)}
-                className="w-8 h-8 mr-4"
               />
-              <span className="text-lg my-1">1개</span>
+              <span className="text-lg m-1">1x1</span>
             </Label>
-            <Label className="mr-4">
+            <Label className="m-6">
               <Input
                 type="radio"
                 name="gridSize"
                 value="12"
                 checked={gridSize === 12}
                 onChange={() => setGridSize(12)}
-                className="w-8 h-8 mr-4"
               />
-              <span className="text-lg my-1">12개</span>
+              <span className="text-lg m-1">4x3</span>
             </Label>
-            <Label>
+            <Label className="m-6">
               <Input
                 type="radio"
                 name="gridSize"
                 value="30"
                 checked={gridSize === 30}
                 onChange={() => setGridSize(30)}
-                className="w-8 h-8 mr-4"
               />
-              <span className="text-lg my-1">30개</span>
+              <span className="text-lg m-1">6x5</span>
             </Label>
           </div>
           <DialogFooter>

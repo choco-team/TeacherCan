@@ -86,6 +86,7 @@ function QRCodeGenerator({
           onChange={handleNameChange}
           placeholder="QR 코드 이름을 입력하세요"
           className="flex-grow w-3/4"
+          maxLength={12}
         />
       </div>
       <div className="flex justify-center mt-4">
@@ -100,7 +101,6 @@ function QRCodeGenerator({
               width={200}
               height={200}
               className="mt-8"
-              fgColor="green"
             />
             {qrCodeName && (
               <p className="text-center mt-2 text-lg font-semibold w-full">
