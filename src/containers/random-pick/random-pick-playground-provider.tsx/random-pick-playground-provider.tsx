@@ -132,7 +132,7 @@ export default function RandomPickPlaygroundProvider({
       let countNum = numberOfPick;
       if (newNumberOfPick) {
         setNumberOfPick(newNumberOfPick);
-        setModalState(MODAL_STATE_TYPES.resultMoal);
+        setModalState(MODAL_STATE_TYPES.resultModal);
         countNum = newNumberOfPick;
       }
       // '뽑힌학생 제외' 옵션에 따라 뽑기 실행

@@ -22,7 +22,7 @@ export default function ResultModal() {
           <XIcon className="size-6" />
         </button>
       </div>
-      <div className="grid grid-cols-3 gap-4 ">
+      <div className="grid grid-cols-6 gap-4 ">
         {winners.map((winner) => (
           <ResultCard key={winner.id} winner={winner} />
         ))}
