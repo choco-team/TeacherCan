@@ -19,14 +19,3 @@ export const PICK_TYPES = [
     label: '이름',
   },
 ] as const;
-
-export const PLACE_SELECTED_STUDENT_TYPES = [
-  {
-    type: 'none',
-    label: '없음',
-  },
-  {
-    type: 'separate',
-    label: '분리',
-  },
-] as const;

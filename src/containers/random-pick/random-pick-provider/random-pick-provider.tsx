@@ -10,11 +10,7 @@ import {
   INIT_STUDENT_NAMES,
   INIT_STUDENT_NUMBERS,
   PICK_TYPES,
-  PLACE_SELECTED_STUDENT_TYPES,
 } from './random-pick-provider.constants';
-
-export type PlaceSelectedStudentType =
-  (typeof PLACE_SELECTED_STUDENT_TYPES)[number]['type'];
 
 type InnerPickListType = {
   value: string;
@@ -27,7 +23,7 @@ type PickListType = Record<PickType, InnerPickListType[]>;
 type OptionsType = {
   isHideResult: boolean;
   isExcludingSelected: boolean;
-  placeSelectedStudent: PlaceSelectedStudentType;
+  isSeparateSelectedStudent: boolean;
 };
 
 type RandomPickState = {
@@ -70,7 +66,7 @@ export default function RandomPickProvider({
   const [options, setOptions] = useState<OptionsType>({
     isHideResult: true,
     isExcludingSelected: true,
-    placeSelectedStudent: 'none',
+    isSeparateSelectedStudent: false,
   });
   const [pickType, setPickType] = useState<PickType>('numbers');
 

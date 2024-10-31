@@ -16,7 +16,7 @@ export default function PlayGround() {
   const {
     pickList,
     pickType,
-    options: { placeSelectedStudent },
+    options: { isSeparateSelectedStudent },
   } = useRandomPickState();
   const { forceRender, modalState, temporaryPickList } =
     useRandomPickPlaygroundState();
@@ -39,7 +39,7 @@ export default function PlayGround() {
         </Button>
       </div>
       {modalState === MODAL_STATE_TYPES.noModal &&
-        placeSelectedStudent === 'separate' && (
+        isSeparateSelectedStudent && (
           <div>
             <div className="grid grid-cols-7 gap-4 p-4">
               {pickList[pickType].map(
@@ -59,7 +59,7 @@ export default function PlayGround() {
         )}
       <div key={forceRender} className="grid grid-cols-7 gap-4 p-4">
         {modalState === MODAL_STATE_TYPES.noModal &&
-          placeSelectedStudent === 'none' &&
+          !isSeparateSelectedStudent &&
           pickList[pickType].map((card) =>
             card.isPicked ? (
               <Card key={card.value} title="당첨" />
