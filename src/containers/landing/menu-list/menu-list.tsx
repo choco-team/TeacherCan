@@ -11,6 +11,11 @@ function MenuList() {
           타이머
         </PopupLink>
       </Button>
+      <Button size="lg" variant="primary-outline" asChild>
+        <PopupLink size={6 / 7} url={`${getDomainURL()}/qr-code`}>
+          큐알코드
+        </PopupLink>
+      </Button>
       <Button variant="gray-outline" size="lg" asChild>
         <Link href="https://teacher-browser.netlify.app/" target="_blank">
           티처캔 v1
