@@ -58,7 +58,9 @@ export default function PlayGround() {
         {modalState === MODAL_STATE_TYPES.setPickNumberModal &&
           temporaryPickList.map((value) => <Card key={value} title={value} />)}
         {modalState === MODAL_STATE_TYPES.resultModal &&
-          pickList[pickType].map((card) => <Card key={card.id} card={card} />)}
+          pickList[pickType].map((card) => (
+            <Card key={card.id} title={card.value} />
+          ))}
       </div>
     </div>
   );
