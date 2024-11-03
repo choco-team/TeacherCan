@@ -14,18 +14,19 @@ import { MODAL_STATE_TYPES } from './random-pick-playground-provider.constans';
 type ModalStateType =
   (typeof MODAL_STATE_TYPES)[keyof typeof MODAL_STATE_TYPES];
 
-type WinnersType = {
-  id: string;
+export type WinnersType = {
+  pickListId: string;
+  pickListValue: string;
   isflipped: boolean;
 };
 
 type RandomPickPlaygroundState = {
   numberOfPick: number;
   winners: WinnersType[];
-  forceRender: number;
   temporaryPickList: string[];
   modalState: ModalStateType;
   maxNumberOfPick: number;
+  forceRender: number;
 };
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
@@ -79,9 +80,9 @@ export default function RandomPickPlaygroundProvider({
   const defaultRandomPickPlaygroundStateValue = {
     numberOfPick,
     winners,
-    forceRender,
     temporaryPickList,
     modalState,
+    forceRender,
     maxNumberOfPick: isExcludingSelected
       ? pickList[pickType].length - numberOfWinner.current
       : pickList[pickType].length,
@@ -93,9 +94,14 @@ export default function RandomPickPlaygroundProvider({
       const newWinners = [];
       while (count !== 0) {
         const n = Math.floor(Math.random() * pickList[pickType].length);
+        const pickedStudent = pickList[pickType][n];
         if (!pickList[pickType][n].isPicked) {
           pickList[pickType][n].isPicked = true;
-          newWinners.push({ id: n, isflipped: false });
+          newWinners.push({
+            pickListId: pickedStudent.id,
+            pickListValue: pickedStudent.value,
+            isflipped: false,
+          });
           count -= 1;
           numberOfWinner.current += 1;
         }
@@ -116,7 +122,7 @@ export default function RandomPickPlaygroundProvider({
             numberOfWinner.current += 1;
           }
           pickList[pickType][n].isPicked = true;
-          newWinners.push({ id: n, isflipped: false });
+          newWinners.push({ pickListIndex: n, isflipped: false });
           count -= 1;
         }
       }
@@ -143,20 +149,24 @@ export default function RandomPickPlaygroundProvider({
       );
     },
     resetPick: () => {
-      pickList.names = pickList.names.map((name) =>
-        name.isPicked ? { ...name, isPicked: false } : { ...name },
-      );
-      pickList.numbers = pickList.numbers.map((number) =>
-        number.isPicked ? { ...number, isPicked: false } : { ...number },
-      );
+      pickList.names = pickList.names.map((name) => ({
+        ...name,
+        isPicked: false,
+        isUsed: false,
+      }));
+      pickList.numbers = pickList.numbers.map((number) => ({
+        ...number,
+        isPicked: false,
+        isUsed: false,
+      }));
       numberOfWinner.current = 0;
       // pickList가 state가 아니라서 강제로 리렌더링시킴
       setForceRender((prev) => prev * -1);
     },
-    handleCardFlip: (id: string) => {
+    handleCardFlip: (pickListId: string) => {
       setWinners((prevWinners) =>
         prevWinners.map((winner) =>
-          winner.id === id
+          winner.pickListId === pickListId
             ? { ...winner, isflipped: !winner.isflipped }
             : winner,
         ),

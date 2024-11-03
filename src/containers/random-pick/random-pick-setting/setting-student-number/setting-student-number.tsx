@@ -10,6 +10,7 @@ import {
 } from '@/components/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { creatId } from '@/utils/createNonoid';
 import {
   useRandomPickAction,
   useRandomPickState,
@@ -44,6 +45,7 @@ export default function SettingStudentNumber() {
 
     const newStudentNumbers = Array.from({ length: number }).map(
       (_, index) => ({
+        id: creatId(),
         value: String(index + 1),
         isPicked: false,
         isUsed: false,

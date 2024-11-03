@@ -24,7 +24,7 @@ export default function ResultModal() {
       </div>
       <div className="grid grid-cols-6 gap-4 ">
         {winners.map((winner) => (
-          <ResultCard key={winner.id} winner={winner} />
+          <ResultCard key={winner.pickListId} winner={winner} />
         ))}
       </div>
     </div>

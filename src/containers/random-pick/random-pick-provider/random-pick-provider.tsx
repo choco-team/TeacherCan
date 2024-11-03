@@ -12,7 +12,8 @@ import {
   PICK_TYPES,
 } from './random-pick-provider.constants';
 
-type InnerPickListType = {
+export type InnerPickListType = {
+  id: string;
   value: string;
   isPicked: boolean;
   isUsed: boolean;

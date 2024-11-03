@@ -1,12 +1,14 @@
+import { creatId } from '@/utils/createNonoid';
+
 export const INIT_STUDENT_NAMES = [
-  { value: '학생1', isPicked: false, isUsed: false },
-  { value: '학생2', isPicked: false, isUsed: false },
-  { value: '학생3', isPicked: false, isUsed: false },
+  { id: creatId(), value: '학생1', isPicked: false, isUsed: false },
+  { id: creatId(), value: '학생2', isPicked: false, isUsed: false },
+  { id: creatId(), value: '학생3', isPicked: false, isUsed: false },
 ];
 export const INIT_STUDENT_NUMBERS = [
-  { value: '1', isPicked: false, isUsed: false },
-  { value: '2', isPicked: false, isUsed: false },
-  { value: '3', isPicked: false, isUsed: false },
+  { id: creatId(), value: '1', isPicked: false, isUsed: false },
+  { id: creatId(), value: '2', isPicked: false, isUsed: false },
+  { id: creatId(), value: '3', isPicked: false, isUsed: false },
 ];
 
 export const PICK_TYPES = [

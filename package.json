@@ -26,6 +26,7 @@
     "clsx": "^2.1.1",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.439.0",
+    "nanoid": "^5.0.8",
     "next": "^14.2.7",
     "qrcode.react": "^4.0.1",
     "react": "^18.3.1",

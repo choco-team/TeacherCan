@@ -17,8 +17,7 @@ export default function PlayGround() {
     pickType,
     options: { isSeparateSelectedStudent },
   } = useRandomPickState();
-  const { forceRender, modalState, temporaryPickList } =
-    useRandomPickPlaygroundState();
+  const { modalState, temporaryPickList } = useRandomPickPlaygroundState();
   const { selectModalState } = useRandomPickPlaygroundAction();
 
   return (
@@ -42,36 +41,24 @@ export default function PlayGround() {
           <div>
             <div className="grid grid-cols-7 gap-4 p-4">
               {pickList[pickType].map(
-                (card) =>
-                  !card.isPicked && (
-                    <Card key={card.value} title={card.value} />
-                  ),
+                (card) => !card.isPicked && <Card key={card.id} card={card} />,
               )}
             </div>
             <div className="grid grid-cols-7 gap-4 p-4">
               {pickList[pickType].map(
-                (card) =>
-                  card.isPicked && <Card key={card.value} title="당첨" />,
+                (card) => card.isPicked && <Card key={card.id} card={card} />,
               )}
             </div>
           </div>
         )}
-      <div key={forceRender} className="grid grid-cols-7 gap-4 p-4">
+      <div className="grid grid-cols-7 gap-4 p-4">
         {modalState === MODAL_STATE_TYPES.noModal &&
           !isSeparateSelectedStudent &&
-          pickList[pickType].map((card) =>
-            card.isPicked ? (
-              <Card key={card.value} title="당첨" />
-            ) : (
-              <Card key={card.value} title={card.value} />
-            ),
-          )}
+          pickList[pickType].map((card) => <Card key={card.id} card={card} />)}
         {modalState === MODAL_STATE_TYPES.setPickNumberModal &&
           temporaryPickList.map((value) => <Card key={value} title={value} />)}
         {modalState === MODAL_STATE_TYPES.resultModal &&
-          pickList[pickType].map((card) => (
-            <Card key={card.value} title={card.value} />
-          ))}
+          pickList[pickType].map((card) => <Card key={card.id} card={card} />)}
       </div>
     </div>
   );

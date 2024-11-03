@@ -10,6 +10,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Textarea } from '@/components/textarea';
+import { nanoid } from 'nanoid';
 import {
   useRandomPickAction,
   useRandomPickState,
@@ -54,7 +55,12 @@ export default function SettingStudentName() {
   const onSubmit = ({ names }: z.infer<typeof formSchema>) => {
     modifyPickList(
       'names',
-      names.map((name) => ({ value: name, isPicked: false, isUsed: false })),
+      names.map((name) => ({
+        id: nanoid(8),
+        value: name,
+        isPicked: false,
+        isUsed: false,
+      })),
     );
   };
 
