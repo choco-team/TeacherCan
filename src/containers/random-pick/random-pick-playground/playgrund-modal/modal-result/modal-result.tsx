@@ -10,22 +10,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormMessage } from '@/components/form';
 import { Input } from '@/components/input';
+import { getFormSchema } from '@/utils/getFormSchema';
 import ResultCard from '../../playground-card/playground-result-card';
 
 export default function ResultModal() {
   const { winners, maxNumberOfPick } = useRandomPickPlaygroundState();
   const { selectModalState, runPick } = useRandomPickPlaygroundAction();
 
-  const formSchema = z.object({
-    number: z.coerce
-      .number()
-      .min(1, {
-        message: '최소 인원은 1명입니다.',
-      })
-      .max(maxNumberOfPick, {
-        message: `남은 인원은 ${maxNumberOfPick}명입니다.`,
-      }),
-  });
+  const formSchema = getFormSchema(maxNumberOfPick);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

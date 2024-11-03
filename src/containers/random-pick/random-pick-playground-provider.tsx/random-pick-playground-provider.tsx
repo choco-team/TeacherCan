@@ -76,6 +76,7 @@ export default function RandomPickPlaygroundProvider({
     } else {
       clearInterval(cardMixRef.current);
     }
+    return () => clearInterval(cardMixRef.current);
   }, [modalState]);
 
   const defaultRandomPickPlaygroundStateValue = {

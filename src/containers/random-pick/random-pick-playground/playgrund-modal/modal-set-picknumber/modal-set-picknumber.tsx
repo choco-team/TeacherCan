@@ -16,21 +16,13 @@ import {
   FormMessage,
 } from '@/components/form';
 import { MODAL_STATE_TYPES } from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider.constans';
+import { getFormSchema } from '@/utils/getFormSchema';
 
 export default function SetPickNumberModal() {
   const { selectModalState, runPick } = useRandomPickPlaygroundAction();
   const { maxNumberOfPick } = useRandomPickPlaygroundState();
 
-  const formSchema = z.object({
-    number: z.coerce
-      .number()
-      .min(1, {
-        message: '최소 인원은 1명입니다.',
-      })
-      .max(maxNumberOfPick, {
-        message: `남은 인원은 ${maxNumberOfPick}명입니다.`,
-      }),
-  });
+  const formSchema = getFormSchema(maxNumberOfPick);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
