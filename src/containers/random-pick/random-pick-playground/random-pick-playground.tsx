@@ -1,13 +1,14 @@
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
-import Card from './playground-card/playground-card';
 import {
   useRandomPickPlaygroundAction,
   useRandomPickPlaygroundState,
 } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 import PlaygroundModal from './playgrund-modal/playground-modal';
 import { MODAL_STATE_TYPES } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.constans';
+import Card from './playground-card/playground-card';
+import MainCard from './playground-card/playground-main-card';
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
@@ -41,12 +42,14 @@ export default function PlayGround() {
           <div>
             <div className="grid grid-cols-7 gap-4 p-4">
               {pickList[pickType].map(
-                (card) => !card.isPicked && <Card key={card.id} card={card} />,
+                (card) =>
+                  !card.isPicked && <MainCard key={card.id} card={card} />,
               )}
             </div>
             <div className="grid grid-cols-7 gap-4 p-4">
               {pickList[pickType].map(
-                (card) => card.isPicked && <Card key={card.id} card={card} />,
+                (card) =>
+                  card.isPicked && <MainCard key={card.id} card={card} />,
               )}
             </div>
           </div>
@@ -54,7 +57,9 @@ export default function PlayGround() {
       <div className="grid grid-cols-7 gap-4 p-4">
         {modalState === MODAL_STATE_TYPES.noModal &&
           !isSeparateSelectedStudent &&
-          pickList[pickType].map((card) => <Card key={card.id} card={card} />)}
+          pickList[pickType].map((card) => (
+            <MainCard key={card.id} card={card} />
+          ))}
         {modalState === MODAL_STATE_TYPES.setPickNumberModal &&
           temporaryPickList.map((value) => <Card key={value} title={value} />)}
         {modalState === MODAL_STATE_TYPES.resultModal &&

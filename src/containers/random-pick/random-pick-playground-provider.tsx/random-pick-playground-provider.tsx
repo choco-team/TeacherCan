@@ -35,7 +35,8 @@ type RandomPickPlaygroundAction = {
   selectModalState: Dispatch<SetStateAction<ModalStateType>>;
   runPick: (newNumberOfPick?: number) => void;
   resetPick: () => void;
-  handleCardFlip: (id: string) => void;
+  handleCardFlip: (pickListId: string) => void;
+  handleCardUsed: (pickListId: string) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -52,7 +53,7 @@ export default function RandomPickPlaygroundProvider({
   const [modalState, setModalState] = useState<ModalStateType>(
     MODAL_STATE_TYPES.noModal,
   );
-  const numberOfWinner = useRef(0);
+  const numberOfExcept = useRef(0);
   const cardMixRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
@@ -84,7 +85,7 @@ export default function RandomPickPlaygroundProvider({
     modalState,
     forceRender,
     maxNumberOfPick: isExcludingSelected
-      ? pickList[pickType].length - numberOfWinner.current
+      ? pickList[pickType].length - numberOfExcept.current
       : pickList[pickType].length,
   };
 
@@ -95,20 +96,20 @@ export default function RandomPickPlaygroundProvider({
       while (count !== 0) {
         const n = Math.floor(Math.random() * pickList[pickType].length);
         const pickedStudent = pickList[pickType][n];
-        if (!pickList[pickType][n].isPicked) {
-          pickList[pickType][n].isPicked = true;
+        if (pickedStudent.isUsed && !pickedStudent.isPicked) {
+          pickedStudent.isPicked = true;
           newWinners.push({
             pickListId: pickedStudent.id,
             pickListValue: pickedStudent.value,
             isflipped: false,
           });
           count -= 1;
-          numberOfWinner.current += 1;
+          numberOfExcept.current += 1;
         }
       }
       return newWinners;
     },
-    [pickList, pickType, numberOfWinner],
+    [pickList, pickType, numberOfExcept],
   );
 
   const includingSelectedPick = useCallback(
@@ -119,7 +120,7 @@ export default function RandomPickPlaygroundProvider({
         const n = Math.floor(Math.random() * pickList[pickType].length);
         if (!newWinners.includes(n)) {
           if (!pickList[pickType][n].isPicked) {
-            numberOfWinner.current += 1;
+            numberOfExcept.current += 1;
           }
           pickList[pickType][n].isPicked = true;
           newWinners.push({ pickListIndex: n, isflipped: false });
@@ -128,7 +129,7 @@ export default function RandomPickPlaygroundProvider({
       }
       return newWinners;
     },
-    [pickList, pickType, numberOfWinner],
+    [pickList, pickType, numberOfExcept],
   );
 
   const defaultRandomPickPlaygroundActionValue = {
@@ -159,7 +160,7 @@ export default function RandomPickPlaygroundProvider({
         isPicked: false,
         isUsed: false,
       }));
-      numberOfWinner.current = 0;
+      numberOfExcept.current = 0;
       // pickList가 state가 아니라서 강제로 리렌더링시킴
       setForceRender((prev) => prev * -1);
     },
@@ -171,6 +172,18 @@ export default function RandomPickPlaygroundProvider({
             : winner,
         ),
       );
+    },
+    handleCardUsed: (pickListId: string) => {
+      pickList[pickType] = pickList[pickType].map((pickListElement) => {
+        if (pickListElement.id === pickListId) {
+          if (!pickListElement.isPicked) {
+            numberOfExcept.current += pickListElement.isUsed ? 1 : -1;
+          }
+          return { ...pickListElement, isUsed: !pickListElement.isUsed };
+        }
+        return { ...pickListElement };
+      });
+      setForceRender((prev) => prev * -1);
     },
   };
 

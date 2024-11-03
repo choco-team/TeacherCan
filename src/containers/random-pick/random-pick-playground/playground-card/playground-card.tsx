@@ -1,28 +1,11 @@
-import { InnerPickListType } from '../../random-pick-provider/random-pick-provider';
-
-type CardProps = {
-  card?: InnerPickListType;
-  title?: string;
+type TitleType = {
+  title: string;
 };
 
-export default function Card({ card, title }: CardProps) {
+export default function Card({ title }: TitleType) {
   return (
-    <>
-      {card && card.isPicked && (
-        <div className="h-10 bg-primary text-white flex items-center justify-center rounded-lg">
-          당첨
-        </div>
-      )}
-      {card && !card.isPicked && (
-        <div className="h-10 bg-primary text-white flex items-center justify-center rounded-lg">
-          {card.value}
-        </div>
-      )}
-      {title && (
-        <div className="h-10 bg-primary text-white flex items-center justify-center rounded-lg">
-          {title}
-        </div>
-      )}
-    </>
+    <div className="h-10 w-full bg-primary text-white flex items-center justify-center rounded-lg">
+      <span>{title}</span>
+    </div>
   );
 }
