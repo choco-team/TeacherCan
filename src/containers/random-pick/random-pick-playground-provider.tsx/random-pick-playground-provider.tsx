@@ -116,15 +116,23 @@ export default function RandomPickPlaygroundProvider({
   const includingSelectedPick = useCallback(
     (countNum: number) => {
       let count = countNum;
-      const newWinners = [];
+      const newWinners: WinnersType[] = [];
       while (count !== 0) {
         const n = Math.floor(Math.random() * pickList[pickType].length);
-        if (!newWinners.includes(n)) {
+
+        const pickedStudent = pickList[pickType][n];
+        const isIncluded = newWinners.map((v) => v.pickListId);
+
+        if (!isIncluded.includes(pickedStudent.id)) {
           if (!pickList[pickType][n].isPicked) {
             numberOfExcept.current += 1;
           }
-          pickList[pickType][n].isPicked = true;
-          newWinners.push({ pickListIndex: n, isflipped: false });
+
+          newWinners.push({
+            pickListId: pickedStudent.id,
+            pickListValue: pickedStudent.value,
+            isflipped: false,
+          });
           count -= 1;
         }
       }
