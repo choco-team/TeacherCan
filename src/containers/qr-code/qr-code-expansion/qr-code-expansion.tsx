@@ -4,6 +4,7 @@ import { ZoomIn } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/dialog';
+import { cn } from '@/styles/utils';
 
 function QRCodeExpansion({ qrCodeValue, qrCodeName }) {
   return (
@@ -13,19 +14,27 @@ function QRCodeExpansion({ qrCodeValue, qrCodeName }) {
           <ZoomIn width={30} height={30} />
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <div className="flex justify-center">
-          {qrCodeValue && (
-            <QRCodeSVG value={qrCodeValue} width={300} height={300} />
-          )}
-        </div>
-        <div className="flex justify-center">
-          {qrCodeName && (
-            <p className="text-center mt-2 text-lg font-semibold w-full">
-              {qrCodeName}
-            </p>
-          )}
-        </div>
+      <DialogContent
+        fullScreen
+        className={cn(
+          'p-12 flex flex-col items-center justify-center gap-y-8',
+          'md:p-16 md:gap-y-12',
+          'lg:p-24',
+        )}
+      >
+        {qrCodeValue && (
+          <QRCodeSVG
+            value={qrCodeValue}
+            className="min-w-60 min-h-60 size-full"
+          />
+        )}
+        {qrCodeName && (
+          <span
+            className={cn('text-3xl font-bold', 'md:text-4xl', 'lg:text-5xl')}
+          >
+            {qrCodeName}
+          </span>
+        )}
       </DialogContent>
     </Dialog>
   );
