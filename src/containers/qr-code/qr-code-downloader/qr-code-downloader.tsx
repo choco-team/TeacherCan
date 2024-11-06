@@ -3,19 +3,26 @@
 import { Button } from '@/components/button';
 import { Download } from 'lucide-react';
 
-function QRCodeDownloader() {
+function QRCodeDownloader({ qrCodeRef, qrCodeName }) {
   const downloadQRCode = () => {
-    const svg = document.querySelector('svg');
-    if (svg) {
-      const svgData = new XMLSerializer().serializeToString(svg);
+    if (!qrCodeRef.current) return;
+
+    if (qrCodeRef.current) {
+      const svgElement = qrCodeRef.current.querySelector('svg');
+      const svgData = new XMLSerializer().serializeToString(svgElement);
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
       const handleImageLoad = () => {
         canvas.width = img.width;
-        canvas.height = img.height;
+        canvas.height = img.height + 30;
         ctx.drawImage(img, 0, 0);
+
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(qrCodeName, canvas.width / 2, img.height + 25);
+
         const pngFile = canvas.toDataURL('image/png');
 
         if (pngFile) {
