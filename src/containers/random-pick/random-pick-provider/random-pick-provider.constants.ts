@@ -1,5 +1,15 @@
-export const INIT_STUDENT_NAMES = ['학생1', '학생2', '학생3'];
-export const INIT_STUDENT_NUMBERS = ['1', '2', '3'];
+import { creatId } from '@/utils/createNonoid';
+
+export const INIT_STUDENT_NAMES = [
+  { id: creatId(), value: '학생1', isPicked: false, isUsed: true },
+  { id: creatId(), value: '학생2', isPicked: false, isUsed: true },
+  { id: creatId(), value: '학생3', isPicked: false, isUsed: true },
+];
+export const INIT_STUDENT_NUMBERS = [
+  { id: creatId(), value: '1', isPicked: false, isUsed: true },
+  { id: creatId(), value: '2', isPicked: false, isUsed: true },
+  { id: creatId(), value: '3', isPicked: false, isUsed: true },
+];
 
 export const PICK_TYPES = [
   {
@@ -9,20 +19,5 @@ export const PICK_TYPES = [
   {
     type: 'names',
     label: '이름',
-  },
-] as const;
-
-export const SORT_SELECTED_STUDENT_TYPES = [
-  {
-    type: 'none',
-    label: '없음',
-  },
-  {
-    type: 'front',
-    label: '앞으로',
-  },
-  {
-    type: 'back',
-    label: '뒤로',
   },
 ] as const;

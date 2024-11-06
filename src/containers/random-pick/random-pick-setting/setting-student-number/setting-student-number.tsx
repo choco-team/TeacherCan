@@ -10,6 +10,7 @@ import {
 } from '@/components/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { creatId } from '@/utils/createNonoid';
 import {
   useRandomPickAction,
   useRandomPickState,
@@ -38,8 +39,13 @@ export default function SettingStudentNumber() {
   });
 
   const onSubmit = ({ number }: z.infer<typeof formSchema>) => {
-    const newStudentNumbers = Array.from({ length: number }).map((_, index) =>
-      String(index + 1),
+    const newStudentNumbers = Array.from({ length: number }).map(
+      (_, index) => ({
+        id: creatId(),
+        value: String(index + 1),
+        isPicked: false,
+        isUsed: true,
+      }),
     );
 
     modifyPickList('numbers', newStudentNumbers);

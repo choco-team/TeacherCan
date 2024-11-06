@@ -10,6 +10,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Textarea } from '@/components/textarea';
+import { creatId } from '@/utils/createNonoid';
 import {
   useRandomPickAction,
   useRandomPickState,
@@ -47,12 +48,20 @@ export default function SettingStudentName() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      names: pickList.names,
+      names: pickList.names.map((name) => name.value),
     },
   });
 
   const onSubmit = ({ names }: z.infer<typeof formSchema>) => {
-    modifyPickList('names', names);
+    modifyPickList(
+      'names',
+      names.map((name) => ({
+        id: creatId(),
+        value: name,
+        isPicked: false,
+        isUsed: true,
+      })),
+    );
   };
 
   return (

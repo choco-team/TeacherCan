@@ -10,18 +10,21 @@ import {
   INIT_STUDENT_NAMES,
   INIT_STUDENT_NUMBERS,
   PICK_TYPES,
-  SORT_SELECTED_STUDENT_TYPES,
 } from './random-pick-provider.constants';
 
-type SortSelectedStudentType =
-  (typeof SORT_SELECTED_STUDENT_TYPES)[number]['type'];
+export type InnerPickListType = {
+  id: string;
+  value: string;
+  isPicked: boolean;
+  isUsed: boolean;
+};
 
 type PickType = (typeof PICK_TYPES)[number]['type'];
-type PickListType = Record<PickType, string[]>;
+type PickListType = Record<PickType, InnerPickListType[]>;
 type OptionsType = {
   isHideResult: boolean;
   isExcludingSelected: boolean;
-  sortSelectedStudent: SortSelectedStudentType;
+  isSeparateSelectedStudent: boolean;
 };
 
 type RandomPickState = {
@@ -36,7 +39,10 @@ export const RandomPickStateContext = createContext<RandomPickState | null>(
 
 type RandomPickAction = {
   selectPickType: Dispatch<SetStateAction<PickType>>;
-  modifyPickList: (pickType: PickType, modifiedPickList: string[]) => void;
+  modifyPickList: (
+    pickType: PickType,
+    modifiedPickList: InnerPickListType[],
+  ) => void;
   changeOption: (
     changedOption: (prev: OptionsType) => Partial<OptionsType>,
   ) => void;
@@ -61,7 +67,7 @@ export default function RandomPickProvider({
   const [options, setOptions] = useState<OptionsType>({
     isHideResult: true,
     isExcludingSelected: true,
-    sortSelectedStudent: 'none',
+    isSeparateSelectedStudent: false,
   });
   const [pickType, setPickType] = useState<PickType>('numbers');
 
@@ -78,7 +84,7 @@ export default function RandomPickProvider({
     selectPickType: setPickType,
     modifyPickList: (
       incomingPickType: PickType,
-      modifiedPickList: string[],
+      modifiedPickList: InnerPickListType[],
     ) => {
       if (incomingPickType === 'names') {
         setNames(modifiedPickList);
