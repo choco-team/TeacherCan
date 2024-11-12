@@ -45,6 +45,12 @@ const DialogContent = React.forwardRef<
         fullScreen && 'max-w-full h-full sm:rounded-none',
         className,
       )}
+      onOpenAutoFocus={
+        props.onOpenAutoFocus ??
+        ((event) => {
+          event.preventDefault();
+        })
+      }
       {...props}
     >
       {children}
