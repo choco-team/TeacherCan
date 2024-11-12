@@ -1,33 +1,9 @@
-import { QRCodeSVG } from 'qrcode.react';
-import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
-import { Heading2 } from '@/components/heading';
+import { type ChangeEvent, useState, useTransition } from 'react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Input } from '@/components/input';
-import { useCallback, useState } from 'react';
-import theme from '@/styles/theme';
-import debounce from './qr-code-generator-debounce';
-
-const loaderStyle = `
-.loader {
-    width: 48px;
-    height: 48px;
-    border: 5px solid ${theme.colors.primary[400]};
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotation 1s linear infinite;
-
-    }
-
-    @keyframes rotation {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    } 
-`;
+import { Label } from '@/components/label';
+import { cn } from '@/styles/utils';
+import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 
 function QRCodeGenerator({
   setQrCodeValue,
@@ -35,91 +11,70 @@ function QRCodeGenerator({
   qrCodeValue,
   qrCodeName,
   setQrCodeName,
-  isGenerated,
-  setIsGenerated,
 }) {
-  const [newValue, setNewValue] = useState('');
-  const [loading, setLoading] = useState(false);
-  const debounceGenerate = useCallback(
-    debounce((value: string) => {
-      setIsGenerated(true);
-      setQrCodeValue(value);
-      setLoading(false);
-    }, 500),
-    [],
-  );
+  const [qrCodeInputValue, setQrCodeInputValue] = useState('');
 
-  const handleGenerate = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isPending, startTransition] = useTransition();
+
+  const handleGenerate = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setNewValue(value);
-    setLoading(true);
-    if (value.trim()) {
-      debounceGenerate(value);
-    } else {
-      setIsGenerated(false);
-    }
+    setQrCodeInputValue(value);
+    startTransition(() => setQrCodeValue(value));
   };
 
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
     setQrCodeName(e.target.value);
   };
 
   return (
-    <div>
-      <style>{loaderStyle}</style>
-      <Heading2 className="text-center text-2xl font-semibold mb-4">
-        QR 코드 생성
-      </Heading2>
-      <div className="flex justify-center">
-        <Input
-          type="text"
-          value={newValue}
-          onChange={handleGenerate}
-          placeholder="주소를 입력하세요"
-          className="flex-grow w-3/4"
-        />
-      </div>
-      <div className="flex justify-center mt-4">
-        <Input
-          type="text"
-          value={qrCodeName}
-          onChange={handleNameChange}
-          placeholder="QR 코드 이름을 입력하세요"
-          className="flex-grow w-3/4"
-          maxLength={12}
-        />
-      </div>
-      <div className="flex justify-center mt-4">
-        {loading && <span className="loader mt-8" />}
+    <section className="flex flex-col items-center gap-y-10 w-full">
+      <div className="flex flex-col gap-y-4 w-full max-w-96">
+        <Label className="space-y-1">
+          <span className="font-semibold">
+            URL 링크 <span className="text-red">*</span>
+          </span>
+          <Input
+            value={qrCodeInputValue}
+            required
+            onChange={handleGenerate}
+            placeholder="https://www.teachercan.com"
+          />
+        </Label>
+
+        <Label className="space-y-1">
+          <span className="font-semibold">제목</span>
+          <Input
+            value={qrCodeName}
+            placeholder="티처캔"
+            maxLength={12}
+            onChange={handleChangeName}
+          />
+        </Label>
       </div>
 
-      {isGenerated && !loading && (
-        <div className="flex justify-center">
-          <div ref={qrCodeRef}>
-            <QRCodeSVG
-              value={qrCodeValue}
-              width={200}
-              height={200}
-              className="mt-8"
-            />
+      <div className="min-h-72">
+        <div className="bg-white shadow-lg rounded-xl overflow-hidden">
+          <div ref={qrCodeRef} className="space-y-5 bg-white p-5">
+            {qrCodeValue ? (
+              <QRCodeCanvas
+                value={qrCodeValue}
+                title={qrCodeName}
+                size={200}
+                className={cn(isPending && 'opacity-70')}
+              />
+            ) : (
+              <TeacherCanLogo width={200} height={200} />
+            )}
+
             {qrCodeName && (
-              <p className="text-center mt-2 text-lg font-semibold w-full">
+              <p className="text-center text-lg text-black font-semibold">
                 {qrCodeName}
               </p>
             )}
           </div>
         </div>
-      )}
-      {!isGenerated && !loading && (
-        <div className="flex justify-center">
-          <TeacherCanLogo
-            width="200"
-            height="200"
-            className="animate-bounce-in-top mt-8"
-          />
-        </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
 
