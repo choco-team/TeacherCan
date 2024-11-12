@@ -1,6 +1,6 @@
 'use client';
 
-import { ZoomIn } from 'lucide-react';
+import { ZoomInIcon } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Button } from '@/components/button';
 import {
@@ -10,13 +10,23 @@ import {
   DialogTrigger,
 } from '@/components/dialog';
 import { cn } from '@/styles/utils';
+import type { QRCode } from '../qr-code.type';
 
-function QRCodeExpansion({ qrCodeValue, qrCodeName }) {
+type Props = {
+  qrCode: QRCode;
+};
+
+function QRCodeExpansion({ qrCode }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="gray-ghost">
-          <ZoomIn width={30} height={30} />
+        <Button
+          disabled={!qrCode.value}
+          variant="primary-outline"
+          className="flex items-center gap-x-1.5"
+        >
+          <ZoomInIcon className="size-5" />
+          크게 보기
         </Button>
       </DialogTrigger>
 
@@ -29,18 +39,19 @@ function QRCodeExpansion({ qrCodeValue, qrCodeName }) {
         )}
         aria-describedby={undefined}
       >
-        {qrCodeValue && (
+        {qrCode.value && (
           <QRCodeSVG
-            value={qrCodeValue}
+            value={qrCode.value}
+            title={qrCode.name}
             className="min-w-60 min-h-60 size-full"
           />
         )}
         <DialogTitle>
-          {qrCodeName && (
+          {qrCode.name && (
             <span
               className={cn('text-3xl font-bold', 'md:text-4xl', 'lg:text-5xl')}
             >
-              {qrCodeName}
+              {qrCode.name}
             </span>
           )}
         </DialogTitle>

@@ -3,7 +3,7 @@
 import { FormEvent, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useReactToPrint } from 'react-to-print';
-import { PrinterCheck } from 'lucide-react';
+import { PrinterCheckIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -18,8 +18,13 @@ import { Button } from '@/components/button';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Label } from '@/components/label';
 import { QR_CODE_PRINT_GRID_OPTIONS } from './qr-code-printer.constants';
+import type { QRCode } from '../qr-code.type';
 
-function QRCodePrinter({ qrCodeValue, qrCodeName }) {
+type Props = {
+  qrCode: QRCode;
+};
+
+function QRCodePrinter({ qrCode }: Props) {
   const [grid, setGrid] = useState<(typeof QR_CODE_PRINT_GRID_OPTIONS)[number]>(
     QR_CODE_PRINT_GRID_OPTIONS[0],
   );
@@ -41,8 +46,13 @@ function QRCodePrinter({ qrCodeValue, qrCodeName }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={!qrCodeValue} variant="gray-ghost">
-          <PrinterCheck width={30} height={30} />
+        <Button
+          disabled={!qrCode.value}
+          variant="gray-outline"
+          className="flex items-center gap-x-1.5"
+        >
+          <PrinterCheckIcon className="size-5" />
+          코드 인쇄
         </Button>
       </DialogTrigger>
 
@@ -112,12 +122,12 @@ function QRCodePrinter({ qrCodeValue, qrCodeName }) {
                     key={index}
                     className="flex flex-col items-center gap-y-1"
                   >
-                    <QRCodeSVG value={qrCodeValue} className="size-5/6" />
+                    <QRCodeSVG value={qrCode.value} className="size-5/6" />
                     <span
                       className="text-center font-semibold leading-tight"
                       style={{ fontSize: 24 / (grid.column / 2) }}
                     >
-                      {qrCodeName}
+                      {qrCode.name}
                     </span>
                   </div>
                 ),

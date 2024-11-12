@@ -2,34 +2,29 @@
 
 import { useRef, useState } from 'react';
 import { Heading1 } from '@/components/heading';
+import { cn } from '@/styles/utils';
 import QRCodeGenerator from './qr-code-generator/qr-code-generator';
 import QRCodeDownloader from './qr-code-downloader/qr-code-downloader';
 import QRCodeClipboard from './qr-code-clipboard/qr-code-clipboard';
 import QRCodeExpansion from './qr-code-expansion/qr-code-expansion';
 import QRCodePrinter from './qr-code-printer/qr-code-printer';
+import type { QRCode } from './qr-code.type';
 
 function QrCodeContainer() {
-  const [qrCodeValue, setQrCodeValue] = useState('');
-  const [qrCodeName, setQrCodeName] = useState('');
+  const [qrCode, setQrCode] = useState<QRCode>({ value: '', name: '' });
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-y-10 bg-body">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-y-10 px-6 bg-body">
       <Heading1>QR코드 생성</Heading1>
 
-      <QRCodeGenerator
-        setQrCodeValue={setQrCodeValue}
-        qrCodeRef={qrCodeRef}
-        qrCodeValue={qrCodeValue}
-        qrCodeName={qrCodeName}
-        setQrCodeName={setQrCodeName}
-      />
+      <QRCodeGenerator ref={qrCodeRef} qrCode={qrCode} setQrCode={setQrCode} />
 
-      <div className="grid grid-cols-4 gap-2">
-        <QRCodeDownloader qrCodeRef={qrCodeRef} qrCodeName={qrCodeName} />
-        <QRCodeClipboard qrCodeRef={qrCodeRef} qrCodeName={qrCodeName} />
-        <QRCodeExpansion qrCodeValue={qrCodeValue} qrCodeName={qrCodeName} />
-        <QRCodePrinter qrCodeName={qrCodeName} qrCodeValue={qrCodeValue} />
+      <div className={cn('grid grid-cols-2 gap-4', 'sm:grid-cols-4')}>
+        <QRCodeClipboard qrCodeRef={qrCodeRef} qrCode={qrCode} />
+        <QRCodeDownloader qrCodeRef={qrCodeRef} qrCode={qrCode} />
+        <QRCodePrinter qrCode={qrCode} />
+        <QRCodeExpansion qrCode={qrCode} />
       </div>
       <div />
     </div>

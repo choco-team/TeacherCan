@@ -1,9 +1,16 @@
 'use client';
 
+import { type MutableRefObject } from 'react';
+import { DownloadIcon } from 'lucide-react';
 import { Button } from '@/components/button';
-import { Download } from 'lucide-react';
+import type { QRCode } from '../qr-code.type';
 
-function QRCodeDownloader({ qrCodeRef, qrCodeName }) {
+type Props = {
+  qrCodeRef: MutableRefObject<HTMLDivElement>;
+  qrCode: QRCode;
+};
+
+function QRCodeDownloader({ qrCodeRef, qrCode }: Props) {
   const downloadQRCode = () => {
     if (!qrCodeRef.current) return;
 
@@ -21,7 +28,7 @@ function QRCodeDownloader({ qrCodeRef, qrCodeName }) {
 
         ctx.font = 'bold 20px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText(qrCodeName, canvas.width / 2, img.height + 25);
+        ctx.fillText(qrCode.name, canvas.width / 2, img.height + 25);
 
         const pngFile = canvas.toDataURL('image/png');
 
@@ -39,15 +46,15 @@ function QRCodeDownloader({ qrCodeRef, qrCodeName }) {
   };
 
   return (
-    <div>
-      <Button
-        onClick={downloadQRCode}
-        variant="gray-ghost"
-        className="size:icon"
-      >
-        <Download width={30} height={30} />
-      </Button>
-    </div>
+    <Button
+      disabled={!qrCode.value}
+      variant="gray-outline"
+      className="flex items-center gap-x-1.5"
+      onClick={downloadQRCode}
+    >
+      <DownloadIcon className="size-5" />
+      코드 저장
+    </Button>
   );
 }
 

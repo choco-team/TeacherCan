@@ -1,9 +1,16 @@
 'use client';
 
 import { Button } from '@/components/button';
-import { ClipboardCopy } from 'lucide-react';
+import { ClipboardCopyIcon } from 'lucide-react';
+import { type MutableRefObject } from 'react';
+import type { QRCode } from '../qr-code.type';
 
-function QRCodeClipboard({ qrCodeRef, qrCodeName }) {
+type Props = {
+  qrCodeRef: MutableRefObject<HTMLDivElement>;
+  qrCode: QRCode;
+};
+
+function QRCodeClipboard({ qrCodeRef, qrCode }: Props) {
   const copyQRCodeToClipboard = async () => {
     if (!qrCodeRef.current) return;
 
@@ -21,7 +28,7 @@ function QRCodeClipboard({ qrCodeRef, qrCodeName }) {
         ctx.font = 'bold 20px Arial';
         ctx.textAlign = 'center';
         ctx.fillStyle = 'white';
-        ctx.fillText(qrCodeName, canvas.width / 2, img.height + 25);
+        ctx.fillText(qrCode.name, canvas.width / 2, img.height + 25);
         canvas.toBlob(async (blob) => {
           const item = new ClipboardItem({ 'image/png': blob });
           await navigator.clipboard.write([item]);
@@ -36,11 +43,13 @@ function QRCodeClipboard({ qrCodeRef, qrCodeName }) {
   return (
     <div>
       <Button
+        disabled={!qrCode.value}
+        variant="gray-outline"
+        className="flex items-center gap-x-1.5"
         onClick={copyQRCodeToClipboard}
-        variant="gray-ghost"
-        className="size:icon"
       >
-        <ClipboardCopy width={30} height={30} />
+        <ClipboardCopyIcon className="size-5" />
+        코드 복사
       </Button>
     </div>
   );
