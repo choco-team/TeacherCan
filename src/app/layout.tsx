@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 
+import { Toaster } from '@/components/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -39,7 +40,8 @@ export default function RootLayout({
       className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable}`}
     >
       <body>
-        <div className="w-full min-h-screen">{children}</div>
+        <main className="w-full min-h-screen">{children}</main>
+        <Toaster />
       </body>
     </html>
   );

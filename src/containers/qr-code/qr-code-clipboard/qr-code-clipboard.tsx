@@ -3,6 +3,7 @@
 import { type MutableRefObject } from 'react';
 import html2canvas from 'html2canvas';
 import { ClipboardIcon } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/button';
 import type { QRCode } from '../qr-code.type';
 
@@ -12,6 +13,8 @@ type Props = {
 };
 
 function QRCodeClipboard({ qrCodeRef, qrCode }: Props) {
+  const { toast } = useToast();
+
   const handleCopy = async () => {
     const target = qrCodeRef.current;
     if (!target) return;
@@ -25,10 +28,11 @@ function QRCodeClipboard({ qrCodeRef, qrCode }: Props) {
               'image/png': blob,
             }),
           ]);
-          // 복사 성공
+          toast({ title: '클립보드에 복사했어요.', variant: 'success' });
         }
       } catch (error) {
         console.error('클립보드 복사 실패:', error);
+        toast({ title: '복사에 실패했어요.', variant: 'error' });
       }
     });
   };
