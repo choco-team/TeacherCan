@@ -1,6 +1,8 @@
 'use client';
 
 import { type MutableRefObject } from 'react';
+import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
 import { DownloadIcon } from 'lucide-react';
 import { Button } from '@/components/button';
 import type { QRCode } from '../qr-code.type';
@@ -11,37 +13,19 @@ type Props = {
 };
 
 function QRCodeDownloader({ qrCodeRef, qrCode }: Props) {
-  const downloadQRCode = () => {
-    if (!qrCodeRef.current) return;
+  const handleDownload = async () => {
+    const target = qrCodeRef.current;
+    if (!target) return;
 
-    if (qrCodeRef.current) {
-      const svgElement = qrCodeRef.current.querySelector('svg');
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-
-      const handleImageLoad = () => {
-        canvas.width = img.width;
-        canvas.height = img.height + 30;
-        ctx.drawImage(img, 0, 0);
-
-        ctx.font = 'bold 20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText(qrCode.name, canvas.width / 2, img.height + 25);
-
-        const pngFile = canvas.toDataURL('image/png');
-
-        if (pngFile) {
-          const link = document.createElement('a');
-          link.href = pngFile;
-          link.download = 'qrcode.png';
-          link.click();
+    try {
+      const canvas = await html2canvas(target);
+      canvas.toBlob((blob) => {
+        if (blob) {
+          saveAs(blob, `${qrCode.name || 'qr-code'}.png`);
         }
-      };
-
-      img.onload = handleImageLoad;
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+      });
+    } catch (error) {
+      console.error('이미지 다운로드 실패:', error);
     }
   };
 
@@ -50,7 +34,7 @@ function QRCodeDownloader({ qrCodeRef, qrCode }: Props) {
       disabled={!qrCode.value}
       variant="gray-outline"
       className="flex items-center gap-x-1.5"
-      onClick={downloadQRCode}
+      onClick={handleDownload}
     >
       <DownloadIcon className="size-5" />
       코드 저장

@@ -1,8 +1,9 @@
 'use client';
 
-import { Button } from '@/components/button';
-import { ClipboardCopyIcon } from 'lucide-react';
 import { type MutableRefObject } from 'react';
+import html2canvas from 'html2canvas';
+import { ClipboardIcon } from 'lucide-react';
+import { Button } from '@/components/button';
 import type { QRCode } from '../qr-code.type';
 
 type Props = {
@@ -11,33 +12,25 @@ type Props = {
 };
 
 function QRCodeClipboard({ qrCodeRef, qrCode }: Props) {
-  const copyQRCodeToClipboard = async () => {
-    if (!qrCodeRef.current) return;
+  const handleCopy = async () => {
+    const target = qrCodeRef.current;
+    if (!target) return;
 
-    try {
-      const svgElement = qrCodeRef.current.querySelector('svg');
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-
-      const img = new Image();
-      img.onload = async () => {
-        canvas.width = img.width;
-        canvas.height = img.height + 30;
-        ctx.drawImage(img, 0, 0);
-        ctx.font = 'bold 20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = 'white';
-        ctx.fillText(qrCode.name, canvas.width / 2, img.height + 25);
-        canvas.toBlob(async (blob) => {
-          const item = new ClipboardItem({ 'image/png': blob });
-          await navigator.clipboard.write([item]);
-        });
-      };
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    } catch (err) {
-      console.error('이미지를 복사하는 데 실패했습니다: ', err);
-    }
+    const canvas = await html2canvas(target);
+    canvas.toBlob(async (blob) => {
+      try {
+        if (blob) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'image/png': blob,
+            }),
+          ]);
+          // 복사 성공
+        }
+      } catch (error) {
+        console.error('클립보드 복사 실패:', error);
+      }
+    });
   };
 
   return (
@@ -46,9 +39,9 @@ function QRCodeClipboard({ qrCodeRef, qrCode }: Props) {
         disabled={!qrCode.value}
         variant="gray-outline"
         className="flex items-center gap-x-1.5"
-        onClick={copyQRCodeToClipboard}
+        onClick={handleCopy}
       >
-        <ClipboardCopyIcon className="size-5" />
+        <ClipboardIcon className="size-5" />
         코드 복사
       </Button>
     </div>

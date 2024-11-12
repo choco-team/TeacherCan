@@ -3,7 +3,7 @@
 import { FormEvent, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useReactToPrint } from 'react-to-print';
-import { PrinterCheckIcon } from 'lucide-react';
+import { PrinterIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -51,7 +51,7 @@ function QRCodePrinter({ qrCode }: Props) {
           variant="gray-outline"
           className="flex items-center gap-x-1.5"
         >
-          <PrinterCheckIcon className="size-5" />
+          <PrinterIcon className="size-5" />
           코드 인쇄
         </Button>
       </DialogTrigger>
