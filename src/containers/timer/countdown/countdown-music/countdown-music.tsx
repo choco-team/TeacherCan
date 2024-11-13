@@ -1,14 +1,28 @@
 import Lottie from 'lottie-react';
 import { cn } from '@/styles/utils';
 import musicWaveAnimation from '@/assets/lottie/music-wave.json';
-import { useCountdownMusicState } from '../countdown-music-provider/countdown-music-provider.hooks';
+import YouTube from 'react-youtube';
+import { Input } from '@/components/input';
+import {
+  useCountdownMusicAction,
+  useCountdownMusicState,
+} from '../countdown-music-provider/countdown-music-provider.hooks';
 import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
 
 export default function CountdownMusic() {
-  const { isMusicUsed, iframeRef, musicAnimationRef } = useCountdownState();
+  const { isMusicUsed, musicAnimationRef, youtubePlayerRef } =
+    useCountdownState();
   const {
     music: { videoId, title },
+    // previewYoutubePlayerRef,
+    volumeValue,
   } = useCountdownMusicState();
+  const { controlVolume } = useCountdownMusicAction();
+
+  const handeleVolumeChange = (e) => {
+    controlVolume(e.target.value);
+    youtubePlayerRef.current.setVolume(e.target.value);
+  };
 
   return (
     <>
@@ -24,18 +38,27 @@ export default function CountdownMusic() {
           autoPlay={false}
           className="w-6 lg:w-10"
         />
+        <Input
+          type="range"
+          value={volumeValue}
+          onChange={handeleVolumeChange}
+        />
+
         <span className="text-xs lg:text-lg text-text">{title}</span>
       </div>
-      <iframe
-        className="hidden"
-        title="youtube"
-        ref={iframeRef}
-        src={
-          videoId
-            ? `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`
-            : undefined
-        }
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+
+      <YouTube
+        // className='hidden'
+        onReady={(event: YT.PlayerEvent) => {
+          youtubePlayerRef.current = event.target;
+        }}
+        videoId={videoId}
+        opts={{
+          playerVars: {
+            autoplay: 0,
+            loop: 1,
+          },
+        }}
       />
     </>
   );

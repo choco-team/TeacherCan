@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MusicIcon } from 'lucide-react';
 import {
@@ -20,6 +20,7 @@ import {
 } from '@/components/collapsible';
 import { cn } from '@/styles/utils';
 import { Label } from '@/components/label';
+import YouTube from 'react-youtube';
 import {
   useCountdownMusicAction,
   useCountdownMusicState,
@@ -28,23 +29,31 @@ import { useCountdownState } from '../../countdown-provider/countdown-provider.h
 
 export default function SettingMusic() {
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
-  const previewIframeRef = useRef<HTMLIFrameElement>(null);
-
-  const { isActive, isMusicUsed } = useCountdownState();
+  const { isActive, isMusicUsed, youtubePlayerRef } = useCountdownState();
   const {
     music: { videoId, title },
   } = useCountdownMusicState();
-  const { getYoutubeMusicURL, toggleMusicUsed } = useCountdownMusicAction();
+  const { getYoutubeMusicURL, toggleMusicUsed, controlVolume } =
+    useCountdownMusicAction();
+  const { previewYoutubePlayerRef, volumeValue } = useCountdownMusicState();
   const form = useFormContext();
 
   const togglePreviewPlay = (isToPlay: boolean) => {
-    const postMessage = isToPlay ? 'playVideo' : 'stopVideo';
-    previewIframeRef.current.contentWindow.postMessage(
-      `{"event":"command","func":"${postMessage}"}`,
-      '*',
-    );
-
+    if (!previewYoutubePlayerRef.current) {
+      return;
+    }
+    if (isToPlay) {
+      previewYoutubePlayerRef.current.playVideo();
+    } else {
+      previewYoutubePlayerRef.current.pauseVideo();
+    }
     setIsPlayingPreview(isToPlay);
+  };
+
+  const handeleVolumeChange = (e) => {
+    controlVolume(e.target.value);
+    previewYoutubePlayerRef.current.setVolume(e.target.value);
+    youtubePlayerRef.current.setVolume(e.target.value);
   };
 
   useEffect(() => {
@@ -110,38 +119,48 @@ export default function SettingMusic() {
         </Form>
       </CollapsibleContent>
 
-      <iframe
-        ref={previewIframeRef}
-        title="preview"
-        className="hidden"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        src={
-          videoId
-            ? `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`
-            : undefined
-        }
+      <YouTube
+        // className='hidden'
+        onReady={(event: YT.PlayerEvent) => {
+          previewYoutubePlayerRef.current = event.target;
+          event.target.setVolume(volumeValue);
+        }}
+        videoId={videoId}
+        opts={{
+          playerVars: {
+            autoplay: 0,
+            loop: 1,
+          },
+        }}
       />
 
       {title && (
-        <div className="flex items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
-          <p
-            className={cn(
-              'text-sm line-clamp-1',
-              isMusicUsed
-                ? 'text-muted-foreground'
-                : 'text-muted-foreground/50',
-            )}
-          >
-            {title}
-          </p>
-          <Button
-            variant="primary-ghost"
-            size="xs"
-            disabled={isActive}
-            onClick={() => togglePreviewPlay(!isPlayingPreview)}
-          >
-            {isPlayingPreview ? '정지' : '미리듣기'}
-          </Button>
+        <div>
+          <div className="flex items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
+            <p
+              className={cn(
+                'text-sm line-clamp-1',
+                isMusicUsed
+                  ? 'text-muted-foreground'
+                  : 'text-muted-foreground/50',
+              )}
+            >
+              {title}
+            </p>
+            <Button
+              variant="primary-ghost"
+              size="xs"
+              disabled={isActive}
+              onClick={() => togglePreviewPlay(!isPlayingPreview)}
+            >
+              {isPlayingPreview ? '정지' : '미리듣기'}
+            </Button>
+          </div>
+          <Input
+            type="range"
+            value={volumeValue}
+            onChange={handeleVolumeChange}
+          />
         </div>
       )}
     </Collapsible>

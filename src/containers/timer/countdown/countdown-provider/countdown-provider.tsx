@@ -27,7 +27,7 @@ type CountdownState = {
   isActive: boolean;
   isHourUsed: boolean;
   isMusicUsed: boolean;
-  iframeRef: MutableRefObject<HTMLIFrameElement>;
+  youtubePlayerRef: MutableRefObject<YT.Player>;
   musicAnimationRef: LottieRef;
 };
 
@@ -62,7 +62,7 @@ export default function CountdownProvider({ children }: Props) {
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const setupTimeRef = useRef<number>(0);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const youtubePlayerRef = useRef<YT.Player>(null);
   const musicAnimationRef = useRef<LottieRefCurrentProps | null>(null);
 
   const hours = Math.floor(leftTime / HOUR_TO_SECONDS);
@@ -79,15 +79,14 @@ export default function CountdownProvider({ children }: Props) {
   const toggleMusicPlay = (to: 'on' | 'off') => {
     const isToPlay = to === 'on';
 
-    const postMessage = isToPlay ? 'playVideo' : 'pauseVideo';
-    iframeRef.current.contentWindow.postMessage(
-      `{"event":"command","func":"${postMessage}"}`,
-      '*',
-    );
-
+    if (!youtubePlayerRef.current) {
+      return;
+    }
     if (isToPlay) {
+      youtubePlayerRef.current.playVideo();
       musicAnimationRef.current.play();
     } else {
+      youtubePlayerRef.current.pauseVideo();
       musicAnimationRef.current.pause();
     }
   };
@@ -122,7 +121,7 @@ export default function CountdownProvider({ children }: Props) {
     setIsActive(false);
     if (isMusicUsed) toggleMusicPlay('off');
     if (timerRef.current) clearInterval(timerRef.current);
-  }, [isActive, isMusicUsed]);
+  }, [isMusicUsed]);
 
   const handleStop = useCallback(() => {
     setIsActive(false);
@@ -155,7 +154,7 @@ export default function CountdownProvider({ children }: Props) {
       if (isMusicUsed) toggleMusicPlay('off');
       if (timerRef.current) clearInterval(timerRef.current);
     }
-  }, [leftTime, isActive]);
+  }, [leftTime, isActive, isMusicUsed]);
 
   const updateHours = useCallback(
     (hou: number, keepPreviousState: boolean = false) => {
@@ -229,7 +228,7 @@ export default function CountdownProvider({ children }: Props) {
       isActive,
       isHourUsed,
       isMusicUsed,
-      iframeRef,
+      youtubePlayerRef,
       musicAnimationRef,
     }),
     [
@@ -241,7 +240,7 @@ export default function CountdownProvider({ children }: Props) {
       isActive,
       isHourUsed,
       isMusicUsed,
-      iframeRef,
+      youtubePlayerRef,
       musicAnimationRef,
     ],
   );
