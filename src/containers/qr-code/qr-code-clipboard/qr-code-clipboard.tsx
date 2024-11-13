@@ -1,46 +1,52 @@
 'use client';
 
+import { type MutableRefObject } from 'react';
+import html2canvas from 'html2canvas';
+import { ClipboardIcon } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/button';
-import { ClipboardCopy } from 'lucide-react';
+import type { QRCode } from '../qr-code.type';
 
-function QRCodeClipboard({ qrCodeRef, qrCodeName }) {
-  const copyQRCodeToClipboard = async () => {
-    if (!qrCodeRef.current) return;
+type Props = {
+  qrCodeRef: MutableRefObject<HTMLDivElement>;
+  qrCode: QRCode;
+};
 
-    try {
-      const svgElement = qrCodeRef.current.querySelector('svg');
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const svgData = new XMLSerializer().serializeToString(svgElement);
+function QRCodeClipboard({ qrCodeRef, qrCode }: Props) {
+  const { toast } = useToast();
 
-      const img = new Image();
-      img.onload = async () => {
-        canvas.width = img.width;
-        canvas.height = img.height + 30;
-        ctx.drawImage(img, 0, 0);
-        ctx.font = 'bold 20px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillStyle = 'white';
-        ctx.fillText(qrCodeName, canvas.width / 2, img.height + 25);
-        canvas.toBlob(async (blob) => {
-          const item = new ClipboardItem({ 'image/png': blob });
-          await navigator.clipboard.write([item]);
-        });
-      };
-      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    } catch (err) {
-      console.error('이미지를 복사하는 데 실패했습니다: ', err);
-    }
+  const handleCopy = async () => {
+    const target = qrCodeRef.current;
+    if (!target) return;
+
+    const canvas = await html2canvas(target);
+    canvas.toBlob(async (blob) => {
+      try {
+        if (blob) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'image/png': blob,
+            }),
+          ]);
+          toast({ title: '클립보드에 복사했어요.', variant: 'success' });
+        }
+      } catch (error) {
+        console.error('클립보드 복사 실패:', error);
+        toast({ title: '복사에 실패했어요.', variant: 'error' });
+      }
+    });
   };
 
   return (
     <div>
       <Button
-        onClick={copyQRCodeToClipboard}
-        variant="gray-ghost"
-        className="size:icon"
+        disabled={!qrCode.value}
+        variant="gray-outline"
+        className="flex items-center gap-x-1.5"
+        onClick={handleCopy}
       >
-        <ClipboardCopy width={30} height={30} />
+        <ClipboardIcon className="size-5" />
+        코드 복사
       </Button>
     </div>
   );

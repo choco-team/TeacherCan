@@ -6,7 +6,17 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, maxLength, onChange, ...props }, ref) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+
+      if (typeof maxLength === 'number' && value.length > maxLength) {
+        return;
+      }
+
+      if (typeof onChange === 'function') onChange(event);
+    };
+
     return (
       <input
         type={type}
@@ -15,6 +25,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className,
         )}
         ref={ref}
+        maxLength={maxLength}
+        onChange={handleChange}
         {...props}
       />
     );

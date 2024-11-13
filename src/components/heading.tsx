@@ -1,4 +1,5 @@
 import type { HTMLAttributes } from 'react';
+import { cn } from '@/styles/utils';
 
 export function Heading1({
   children,
@@ -7,7 +8,7 @@ export function Heading1({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h1
-      className={`scroll-m-20 text-4xl font-extrabold ${className ? ` ${className}` : ''}`}
+      className={cn('scroll-m-20 text-4xl font-extrabold', className)}
       {...props}
     >
       {children}
@@ -22,7 +23,7 @@ export function Heading2({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h2
-      className={`scroll-m-20 text-2.5xl font-bold${className ? ` ${className}` : ''}`}
+      className={cn('scroll-m-20 text-2.5xl font-bold', className)}
       {...props}
     >
       {children}
@@ -36,10 +37,7 @@ export function Heading3({
   ...props
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
-    <h3
-      className={`scroll-m-20 text-2xl font-bold${className ? ` ${className}` : ''}`}
-      {...props}
-    >
+    <h3 className={cn('scroll-m-20 text-2xl font-bold', className)} {...props}>
       {children}
     </h3>
   );
@@ -52,7 +50,7 @@ export function Heading4({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h4
-      className={`scroll-m-20 text-xl font-semibold${className ? ` ${className}` : ''}`}
+      className={cn('scroll-m-20 text-xl font-semibold', className)}
       {...props}
     >
       {children}

@@ -1,9 +1,9 @@
 'use client';
 
-import { QRCodeCanvas } from 'qrcode.react';
-import { Button } from '@/components/button';
-import { PrinterCheck } from 'lucide-react';
-import { useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
+import { useReactToPrint } from 'react-to-print';
+import { PrinterIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -14,121 +14,135 @@ import {
   DialogFooter,
   DialogClose,
 } from '@/components/dialog';
-import { Input } from '@/components/input';
+import { Button } from '@/components/button';
+import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Label } from '@/components/label';
+import { QR_CODE_PRINT_GRID_OPTIONS } from './qr-code-printer.constants';
+import type { QRCode } from '../qr-code.type';
 
-function QRCodePrinter({ qrCodeValue, qrCodeName, qrCodeRef }) {
-  const [gridSize, setGridSize] = useState(12);
+type Props = {
+  qrCode: QRCode;
+};
 
-  const gridConfigs = {
-    1: { columns: 1, rows: 1 },
-    12: { columns: 3, rows: 4 },
-    30: { columns: 5, rows: 6 },
-  };
+function QRCodePrinter({ qrCode }: Props) {
+  const [grid, setGrid] = useState<(typeof QR_CODE_PRINT_GRID_OPTIONS)[number]>(
+    QR_CODE_PRINT_GRID_OPTIONS[0],
+  );
 
-  const printQRCode = () => {
-    if (!qrCodeRef.current) return;
-    const svgElement = qrCodeRef.current.querySelector('svg');
-    if (!svgElement) {
-      console.error('출력할 이미지를 찾을 수 없습니다.');
-      return;
-    }
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-    const imgSrc = `data:image/svg+xml;base64,${btoa(svgData)}`;
-    const { columns, rows } = gridConfigs[gridSize];
-    const printHTML = `
-      <html>
-        <head>
-          <style>
-            body { text-align: center; margin: 0; padding: 20px; }
-            .grid-container { display: grid; grid-template-columns: repeat(${columns}, 1fr); gap: 20px; width: 80%; margin: auto; }
-            img { width: 100%; height: auto; }
-            .qr-name { margin-top: 5px; font-size: 12px; text-align: center; }
-          </style>
-        </head>
-        <body onload="window.print(); window.close();">
-          <div class="grid-container">
-            ${Array(columns * rows)
-              .fill(
-                `<div>
-                  <img src="${imgSrc}" alt="QR Code" />
-                  <div class="qr-name">${qrCodeName}</div>
-                </div>`,
-              )
-              .join('')}
-          </div>
-        </body>
-      </html>
-    `;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-    printWindow.document.open();
-    printWindow.document.write(printHTML);
-    printWindow.document.close();
+  const printRef = useRef<HTMLDivElement>(null);
+
+  const print = useReactToPrint({ contentRef: printRef });
+
+  const handleChange =
+    (gridOption: (typeof QR_CODE_PRINT_GRID_OPTIONS)[number]) => () => {
+      setGrid(gridOption);
+    };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    print();
   };
 
   return (
-    <div>
-      <div style={{ display: 'none' }} ref={qrCodeRef}>
-        <QRCodeCanvas value={qrCodeValue} size={256} />
-      </div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="gray-ghost" className="size:icon">
-            <PrinterCheck width={30} height={30} />
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>프린트 설정</DialogTitle>
-            <DialogDescription>QR 코드 개수를 선택하세요.</DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center mt-4">
-            <Label className="m-6">
-              <Input
-                type="radio"
-                name="gridSize"
-                value="1"
-                checked={gridSize === 1}
-                onChange={() => setGridSize(1)}
-              />
-              <span className="text-lg m-1">1x1</span>
-            </Label>
-            <Label className="m-6">
-              <Input
-                type="radio"
-                name="gridSize"
-                value="12"
-                checked={gridSize === 12}
-                onChange={() => setGridSize(12)}
-              />
-              <span className="text-lg m-1">4x3</span>
-            </Label>
-            <Label className="m-6">
-              <Input
-                type="radio"
-                name="gridSize"
-                value="30"
-                checked={gridSize === 30}
-                onChange={() => setGridSize(30)}
-              />
-              <span className="text-lg m-1">6x5</span>
-            </Label>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button
-                onClick={printQRCode}
-                variant="gray-ghost"
-                className="size:icon"
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          disabled={!qrCode.value}
+          variant="gray-outline"
+          className="flex items-center gap-x-1.5"
+        >
+          <PrinterIcon className="size-5" />
+          코드 인쇄
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>인쇄하기</DialogTitle>
+          <DialogDescription>
+            한 페이지에 인쇄할 QR코드 개수를 선택하세요.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit}>
+          <RadioGroup className="flex items-stretch justify-evenly gap-6 pt-2 pb-6">
+            {QR_CODE_PRINT_GRID_OPTIONS.map(({ row, column }) => (
+              <Label
+                key={`${row}*${column}`}
+                className="group basis-24 flex flex-col items-center gap-y-1 p-2 outline outline-border has-[:checked]:outline-2 has-[:checked]:outline-primary rounded-md cursor-pointer"
               >
-                확인
-              </Button>
+                <RadioGroupItem
+                  value={`${row}*${column}`}
+                  checked={row === grid.row && column === grid.column}
+                  hidden
+                  onClick={handleChange({ row, column })}
+                />
+
+                <div className="flex items-center gap-x-2 text-lg group-has-[:checked]:text-primary">
+                  {`${row} × ${column}`}
+                </div>
+
+                <div className="flex-grow flex flex-col items-stretch gap-0.5 w-full">
+                  {Array.from({ length: row }).map((_, rowIndex) => (
+                    <span
+                      // eslint-disable-next-line react/no-array-index-key
+                      key={rowIndex}
+                      className="flex gap-0.5"
+                    >
+                      {Array.from({ length: column }).map((__, colIndex) => (
+                        <span
+                          // eslint-disable-next-line react/no-array-index-key
+                          key={colIndex}
+                          className="flex-1 aspect-square bg-gray-300 group-has-[:checked]:bg-primary-300"
+                        />
+                      ))}
+                    </span>
+                  ))}
+                </div>
+              </Label>
+            ))}
+          </RadioGroup>
+
+          <div
+            ref={printRef}
+            className="hidden print:block w-screen h-screen overflow-hidden"
+            style={{ margin: 0, padding: 30 }}
+          >
+            <div
+              className="grid gap-8 w-full h-full"
+              style={{
+                gridTemplateRows: `repeat(${grid.row}, 1fr)`,
+                gridTemplateColumns: `repeat(${grid.column}, 1fr)`,
+              }}
+            >
+              {Array.from({ length: grid.row * grid.column }).map(
+                (_, index) => (
+                  <div
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={index}
+                    className="flex flex-col items-center gap-y-1"
+                  >
+                    <QRCodeSVG value={qrCode.value} className="size-5/6" />
+                    <span
+                      className="text-center font-semibold leading-tight"
+                      style={{ fontSize: 24 / (grid.column / 2) }}
+                    >
+                      {qrCode.name}
+                    </span>
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="justify-self-center">
+            <DialogClose asChild>
+              <Button type="submit">인쇄</Button>
             </DialogClose>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
