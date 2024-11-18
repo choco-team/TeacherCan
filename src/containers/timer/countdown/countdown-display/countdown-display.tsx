@@ -75,6 +75,14 @@ export default function CountdownDisplay() {
     updateMinutes(-1, true);
   };
 
+  const handleIncreaseSeconds = () => {
+    updateSeconds(1, true);
+  };
+
+  const handleDecreaseSeconds = () => {
+    updateSeconds(-1, true);
+  };
+
   return (
     <div className="flex flex-col items-center gap-y-4 lg:gap-y-12 px-6 lg:px-8 pt-8 md:pt-4 lg:pt-12 pb-4 md:pb-12 lg:pb-20 w-full">
       {isActive ? (
@@ -145,7 +153,15 @@ export default function CountdownDisplay() {
             </Button>
           </div>
           <Colon />
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center gap-y-1.5 lg:gap-y-4">
+            <Button
+              size="icon"
+              variant="primary-ghost"
+              className="max-md:hidden size-6 lg:size-12 rounded-full"
+              onClick={handleIncreaseSeconds}
+            >
+              <ChevronUpIcon className="size-5 lg:size-8" />
+            </Button>
             <InputNumberWithoutSpin
               value={formatTimeToTwoDigits(seconds)}
               onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -156,6 +172,15 @@ export default function CountdownDisplay() {
               className={timeInputClassName}
               readOnly={isActive}
             />
+            <Button
+              size="icon"
+              variant="primary-ghost"
+              className="max-md:hidden size-6 lg:size-12 rounded-full"
+              disabled={seconds <= 0}
+              onClick={handleDecreaseSeconds}
+            >
+              <ChevronDownIcon className="size-5 lg:size-8" />
+            </Button>
           </div>
         </div>
 
