@@ -70,7 +70,7 @@ export default function CountdownDisplay() {
   const holdInterval = useRef<NodeJS.Timeout | null>(null);
   const startHold = (callback: () => void) => {
     callback();
-    holdInterval.current = setInterval(callback, 500);
+    holdInterval.current = setInterval(callback, 300);
   };
 
   const stopHold = () => {
