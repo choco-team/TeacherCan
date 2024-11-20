@@ -19,6 +19,15 @@ function MenuList() {
           QR코드
         </Link>
       </Button>
+      <Button
+        size="lg"
+        className="bg-green-500 hover:bg-green-400 active:bg-green-600"
+        asChild
+      >
+        <Link href={ROUTE.RANDOM_PICK} target="_blank">
+          랜덤뽑기
+        </Link>
+      </Button>
       <Button variant="gray-outline" size="lg" asChild>
         <Link href="https://teacher-browser.netlify.app/" target="_blank">
           티처캔 v1

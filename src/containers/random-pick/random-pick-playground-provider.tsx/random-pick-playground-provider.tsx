@@ -1,42 +1,24 @@
-import {
-  createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+/* eslint-disable no-continue */
+import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
-import { MODAL_STATE_TYPES } from './random-pick-playground-provider.constans';
-
-type ModalStateType =
-  (typeof MODAL_STATE_TYPES)[keyof typeof MODAL_STATE_TYPES];
+import { InnerPickListType } from '../random-pick-provider/random-pick-provider';
 
 export type WinnersType = {
-  pickListId: string;
-  pickListValue: string;
-  isflipped: boolean;
+  id: string;
+  value: string;
 };
 
 type RandomPickPlaygroundState = {
-  numberOfPick: number;
+  students: InnerPickListType[];
   winners: WinnersType[];
-  temporaryPickList: string[];
-  modalState: ModalStateType;
-  maxNumberOfPick: number;
-  forceRender: number;
+  isRunning: boolean;
 };
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
 
 type RandomPickPlaygroundAction = {
-  selectModalState: Dispatch<SetStateAction<ModalStateType>>;
-  runPick: (newNumberOfPick?: number) => void;
+  runPick: (newNumberOfPick: number) => WinnersType[];
   resetPick: () => void;
-  handleCardFlip: (pickListId: string) => void;
-  handleCardUsed: (pickListId: string) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -45,148 +27,78 @@ export const RandomPickPlaygroundActionContext =
 export default function RandomPickPlaygroundProvider({
   children,
 }: PropsWithChildren<{}>) {
-  const [numberOfPick, setNumberOfPick] = useState(1);
-  const [winners, setWinners] = useState<WinnersType[]>([]);
-  const [forceRender, setForceRender] = useState(1);
-  const [temporaryPickList, setTemporaryPickList] = useState([]);
-
-  const [modalState, setModalState] = useState<ModalStateType>(
-    MODAL_STATE_TYPES.noModal,
-  );
-  const numberOfExcept = useRef(0);
-  const cardMixRef = useRef<NodeJS.Timeout | null>(null);
-
   const {
     pickType,
     pickList,
     options: { isExcludingSelected },
   } = useRandomPickState();
 
-  useEffect(() => {
-    setTemporaryPickList(pickList[pickType].map((e) => e.value));
-  }, [pickList, pickType]);
-
-  useEffect(() => {
-    if (modalState === MODAL_STATE_TYPES.setPickNumberModal) {
-      cardMixRef.current = setInterval(() => {
-        setTemporaryPickList((prev) =>
-          [...prev].sort(() => Math.random() - 0.5),
-        );
-      }, 100);
-    } else {
-      clearInterval(cardMixRef.current);
-    }
-    return () => clearInterval(cardMixRef.current);
-  }, [modalState]);
+  const [winners, setWinners] = useState<WinnersType[]>([]);
+  const [tempWinners, setTempWinners] = useState<WinnersType[]>([]);
 
   const defaultRandomPickPlaygroundStateValue = {
-    numberOfPick,
+    students: pickList[pickType],
     winners,
-    temporaryPickList,
-    modalState,
-    forceRender,
-    maxNumberOfPick: isExcludingSelected
-      ? pickList[pickType].length - numberOfExcept.current
-      : pickList[pickType].length,
+    isRunning: tempWinners.length > 0,
   };
 
-  const excludingSelectedPick = useCallback(
-    (countNum: number) => {
-      let count = countNum;
-      const newWinners = [];
-      while (count !== 0) {
-        const n = Math.floor(Math.random() * pickList[pickType].length);
-        const pickedStudent = pickList[pickType][n];
-        if (pickedStudent.isUsed && !pickedStudent.isPicked) {
-          pickedStudent.isPicked = true;
-          newWinners.push({
-            pickListId: pickedStudent.id,
-            pickListValue: pickedStudent.value,
-            isflipped: false,
-          });
-          count -= 1;
-          numberOfExcept.current += 1;
-        }
-      }
-      return newWinners;
-    },
-    [pickList, pickType, numberOfExcept],
-  );
+  const updateWinner = (countNum: number) => {
+    let count = countNum;
+    const newWinners: WinnersType[] = [];
 
-  const includingSelectedPick = useCallback(
-    (countNum: number) => {
-      let count = countNum;
-      const newWinners = [];
-      while (count !== 0) {
-        const n = Math.floor(Math.random() * pickList[pickType].length);
-        if (!newWinners.includes(n)) {
-          if (!pickList[pickType][n].isPicked) {
-            numberOfExcept.current += 1;
-          }
-          pickList[pickType][n].isPicked = true;
-          newWinners.push({ pickListIndex: n, isflipped: false });
-          count -= 1;
-        }
+    while (count !== 0) {
+      const n = Math.floor(Math.random() * pickList[pickType].length);
+      const pickedStudent = pickList[pickType][n];
+
+      const isIncluded = [
+        ...newWinners.map((v) => v.id),
+        ...(isExcludingSelected ? winners.map((v) => v.id) : []),
+      ].includes(pickedStudent.id);
+
+      if (!pickedStudent.isUsed) {
+        continue;
       }
-      return newWinners;
-    },
-    [pickList, pickType, numberOfExcept],
-  );
+
+      if (isIncluded) {
+        continue;
+      }
+
+      count -= 1;
+
+      newWinners.push({
+        id: pickedStudent.id,
+        value: pickedStudent.value,
+      });
+    }
+
+    return newWinners;
+  };
 
   const defaultRandomPickPlaygroundActionValue = {
-    selectModalState: setModalState,
-    runPick: (newNumberOfPick?: number) => {
-      // 당첨 개수, 모달 설정
-      let countNum = numberOfPick;
-      if (newNumberOfPick) {
-        setNumberOfPick(newNumberOfPick);
-        setModalState(MODAL_STATE_TYPES.resultModal);
-        countNum = newNumberOfPick;
+    runPick: (newNumberOfPick: number) => {
+      const newWinners = updateWinner(newNumberOfPick);
+
+      if (isExcludingSelected) {
+        setWinners((prev) => [...prev, ...newWinners]);
       }
-      // '뽑힌학생 제외' 옵션에 따라 뽑기 실행
-      setWinners(
-        isExcludingSelected
-          ? excludingSelectedPick(countNum)
-          : includingSelectedPick(countNum),
-      );
+
+      setTempWinners((prev) => [...prev, ...newWinners]);
+      return newWinners;
     },
     resetPick: () => {
-      pickList.names = pickList.names.map((name) => ({
-        ...name,
-        isPicked: false,
-        isUsed: false,
-      }));
-      pickList.numbers = pickList.numbers.map((number) => ({
-        ...number,
-        isPicked: false,
-        isUsed: false,
-      }));
-      numberOfExcept.current = 0;
-      // pickList가 state가 아니라서 강제로 리렌더링시킴
-      setForceRender((prev) => prev * -1);
-    },
-    handleCardFlip: (pickListId: string) => {
-      setWinners((prevWinners) =>
-        prevWinners.map((winner) =>
-          winner.pickListId === pickListId
-            ? { ...winner, isflipped: !winner.isflipped }
-            : winner,
-        ),
-      );
-    },
-    handleCardUsed: (pickListId: string) => {
-      pickList[pickType] = pickList[pickType].map((pickListElement) => {
-        if (pickListElement.id === pickListId) {
-          if (!pickListElement.isPicked) {
-            numberOfExcept.current += pickListElement.isUsed ? 1 : -1;
-          }
-          return { ...pickListElement, isUsed: !pickListElement.isUsed };
-        }
-        return { ...pickListElement };
-      });
-      setForceRender((prev) => prev * -1);
+      setWinners([]);
+      setTempWinners([]);
     },
   };
+
+  useEffect(() => {
+    if (isExcludingSelected) {
+      setWinners(tempWinners);
+      return;
+    }
+
+    setWinners([]);
+  }, [isExcludingSelected]);
 
   return (
     <RandomPickPlaygroundStateContext.Provider

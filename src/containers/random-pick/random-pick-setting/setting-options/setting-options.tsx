@@ -9,6 +9,7 @@ import {
 
 export default function SettingOptions() {
   const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     options: { isExcludingSelected, isHideResult, isSeparateSelectedStudent },
   } = useRandomPickState();
   const { changeOption } = useRandomPickAction();
@@ -47,7 +48,8 @@ export default function SettingOptions() {
           }
         />
       </Label>
-      <Label className="flex items-center justify-between">
+      {/* NOTE:(김홍동) 추후 작업에서 다룰 예정 */}
+      {/* <Label className="flex items-center justify-between">
         <span>뽑힌 학생 분리</span>
         <Switch
           checked={isSeparateSelectedStudent}
@@ -57,7 +59,7 @@ export default function SettingOptions() {
             }))
           }
         />
-      </Label>
+      </Label> */}
     </div>
   );
 }

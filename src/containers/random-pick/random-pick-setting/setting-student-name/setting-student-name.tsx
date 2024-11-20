@@ -15,6 +15,7 @@ import {
   useRandomPickAction,
   useRandomPickState,
 } from '../../random-pick-provider/random-pick-provider.hooks';
+import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
 const formSchema = z.object({
   names: z.preprocess(
@@ -44,6 +45,7 @@ const formSchema = z.object({
 export default function SettingStudentName() {
   const { pickList } = useRandomPickState();
   const { modifyPickList } = useRandomPickAction();
+  const { isRunning } = useRandomPickPlaygroundState();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,10 +80,13 @@ export default function SettingStudentName() {
                     <Textarea
                       className="min-h-[120px]"
                       placeholder="학생 이름 입력"
+                      disabled={isRunning}
                       {...field}
                     />
                   </FormControl>
-                  <Button type="submit">생성</Button>
+                  <Button type="submit" disabled={isRunning}>
+                    생성
+                  </Button>
                 </div>
                 <FormDescription>
                   학생 이름을 쉼표(,) 혹은 Enter로 구분하여 입력해주세요.

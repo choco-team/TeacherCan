@@ -5,7 +5,7 @@ import { Sheet, SheetTrigger } from '@/components/sheet';
 import { SettingsIcon } from 'lucide-react';
 import RandomPickSetting from './random-pick-setting/random-pick-setting';
 import RandomPickProvider from './random-pick-provider/random-pick-provider';
-import PlayGround from './random-pick-playground/random-pick-playground';
+import PlayGround from './playground/playground';
 import RandomPickPlaygroundProvider from './random-pick-playground-provider.tsx/random-pick-playground-provider';
 
 export default function RandomPickContainer() {
