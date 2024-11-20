@@ -14,7 +14,7 @@ export default function PlayGround() {
   };
 
   return (
-    <div className="mt-8 flex flex-col p-4">
+    <div className="flex flex-col p-4">
       <div className="p-4 flex flex-row gap-4 w-full">
         <Input
           type="text"
