@@ -80,8 +80,9 @@ export default function RandomPickPlaygroundProvider({
 
       if (isExcludingSelected) {
         setWinners((prev) => [...prev, ...newWinners]);
-        setTempWinners((prev) => [...prev, ...newWinners]);
       }
+
+      setTempWinners((prev) => [...prev, ...newWinners]);
       return newWinners;
     },
     resetPick: () => {
