@@ -22,7 +22,7 @@ export default function ResultCard({ winner }: Winner) {
   };
 
   return (
-    <div onClick={handleFlip} className="perspective-1000 w-full h-[60px]">
+    <div onClick={handleFlip} className="perspective-1000 w-full aspect-[4/3]">
       <AnimatePresence initial={false}>
         {isFlip ? (
           <motion.div
@@ -30,8 +30,8 @@ export default function ResultCard({ winner }: Winner) {
             initial={{ rotateY: 180 }}
             animate={{ rotateY: 0 }}
             exit={{ rotateY: -180 }}
-            transition={{ duration: 0.6 }}
-            className="bg-primary absolute w-full h-full backface-hidden flex items-center justify-center text-white rounded-lg"
+            transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
+            className="bg-primary absolute w-full h-full backface-hidden flex items-center justify-center text-white rounded-md text-[120px]"
           >
             {winner.pickListValue}
           </motion.div>
@@ -41,10 +41,10 @@ export default function ResultCard({ winner }: Winner) {
             initial={{ rotateY: -180 }}
             animate={{ rotateY: 0 }}
             exit={{ rotateY: 180 }}
-            transition={{ duration: 0.6 }}
-            className="bg-primary-300 absolute w-full h-full backface-hidden flex items-center justify-center text-white rounded-lg"
+            transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
+            className="bg-primary-300 absolute w-full h-full backface-hidden flex items-center justify-center text-white rounded-md cursor-pointer"
           >
-            <TeacherCanLogo width="50" height="50" />
+            <TeacherCanLogo width="120" height="120" />
           </motion.div>
         )}
       </AnimatePresence>

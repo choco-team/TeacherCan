@@ -60,37 +60,56 @@ export default function PlaygroundModal({ triggerOpenModal }: Props) {
     setNewWinners([]);
   };
 
+  const hasNewWinner = newWinners.length > 0;
+
   return (
     <Dialog onOpenChange={onOpenModal}>
       <DialogTrigger asChild>
         <Button className="w-20">뽑기</Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col h-96 overflow-auto">
-        <DialogTitle>랜덤뽑기</DialogTitle>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-            <FormField
-              control={form.control}
-              name="number"
-              render={({ field }) => (
-                <>
-                  <div className="flex gap-x-4">
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <Button type="submit">
-                      {newWinners.length > 0 ? '다시 뽑기' : '뽑기'}
-                    </Button>
-                  </div>
-                  <DialogDescription>
-                    남은 학생 수는 {restStudentLength}명입니다.
-                  </DialogDescription>
-                </>
-              )}
-            />
-          </form>
-        </Form>
-        <div className="grid grid-cols-3 gap-2">
+      <DialogContent
+        className="flex flex-col overflow-auto transition-none"
+        fullScreen={hasNewWinner}
+      >
+        {hasNewWinner ? (
+          <div className="flex justify-between">
+            <DialogTitle>랜덤뽑기 결과</DialogTitle>
+            <div className="mr-8">
+              <Button className="w-fit" onClick={() => setNewWinners([])}>
+                다시 뽑기
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <DialogTitle>랜덤뽑기</DialogTitle>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-2"
+              >
+                <FormField
+                  control={form.control}
+                  name="number"
+                  render={({ field }) => (
+                    <>
+                      <div className="flex gap-x-4">
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <Button type="submit">뽑기</Button>
+                      </div>
+                      <DialogDescription>
+                        남은 학생 수는 {restStudentLength}명입니다.
+                      </DialogDescription>
+                    </>
+                  )}
+                />
+              </form>
+            </Form>
+          </>
+        )}
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
           {newWinners.map((newWinner) => (
             <ResultCard key={newWinner.pickListId} winner={newWinner} />
           ))}
