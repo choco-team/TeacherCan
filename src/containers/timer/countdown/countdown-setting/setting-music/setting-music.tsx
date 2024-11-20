@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { MusicIcon } from 'lucide-react';
+import { MusicIcon, Volume1Icon, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -29,6 +29,7 @@ import { useCountdownState } from '../../countdown-provider/countdown-provider.h
 
 export default function SettingMusic() {
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const [previousVolumeValue, setPreviousVolumeValue] = useState(50);
   const { isActive, isMusicUsed, youtubePlayerRef } = useCountdownState();
   const {
     music: { videoId, title },
@@ -50,10 +51,12 @@ export default function SettingMusic() {
     setIsPlayingPreview(isToPlay);
   };
 
-  const handeleVolumeChange = (e) => {
-    controlVolume(e.target.value);
-    previewYoutubePlayerRef.current.setVolume(e.target.value);
-    youtubePlayerRef.current.setVolume(e.target.value);
+  const handeleVolumeChange = (volume: number) => {
+    controlVolume(volume);
+    if (previewYoutubePlayerRef) {
+      previewYoutubePlayerRef.current.setVolume(volume);
+    }
+    youtubePlayerRef.current.setVolume(volume);
   };
 
   useEffect(() => {
@@ -120,7 +123,7 @@ export default function SettingMusic() {
       </CollapsibleContent>
 
       <YouTube
-        // className='hidden'
+        className="hidden"
         onReady={(event: YT.PlayerEvent) => {
           previewYoutubePlayerRef.current = event.target;
           event.target.setVolume(volumeValue);
@@ -135,8 +138,8 @@ export default function SettingMusic() {
       />
 
       {title && (
-        <div>
-          <div className="flex items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
+        <div className="flex flex-col items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
+          <div className="flex flex-row w-full items-center">
             <p
               className={cn(
                 'text-sm line-clamp-1',
@@ -148,6 +151,7 @@ export default function SettingMusic() {
               {title}
             </p>
             <Button
+              className="w-12"
               variant="primary-ghost"
               size="xs"
               disabled={isActive}
@@ -156,11 +160,35 @@ export default function SettingMusic() {
               {isPlayingPreview ? '정지' : '미리듣기'}
             </Button>
           </div>
-          <Input
-            type="range"
-            value={volumeValue}
-            onChange={handeleVolumeChange}
-          />
+          <div className="flex flex-row w-full items-center">
+            <button
+              type="button"
+              onClick={() => {
+                handeleVolumeChange(previousVolumeValue);
+              }}
+            >
+              {volumeValue === 0 && (
+                <VolumeXIcon className="opacity-50 color-primary" />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPreviousVolumeValue(volumeValue);
+                handeleVolumeChange(0);
+              }}
+            >
+              {volumeValue > 0 && volumeValue < 50 && <Volume1Icon />}
+              {volumeValue >= 50 && <Volume2Icon />}
+            </button>
+            <Input
+              type="range"
+              value={volumeValue}
+              onChange={(e) => {
+                handeleVolumeChange(Number(e.target.value));
+              }}
+            />
+          </div>
         </div>
       )}
     </Collapsible>

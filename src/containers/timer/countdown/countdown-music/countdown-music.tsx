@@ -2,11 +2,7 @@ import Lottie from 'lottie-react';
 import { cn } from '@/styles/utils';
 import musicWaveAnimation from '@/assets/lottie/music-wave.json';
 import YouTube from 'react-youtube';
-import { Input } from '@/components/input';
-import {
-  useCountdownMusicAction,
-  useCountdownMusicState,
-} from '../countdown-music-provider/countdown-music-provider.hooks';
+import { useCountdownMusicState } from '../countdown-music-provider/countdown-music-provider.hooks';
 import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
 
 export default function CountdownMusic() {
@@ -14,15 +10,8 @@ export default function CountdownMusic() {
     useCountdownState();
   const {
     music: { videoId, title },
-    // previewYoutubePlayerRef,
     volumeValue,
   } = useCountdownMusicState();
-  const { controlVolume } = useCountdownMusicAction();
-
-  const handeleVolumeChange = (e) => {
-    controlVolume(e.target.value);
-    youtubePlayerRef.current.setVolume(e.target.value);
-  };
 
   return (
     <>
@@ -38,19 +27,14 @@ export default function CountdownMusic() {
           autoPlay={false}
           className="w-6 lg:w-10"
         />
-        <Input
-          type="range"
-          value={volumeValue}
-          onChange={handeleVolumeChange}
-        />
-
         <span className="text-xs lg:text-lg text-text">{title}</span>
       </div>
 
       <YouTube
-        // className='hidden'
+        className="hidden"
         onReady={(event: YT.PlayerEvent) => {
           youtubePlayerRef.current = event.target;
+          event.target.setVolume(volumeValue);
         }}
         videoId={videoId}
         opts={{
