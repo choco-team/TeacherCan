@@ -12,7 +12,7 @@ export default function CardList({ isOpenModal }: Props) {
 
   const { pickList, pickType } = useRandomPickState();
   const { winners } = useRandomPickPlaygroundState();
-  const winnerIds = winners.map((winner) => winner.pickListId);
+  const winnerIds = winners.map((winner) => winner.id);
 
   const [students, setStudents] = useState(pickList[pickType]);
 

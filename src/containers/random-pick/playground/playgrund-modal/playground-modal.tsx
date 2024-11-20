@@ -112,7 +112,7 @@ export default function PlaygroundModal({ title, triggerOpenModal }: Props) {
         )}
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
           {newWinners.map((newWinner) => (
-            <ResultCard key={newWinner.pickListId} winner={newWinner} />
+            <ResultCard key={newWinner.id} winner={newWinner} />
           ))}
         </div>
       </DialogContent>

@@ -9,10 +9,12 @@ import {
   useRandomPickState,
 } from '../../random-pick-provider/random-pick-provider.hooks';
 import { PICK_TYPES } from '../../random-pick-provider/random-pick-provider.constants';
+import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
 export default function SettingPickType() {
   const { pickType } = useRandomPickState();
   const { selectPickType } = useRandomPickAction();
+  const { isRunning } = useRandomPickPlaygroundState();
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -33,6 +35,7 @@ export default function SettingPickType() {
               value={type}
               checked={pickType === type}
               onClick={() => selectPickType(type)}
+              disabled={isRunning}
             />
             {label}
           </Label>

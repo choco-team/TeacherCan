@@ -33,7 +33,7 @@ export default function ResultCard({ winner }: Winner) {
             transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
             className="bg-primary absolute w-full h-full backface-hidden flex items-center justify-center text-white rounded-md text-[120px]"
           >
-            {winner.pickListValue}
+            {winner.value}
           </motion.div>
         ) : (
           <motion.div

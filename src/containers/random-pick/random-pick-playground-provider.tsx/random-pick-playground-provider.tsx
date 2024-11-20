@@ -4,13 +4,14 @@ import { useRandomPickState } from '../random-pick-provider/random-pick-provider
 import { InnerPickListType } from '../random-pick-provider/random-pick-provider';
 
 export type WinnersType = {
-  pickListId: string;
-  pickListValue: string;
+  id: string;
+  value: string;
 };
 
 type RandomPickPlaygroundState = {
   students: InnerPickListType[];
   winners: WinnersType[];
+  isRunning: boolean;
 };
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
@@ -33,10 +34,12 @@ export default function RandomPickPlaygroundProvider({
   } = useRandomPickState();
 
   const [winners, setWinners] = useState<WinnersType[]>([]);
+  const [tempWinners, setTempWinners] = useState<WinnersType[]>([]);
 
   const defaultRandomPickPlaygroundStateValue = {
     students: pickList[pickType],
     winners,
+    isRunning: tempWinners.length > 0,
   };
 
   const updateWinner = (countNum: number) => {
@@ -48,8 +51,8 @@ export default function RandomPickPlaygroundProvider({
       const pickedStudent = pickList[pickType][n];
 
       const isIncluded = [
-        ...newWinners.map((v) => v.pickListId),
-        ...(isExcludingSelected ? winners.map((v) => v.pickListId) : []),
+        ...newWinners.map((v) => v.id),
+        ...(isExcludingSelected ? winners.map((v) => v.id) : []),
       ].includes(pickedStudent.id);
 
       if (!pickedStudent.isUsed) {
@@ -63,8 +66,8 @@ export default function RandomPickPlaygroundProvider({
       count -= 1;
 
       newWinners.push({
-        pickListId: pickedStudent.id,
-        pickListValue: pickedStudent.value,
+        id: pickedStudent.id,
+        value: pickedStudent.value,
       });
     }
 
@@ -77,18 +80,22 @@ export default function RandomPickPlaygroundProvider({
 
       if (isExcludingSelected) {
         setWinners((prev) => [...prev, ...newWinners]);
+        setTempWinners((prev) => [...prev, ...newWinners]);
       }
       return newWinners;
     },
     resetPick: () => {
       setWinners([]);
+      setTempWinners([]);
     },
   };
 
   useEffect(() => {
     if (isExcludingSelected) {
+      setWinners(tempWinners);
       return;
     }
+
     setWinners([]);
   }, [isExcludingSelected]);
 
