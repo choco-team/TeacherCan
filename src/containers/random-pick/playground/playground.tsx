@@ -1,7 +1,7 @@
 import { Input } from '@/components/input';
 import { useState } from 'react';
 import PlaygroundModal from './playgrund-modal/playground-modal';
-import CardList from './playground-card-list/playground-card-list';
+import CardList from './card-list/card-list';
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 

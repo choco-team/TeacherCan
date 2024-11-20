@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
-import Card from '../playground-card/playground-card';
+import Card from '../card/card';
 
 type Props = {
   isOpenModal: boolean;

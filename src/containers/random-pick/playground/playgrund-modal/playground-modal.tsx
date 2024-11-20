@@ -18,7 +18,7 @@ import { Form, FormControl, FormField } from '@/components/form';
 import { getFormSchema } from '@/utils/getFormSchema';
 import { useState } from 'react';
 import { WinnersType } from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider';
-import ResultCard from '../playground-card/playground-result-card';
+import ResultCard from '../result-card/result-card';
 import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
 
 type Props = {
