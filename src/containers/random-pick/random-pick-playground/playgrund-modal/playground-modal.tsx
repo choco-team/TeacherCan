@@ -22,10 +22,11 @@ import ResultCard from '../playground-card/playground-result-card';
 import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
 
 type Props = {
+  title: string;
   triggerOpenModal: (state: boolean) => void;
 };
 
-export default function PlaygroundModal({ triggerOpenModal }: Props) {
+export default function PlaygroundModal({ title, triggerOpenModal }: Props) {
   const {
     options: { isExcludingSelected },
   } = useRandomPickState();
@@ -73,7 +74,7 @@ export default function PlaygroundModal({ triggerOpenModal }: Props) {
       >
         {hasNewWinner ? (
           <div className="flex justify-between">
-            <DialogTitle>랜덤뽑기 결과</DialogTitle>
+            <DialogTitle>{title || '랜덤 뽑기 결과'}</DialogTitle>
             <div className="mr-8">
               <Button className="w-fit" onClick={() => setNewWinners([])}>
                 다시 뽑기
@@ -82,7 +83,7 @@ export default function PlaygroundModal({ triggerOpenModal }: Props) {
           </div>
         ) : (
           <>
-            <DialogTitle>랜덤뽑기</DialogTitle>
+            <DialogTitle>인원 설정</DialogTitle>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
