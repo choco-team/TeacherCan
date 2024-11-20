@@ -1,53 +1,101 @@
-import Modal from 'react-modal';
-import { useCallback } from 'react';
-import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+import { Button } from '@/components/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/dialog';
+import {
+  useRandomPickPlaygroundAction,
+  useRandomPickPlaygroundState,
+} from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+import { Input } from '@/components/input';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Form, FormControl, FormField } from '@/components/form';
+import { getFormSchema } from '@/utils/getFormSchema';
+import { useState } from 'react';
+import { WinnersType } from '@/containers/random-pick/random-pick-playground-provider.tsx/random-pick-playground-provider';
+import ResultCard from '../playground-card/playground-result-card';
+import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
 
-import SetPickNumberModal from './modal-set-picknumber/modal-set-picknumber';
-import ResultModal from './modal-result/modal-result';
-import { MODAL_STATE_TYPES } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.constans';
+type Props = {
+  triggerOpenModal: (state: boolean) => void;
+};
 
-export default function PlaygroundModal() {
-  const { modalState } = useRandomPickPlaygroundState();
-  const onRequestClose = useCallback(() => {}, []);
+export default function PlaygroundModal({ triggerOpenModal }: Props) {
+  const {
+    options: { isExcludingSelected },
+  } = useRandomPickState();
+  const { winners, students } = useRandomPickPlaygroundState();
+  const { runPick } = useRandomPickPlaygroundAction();
+  const [newWinners, setNewWinners] = useState<WinnersType[]>([]);
 
-  const customModalStyles: ReactModal.Styles = {
-    overlay: {
-      backgroundColor: ' rgba(0, 0, 0, 0.4)',
-      width: '100%',
-      height: '100vh',
-      zIndex: '10',
-      position: 'fixed',
-      top: '0',
-      left: '0',
+  const formSchema = getFormSchema(students.length - winners.length);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      number: 1,
     },
-    content: {
-      width: modalState === MODAL_STATE_TYPES.resultModal ? '800px' : '400px',
-      height: modalState === MODAL_STATE_TYPES.resultModal ? '400px' : '200px',
-      zIndex: '150',
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      borderRadius: '10px',
-      boxShadow: '2px 2px 2px rgba(0, 0, 0, 0.25)',
-      backgroundColor: 'white',
-      justifyContent: 'center',
-      overflow: 'auto',
-    },
+  });
+
+  const onSubmit = ({ number }: z.infer<typeof formSchema>) => {
+    setNewWinners(runPick(number));
   };
+
+  const restStudentLength = isExcludingSelected
+    ? students.length - winners.length
+    : students.length;
+
+  const onOpenModal = (open: boolean) => {
+    triggerOpenModal(open);
+
+    if (!open) {
+      return;
+    }
+
+    setNewWinners([]);
+  };
+
   return (
-    <Modal
-      isOpen={modalState !== MODAL_STATE_TYPES.noModal}
-      onRequestClose={onRequestClose}
-      style={customModalStyles}
-      ariaHideApp={false}
-      contentLabel="Pop up Message"
-      shouldCloseOnOverlayClick={false}
-    >
-      {modalState === MODAL_STATE_TYPES.setPickNumberModal && (
-        <SetPickNumberModal />
-      )}
-      {modalState === MODAL_STATE_TYPES.resultModal && <ResultModal />}
-    </Modal>
+    <Dialog onOpenChange={onOpenModal}>
+      <DialogTrigger asChild>
+        <Button className="w-20">뽑기</Button>
+      </DialogTrigger>
+      <DialogContent className="flex flex-col h-96 overflow-auto">
+        <DialogTitle>랜덤뽑기</DialogTitle>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+            <FormField
+              control={form.control}
+              name="number"
+              render={({ field }) => (
+                <>
+                  <div className="flex gap-x-4">
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <Button type="submit">
+                      {newWinners.length > 0 ? '다시 뽑기' : '뽑기'}
+                    </Button>
+                  </div>
+                  <DialogDescription>
+                    남은 학생 수는 {restStudentLength}명입니다.
+                  </DialogDescription>
+                </>
+              )}
+            />
+          </form>
+        </Form>
+        <div className="grid grid-cols-3 gap-2">
+          {newWinners.map((newWinner) => (
+            <ResultCard key={newWinner.pickListId} winner={newWinner} />
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
