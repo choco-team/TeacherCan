@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FocusEvent } from 'react';
+import { useRef, useState, type ChangeEvent, type FocusEvent } from 'react';
 import {
   ChevronUpIcon,
   ChevronDownIcon,
@@ -67,6 +67,19 @@ export default function CountdownDisplay() {
       event.target.value = formatter ? formatter(time) : time.toString();
     };
 
+  const holdInterval = useRef<NodeJS.Timeout | null>(null);
+  const startHold = (callback: () => void) => {
+    callback();
+    holdInterval.current = setInterval(callback, 500);
+  };
+
+  const stopHold = () => {
+    if (holdInterval.current) {
+      clearInterval(holdInterval.current);
+      holdInterval.current = null;
+    }
+  };
+
   const handleIncreaseMinutes = () => {
     updateMinutes(1, true);
   };
@@ -128,7 +141,9 @@ export default function CountdownDisplay() {
               size="icon"
               variant="primary-ghost"
               className="max-md:hidden size-6 lg:size-12 rounded-full"
-              onClick={handleIncreaseMinutes}
+              onMouseDown={() => startHold(handleIncreaseMinutes)}
+              onMouseUp={stopHold}
+              onMouseLeave={stopHold}
             >
               <ChevronUpIcon className="size-5 lg:size-8" />
             </Button>
@@ -147,7 +162,9 @@ export default function CountdownDisplay() {
               variant="primary-ghost"
               className="max-md:hidden size-6 lg:size-12 rounded-full"
               disabled={leftTime < MINUTE_TO_SECONDS}
-              onClick={handleDecreaseMinutes}
+              onMouseDown={() => startHold(handleDecreaseMinutes)}
+              onMouseUp={stopHold}
+              onMouseLeave={stopHold}
             >
               <ChevronDownIcon className="size-5 lg:size-8" />
             </Button>
@@ -158,7 +175,9 @@ export default function CountdownDisplay() {
               size="icon"
               variant="primary-ghost"
               className="max-md:hidden size-6 lg:size-12 rounded-full"
-              onClick={handleIncreaseSeconds}
+              onMouseDown={() => startHold(handleIncreaseSeconds)}
+              onMouseUp={stopHold}
+              onMouseLeave={stopHold}
             >
               <ChevronUpIcon className="size-5 lg:size-8" />
             </Button>
@@ -176,8 +195,10 @@ export default function CountdownDisplay() {
               size="icon"
               variant="primary-ghost"
               className="max-md:hidden size-6 lg:size-12 rounded-full"
-              disabled={seconds <= 0}
-              onClick={handleDecreaseSeconds}
+              disabled={leftTime <= 0}
+              onMouseDown={() => startHold(handleDecreaseSeconds)}
+              onMouseUp={stopHold}
+              onMouseLeave={stopHold}
             >
               <ChevronDownIcon className="size-5 lg:size-8" />
             </Button>
