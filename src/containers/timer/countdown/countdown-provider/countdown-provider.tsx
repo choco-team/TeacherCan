@@ -180,43 +180,62 @@ export default function CountdownProvider({ children }: Props) {
 
   const updateMinutes = useCallback(
     (min: number, keepPreviousState: boolean = false) => {
-      let newMinute = min;
-      if (min > MAX_TIME_INPUT.MINUTE) newMinute = MAX_TIME_INPUT.MINUTE;
+      setLeftTime((prev) => {
+        let newMinute = min;
+        if (min > MAX_TIME_INPUT.MINUTE) newMinute = MAX_TIME_INPUT.MINUTE;
 
-      const newLeftTime =
-        hours * HOUR_TO_SECONDS +
-        (keepPreviousState
-          ? (minutes + newMinute) * MINUTE_TO_SECONDS
-          : newMinute * MINUTE_TO_SECONDS) +
-        seconds;
+        // 이전 값을(prev)를 바탕으로 시, 분, 초 값 할당
+        const newHours = Math.floor(prev / HOUR_TO_SECONDS);
+        const newMinutes = Math.floor(
+          (prev - newHours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
+        );
+        const newSeconds = Math.floor(prev % MINUTE_TO_SECONDS);
 
-      if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
-        return;
-      }
+        const newLeftTime =
+          newHours * HOUR_TO_SECONDS +
+          (keepPreviousState
+            ? (newMinutes + newMinute) * MINUTE_TO_SECONDS
+            : newMinute * MINUTE_TO_SECONDS) +
+          newSeconds;
 
-      setLeftTime(newLeftTime);
+        // 아래 조건인 경우엔 이전 값을 return
+        if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
+          return prev;
+        }
+
+        // 그렇지 않으면 새로운 남은 시간을 return 하여 상태 업데이트
+        return newLeftTime;
+      });
     },
 
-    [hours, minutes, seconds],
+    [],
   );
 
   const updateSeconds = useCallback(
     (sec: number, keepPreviousState: boolean = false) => {
-      let newSecond = sec;
-      if (sec > MAX_TIME_INPUT.SECOND) newSecond = MAX_TIME_INPUT.SECOND;
+      setLeftTime((prev) => {
+        let newSecond = sec;
+        if (sec > MAX_TIME_INPUT.SECOND) newSecond = MAX_TIME_INPUT.SECOND;
 
-      const newLeftTime =
-        hours * HOUR_TO_SECONDS +
-        minutes * MINUTE_TO_SECONDS +
-        (keepPreviousState ? seconds + newSecond : newSecond);
+        const newHours = Math.floor(prev / HOUR_TO_SECONDS);
+        const newMinutes = Math.floor(
+          (prev - newHours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
+        );
+        const newSeconds = Math.floor(prev % MINUTE_TO_SECONDS);
 
-      if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
-        return;
-      }
+        const newLeftTime =
+          newHours * HOUR_TO_SECONDS +
+          newMinutes * MINUTE_TO_SECONDS +
+          (keepPreviousState ? newSeconds + newSecond : newSecond);
 
-      setLeftTime(newLeftTime);
+        if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
+          return prev;
+        }
+
+        return newLeftTime;
+      });
     },
-    [hours, minutes, seconds],
+    [],
   );
 
   const defaultCountdownStateValue = useMemo<CountdownState>(
