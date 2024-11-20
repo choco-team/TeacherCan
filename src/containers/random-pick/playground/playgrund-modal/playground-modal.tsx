@@ -47,8 +47,14 @@ export default function PlaygroundModal({ title, triggerOpenModal }: Props) {
     setNewWinners(runPick(number));
   };
 
+  const deduplicatedWinners = winners.reduce((acc: WinnersType[], cur) => {
+    const isDuplicate = acc.some(({ id }) => id === cur.id);
+
+    return isDuplicate ? acc : [...acc, cur];
+  }, []);
+
   const restStudentLength = isExcludingSelected
-    ? students.length - winners.length
+    ? students.length - deduplicatedWinners.length
     : students.length;
 
   const onOpenModal = (open: boolean) => {

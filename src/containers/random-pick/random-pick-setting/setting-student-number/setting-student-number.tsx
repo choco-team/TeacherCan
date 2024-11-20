@@ -23,8 +23,8 @@ const formSchema = z.object({
     .min(2, {
       message: '최소 인원은 2명입니다.',
     })
-    .max(30, {
-      message: '최대 인원은 30명입니다.',
+    .max(100, {
+      message: '최대 인원은 100명입니다.',
     }),
 });
 
@@ -70,7 +70,7 @@ export default function SettingStudentNumber() {
                 </Button>
               </div>
               <FormDescription>
-                2 ~ 30 사이의 숫자를 입력하고 생성하기 버튼을 누르세요.
+                2 ~ 100 사이의 숫자를 입력하고 생성하기 버튼을 누르세요.
               </FormDescription>
               <FormMessage />
             </>
