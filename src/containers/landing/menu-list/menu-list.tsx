@@ -8,7 +8,7 @@ function MenuList() {
   const domainURL = getDomainURL();
 
   return (
-    <div className="flex gap-x-6">
+    <div className="flex gap-6 flex-col md:flex-row">
       <Button size="lg" variant="primary" asChild>
         <PopupLink size={7 / 8} url={`${domainURL}${ROUTE.TIMER}`}>
           타이머
