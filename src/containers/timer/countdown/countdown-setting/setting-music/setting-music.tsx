@@ -135,19 +135,8 @@ export default function SettingMusic() {
           previewYoutubePlayerRef.current = event.target;
           event.target.setVolume(volumeValue);
           controlIsPreviewYoutubeReady(true);
-
-          // console.log("onReady-start")
-          // setTimeout(()=>{controlIsPreviewYoutubeReady(true)
-          //   console.log("onReady-end")
-          // }, 10000);
         }}
-        onStateChange={() => {
-          console.log('onState-start');
-          setTimeout(() => {
-            controlIsPreviewYoutubeReady(true);
-            console.log('onState-start');
-          }, 10000);
-        }}
+        onStateChange={() => controlIsPreviewYoutubeReady(true)}
         videoId={videoId}
         opts={{
           playerVars: {
