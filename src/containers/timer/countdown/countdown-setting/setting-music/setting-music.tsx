@@ -33,9 +33,14 @@ export default function SettingMusic() {
   const { isActive, isMusicUsed, youtubePlayerRef } = useCountdownState();
   const {
     music: { videoId, title },
+    isPreviewYoutubeReady,
   } = useCountdownMusicState();
-  const { getYoutubeMusicURL, toggleMusicUsed, controlVolume } =
-    useCountdownMusicAction();
+  const {
+    getYoutubeMusicURL,
+    toggleMusicUsed,
+    controlVolume,
+    controlIsPreviewYoutubeReady,
+  } = useCountdownMusicAction();
   const { previewYoutubePlayerRef, volumeValue } = useCountdownMusicState();
   const form = useFormContext();
 
@@ -62,6 +67,7 @@ export default function SettingMusic() {
   useEffect(() => {
     if (isActive && isPlayingPreview) setIsPlayingPreview(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return controlIsPreviewYoutubeReady(false);
   }, [isActive]);
 
   return (
@@ -70,6 +76,7 @@ export default function SettingMusic() {
         <SheetSubTitle>
           <MusicIcon />
           배경 음악
+          {isPreviewYoutubeReady ? 'true' : 'false'}
         </SheetSubTitle>
 
         <CollapsibleTrigger asChild>
@@ -127,6 +134,19 @@ export default function SettingMusic() {
         onReady={(event: YT.PlayerEvent) => {
           previewYoutubePlayerRef.current = event.target;
           event.target.setVolume(volumeValue);
+          controlIsPreviewYoutubeReady(true);
+
+          // console.log("onReady-start")
+          // setTimeout(()=>{controlIsPreviewYoutubeReady(true)
+          //   console.log("onReady-end")
+          // }, 10000);
+        }}
+        onStateChange={() => {
+          console.log('onState-start');
+          setTimeout(() => {
+            controlIsPreviewYoutubeReady(true);
+            console.log('onState-start');
+          }, 10000);
         }}
         videoId={videoId}
         opts={{
@@ -154,7 +174,7 @@ export default function SettingMusic() {
               className="w-12"
               variant="primary-ghost"
               size="xs"
-              disabled={isActive}
+              disabled={isActive || !isPreviewYoutubeReady}
               onClick={() => togglePreviewPlay(!isPlayingPreview)}
             >
               {isPlayingPreview ? '정지' : '미리듣기'}
@@ -162,6 +182,7 @@ export default function SettingMusic() {
           </div>
           <div className="flex flex-row w-full items-center">
             <button
+              disabled={!isPreviewYoutubeReady}
               type="button"
               onClick={() => {
                 handeleVolumeChange(previousVolumeValue);
@@ -172,6 +193,7 @@ export default function SettingMusic() {
               )}
             </button>
             <button
+              disabled={!isPreviewYoutubeReady}
               type="button"
               onClick={() => {
                 setPreviousVolumeValue(volumeValue);
@@ -182,6 +204,7 @@ export default function SettingMusic() {
               {volumeValue >= 50 && <Volume2Icon />}
             </button>
             <Input
+              disabled={!isPreviewYoutubeReady}
               type="range"
               value={volumeValue}
               onChange={(e) => {

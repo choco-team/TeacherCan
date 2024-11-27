@@ -23,6 +23,7 @@ type CountdownMusicState = {
   };
   previewYoutubePlayerRef: React.MutableRefObject<YT.Player>;
   volumeValue: number;
+  isPreviewYoutubeReady: boolean;
 };
 
 export const CountdownMusicStateContext =
@@ -32,6 +33,7 @@ type CountdownMusicAction = {
   getYoutubeMusicURL: (url: string) => void;
   toggleMusicUsed: () => void;
   controlVolume: Dispatch<SetStateAction<number>>;
+  controlIsPreviewYoutubeReady: Dispatch<SetStateAction<boolean>>;
 };
 
 export const CountdownMusicActionContext =
@@ -65,6 +67,7 @@ export default function CountdownMusicProvider({ children }: Props) {
     title: '',
   });
   const [volumeValue, setVolumeValue] = useState(50);
+  const [isPreviewYoutubeReady, setIsPreviewYoutubeReady] = useState(false);
 
   const { isActive, isMusicUsed } = useCountdownState();
   const { setIsMusicUsed, toggleMusicPlay } = useCountdownAction();
@@ -98,7 +101,11 @@ export default function CountdownMusicProvider({ children }: Props) {
           // 공유 URL
           [videoId] = url.split('youtu.be/')[1].split('?');
         }
+        if (music.videoId === videoId) {
+          return;
+        }
 
+        setIsPreviewYoutubeReady(false);
         const title = await getMusicTitle(videoId);
         setMusic({ title, videoId });
 
@@ -110,7 +117,7 @@ export default function CountdownMusicProvider({ children }: Props) {
         });
       }
     },
-    [toggleMusicPlay, setIsMusicUsed, form],
+    [toggleMusicPlay, setIsMusicUsed, form, music],
   );
 
   const toggleMusicUsed = useCallback(() => {
@@ -121,13 +128,18 @@ export default function CountdownMusicProvider({ children }: Props) {
 
   const controlVolume = useCallback(setVolumeValue, [volumeValue]);
 
+  const controlIsPreviewYoutubeReady = useCallback(setIsPreviewYoutubeReady, [
+    isPreviewYoutubeReady,
+  ]);
+
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(
     () => ({
       music,
       previewYoutubePlayerRef,
       volumeValue,
+      isPreviewYoutubeReady,
     }),
-    [music, previewYoutubePlayerRef, volumeValue],
+    [music, previewYoutubePlayerRef, volumeValue, isPreviewYoutubeReady],
   );
 
   const defaultCountdownMusicActionValue = useMemo<CountdownMusicAction>(
@@ -135,8 +147,14 @@ export default function CountdownMusicProvider({ children }: Props) {
       getYoutubeMusicURL,
       toggleMusicUsed,
       controlVolume,
+      controlIsPreviewYoutubeReady,
     }),
-    [getYoutubeMusicURL, toggleMusicUsed, controlVolume],
+    [
+      getYoutubeMusicURL,
+      toggleMusicUsed,
+      controlVolume,
+      controlIsPreviewYoutubeReady,
+    ],
   );
 
   return (
