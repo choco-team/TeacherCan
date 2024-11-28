@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { MusicIcon } from 'lucide-react';
+import { MusicIcon, Volume1Icon, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -20,6 +20,7 @@ import {
 } from '@/components/collapsible';
 import { cn } from '@/styles/utils';
 import { Label } from '@/components/label';
+import YouTube from 'react-youtube';
 import {
   useCountdownMusicAction,
   useCountdownMusicState,
@@ -28,28 +29,45 @@ import { useCountdownState } from '../../countdown-provider/countdown-provider.h
 
 export default function SettingMusic() {
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
-  const previewIframeRef = useRef<HTMLIFrameElement>(null);
-
-  const { isActive, isMusicUsed } = useCountdownState();
+  const [previousVolumeValue, setPreviousVolumeValue] = useState(50);
+  const { isActive, isMusicUsed, youtubePlayerRef } = useCountdownState();
   const {
     music: { videoId, title },
+    isPreviewYoutubeReady,
   } = useCountdownMusicState();
-  const { getYoutubeMusicURL, toggleMusicUsed } = useCountdownMusicAction();
+  const {
+    getYoutubeMusicURL,
+    toggleMusicUsed,
+    controlVolume,
+    controlIsPreviewYoutubeReady,
+  } = useCountdownMusicAction();
+  const { previewYoutubePlayerRef, volumeValue } = useCountdownMusicState();
   const form = useFormContext();
 
   const togglePreviewPlay = (isToPlay: boolean) => {
-    const postMessage = isToPlay ? 'playVideo' : 'stopVideo';
-    previewIframeRef.current.contentWindow.postMessage(
-      `{"event":"command","func":"${postMessage}"}`,
-      '*',
-    );
-
+    if (!previewYoutubePlayerRef.current) {
+      return;
+    }
+    if (isToPlay) {
+      previewYoutubePlayerRef.current.playVideo();
+    } else {
+      previewYoutubePlayerRef.current.pauseVideo();
+    }
     setIsPlayingPreview(isToPlay);
+  };
+
+  const handeleVolumeChange = (volume: number) => {
+    controlVolume(volume);
+    if (previewYoutubePlayerRef) {
+      previewYoutubePlayerRef.current.setVolume(volume);
+    }
+    youtubePlayerRef.current.setVolume(volume);
   };
 
   useEffect(() => {
     if (isActive && isPlayingPreview) setIsPlayingPreview(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    return controlIsPreviewYoutubeReady(false);
   }, [isActive]);
 
   return (
@@ -58,6 +76,7 @@ export default function SettingMusic() {
         <SheetSubTitle>
           <MusicIcon />
           배경 음악
+          {isPreviewYoutubeReady ? 'true' : 'false'}
         </SheetSubTitle>
 
         <CollapsibleTrigger asChild>
@@ -110,38 +129,78 @@ export default function SettingMusic() {
         </Form>
       </CollapsibleContent>
 
-      <iframe
-        ref={previewIframeRef}
-        title="preview"
+      <YouTube
         className="hidden"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        src={
-          videoId
-            ? `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`
-            : undefined
-        }
+        onReady={(event: YT.PlayerEvent) => {
+          previewYoutubePlayerRef.current = event.target;
+          event.target.setVolume(volumeValue);
+          controlIsPreviewYoutubeReady(true);
+        }}
+        onStateChange={() => controlIsPreviewYoutubeReady(true)}
+        videoId={videoId}
+        opts={{
+          playerVars: {
+            autoplay: 0,
+            loop: 1,
+          },
+        }}
       />
 
       {title && (
-        <div className="flex items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
-          <p
-            className={cn(
-              'text-sm line-clamp-1',
-              isMusicUsed
-                ? 'text-muted-foreground'
-                : 'text-muted-foreground/50',
-            )}
-          >
-            {title}
-          </p>
-          <Button
-            variant="primary-ghost"
-            size="xs"
-            disabled={isActive}
-            onClick={() => togglePreviewPlay(!isPlayingPreview)}
-          >
-            {isPlayingPreview ? '정지' : '미리듣기'}
-          </Button>
+        <div className="flex flex-col items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
+          <div className="flex flex-row w-full items-center">
+            <p
+              className={cn(
+                'text-sm line-clamp-1',
+                isMusicUsed
+                  ? 'text-muted-foreground'
+                  : 'text-muted-foreground/50',
+              )}
+            >
+              {title}
+            </p>
+            <Button
+              className="w-12"
+              variant="primary-ghost"
+              size="xs"
+              disabled={isActive || !isPreviewYoutubeReady}
+              onClick={() => togglePreviewPlay(!isPlayingPreview)}
+            >
+              {isPlayingPreview ? '정지' : '미리듣기'}
+            </Button>
+          </div>
+          <div className="flex flex-row w-full items-center">
+            <button
+              disabled={!isPreviewYoutubeReady}
+              type="button"
+              onClick={() => {
+                handeleVolumeChange(previousVolumeValue);
+              }}
+            >
+              {volumeValue === 0 && (
+                <VolumeXIcon className="opacity-50 color-primary" />
+              )}
+            </button>
+            <button
+              disabled={!isPreviewYoutubeReady}
+              type="button"
+              onClick={() => {
+                setPreviousVolumeValue(volumeValue);
+                handeleVolumeChange(0);
+              }}
+            >
+              {volumeValue > 0 && volumeValue < 50 && <Volume1Icon />}
+              {volumeValue >= 50 && <Volume2Icon />}
+            </button>
+            <Input
+              disabled={!isPreviewYoutubeReady}
+              type="range"
+              value={volumeValue}
+              onChange={(e) => {
+                handeleVolumeChange(Number(e.target.value));
+              }}
+            />
+          </div>
         </div>
       )}
     </Collapsible>

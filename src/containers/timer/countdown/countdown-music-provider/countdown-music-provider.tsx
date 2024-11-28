@@ -1,8 +1,11 @@
 import {
   createContext,
+  Dispatch,
   type ReactNode,
+  SetStateAction,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { z } from 'zod';
@@ -18,6 +21,9 @@ type CountdownMusicState = {
     videoId: string;
     title: string;
   };
+  previewYoutubePlayerRef: React.MutableRefObject<YT.Player>;
+  volumeValue: number;
+  isPreviewYoutubeReady: boolean;
 };
 
 export const CountdownMusicStateContext =
@@ -26,6 +32,8 @@ export const CountdownMusicStateContext =
 type CountdownMusicAction = {
   getYoutubeMusicURL: (url: string) => void;
   toggleMusicUsed: () => void;
+  controlVolume: Dispatch<SetStateAction<number>>;
+  controlIsPreviewYoutubeReady: Dispatch<SetStateAction<boolean>>;
 };
 
 export const CountdownMusicActionContext =
@@ -58,9 +66,12 @@ export default function CountdownMusicProvider({ children }: Props) {
     videoId: '',
     title: '',
   });
+  const [volumeValue, setVolumeValue] = useState(50);
+  const [isPreviewYoutubeReady, setIsPreviewYoutubeReady] = useState(false);
 
   const { isActive, isMusicUsed } = useCountdownState();
   const { setIsMusicUsed, toggleMusicPlay } = useCountdownAction();
+  const previewYoutubePlayerRef = useRef<YT.Player>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -90,7 +101,11 @@ export default function CountdownMusicProvider({ children }: Props) {
           // 공유 URL
           [videoId] = url.split('youtu.be/')[1].split('?');
         }
+        if (music.videoId === videoId) {
+          return;
+        }
 
+        setIsPreviewYoutubeReady(false);
         const title = await getMusicTitle(videoId);
         setMusic({ title, videoId });
 
@@ -102,7 +117,7 @@ export default function CountdownMusicProvider({ children }: Props) {
         });
       }
     },
-    [toggleMusicPlay, setIsMusicUsed, form],
+    [toggleMusicPlay, setIsMusicUsed, form, music],
   );
 
   const toggleMusicUsed = useCallback(() => {
@@ -111,19 +126,35 @@ export default function CountdownMusicProvider({ children }: Props) {
     setIsMusicUsed((prev) => !prev);
   }, [isMusicUsed, isActive, toggleMusicPlay, setIsMusicUsed]);
 
+  const controlVolume = useCallback(setVolumeValue, [volumeValue]);
+
+  const controlIsPreviewYoutubeReady = useCallback(setIsPreviewYoutubeReady, [
+    isPreviewYoutubeReady,
+  ]);
+
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(
     () => ({
       music,
+      previewYoutubePlayerRef,
+      volumeValue,
+      isPreviewYoutubeReady,
     }),
-    [music],
+    [music, previewYoutubePlayerRef, volumeValue, isPreviewYoutubeReady],
   );
 
   const defaultCountdownMusicActionValue = useMemo<CountdownMusicAction>(
     () => ({
       getYoutubeMusicURL,
       toggleMusicUsed,
+      controlVolume,
+      controlIsPreviewYoutubeReady,
     }),
-    [getYoutubeMusicURL, toggleMusicUsed],
+    [
+      getYoutubeMusicURL,
+      toggleMusicUsed,
+      controlVolume,
+      controlIsPreviewYoutubeReady,
+    ],
   );
 
   return (

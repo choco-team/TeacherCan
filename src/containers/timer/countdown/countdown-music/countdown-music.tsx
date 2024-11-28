@@ -1,13 +1,16 @@
 import Lottie from 'lottie-react';
 import { cn } from '@/styles/utils';
 import musicWaveAnimation from '@/assets/lottie/music-wave.json';
+import YouTube from 'react-youtube';
 import { useCountdownMusicState } from '../countdown-music-provider/countdown-music-provider.hooks';
 import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
 
 export default function CountdownMusic() {
-  const { isMusicUsed, iframeRef, musicAnimationRef } = useCountdownState();
+  const { isMusicUsed, musicAnimationRef, youtubePlayerRef } =
+    useCountdownState();
   const {
     music: { videoId, title },
+    volumeValue,
   } = useCountdownMusicState();
 
   return (
@@ -26,16 +29,20 @@ export default function CountdownMusic() {
         />
         <span className="text-xs lg:text-lg text-text">{title}</span>
       </div>
-      <iframe
+
+      <YouTube
         className="hidden"
-        title="youtube"
-        ref={iframeRef}
-        src={
-          videoId
-            ? `https://www.youtube.com/embed/${videoId}?loop=1&playlist=${videoId}&enablejsapi=1`
-            : undefined
-        }
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        onReady={(event: YT.PlayerEvent) => {
+          youtubePlayerRef.current = event.target;
+          event.target.setVolume(volumeValue);
+        }}
+        videoId={videoId}
+        opts={{
+          playerVars: {
+            autoplay: 0,
+            loop: 1,
+          },
+        }}
       />
     </>
   );
