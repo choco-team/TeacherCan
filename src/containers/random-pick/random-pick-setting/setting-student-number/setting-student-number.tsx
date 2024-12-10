@@ -10,7 +10,7 @@ import {
 } from '@/components/form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { creatId } from '@/utils/createNonoid';
+import { creatId } from '@/utils/createNanoid';
 import {
   useRandomPickAction,
   useRandomPickState,

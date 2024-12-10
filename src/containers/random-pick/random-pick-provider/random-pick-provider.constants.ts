@@ -1,4 +1,4 @@
-import { creatId } from '@/utils/createNonoid';
+import { creatId } from '@/utils/createNanoid';
 
 export const INIT_STUDENT_NAMES = [
   { id: creatId(), value: '학생1', isPicked: false, isUsed: true },
