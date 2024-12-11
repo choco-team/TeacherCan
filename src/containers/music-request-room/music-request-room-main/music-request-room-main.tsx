@@ -14,7 +14,10 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMusicRequestRoomAction } from '../music-request-room-provider/music-request-room-provider.hooks';
+import {
+  useMusicRequestRoomAction,
+  useMusicRequestRoomState,
+} from '../music-request-room-provider/music-request-room-provider.hooks';
 
 const YOUTUBE_SEARCH_ERROR_MESSAGE = {
   EMPTY_INPUT: '검색어를 입력해 주세요.',
@@ -41,6 +44,8 @@ export default function MusicRequestRoomMain() {
   const pathname = usePathname();
   const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+  const { roomId } = useMusicRequestRoomState();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,6 +66,20 @@ export default function MusicRequestRoomMain() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const requestMusic = async (data) => {
+    try {
+      await fetch(`${originURL}/api/firebase/music-request/musics`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+    } catch (error) {
+      throw Error(error.message);
     }
   };
 
@@ -118,7 +137,9 @@ export default function MusicRequestRoomMain() {
                   </div>
                   <Button
                     variant="primary-outline"
-                    // onClick={firebase에 roomId찾아서 저장하기}
+                    onClick={() => {
+                      requestMusic({ ...video, roomId });
+                    }}
                   >
                     신청하기
                   </Button>
