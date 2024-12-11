@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 type MusicRequestState = {
-  roomID: number;
+  roomID: string;
 };
 
 export const MusicRequestStateContext = createContext<MusicRequestState | null>(
@@ -15,7 +15,7 @@ export const MusicRequestStateContext = createContext<MusicRequestState | null>(
 );
 
 type MusicRequestAction = {
-  settingRoomID: Dispatch<SetStateAction<number>>;
+  settingRoomID: Dispatch<SetStateAction<string>>;
 };
 
 export const MusicRequestActionContext =
