@@ -9,9 +9,9 @@ export async function GET() {
 
 export async function POST() {
   try {
-    const roomID = creatId();
-    set(ref(firebaseDB, `musicRooms/${roomID}`), { roomId: roomID });
-    return NextResponse.json({ roomID }, { status: 200 });
+    const roomId = creatId();
+    set(ref(firebaseDB, `musicRooms/${roomId}`), { roomId });
+    return NextResponse.json({ roomId }, { status: 200 });
   } catch (error) {
     throw new Error(error.message);
   }

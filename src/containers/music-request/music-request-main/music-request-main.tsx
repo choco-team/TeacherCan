@@ -7,8 +7,8 @@ import {
 
 export default function MusicRequestMain() {
   const [isLoading, setIsLoading] = useState<boolean | null>(false);
-  const { roomID } = useMusicRequestState();
-  const { settingRoomID } = useMusicRequestAction();
+  const { roomId } = useMusicRequestState();
+  const { settingRoomId } = useMusicRequestAction();
   const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
   const createRoom = async () => {
@@ -24,7 +24,7 @@ export default function MusicRequestMain() {
         },
       );
       const json = await response.json();
-      settingRoomID(json.roomID);
+      settingRoomId(json.roomId);
     } catch (error) {
       throw Error(error.message);
     } finally {
@@ -38,11 +38,11 @@ export default function MusicRequestMain() {
         {isLoading ? '로딩중..' : '방만들기'}
       </Button>
       <br />
-      {roomID && (
+      {roomId && (
         <Button>
-          <a href={`${originURL}/music-request/${roomID}`}>
+          <a href={`${originURL}/music-request/${roomId}`}>
             학생방입장 <br />
-            {roomID}
+            {roomId}
           </a>
         </Button>
       )}
