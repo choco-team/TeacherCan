@@ -8,17 +8,17 @@ import {
 } from '../music-request-room-provider/music-request-room-provider.hooks';
 
 export default function MusicRequestRoomMain() {
-  const { roomID } = useMusicRequestRoomState();
-  const { settingRoomID } = useMusicRequestRoomAction();
+  const { roomId } = useMusicRequestRoomState();
+  const { settingRoomId } = useMusicRequestRoomAction();
   const pathname = usePathname();
 
   useEffect(() => {
-    settingRoomID(pathname.split('/').pop());
+    settingRoomId(pathname.split('/').pop());
   }, [pathname]);
 
   return (
     <div className="flex justify-center	items-center h-screen">
-      roomId: {roomID}
+      roomId: {roomId}
     </div>
   );
 }

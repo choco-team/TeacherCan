@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 type MusicRequestState = {
-  roomID: string;
+  roomId: string;
 };
 
 export const MusicRequestStateContext = createContext<MusicRequestState | null>(
@@ -15,7 +15,7 @@ export const MusicRequestStateContext = createContext<MusicRequestState | null>(
 );
 
 type MusicRequestAction = {
-  settingRoomID: Dispatch<SetStateAction<string>>;
+  settingRoomId: Dispatch<SetStateAction<string>>;
 };
 
 export const MusicRequestActionContext =
@@ -24,14 +24,14 @@ export const MusicRequestActionContext =
 export default function MusicRequestProvider({
   children,
 }: PropsWithChildren<{}>) {
-  const [roomID, setRoomID] = useState();
+  const [roomId, setRoomId] = useState();
 
   const defaultMusicRequestStateValue = {
-    roomID,
+    roomId,
   };
 
   const defaultMusicRequestActionValue = {
-    settingRoomID: setRoomID,
+    settingRoomId: setRoomId,
   };
 
   return (
