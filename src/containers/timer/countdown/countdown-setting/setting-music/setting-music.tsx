@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MusicIcon, Volume1Icon, Volume2Icon, VolumeXIcon } from 'lucide-react';
+import YouTube from 'react-youtube';
 import {
   Form,
   FormControl,
@@ -20,7 +21,7 @@ import {
 } from '@/components/collapsible';
 import { cn } from '@/styles/utils';
 import { Label } from '@/components/label';
-import YouTube from 'react-youtube';
+import { Slider } from '@/components/slider';
 import {
   useCountdownMusicAction,
   useCountdownMusicState,
@@ -56,7 +57,7 @@ export default function SettingMusic() {
     setIsPlayingPreview(isToPlay);
   };
 
-  const handeleVolumeChange = (volume: number) => {
+  const handleVolumeChange = (volume: number) => {
     controlVolume(volume);
     if (previewYoutubePlayerRef) {
       previewYoutubePlayerRef.current.setVolume(volume);
@@ -66,8 +67,8 @@ export default function SettingMusic() {
 
   useEffect(() => {
     if (isActive && isPlayingPreview) setIsPlayingPreview(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     return controlIsPreviewYoutubeReady(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive]);
 
   return (
@@ -76,7 +77,6 @@ export default function SettingMusic() {
         <SheetSubTitle>
           <MusicIcon />
           배경 음악
-          {isPreviewYoutubeReady ? 'true' : 'false'}
         </SheetSubTitle>
 
         <CollapsibleTrigger asChild>
@@ -147,8 +147,8 @@ export default function SettingMusic() {
       />
 
       {title && (
-        <div className="flex flex-col items-center justify-between gap-x-1 px-2 py-1.5 rounded-lg bg-muted">
-          <div className="flex flex-row w-full items-center">
+        <div className="flex flex-col items-center justify-between gap-y-1 px-3 py-2 rounded-lg bg-muted">
+          <div className="flex items-center justify-between w-full">
             <p
               className={cn(
                 'text-sm line-clamp-1',
@@ -169,35 +169,38 @@ export default function SettingMusic() {
               {isPlayingPreview ? '정지' : '미리듣기'}
             </Button>
           </div>
-          <div className="flex flex-row w-full items-center">
-            <button
+          <div className="flex items-center gap-x-1 w-full">
+            {volumeValue === 0 && (
+              <button
+                disabled={!isPreviewYoutubeReady}
+                type="button"
+                onClick={() => {
+                  handleVolumeChange(previousVolumeValue);
+                }}
+                className="text-primary"
+              >
+                <VolumeXIcon />
+              </button>
+            )}
+            {volumeValue > 0 && (
+              <button
+                disabled={!isPreviewYoutubeReady}
+                type="button"
+                onClick={() => {
+                  setPreviousVolumeValue(volumeValue);
+                  handleVolumeChange(0);
+                }}
+                className="text-primary"
+              >
+                {volumeValue < 50 && <Volume1Icon />}
+                {volumeValue >= 50 && <Volume2Icon />}
+              </button>
+            )}
+            <Slider
               disabled={!isPreviewYoutubeReady}
-              type="button"
-              onClick={() => {
-                handeleVolumeChange(previousVolumeValue);
-              }}
-            >
-              {volumeValue === 0 && (
-                <VolumeXIcon className="opacity-50 color-primary" />
-              )}
-            </button>
-            <button
-              disabled={!isPreviewYoutubeReady}
-              type="button"
-              onClick={() => {
-                setPreviousVolumeValue(volumeValue);
-                handeleVolumeChange(0);
-              }}
-            >
-              {volumeValue > 0 && volumeValue < 50 && <Volume1Icon />}
-              {volumeValue >= 50 && <Volume2Icon />}
-            </button>
-            <Input
-              disabled={!isPreviewYoutubeReady}
-              type="range"
-              value={volumeValue}
-              onChange={(e) => {
-                handeleVolumeChange(Number(e.target.value));
+              value={[volumeValue]}
+              onValueChange={([value]) => {
+                handleVolumeChange(value);
               }}
             />
           </div>
