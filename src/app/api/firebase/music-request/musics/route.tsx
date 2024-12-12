@@ -1,16 +1,34 @@
-import { ref, set } from 'firebase/database';
+import { ref, set, onValue } from 'firebase/database';
 import { firebaseDB } from '@/services/firebase';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
-  return NextResponse.json({ asd: 'asd' }, { status: 200 });
+export async function GET(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const roomId = url.searchParams.get('roomId');
+
+    onValue(ref(firebaseDB, `musicRooms/${roomId}/musics`), (snapshot) => {
+      if (snapshot.exists()) {
+        console.log('Real-time data:', snapshot.val());
+      } else {
+        console.log('No data available');
+      }
+    });
+
+    return NextResponse.json({ asd: 'asd' }, { status: 200 });
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const musicData = await request.json();
+    const musicData = await req.json();
     set(
-      ref(firebaseDB, `musicRooms/${musicData.roomId}/${musicData.videoId}`),
+      ref(
+        firebaseDB,
+        `musicRooms/${musicData.roomId}/musics/${musicData.videoId}`,
+      ),
       musicData,
     );
 

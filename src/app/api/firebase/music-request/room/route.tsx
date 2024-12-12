@@ -3,10 +3,6 @@ import { creatId } from '@/utils/createNanoid';
 import { firebaseDB } from '@/services/firebase';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
-  return NextResponse.json({ asd: 'asd' }, { status: 200 });
-}
-
 export async function POST() {
   try {
     const roomId = creatId();
