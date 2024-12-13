@@ -1,7 +1,5 @@
 'use client';
 
-import { Button } from '@/components/button';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Input } from '@/components/input';
 import {
@@ -12,51 +10,57 @@ import {
   FormMessage,
 } from '@/components/form';
 import { useForm } from 'react-hook-form';
+import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  useMusicRequestStudentAction,
+  useMusicRequestStudentState,
+} from '../../music-request-student-provider/music-request-student-provider.hooks';
 
-const ROOM_TITLE_ERROR_MESSAGE = {
-  EMPTY_INPUT: '방이름을 입력해 주세요.',
-  API_ERROR: '방 생성을 실패 했어요. 다시 시도해주세요.',
+const STUDENT_NAME_ERROR_MESSAGE = {
+  EMPTY_INPUT: '이름을 입력해 주세요.',
+  API_ERROR: '방입장에 실패 했어요. 다시 시도해주세요.',
 } as const;
 
 const formSchema = z.object({
-  roomTitle: z
+  studentNameInput: z
     .string()
-    .nonempty({ message: ROOM_TITLE_ERROR_MESSAGE.EMPTY_INPUT }),
+    .nonempty({ message: STUDENT_NAME_ERROR_MESSAGE.EMPTY_INPUT }),
 });
 
-export default function MusicRequestContainer() {
-  const [isLoading, setIsLoading] = useState<boolean | null>(false);
+export default function CreateNamePage() {
+  const [isLoading, setIsLoading] = useState<boolean | null>();
   const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-  const router = useRouter();
+  const { roomId } = useMusicRequestStudentState();
+  const { settingStudentName } = useMusicRequestStudentAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      roomTitle: '',
+      studentNameInput: '',
     },
     reValidateMode: 'onSubmit',
   });
 
-  const createRoom = async (roomTitle: string) => {
+  const handleSearch = async (studentNameInput: string) => {
     try {
       setIsLoading(true);
       const response = await fetch(
-        `${originURL}/api/firebase/music-request/room`,
+        `${originURL}/api/firebase/music-request/students`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ roomTitle }),
+          body: JSON.stringify({ roomId, studentNameInput }),
         },
       );
       const json = await response.json();
-      router.push(`${originURL}/music-request/teacher/${json.roomId}`);
+      settingStudentName(json.studentName);
     } catch (error) {
-      form.setError('roomTitle', {
-        message: ROOM_TITLE_ERROR_MESSAGE.API_ERROR,
+      form.setError('studentNameInput', {
+        message: STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
       });
       throw Error(error.message);
     } finally {
@@ -65,7 +69,7 @@ export default function MusicRequestContainer() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center h-full pt-8">
       <div className="flex flex-col items-center bg-gray mb-10">
         <p>신청곡 페이지 사용하는 방법</p>
         <br />
@@ -77,13 +81,13 @@ export default function MusicRequestContainer() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() =>
-            createRoom(form.getValues('roomTitle')),
+            handleSearch(form.getValues('studentNameInput')),
           )}
           className="space-y-4"
         >
           <FormField
             control={form.control}
-            name="roomTitle"
+            name="studentNameInput"
             render={({ field }) => (
               <FormItem>
                 <div className="flex items-center gap-x-2">
@@ -91,11 +95,11 @@ export default function MusicRequestContainer() {
                     <Input
                       type="text"
                       {...field}
-                      placeholder="방 이름을 입력해주세요."
+                      placeholder="이름을 입력해주세요."
                     />
                   </FormControl>
-                  <Button type="submit" variant="primary">
-                    {isLoading ? '로딩중...' : '방 생성'}
+                  <Button type="submit" variant="primary-outline">
+                    {isLoading ? '로딩중...' : '입장하기'}
                   </Button>
                 </div>
                 <FormMessage />

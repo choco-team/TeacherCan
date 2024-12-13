@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { Input } from '@/components/input';
 import {
   Form,
@@ -14,10 +13,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  useMusicRequestRoomAction,
-  useMusicRequestRoomState,
-} from '../music-request-room-provider/music-request-room-provider.hooks';
+import { useMusicRequestStudentState } from '../../music-request-student-provider/music-request-student-provider.hooks';
 
 const YOUTUBE_SEARCH_ERROR_MESSAGE = {
   EMPTY_INPUT: '검색어를 입력해 주세요.',
@@ -37,14 +33,12 @@ type Video = {
   channelTitle: string;
 };
 
-export default function MusicRequestRoomMain() {
+const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export default function SearchPage() {
   const [videos, setVidoes] = useState<Video[]>();
   const [isLoading, setIsLoading] = useState<boolean | null>();
-  const { settingRoomId } = useMusicRequestRoomAction();
-  const pathname = usePathname();
-  const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-  const { roomId } = useMusicRequestRoomState();
+  const { roomId } = useMusicRequestStudentState();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,6 +58,7 @@ export default function MusicRequestRoomMain() {
       form.setError('q', {
         message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
       });
+      throw Error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -82,10 +77,6 @@ export default function MusicRequestRoomMain() {
       throw Error(error.message);
     }
   };
-
-  useEffect(() => {
-    settingRoomId(pathname.split('/').pop());
-  }, [pathname, settingRoomId]);
 
   return (
     <div className="flex flex-col justify-center h-full pt-8">
