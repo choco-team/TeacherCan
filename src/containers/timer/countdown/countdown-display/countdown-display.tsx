@@ -1,12 +1,5 @@
-import { useRef, useState, type ChangeEvent, type FocusEvent } from 'react';
-import {
-  ChevronUpIcon,
-  ChevronDownIcon,
-  SquareIcon,
-  PlayIcon,
-  PauseIcon,
-  RotateCcwIcon,
-} from 'lucide-react';
+import { useState, type ChangeEvent } from 'react';
+import { SquareIcon, PlayIcon, PauseIcon, RotateCcwIcon } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Heading1 } from '@/components/heading';
@@ -15,7 +8,6 @@ import {
   useCountdownAction,
   useCountdownState,
 } from '../countdown-provider/countdown-provider.hooks';
-import { InputNumberWithoutSpin } from '../countdown-components/countdown-input';
 import {
   HOUR_TO_SECONDS,
   MAX_TIME,
@@ -24,17 +16,13 @@ import {
   NO_TIME,
 } from '../countdown-provider/countdown-provider.constants';
 import Colon from './colon';
+import CountdownStepper from '../countdown-components/countdown-stepper';
 
-const timeInputClassName =
-  'px-2 md:px-4 md:pb-2 lg:p-6 pt-4 md:pt-6 lg:pt-10 max-w-32 md:max-w-60 lg:max-w-96 text-7xl md:text-9xl lg:text-[13rem] h-auto md:rounded-2xl lg:rounded-3xl bg-white read-only:border-body read-only:bg-body read-only:pointer-events-none text-end font-medium font-number leading-none md:tracking-wide';
 const timerButtonClassName =
   'size-10 max-md:p-1.5 md:size-16 lg:size-32 rounded-full';
 const timerButtonIconClassName = 'size-6 md:size-12 lg:size-20 fill-inherit';
 
 const TIMER_NAME_MAX_LENGTH = 20;
-
-const formatTimeToTwoDigits = (time: number) =>
-  time.toString().padStart(2, '0');
 
 export default function CountdownDisplay() {
   const [timerName, setTimerName] = useState('');
@@ -51,74 +39,15 @@ export default function CountdownDisplay() {
     handleReset,
   } = useCountdownAction();
 
-  const shouldRenderHours = !isActive || hours > 0;
+  const shouldRenderHours = hours > 0;
+  // NOTE:(김홍동) 타이머가 동작하지 않을 땐 시간은 항상 보이기
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const shouldRenderHoursV2 = !isActive || hours > 0;
 
   const handleChangeTimerName = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     if (value.length > TIMER_NAME_MAX_LENGTH) return;
     setTimerName(value);
-  };
-
-  const handleFocus = (event: FocusEvent<HTMLInputElement>) => {
-    if (isActive) return;
-    // eslint-disable-next-line no-param-reassign
-    event.target.value = '';
-  };
-
-  const handleBlur =
-    (time: number, formatter?: (time: number) => string) =>
-    (event: FocusEvent<HTMLInputElement>) => {
-      // eslint-disable-next-line no-param-reassign
-      event.target.value = formatter ? formatter(time) : time.toString();
-    };
-
-  const holdTimeout = useRef<NodeJS.Timeout | null>(null);
-  const holdSpeed = useRef(300);
-
-  const startHold = (callback: () => void) => {
-    const repeatCallback = () => {
-      callback();
-
-      holdSpeed.current = Math.max(holdSpeed.current * 0.92, 30);
-
-      holdTimeout.current = setTimeout(repeatCallback, holdSpeed.current);
-    };
-
-    callback();
-    holdSpeed.current = 300;
-    holdTimeout.current = setTimeout(repeatCallback, holdSpeed.current);
-  };
-
-  const stopHold = () => {
-    if (holdTimeout.current) {
-      clearTimeout(holdTimeout.current);
-      holdTimeout.current = null;
-    }
-    holdSpeed.current = 300;
-  };
-
-  const handleIncreaseHours = () => {
-    updateHours(1, true);
-  };
-
-  const handleDecreaseHours = () => {
-    updateHours(-1, true);
-  };
-
-  const handleIncreaseMinutes = () => {
-    updateMinutes(1, true);
-  };
-
-  const handleDecreaseMinutes = () => {
-    updateMinutes(-1, true);
-  };
-
-  const handleIncreaseSeconds = () => {
-    updateSeconds(1, true);
-  };
-
-  const handleDecreaseSeconds = () => {
-    updateSeconds(-1, true);
   };
 
   return (
@@ -143,120 +72,42 @@ export default function CountdownDisplay() {
         <div className="flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4">
           {shouldRenderHours && (
             <>
-              <div className="flex flex-col items-center">
-                <div className="flex flex-col items-center gap-y-1.5 lg:gap-y-4">
-                  <Button
-                    size="icon"
-                    variant="primary-ghost"
-                    className="max-md:hidden size-6 lg:size-12 rounded-full"
-                    disabled={leftTime >= MAX_TIME_INPUT.HOUR * 60 * 60}
-                    onMouseDown={() => startHold(handleIncreaseHours)}
-                    onMouseUp={stopHold}
-                    onMouseLeave={stopHold}
-                  >
-                    <ChevronUpIcon className="size-5 lg:size-8" />
-                  </Button>
-                  <InputNumberWithoutSpin
-                    value={hours}
-                    className={cn(
-                      timeInputClassName,
-                      'max-w-20 md:max-w-40 lg:max-w-60',
-                    )}
-                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                      updateHours(Math.floor(Number(event.target.value)))
-                    }
-                    onFocus={handleFocus}
-                    onBlur={handleBlur(hours)}
-                    readOnly={isActive}
-                  />
-                  <Button
-                    size="icon"
-                    variant="primary-ghost"
-                    className="max-md:hidden size-6 lg:size-12 rounded-full"
-                    disabled={leftTime < HOUR_TO_SECONDS}
-                    onMouseDown={() => startHold(handleDecreaseHours)}
-                    onMouseUp={stopHold}
-                    onMouseLeave={stopHold}
-                  >
-                    <ChevronDownIcon className="size-5 lg:size-8" />
-                  </Button>
-                </div>
-              </div>
+              <CountdownStepper
+                value={hours}
+                isActive={isActive}
+                disabledUp={leftTime >= MAX_TIME_INPUT.HOUR * 60 * 60}
+                disabledDown={leftTime < HOUR_TO_SECONDS}
+                length={1}
+                className="max-w-20 md:max-w-40 lg:max-w-60"
+                onIncrease={() => updateHours(1, true)}
+                onDecrease={() => updateHours(-1, true)}
+                onChange={(value) => updateHours(value)}
+              />
               <Colon />
             </>
           )}
-          <div className="flex flex-col items-center gap-y-1.5 lg:gap-y-4">
-            <Button
-              size="icon"
-              variant="primary-ghost"
-              className="max-md:hidden size-6 lg:size-12 rounded-full"
-              disabled={
-                leftTime >=
-                MAX_TIME_INPUT.HOUR * 60 * 60 + MAX_TIME_INPUT.MINUTE * 60
-              }
-              onMouseDown={() => startHold(handleIncreaseMinutes)}
-              onMouseUp={stopHold}
-              onMouseLeave={stopHold}
-            >
-              <ChevronUpIcon className="size-5 lg:size-8" />
-            </Button>
-            <InputNumberWithoutSpin
-              value={formatTimeToTwoDigits(minutes)}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                updateMinutes(Math.floor(Number(event.target.value)))
-              }
-              onFocus={handleFocus}
-              onBlur={handleBlur(minutes, formatTimeToTwoDigits)}
-              className={timeInputClassName}
-              readOnly={isActive}
-            />
-            <Button
-              size="icon"
-              variant="primary-ghost"
-              className="max-md:hidden size-6 lg:size-12 rounded-full"
-              disabled={leftTime < MINUTE_TO_SECONDS}
-              onMouseDown={() => startHold(handleDecreaseMinutes)}
-              onMouseUp={stopHold}
-              onMouseLeave={stopHold}
-            >
-              <ChevronDownIcon className="size-5 lg:size-8" />
-            </Button>
-          </div>
+          <CountdownStepper
+            value={minutes}
+            isActive={isActive}
+            disabledUp={
+              leftTime >=
+              MAX_TIME_INPUT.HOUR * 60 * 60 + MAX_TIME_INPUT.MINUTE * 60
+            }
+            disabledDown={leftTime <= MINUTE_TO_SECONDS}
+            onIncrease={() => updateMinutes(1, true)}
+            onDecrease={() => updateMinutes(-1, true)}
+            onChange={(value) => updateMinutes(value)}
+          />
           <Colon />
-          <div className="flex flex-col items-center gap-y-1.5 lg:gap-y-4">
-            <Button
-              size="icon"
-              variant="primary-ghost"
-              className="max-md:hidden size-6 lg:size-12 rounded-full"
-              disabled={leftTime >= MAX_TIME}
-              onMouseDown={() => startHold(handleIncreaseSeconds)}
-              onMouseUp={stopHold}
-              onMouseLeave={stopHold}
-            >
-              <ChevronUpIcon className="size-5 lg:size-8" />
-            </Button>
-            <InputNumberWithoutSpin
-              value={formatTimeToTwoDigits(seconds)}
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                updateSeconds(Number(event.target.value))
-              }
-              onFocus={handleFocus}
-              onBlur={handleBlur(seconds, formatTimeToTwoDigits)}
-              className={timeInputClassName}
-              readOnly={isActive}
-            />
-            <Button
-              size="icon"
-              variant="primary-ghost"
-              className="max-md:hidden size-6 lg:size-12 rounded-full"
-              disabled={leftTime <= 0}
-              onMouseDown={() => startHold(handleDecreaseSeconds)}
-              onMouseUp={stopHold}
-              onMouseLeave={stopHold}
-            >
-              <ChevronDownIcon className="size-5 lg:size-8" />
-            </Button>
-          </div>
+          <CountdownStepper
+            value={seconds}
+            isActive={isActive}
+            disabledUp={leftTime >= MAX_TIME}
+            disabledDown={leftTime <= NO_TIME}
+            onIncrease={() => updateSeconds(1, true)}
+            onDecrease={() => updateSeconds(-1, true)}
+            onChange={(value) => updateSeconds(value)}
+          />
         </div>
 
         <div className="flex items-center justify-center gap-x-12 md:gap-x-16 lg:gap-x-28">
