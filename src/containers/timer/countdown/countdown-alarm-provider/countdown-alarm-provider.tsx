@@ -44,7 +44,8 @@ export default function CountdownAlarmProvider({ children }: Props) {
   );
 
   useEffect(() => {
-    const alarmBasic = new Audio('/audio/alarm-basic.mp3');
+    // const alarmBasic = new Audio('/timer/audio/alarm-beeps.mp3');
+    const alarmBasic = new Audio('/audio/timer/alarm-beeps.mp3');
     setAlarmAudio(alarmBasic);
 
     return () => {
@@ -66,6 +67,7 @@ export default function CountdownAlarmProvider({ children }: Props) {
     }
 
     alarmAudio.play();
+
     if (leftTime === 0) setAlarmTimes([0]);
   }, [alarmTimes, leftTime, isActive, alarmAudio]);
 
