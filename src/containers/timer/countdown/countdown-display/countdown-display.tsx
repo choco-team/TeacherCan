@@ -4,6 +4,7 @@ import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
+import { cva } from 'class-variance-authority';
 import {
   useCountdownAction,
   useCountdownState,
@@ -17,6 +18,15 @@ import {
 } from '../countdown-provider/countdown-provider.constants';
 import Colon from './colon';
 import CountdownStepper from '../countdown-components/countdown-stepper';
+
+const buttonText = cva('transition duration-300', {
+  variants: {
+    status: {
+      active: 'max-md:scale-125 scale-150',
+      none: '',
+    },
+  },
+});
 
 const timerButtonClassName =
   'size-10 max-md:p-1.5 md:size-16 lg:size-32 rounded-full';
@@ -69,7 +79,12 @@ export default function CountdownDisplay() {
       )}
 
       <div className="flex flex-col items-center gap-y-2 lg:gap-y-8">
-        <div className="flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4">
+        <div
+          className={cn(
+            'flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4',
+            buttonText({ status: isActive ? 'active' : 'none' }),
+          )}
+        >
           {shouldRenderHours && (
             <>
               <CountdownStepper
@@ -110,7 +125,7 @@ export default function CountdownDisplay() {
           />
         </div>
 
-        <div className="flex items-center justify-center gap-x-12 md:gap-x-16 lg:gap-x-28">
+        <div className="flex items-center justify-center gap-x-12 md:gap-x-16 lg:gap-x-28 z-10">
           {isActive ? (
             <Button
               variant="primary-ghost"
