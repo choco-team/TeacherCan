@@ -17,6 +17,9 @@ import {
 } from '../countdown-provider/countdown-provider.hooks';
 import { InputNumberWithoutSpin } from '../countdown-components/countdown-input';
 import {
+  HOUR_TO_SECONDS,
+  MAX_TIME,
+  MAX_TIME_INPUT,
   MINUTE_TO_SECONDS,
   NO_TIME,
 } from '../countdown-provider/countdown-provider.constants';
@@ -36,7 +39,7 @@ const formatTimeToTwoDigits = (time: number) =>
 export default function CountdownDisplay() {
   const [timerName, setTimerName] = useState('');
 
-  const { hours, minutes, seconds, setupTime, leftTime, isActive, isHourUsed } =
+  const { hours, minutes, seconds, setupTime, leftTime, isActive } =
     useCountdownState();
   const {
     updateHours,
@@ -47,6 +50,8 @@ export default function CountdownDisplay() {
     handleStop,
     handleReset,
   } = useCountdownAction();
+
+  const shouldRenderHours = !isActive || hours > 0;
 
   const handleChangeTimerName = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -92,6 +97,14 @@ export default function CountdownDisplay() {
     holdSpeed.current = 300;
   };
 
+  const handleIncreaseHours = () => {
+    updateHours(1, true);
+  };
+
+  const handleDecreaseHours = () => {
+    updateHours(-1, true);
+  };
+
   const handleIncreaseMinutes = () => {
     updateMinutes(1, true);
   };
@@ -128,22 +141,46 @@ export default function CountdownDisplay() {
 
       <div className="flex flex-col items-center gap-y-2 lg:gap-y-8">
         <div className="flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4">
-          {isHourUsed && (
+          {shouldRenderHours && (
             <>
               <div className="flex flex-col items-center">
-                <InputNumberWithoutSpin
-                  value={hours}
-                  className={cn(
-                    timeInputClassName,
-                    'max-w-20 md:max-w-40 lg:max-w-60',
-                  )}
-                  onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                    updateHours(Math.floor(Number(event.target.value)))
-                  }
-                  onFocus={handleFocus}
-                  onBlur={handleBlur(hours)}
-                  readOnly={isActive}
-                />
+                <div className="flex flex-col items-center gap-y-1.5 lg:gap-y-4">
+                  <Button
+                    size="icon"
+                    variant="primary-ghost"
+                    className="max-md:hidden size-6 lg:size-12 rounded-full"
+                    disabled={leftTime >= MAX_TIME_INPUT.HOUR * 60 * 60}
+                    onMouseDown={() => startHold(handleIncreaseHours)}
+                    onMouseUp={stopHold}
+                    onMouseLeave={stopHold}
+                  >
+                    <ChevronUpIcon className="size-5 lg:size-8" />
+                  </Button>
+                  <InputNumberWithoutSpin
+                    value={hours}
+                    className={cn(
+                      timeInputClassName,
+                      'max-w-20 md:max-w-40 lg:max-w-60',
+                    )}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      updateHours(Math.floor(Number(event.target.value)))
+                    }
+                    onFocus={handleFocus}
+                    onBlur={handleBlur(hours)}
+                    readOnly={isActive}
+                  />
+                  <Button
+                    size="icon"
+                    variant="primary-ghost"
+                    className="max-md:hidden size-6 lg:size-12 rounded-full"
+                    disabled={leftTime < HOUR_TO_SECONDS}
+                    onMouseDown={() => startHold(handleDecreaseHours)}
+                    onMouseUp={stopHold}
+                    onMouseLeave={stopHold}
+                  >
+                    <ChevronDownIcon className="size-5 lg:size-8" />
+                  </Button>
+                </div>
               </div>
               <Colon />
             </>
@@ -153,6 +190,10 @@ export default function CountdownDisplay() {
               size="icon"
               variant="primary-ghost"
               className="max-md:hidden size-6 lg:size-12 rounded-full"
+              disabled={
+                leftTime >=
+                MAX_TIME_INPUT.HOUR * 60 * 60 + MAX_TIME_INPUT.MINUTE * 60
+              }
               onMouseDown={() => startHold(handleIncreaseMinutes)}
               onMouseUp={stopHold}
               onMouseLeave={stopHold}
@@ -187,6 +228,7 @@ export default function CountdownDisplay() {
               size="icon"
               variant="primary-ghost"
               className="max-md:hidden size-6 lg:size-12 rounded-full"
+              disabled={leftTime >= MAX_TIME}
               onMouseDown={() => startHold(handleIncreaseSeconds)}
               onMouseUp={stopHold}
               onMouseLeave={stopHold}
