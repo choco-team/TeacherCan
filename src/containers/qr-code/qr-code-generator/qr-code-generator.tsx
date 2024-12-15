@@ -12,6 +12,8 @@ import { Input } from '@/components/input';
 import { Label } from '@/components/label';
 import { cn } from '@/styles/utils';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
+import { Button } from '@/components/button';
+import { useToast } from '@/hooks/use-toast';
 import type { QRCode } from '../qr-code.type';
 
 type Props = {
@@ -27,6 +29,8 @@ function QRCodeGenerator(
 
   const [isPending, startTransition] = useTransition();
 
+  const { toast } = useToast();
+
   const handleGenerate = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setQrCodeInputValue(value);
@@ -36,6 +40,42 @@ function QRCodeGenerator(
   const handleChangeName = (event: ChangeEvent<HTMLInputElement>) => {
     setQrCode((prev) => ({ ...prev, name: event.target.value }));
   };
+
+  const handleSaveToLocalStorage = () => {
+    const currentDate = new Date().toISOString();
+    const newEntry = {
+      date: currentDate,
+      url: qrCode.value,
+      title: qrCode.name,
+    };
+
+    const existingData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
+
+    const isDuplicate = existingData.some(
+      (entry: { url: string }) => entry.url === qrCode.value,
+    );
+
+    if (isDuplicate) {
+      toast({ title: '이미 저장된 QR코드입니다.', variant: 'error' });
+      return;
+    }
+
+    if (existingData.length >= 10) {
+      toast({
+        title: '최대 10개의 QR코드만 저장할 수 있습니다.',
+        variant: 'error',
+      });
+      return;
+    }
+
+    const updatedData = [...existingData, newEntry];
+
+    localStorage.setItem('qrcodes', JSON.stringify(updatedData));
+
+    toast({ title: 'QR코드가 저장되었습니다.', variant: 'success' });
+  };
+
+  const isButtonDisabled = !qrCode.value || !qrCode.name;
 
   return (
     <section className="flex flex-col items-center gap-y-10 w-full">
@@ -62,6 +102,12 @@ function QRCodeGenerator(
             maxLength={12}
             onChange={handleChangeName}
           />
+          <Button
+            onClick={handleSaveToLocalStorage}
+            disabled={isButtonDisabled}
+          >
+            QR코드 북마크
+          </Button>
         </Label>
       </div>
 
