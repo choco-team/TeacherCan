@@ -4,6 +4,9 @@ import { Button } from '@/components/button';
 import { cn } from '@/styles/utils';
 import { InputNumberWithoutSpin } from './countdown-input';
 
+const INIT_HOLD_SPEED = 300;
+const MAX_HOLD_SPEED = 30;
+
 const timeInputClassName =
   'px-2 md:px-4 md:pb-2 lg:p-6 pt-4 md:pt-6 lg:pt-10 max-w-32 md:max-w-60 lg:max-w-96 text-7xl md:text-9xl lg:text-[13rem] h-auto md:rounded-2xl lg:rounded-3xl bg-white read-only:border-body read-only:bg-body read-only:pointer-events-none text-end font-medium font-number leading-none md:tracking-wide';
 
@@ -34,17 +37,17 @@ export default function CountdownStepper({
     time.toString().padStart(length, '0');
 
   const holdTimeout = useRef<NodeJS.Timeout | null>(null);
-  const holdSpeed = useRef(300);
+  const holdSpeed = useRef(INIT_HOLD_SPEED);
 
   const startHold = (callback: () => void) => {
     const repeatCallback = () => {
       callback();
-      holdSpeed.current = Math.max(holdSpeed.current * 0.92, 30);
+      holdSpeed.current = Math.max(holdSpeed.current * 0.92, MAX_HOLD_SPEED);
       holdTimeout.current = setTimeout(repeatCallback, holdSpeed.current);
     };
 
     callback();
-    holdSpeed.current = 300;
+    holdSpeed.current = INIT_HOLD_SPEED;
     holdTimeout.current = setTimeout(repeatCallback, holdSpeed.current);
   };
 
@@ -54,7 +57,7 @@ export default function CountdownStepper({
       holdTimeout.current = null;
     }
 
-    holdSpeed.current = 300;
+    holdSpeed.current = INIT_HOLD_SPEED;
   };
 
   const handleBlur =

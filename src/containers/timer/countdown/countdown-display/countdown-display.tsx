@@ -22,7 +22,7 @@ import CountdownStepper from '../countdown-components/countdown-stepper';
 const buttonText = cva('transition duration-300', {
   variants: {
     status: {
-      active: 'max-md:scale-125 scale-150',
+      active: 'max-md:scale-110 scale-125',
       none: '',
     },
   },
