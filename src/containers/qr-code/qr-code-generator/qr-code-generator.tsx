@@ -88,6 +88,18 @@ function QRCodeGenerator(
     toast({ title: 'QR코드가 저장되었습니다.', variant: 'success' });
   };
 
+  const handleDeleteQRCode = (url: string) => {
+    const existingData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
+
+    const updatedData = existingData.filter(
+      (entry: { url: string }) => entry.url !== url,
+    );
+
+    localStorage.setItem('qrcodes', JSON.stringify(updatedData));
+    setSavedQRCodes(updatedData);
+    toast({ title: 'QR코드가 삭제되었습니다.', variant: 'success' });
+  };
+
   const isButtonDisabled = !qrCode.value || !qrCode.name;
 
   return (
@@ -151,9 +163,20 @@ function QRCodeGenerator(
           북마크된 QR 코드 목록
         </Heading3>
         <div className="flex flex-wrap gap-2">
-          {savedQRCodes.map((code) => (
-            <Badge key={code.url} variant="primary-outline" size="sm">
-              {code.title}
+          {savedQRCodes.map((entry) => (
+            <Badge
+              key={entry.url}
+              variant="primary"
+              size="sm"
+              className="cursor-pointer flex items-center space-x-2 relative"
+            >
+              {entry.title}
+              <Button
+                onClick={() => handleDeleteQRCode(entry.url)}
+                className="ml-2 text-red-300 hover:text-red-700 text-xs"
+              >
+                ✕
+              </Button>
             </Badge>
           ))}
         </div>
