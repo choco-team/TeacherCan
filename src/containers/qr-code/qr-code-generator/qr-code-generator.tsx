@@ -6,6 +6,7 @@ import {
   type SetStateAction,
   useState,
   useTransition,
+  useEffect,
 } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { Input } from '@/components/input';
@@ -14,6 +15,8 @@ import { cn } from '@/styles/utils';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Button } from '@/components/button';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/badge';
+import { Heading3 } from '@/components/heading';
 import type { QRCode } from '../qr-code.type';
 
 type Props = {
@@ -29,7 +32,16 @@ function QRCodeGenerator(
 
   const [isPending, startTransition] = useTransition();
 
+  const [savedQRCodes, setSavedQRCodes] = useState<
+    { date: string; url: string; title: string }[]
+  >([]);
+
   const { toast } = useToast();
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
+    setSavedQRCodes(storedData);
+  }, []);
 
   const handleGenerate = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -51,12 +63,13 @@ function QRCodeGenerator(
 
     const existingData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
 
-    const isDuplicate = existingData.some(
-      (entry: { url: string }) => entry.url === qrCode.value,
+    const isLinkDuplicate = existingData.some(
+      (entry: { url: string; title: string }) =>
+        entry.url === qrCode.value || entry.title === qrCode.name,
     );
 
-    if (isDuplicate) {
-      toast({ title: '이미 저장된 QR코드입니다.', variant: 'error' });
+    if (isLinkDuplicate) {
+      toast({ title: '이미 저장된 QR코드 또는 제목입니다.', variant: 'error' });
       return;
     }
 
@@ -71,7 +84,7 @@ function QRCodeGenerator(
     const updatedData = [...existingData, newEntry];
 
     localStorage.setItem('qrcodes', JSON.stringify(updatedData));
-
+    setSavedQRCodes(updatedData);
     toast({ title: 'QR코드가 저장되었습니다.', variant: 'success' });
   };
 
@@ -131,6 +144,18 @@ function QRCodeGenerator(
               </p>
             )}
           </div>
+        </div>
+      </div>
+      <div className="w-full max-w-96">
+        <Heading3 className="font-semibold text-lg mb-4">
+          북마크된 QR 코드 목록
+        </Heading3>
+        <div className="flex flex-wrap gap-2">
+          {savedQRCodes.map((code) => (
+            <Badge key={code.url} variant="primary-outline" size="sm">
+              {code.title}
+            </Badge>
+          ))}
         </div>
       </div>
     </section>
