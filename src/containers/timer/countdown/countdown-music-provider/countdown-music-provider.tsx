@@ -11,6 +11,7 @@ import {
 import { z } from 'zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { getMusicTitle } from '@/utils/api/youtubeAPI';
 import {
   useCountdownAction,
   useCountdownState,
@@ -81,14 +82,6 @@ export default function CountdownMusicProvider({ children }: Props) {
     reValidateMode: 'onSubmit',
   });
 
-  const getMusicTitle = async (videoId: string) => {
-    const response = await fetch(
-      `${window.location.origin}/api/youtube/video/${videoId}`,
-    );
-    const json = await response.json();
-    return json.title;
-  };
-
   const getYoutubeMusicURL = useCallback(
     async (url: string) => {
       try {
@@ -126,10 +119,10 @@ export default function CountdownMusicProvider({ children }: Props) {
     setIsMusicUsed((prev) => !prev);
   }, [isMusicUsed, isActive, toggleMusicPlay, setIsMusicUsed]);
 
-  const controlVolume = useCallback(setVolumeValue, [volumeValue]);
+  const controlVolume = useCallback(setVolumeValue, [setVolumeValue]);
 
   const controlIsPreviewYoutubeReady = useCallback(setIsPreviewYoutubeReady, [
-    isPreviewYoutubeReady,
+    setIsPreviewYoutubeReady,
   ]);
 
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(

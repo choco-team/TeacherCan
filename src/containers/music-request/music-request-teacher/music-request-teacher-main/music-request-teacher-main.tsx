@@ -2,6 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { House } from 'lucide-react';
 import { Button } from '@/components/button';
+import { getRoomTitle } from '@/utils/api/firebaseAPI';
 import {
   useMusicRequestTeacherAction,
   useMusicRequestTeacherState,
@@ -14,23 +15,9 @@ export default function MusicRequestTeacherMain() {
   const { settingRoomId, settingRoomTitle } = useMusicRequestTeacherAction();
   const router = useRouter();
 
-  const getRoomTitle = useCallback(
+  const settingRoomTitleCallback = useCallback(
     async (id: string) => {
-      try {
-        const res = await fetch(
-          `${originURL}/api/firebase/music-request/room?roomId=${id}`,
-          {
-            cache: 'force-cache',
-          },
-        );
-        const json = await res.json();
-        if (!res.ok) {
-          throw new Error('응답이 존재하지 않습니다.');
-        }
-        settingRoomTitle(json.roomTitle);
-      } catch (e) {
-        throw new Error(e.message);
-      }
+      settingRoomTitle(await getRoomTitle(id));
     },
     [settingRoomTitle],
   );
@@ -38,7 +25,7 @@ export default function MusicRequestTeacherMain() {
   useEffect(() => {
     if (params?.roomId) {
       settingRoomId(params.roomId);
-      getRoomTitle(params.roomId);
+      settingRoomTitleCallback(params.roomId);
     }
   }, [params?.roomId, getRoomTitle, settingRoomId]);
 

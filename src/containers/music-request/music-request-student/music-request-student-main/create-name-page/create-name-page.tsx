@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createStudentName } from '@/utils/api/firebaseAPI';
 import {
   useMusicRequestStudentAction,
   useMusicRequestStudentState,
@@ -31,7 +32,6 @@ const formSchema = z.object({
 
 export default function CreateNamePage() {
   const [isLoading, setIsLoading] = useState<boolean | null>();
-  const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const { roomId } = useMusicRequestStudentState();
   const { settingStudentName } = useMusicRequestStudentAction();
 
@@ -43,21 +43,10 @@ export default function CreateNamePage() {
     reValidateMode: 'onSubmit',
   });
 
-  const handleSearch = async (studentNameInput: string) => {
+  const handleStudentName = async (studentNameInput: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `${originURL}/api/firebase/music-request/students`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ roomId, studentNameInput }),
-        },
-      );
-      const json = await response.json();
-      settingStudentName(json.studentName);
+      settingStudentName(await createStudentName(roomId, studentNameInput));
     } catch (error) {
       form.setError('studentNameInput', {
         message: STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
@@ -81,7 +70,7 @@ export default function CreateNamePage() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() =>
-            handleSearch(form.getValues('studentNameInput')),
+            handleStudentName(form.getValues('studentNameInput')),
           )}
           className="space-y-4"
         >

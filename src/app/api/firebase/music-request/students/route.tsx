@@ -6,14 +6,11 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     set(
-      ref(
-        firebaseDB,
-        `musicRooms/${body.roomId}/students/${body.studentNameInput}`,
-      ),
+      ref(firebaseDB, `musicRooms/${body.roomId}/students/${body.studentName}`),
       ' ',
     );
     return NextResponse.json(
-      { studentName: body.studentNameInput },
+      { studentName: body.studentName },
       { status: 200 },
     );
   } catch (error) {

@@ -14,6 +14,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createRoom } from '@/utils/api/firebaseAPI';
 
 const ROOM_TITLE_ERROR_MESSAGE = {
   EMPTY_INPUT: '방이름을 입력해 주세요.',
@@ -39,21 +40,12 @@ export default function MusicRequestContainer() {
     reValidateMode: 'onSubmit',
   });
 
-  const createRoom = async (roomTitle: string) => {
+  const handleRoomTitleSubmit = async (roomTitle: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch(
-        `${originURL}/api/firebase/music-request/room`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ roomTitle }),
-        },
+      router.push(
+        `${originURL}/music-request/teacher/${await createRoom(roomTitle)}`,
       );
-      const json = await response.json();
-      router.push(`${originURL}/music-request/teacher/${json.roomId}`);
     } catch (error) {
       form.setError('roomTitle', {
         message: ROOM_TITLE_ERROR_MESSAGE.API_ERROR,
@@ -77,7 +69,7 @@ export default function MusicRequestContainer() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() =>
-            createRoom(form.getValues('roomTitle')),
+            handleRoomTitleSubmit(form.getValues('roomTitle')),
           )}
           className="space-y-4"
         >

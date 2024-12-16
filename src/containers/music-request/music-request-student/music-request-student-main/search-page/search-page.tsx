@@ -13,6 +13,8 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { youtubeSearch } from '@/utils/api/youtubeAPI';
+import { writeMusic } from '@/utils/api/firebaseAPI';
 import { useMusicRequestStudentState } from '../../music-request-student-provider/music-request-student-provider.hooks';
 
 const YOUTUBE_SEARCH_ERROR_MESSAGE = {
@@ -33,8 +35,6 @@ type Video = {
   channelTitle: string;
 };
 
-const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 export default function SearchPage() {
   const [videos, setVidoes] = useState<Video[]>();
   const [isLoading, setIsLoading] = useState<boolean | null>();
@@ -51,9 +51,7 @@ export default function SearchPage() {
   const handleSearch = async (q: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${originURL}/api/youtube/search?q=${q}`);
-      const json = await response.json();
-      setVidoes(json);
+      setVidoes(await youtubeSearch(q));
     } catch (error) {
       form.setError('q', {
         message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
@@ -64,15 +62,9 @@ export default function SearchPage() {
     }
   };
 
-  const requestMusic = async (data) => {
+  const handleRequestMusic = async (musicData) => {
     try {
-      await fetch(`${originURL}/api/firebase/music-request/musics`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      await writeMusic(musicData);
     } catch (error) {
       throw Error(error.message);
     }
@@ -129,7 +121,7 @@ export default function SearchPage() {
                   <Button
                     variant="primary-outline"
                     onClick={() => {
-                      requestMusic({ ...video, roomId });
+                      handleRequestMusic({ ...video, roomId });
                     }}
                   >
                     신청하기
