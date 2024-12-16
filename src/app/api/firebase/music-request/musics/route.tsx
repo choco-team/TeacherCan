@@ -29,9 +29,8 @@ export async function POST(req: NextRequest) {
         firebaseDB,
         `musicRooms/${musicData.roomId}/musics/${musicData.videoId}`,
       ),
-      musicData,
+      { title: musicData.title, proposer: musicData.proposer },
     );
-
     return NextResponse.json(
       { message: '성공적으로 저장하였습니다.' },
       { status: 200 },

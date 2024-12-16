@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Input } from '@/components/input';
 import {
@@ -14,8 +12,11 @@ import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { youtubeSearch } from '@/utils/api/youtubeAPI';
-import { writeMusic } from '@/utils/api/firebaseAPI';
-import { useMusicRequestStudentState } from '../../music-request-student-provider/music-request-student-provider.hooks';
+import {
+  useMusicRequestStudentAction,
+  useMusicRequestStudentState,
+} from '../../music-request-student-provider/music-request-student-provider.hooks';
+import VideoCard from './video-card/video-card';
 
 const YOUTUBE_SEARCH_ERROR_MESSAGE = {
   EMPTY_INPUT: '검색어를 입력해 주세요.',
@@ -26,20 +27,10 @@ const formSchema = z.object({
   q: z.string().nonempty({ message: YOUTUBE_SEARCH_ERROR_MESSAGE.EMPTY_INPUT }),
 });
 
-type Video = {
-  videoId: string;
-  title: string;
-  description: string;
-  publishedAt: string;
-  thumbnails: string;
-  channelTitle: string;
-};
-
 export default function SearchPage() {
-  const [videos, setVidoes] = useState<Video[]>();
   const [isLoading, setIsLoading] = useState<boolean | null>();
-  const { roomId } = useMusicRequestStudentState();
-
+  const { roomId, studentName, videos } = useMusicRequestStudentState();
+  const { settingVideos } = useMusicRequestStudentAction();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,7 +42,7 @@ export default function SearchPage() {
   const handleSearch = async (q: string) => {
     try {
       setIsLoading(true);
-      setVidoes(await youtubeSearch(q));
+      settingVideos(await youtubeSearch(q));
     } catch (error) {
       form.setError('q', {
         message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
@@ -62,16 +53,8 @@ export default function SearchPage() {
     }
   };
 
-  const handleRequestMusic = async (musicData) => {
-    try {
-      await writeMusic(musicData);
-    } catch (error) {
-      throw Error(error.message);
-    }
-  };
-
   return (
-    <div className="flex flex-col justify-center h-full pt-8">
+    <div className="flex flex-col justify-center h-full pr-4 pl-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() => handleSearch(form.getValues('q')))}
@@ -102,34 +85,13 @@ export default function SearchPage() {
       </Form>
       <ul>
         {videos &&
-          videos.map((video) => {
-            return (
-              <li key={video.videoId}>
-                <div className="flex flex-row m-8 ">
-                  <iframe
-                    width="200"
-                    height="150"
-                    src={`https://www.youtube.com/embed/${video.videoId}?si=unMcQ-lsDcxcqWph`}
-                    title={video.videoId}
-                  />
-                  <div className="flex flex-col">
-                    <p>{video.title}</p>
-                    <p>{video.channelTitle}</p>
-                    <p>{video.description}</p>
-                    <p>{video.publishedAt}</p>
-                  </div>
-                  <Button
-                    variant="primary-outline"
-                    onClick={() => {
-                      handleRequestMusic({ ...video, roomId });
-                    }}
-                  >
-                    신청하기
-                  </Button>
-                </div>
-              </li>
-            );
-          })}
+          videos.map((video) => (
+            <VideoCard
+              video={video}
+              roomId={roomId}
+              studentName={studentName}
+            />
+          ))}
       </ul>
     </div>
   );

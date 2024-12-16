@@ -1,5 +1,3 @@
-'use client';
-
 import { useCallback, useEffect } from 'react';
 
 import { getRoomTitle } from '@/utils/api/firebaseAPI';
@@ -28,8 +26,10 @@ export default function MusicRequestStudentMain() {
 
   return (
     <div>
-      <p>방 이름: {roomTitle}</p>
-      {studentName && <p>내 이름: {studentName}</p>}
+      <div className="flex flex-row justify-between	m-4">
+        <div>방 이름: {roomTitle}</div>
+        {studentName && <div>내 이름: {studentName}</div>}
+      </div>
       {!studentName && <CreateNamePage />}
       {studentName && <SearchPage />}
     </div>

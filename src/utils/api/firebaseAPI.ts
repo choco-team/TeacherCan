@@ -48,7 +48,7 @@ export const createRoom = async (roomTitle: string) => {
   return json.roomId;
 };
 
-export const writeMusic = async (musicData: object) => {
+export const createMusic = async (musicData: object) => {
   await fetch(`${originURL}/api/firebase/music-request/musics`, {
     method: 'POST',
     headers: {

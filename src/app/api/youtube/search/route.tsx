@@ -15,12 +15,10 @@ async function searchVideos(q: string) {
     const result = await data.items.map((item) => ({
       videoId: item.id.videoId,
       title: item.snippet.title,
-      description: item.snippet.description,
-      publishedAt: item.snippet.publishedAt,
-      thumbnails: item.snippet.thumbnails.high.url,
+      publishedAt: item.snippet.publishedAt.split('T')[0],
       channelTitle: item.snippet.channelTitle,
+      isRequested: false,
     }));
-
     return result;
   } catch (error) {
     throw new Error(error.message);

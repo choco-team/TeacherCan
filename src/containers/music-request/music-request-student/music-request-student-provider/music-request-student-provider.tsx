@@ -10,6 +10,14 @@ export type MusicRequestStudentParams = {
   roomId: string;
 };
 
+type Video = {
+  videoId: string;
+  title: string;
+  publishedAt: string;
+  channelTitle: string;
+  isRequested: boolean;
+};
+
 interface PropsWithChildrenParams extends PropsWithChildren {
   params: MusicRequestStudentParams;
 }
@@ -18,6 +26,7 @@ type MusicRequestStudentState = {
   roomId: string;
   studentName: string;
   roomTitle: string;
+  videos: Video[];
   params: MusicRequestStudentParams;
 };
 
@@ -28,6 +37,7 @@ type MusicRequestStudentAction = {
   settingRoomId: Dispatch<SetStateAction<string>>;
   settingStudentName: Dispatch<SetStateAction<string>>;
   settingRoomTitle: Dispatch<SetStateAction<string>>;
+  settingVideos: Dispatch<SetStateAction<Video[]>>;
 };
 
 export const MusicRequestStudentActionContext =
@@ -40,11 +50,13 @@ export default function MusicRequestStudentProvider({
   const [roomId, setRoomId] = useState<string>();
   const [studentName, setStudentName] = useState<string>();
   const [roomTitle, setRoomTitle] = useState<string>();
+  const [videos, setVideos] = useState<Video[]>();
 
   const defaultMusicRequestStudentStateValue = {
     roomId,
     studentName,
     roomTitle,
+    videos,
     params,
   };
 
@@ -52,6 +64,7 @@ export default function MusicRequestStudentProvider({
     settingRoomId: setRoomId,
     settingStudentName: setStudentName,
     settingRoomTitle: setRoomTitle,
+    settingVideos: setVideos,
   };
 
   return (
