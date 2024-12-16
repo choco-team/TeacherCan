@@ -169,14 +169,22 @@ function QRCodeGenerator(
               variant="primary"
               size="sm"
               className="cursor-pointer flex items-center space-x-2 relative"
+              onClick={() => {
+                setQrCode({ value: entry.url, name: entry.title });
+                setQrCodeInputValue(entry.url);
+              }}
             >
               {entry.title}
-              <Button
-                onClick={() => handleDeleteQRCode(entry.url)}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteQRCode(entry.url);
+                }}
                 className="ml-2 text-red-300 hover:text-red-700 text-xs"
               >
                 ✕
-              </Button>
+              </button>
             </Badge>
           ))}
         </div>
