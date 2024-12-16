@@ -16,7 +16,7 @@ import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { Button } from '@/components/button';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/badge';
-import { Heading3 } from '@/components/heading';
+import { Heading4 } from '@/components/heading';
 import type { QRCode } from '../qr-code.type';
 
 type Props = {
@@ -104,7 +104,7 @@ function QRCodeGenerator(
 
   return (
     <section className="flex flex-col items-center gap-y-10 w-full">
-      <div className="flex flex-col gap-y-4 w-full max-w-96">
+      <div className="flex flex-col gap-y-4 w-full max-w-96 mt-8">
         <Label className="space-y-1.5">
           <span className="font-semibold">
             URL 링크 <span className="text-red">*</span>
@@ -120,19 +120,22 @@ function QRCodeGenerator(
 
         <Label className="space-y-1">
           <span className="font-semibold">제목</span>
-          <Input
-            name="name"
-            value={qrCode.name}
-            placeholder="티처캔"
-            maxLength={12}
-            onChange={handleChangeName}
-          />
-          <Button
-            onClick={handleSaveToLocalStorage}
-            disabled={isButtonDisabled}
-          >
-            QR코드 북마크
-          </Button>
+          <div className="flex items-center space-x-4">
+            <Input
+              name="name"
+              value={qrCode.name}
+              placeholder="티처캔"
+              maxLength={12}
+              onChange={handleChangeName}
+              className="flex-1" // Input이 공간을 차지하도록 설정
+            />
+            <Button
+              onClick={handleSaveToLocalStorage}
+              disabled={isButtonDisabled}
+            >
+              QR코드 북마크
+            </Button>
+          </div>
         </Label>
       </div>
 
@@ -159,9 +162,9 @@ function QRCodeGenerator(
         </div>
       </div>
       <div className="w-full max-w-96">
-        <Heading3 className="font-semibold text-lg mb-4">
+        <Heading4 className="font-semibold text-lg mb-4">
           북마크된 QR 코드 목록
-        </Heading3>
+        </Heading4>
         <div className="flex flex-wrap gap-2">
           {savedQRCodes.map((entry) => (
             <Badge
