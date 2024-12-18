@@ -63,16 +63,6 @@ function QRCodeGenerator(
 
     const existingData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
 
-    const isLinkDuplicate = existingData.some(
-      (entry: { url: string; title: string }) =>
-        entry.url === qrCode.value || entry.title === qrCode.name,
-    );
-
-    if (isLinkDuplicate) {
-      toast({ title: '이미 저장된 QR코드 또는 제목입니다.', variant: 'error' });
-      return;
-    }
-
     if (existingData.length >= 10) {
       toast({
         title: '최대 10개의 QR코드만 저장할 수 있습니다.',
@@ -127,7 +117,7 @@ function QRCodeGenerator(
               placeholder="티처캔"
               maxLength={12}
               onChange={handleChangeName}
-              className="flex-1" // Input이 공간을 차지하도록 설정
+              className="flex-1"
             />
             <Button
               onClick={handleSaveToLocalStorage}
