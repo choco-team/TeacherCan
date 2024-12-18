@@ -4,7 +4,6 @@ import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
-import { cva } from 'class-variance-authority';
 import {
   useCountdownAction,
   useCountdownState,
@@ -18,15 +17,6 @@ import {
 } from '../countdown-provider/countdown-provider.constants';
 import Colon from './colon';
 import CountdownStepper from '../countdown-components/countdown-stepper';
-
-const buttonText = cva('transition duration-300', {
-  variants: {
-    status: {
-      active: 'max-md:scale-110 scale-125',
-      none: '',
-    },
-  },
-});
 
 const timerButtonClassName =
   'size-10 max-md:p-1.5 md:size-16 lg:size-32 rounded-full';
@@ -50,9 +40,6 @@ export default function CountdownDisplay() {
   } = useCountdownAction();
 
   const shouldRenderHours = hours > 0;
-  // NOTE:(김홍동) 타이머가 동작하지 않을 땐 시간은 항상 보이기
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const shouldRenderHoursV2 = !isActive || hours > 0;
 
   const handleChangeTimerName = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -79,12 +66,7 @@ export default function CountdownDisplay() {
       )}
 
       <div className="flex flex-col items-center gap-y-2 lg:gap-y-8">
-        <div
-          className={cn(
-            'flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4',
-            buttonText({ status: isActive ? 'active' : 'none' }),
-          )}
-        >
+        <div className="flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4">
           {shouldRenderHours && (
             <>
               <CountdownStepper

@@ -7,7 +7,7 @@ import { Button } from '@/components/button';
 import { SheetSubTitle } from '@/components/sheet';
 import { useCountdownAction } from '../../countdown-provider/countdown-provider.hooks';
 
-const SETTING_TIMES = [5, 10, -5, -10] as const;
+const SETTING_TIMES = [5, 10, 60, -5, -10, -60] as const;
 
 export default function SettingTime() {
   const { updateMinutes } = useCountdownAction();
@@ -18,7 +18,7 @@ export default function SettingTime() {
         <AlarmClockPlusIcon />
         시간 증감
       </SheetSubTitle>
-      <div className="max-sm:grid max-sm:grid-cols-2 sm:flex gap-2">
+      <div className="grid grid-cols-3 gap-2">
         {SETTING_TIMES.map((time) => (
           <Button
             value={time}

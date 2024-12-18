@@ -75,21 +75,17 @@ export default function CountdownStepper({
 
   return (
     <div className="flex flex-col items-center gap-y-1.5 lg:gap-y-4">
-      {!isActive ? (
-        <Button
-          size="icon"
-          variant="primary-ghost"
-          className="max-md:hidden size-6 lg:size-12 rounded-full"
-          disabled={disabledUp}
-          onMouseDown={() => startHold(onIncrease)}
-          onMouseUp={stopHold}
-          onMouseLeave={stopHold}
-        >
-          <ChevronUpIcon className="size-5 lg:size-8" />
-        </Button>
-      ) : (
-        <div className="max-md:hidden size-6 lg:size-12" />
-      )}
+      <Button
+        size="icon"
+        variant="primary-ghost"
+        className="max-md:hidden size-6 lg:size-12 rounded-full"
+        disabled={disabledUp}
+        onMouseDown={() => startHold(onIncrease)}
+        onMouseUp={stopHold}
+        onMouseLeave={stopHold}
+      >
+        <ChevronUpIcon className="size-5 lg:size-8" />
+      </Button>
       <InputNumberWithoutSpin
         value={formatTimeToTwoDigits(value)}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
@@ -100,21 +96,17 @@ export default function CountdownStepper({
         className={cn(timeInputClassName, className)}
         readOnly={isActive}
       />
-      {!isActive ? (
-        <Button
-          size="icon"
-          variant="primary-ghost"
-          className="max-md:hidden size-6 lg:size-12 rounded-full"
-          disabled={disabledDown}
-          onMouseDown={() => startHold(onDecrease)}
-          onMouseUp={stopHold}
-          onMouseLeave={stopHold}
-        >
-          <ChevronDownIcon className="size-5 lg:size-8" />
-        </Button>
-      ) : (
-        <div className="max-md:hidden size-6 lg:size-12" />
-      )}
+      <Button
+        size="icon"
+        variant="primary-ghost"
+        className="max-md:hidden size-6 lg:size-12 rounded-full"
+        disabled={disabledDown}
+        onMouseDown={() => startHold(onDecrease)}
+        onMouseUp={stopHold}
+        onMouseLeave={stopHold}
+      >
+        <ChevronDownIcon className="size-5 lg:size-8" />
+      </Button>
     </div>
   );
 }
