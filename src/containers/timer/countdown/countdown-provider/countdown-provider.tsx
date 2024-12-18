@@ -38,7 +38,11 @@ type CountdownAction = {
   handleStop: () => void;
   handleReset: () => void;
   updateHours: (_hou: number, keepPreviousState?: boolean) => void;
-  updateMinutes: (_min: number, keepPreviousState?: boolean) => void;
+  updateMinutes: (
+    _min: number,
+    keepPreviousState?: boolean,
+    allowMaxMinuteTime?: boolean,
+  ) => void;
   updateSeconds: (_sec: number, keepPreviousState?: boolean) => void;
   setIsMusicUsed: (value: SetStateAction<boolean>) => void;
   toggleMusicPlay: (to: 'on' | 'off') => void;
@@ -178,10 +182,15 @@ export default function CountdownProvider({ children }: Props) {
   );
 
   const updateMinutes = useCallback(
-    (min: number, keepPreviousState: boolean = false) => {
+    (
+      min: number,
+      keepPreviousState: boolean = false,
+      allowMaxMinuteTime: boolean = false,
+    ) => {
       setLeftTime((prev) => {
         let newMinute = min;
-        if (min > MAX_TIME_INPUT.MINUTE) newMinute = MAX_TIME_INPUT.MINUTE;
+        if (min > MAX_TIME_INPUT.MINUTE && !allowMaxMinuteTime)
+          newMinute = MAX_TIME_INPUT.MINUTE;
 
         const newHours = Math.floor(prev / HOUR_TO_SECONDS);
         const newMinutes = Math.floor(

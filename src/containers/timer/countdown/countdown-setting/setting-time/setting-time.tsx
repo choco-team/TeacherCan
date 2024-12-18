@@ -26,7 +26,7 @@ export default function SettingTime() {
             variant={time > 0 ? 'primary-outline' : 'secondary-outline'}
             size="sm"
             className="flex-1 flex items-center gap-x-0.5 [&_svg]:size-4"
-            onClick={() => updateMinutes(time, true)}
+            onClick={() => updateMinutes(time, true, true)}
           >
             {time > 0 ? <PlusIcon /> : <MinusIcon />}
             {Math.abs(time)}분
