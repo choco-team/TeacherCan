@@ -67,17 +67,29 @@ export default function CountdownDisplay() {
       event.target.value = formatter ? formatter(time) : time.toString();
     };
 
-  const holdInterval = useRef<NodeJS.Timeout | null>(null);
+  const holdTimeout = useRef<NodeJS.Timeout | null>(null);
+  const holdSpeed = useRef(300);
+
   const startHold = (callback: () => void) => {
+    const repeatCallback = () => {
+      callback();
+
+      holdSpeed.current = Math.max(holdSpeed.current * 0.92, 30);
+
+      holdTimeout.current = setTimeout(repeatCallback, holdSpeed.current);
+    };
+
     callback();
-    holdInterval.current = setInterval(callback, 300);
+    holdSpeed.current = 300;
+    holdTimeout.current = setTimeout(repeatCallback, holdSpeed.current);
   };
 
   const stopHold = () => {
-    if (holdInterval.current) {
-      clearInterval(holdInterval.current);
-      holdInterval.current = null;
+    if (holdTimeout.current) {
+      clearTimeout(holdTimeout.current);
+      holdTimeout.current = null;
     }
+    holdSpeed.current = 300;
   };
 
   const handleIncreaseMinutes = () => {
