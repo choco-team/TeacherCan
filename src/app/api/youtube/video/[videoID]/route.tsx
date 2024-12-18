@@ -10,12 +10,26 @@ async function getVideos(videoId: string) {
       part: 'snippet',
       id: videoId,
       key: process.env.YOUTUBE_DATA_API_KEY,
-    }).toString();
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?${queryParams}`,
+    });
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/videos?${queryParams.toString()}`,
     );
-    const json = await response.json();
-    const result = json.items[0].snippet.title;
+    const json = await res.json();
+    const snippet = await json.items[0].snippet;
+
+    queryParams.set('id', snippet.channelId);
+    const channelRes = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?${queryParams.toString()}`,
+    );
+    const channelJson = await channelRes.json();
+
+    const result = await {
+      publishedAt: snippet.publishedAt.split('T')[0],
+      description: snippet.description,
+      thumbnails: snippet.thumbnails.high.url,
+      channelTitle: snippet.channelTitle,
+      channelThumbnails: await channelJson.items[0].snippet.thumbnails.high.url,
+    };
     return result;
   } catch (error) {
     throw new Error(error.message);
@@ -23,7 +37,5 @@ async function getVideos(videoId: string) {
 }
 
 export async function GET(req: NextRequest, { params: { videoId } }: IParams) {
-  return NextResponse.json({
-    title: await getVideos(videoId),
-  });
+  return NextResponse.json(await getVideos(videoId));
 }

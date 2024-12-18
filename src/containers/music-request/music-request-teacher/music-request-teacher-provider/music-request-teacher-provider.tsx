@@ -10,6 +10,20 @@ export type MusicRequestTeacherParams = {
   roomId: string;
 };
 
+// type ExtraData = {
+//   publishedAt: string;
+//   channelTitle: string;
+//   thumbnails: string;
+//   channelId: string;
+//   description: string;
+// }
+
+type Video = {
+  videoId: string;
+  title: string;
+  proposer: string;
+};
+
 interface PropsWithChildrenParams extends PropsWithChildren {
   params: MusicRequestTeacherParams;
 }
@@ -17,6 +31,7 @@ interface PropsWithChildrenParams extends PropsWithChildren {
 type MusicRequestTeacherState = {
   roomId: string;
   roomTitle: string;
+  videos: Video[];
   params: MusicRequestTeacherParams;
 };
 
@@ -26,6 +41,7 @@ export const MusicRequestTeacherStateContext =
 type MusicRequestTeacherAction = {
   settingRoomId: Dispatch<SetStateAction<string>>;
   settingRoomTitle: Dispatch<SetStateAction<string>>;
+  settingVideos: Dispatch<SetStateAction<Video[]>>;
 };
 
 export const MusicRequestTeacherActionContext =
@@ -37,16 +53,19 @@ export default function MusicRequestTeacherProvider({
 }: PropsWithChildrenParams) {
   const [roomId, setRoomId] = useState();
   const [roomTitle, setRoomTitle] = useState();
+  const [videos, setVideos] = useState([]);
 
   const defaultMusicRequestTeacherStateValue = {
     roomId,
     roomTitle,
+    videos,
     params,
   };
 
   const defaultMusicRequestTeacherActionValue = {
     settingRoomId: setRoomId,
     settingRoomTitle: setRoomTitle,
+    settingVideos: setVideos,
   };
 
   return (

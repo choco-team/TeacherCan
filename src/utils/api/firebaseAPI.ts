@@ -1,3 +1,6 @@
+import { firebaseDB } from '@/services/firebase';
+import { ref, remove } from 'firebase/database';
+
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const getRoomTitle = async (id: string) => {
@@ -56,4 +59,13 @@ export const createMusic = async (musicData: object) => {
     },
     body: JSON.stringify(musicData),
   });
+};
+
+export const deleteMusic = async (roomId, videoId) => {
+  try {
+    const dbRef = ref(firebaseDB, `musicRooms/${roomId}/musics/${videoId}`);
+    await remove(dbRef);
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };

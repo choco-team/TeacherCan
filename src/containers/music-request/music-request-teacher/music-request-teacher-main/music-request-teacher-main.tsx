@@ -10,14 +10,15 @@ import {
   useMusicRequestTeacherAction,
   useMusicRequestTeacherState,
 } from '../music-request-teacher-provider/music-request-teacher-provider.hooks';
+import MusicCard from './music-card/music-card';
 
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 export default function MusicRequestTeacherMain() {
   const { roomId, roomTitle, params } = useMusicRequestTeacherState();
   const { settingRoomId, settingRoomTitle } = useMusicRequestTeacherAction();
   const router = useRouter();
-  const [videos, setVideos] = useState([]);
+  const { videos } = useMusicRequestTeacherState();
+  const { settingVideos } = useMusicRequestTeacherAction();
   const [students, setStudents] = useState([]);
 
   const settingRoomTitleCallback = useCallback(
@@ -43,7 +44,9 @@ export default function MusicRequestTeacherMain() {
           id: key,
           ...value[key],
         }));
-        setVideos(videoArray);
+        settingVideos(videoArray);
+      } else {
+        settingVideos([]);
       }
     });
     return () => unsubscribe();
@@ -56,6 +59,8 @@ export default function MusicRequestTeacherMain() {
       if (value) {
         const studentArray = Object.keys(value);
         setStudents(studentArray);
+      } else {
+        setStudents([]);
       }
     });
     return () => unsubscribe();
@@ -64,31 +69,31 @@ export default function MusicRequestTeacherMain() {
   return (
     <div className="grid grid-cols-6 h-screen">
       <div className="flex flex-col col-span-4">
-        <div className="h-36 bg-zinc-500">음악 플레이어</div>
-        <div className="bg-red-100">
-          신청목록
+        <div className="h-36 p-4 border-solid border-2 ">음악 플레이어</div>
+        <div className="border-solid border-2 ">
           {videos &&
             videos.map((video) => (
-              <div key={video.id}>
-                <p>{video.title}</p>
-                <p>{video.proposer}</p>
-              </div>
+              <MusicCard video={video} roomId={roomId} key={video.videoId} />
             ))}
         </div>
       </div>
       <div className="flex flex-col col-span-2">
-        <div className="flex flex-row bg-orange-300">
-          <button
-            type="button"
-            onClick={() => {
-              router.push(`${originURL}/music-request/`);
-            }}
-          >
-            <House />
-          </button>
-          방이름: {roomTitle}
+        <div className="border-solid border-2 ">
+          <div className="flex flex-row bg-primary-200 rounded p-2 m-2">
+            <button
+              className="mr-2"
+              type="button"
+              onClick={() => {
+                router.push(`${originURL}/music-request/`);
+              }}
+            >
+              <House />
+            </button>
+            방이름: {roomTitle}
+          </div>
         </div>
-        <div className="bg-amber-200">
+
+        <div className="p-2 border-solid border-2">
           <Button>
             <a href={`${originURL}/music-request/student/${roomId}`}>
               <p>학생방 큐알 넣기</p>
@@ -96,9 +101,8 @@ export default function MusicRequestTeacherMain() {
             </a>
           </Button>
         </div>
-        <div className="bg-lime-500">
-          학생 목록
-          <div className="bg-white m-2">
+        <div className="border-solid border-2">
+          <div className="bg-primary-200 rounded m-2 p-2">
             {students &&
               students.map((student) => <div key={nanoid()}>{student}</div>)}
           </div>
