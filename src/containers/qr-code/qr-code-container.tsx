@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
 import QRCodeGenerator from './qr-code-generator/qr-code-generator';
 import QRCodeDownloader from './qr-code-downloader/qr-code-downloader';
@@ -16,8 +15,6 @@ function QrCodeContainer() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-y-10 px-6 bg-body">
-      <Heading1>QR코드 생성</Heading1>
-
       <QRCodeGenerator ref={qrCodeRef} qrCode={qrCode} setQrCode={setQrCode} />
 
       <div className={cn('grid grid-cols-2 gap-4', 'sm:grid-cols-4')}>
