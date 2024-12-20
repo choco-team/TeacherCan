@@ -57,14 +57,6 @@ export default function CreateNamePage() {
 
   return (
     <div className="flex flex-col justify-center h-full pt-8">
-      <div className="flex flex-col items-center bg-gray mb-10">
-        <p>신청곡 페이지 사용하는 방법</p>
-        <br />
-        <p>1. 동해물과 백두산이</p>
-        <p>2. 마르고 닳도록</p>
-        <p>3. 하느님이 보우하사</p>
-        <p>4. 우리나라만세</p>
-      </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() =>

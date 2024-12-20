@@ -35,7 +35,7 @@ export default function VideoCard({
       <div className="flex flex-col mt-8">
         <iframe
           className="w-full"
-          src={`https://www.youtube.com/embed/${video.videoId}?si=unMcQ-lsDcxcqWph`}
+          src={`https://www.youtube.com/embed/${video.videoId}`}
           title={video.videoId}
         />
         <div className="flex flex-row justify-between m-2">

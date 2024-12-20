@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { House } from 'lucide-react';
-import { Button } from '@/components/button';
 import { getRoomTitle } from '@/utils/api/firebaseAPI';
 import { onValue, ref } from 'firebase/database';
 import { firebaseDB } from '@/services/firebase';
 import { nanoid } from 'nanoid';
+import { QRCodeCanvas } from 'qrcode.react';
 import {
   useMusicRequestTeacherAction,
   useMusicRequestTeacherState,
@@ -41,7 +41,7 @@ export default function MusicRequestTeacherMain() {
       const value = snapshot.val();
       if (value) {
         const videoArray = Object.keys(value).map((key) => ({
-          id: key,
+          videoId: key,
           ...value[key],
         }));
         settingVideos(videoArray);
@@ -50,7 +50,7 @@ export default function MusicRequestTeacherMain() {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [params.roomId, settingVideos]);
 
   useEffect(() => {
     const dbRef = ref(firebaseDB, `musicRooms/${params.roomId}/students`);
@@ -64,13 +64,13 @@ export default function MusicRequestTeacherMain() {
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [params.roomId]);
 
   return (
     <div className="grid grid-cols-6 h-screen">
       <div className="flex flex-col col-span-4">
-        <div className="h-36 p-4 border-solid border-2 ">음악 플레이어</div>
-        <div className="border-solid border-2 ">
+        <div className="h-36 p-4">음악 플레이어</div>
+        <div>
           {videos &&
             videos.map((video) => (
               <MusicCard video={video} roomId={roomId} key={video.videoId} />
@@ -78,30 +78,31 @@ export default function MusicRequestTeacherMain() {
         </div>
       </div>
       <div className="flex flex-col col-span-2">
-        <div className="border-solid border-2 ">
-          <div className="flex flex-row bg-primary-200 rounded p-2 m-2">
-            <button
-              className="mr-2"
-              type="button"
-              onClick={() => {
-                router.push(`${originURL}/music-request/`);
-              }}
-            >
-              <House />
-            </button>
-            방이름: {roomTitle}
+        <div className="p-2">
+          <div className="flex flex-col bg-primary-200 p-2 rounded">
+            <div className="flex flex-row mb-2 justify-center">
+              <button
+                className="mr-2"
+                type="button"
+                onClick={() => {
+                  router.push(`${originURL}/music-request/`);
+                }}
+              >
+                <House />
+              </button>
+              방이름: {roomTitle}
+            </div>
+            <div className="flex justify-center">
+              <a href={`${originURL}/music-request/student/${roomId}`}>
+                <QRCodeCanvas
+                  value={`${originURL}/music-request/student/${roomId}`}
+                  size={150}
+                />
+              </a>
+            </div>
           </div>
         </div>
-
-        <div className="p-2 border-solid border-2">
-          <Button>
-            <a href={`${originURL}/music-request/student/${roomId}`}>
-              <p>학생방 큐알 넣기</p>
-              <p>{roomId}</p>
-            </a>
-          </Button>
-        </div>
-        <div className="border-solid border-2">
+        <div>
           <div className="bg-primary-200 rounded m-2 p-2">
             {students &&
               students.map((student) => <div key={nanoid()}>{student}</div>)}

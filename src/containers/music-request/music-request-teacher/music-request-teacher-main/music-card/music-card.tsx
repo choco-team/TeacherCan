@@ -1,6 +1,7 @@
 import { deleteMusic } from '@/utils/api/firebaseAPI';
 import { getMusicExtraData } from '@/utils/api/youtubeAPI';
 import { ChevronsDown, ChevronsUp, X } from 'lucide-react';
+import Image from 'next/image';
 import { useState } from 'react';
 
 interface MusicCardProps {
@@ -19,6 +20,7 @@ type ExtraData = {
 export default function MusicCard({ video, roomId }: MusicCardProps) {
   const [extraData, setExtraData] = useState<ExtraData>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isVideo, setIsVideo] = useState<boolean>(false);
 
   const handleDeleteMusic = async (videoId: string) => {
     try {
@@ -32,6 +34,7 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
     try {
       if (isOpen) {
         setIsOpen(false);
+        setIsVideo(false);
       } else {
         if (extraData) {
           setExtraData(extraData);
@@ -53,7 +56,7 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
           {isOpen && (
             <div className="bg-white rounded pr-2 pl-2 pb-2 mb-2 mt-2">
               <div className="flex flex-row p-1">
-                <img
+                <Image
                   className="w-7 rounded-full mr-2"
                   src={extraData.channelThumbnails}
                   alt=""
@@ -66,11 +69,21 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
               </div>
               <div className="flex flex-row">
                 <div className=" w-3/5 mr-2">
-                  <img
-                    className="w-full rounded-lg"
-                    src={extraData.thumbnails}
-                    alt=""
-                  />
+                  {!isVideo && (
+                    <Image
+                      onClick={() => setIsVideo(true)}
+                      className="w-full rounded-lg cursor-pointer"
+                      src={extraData.thumbnails}
+                      alt=""
+                    />
+                  )}
+                  {isVideo && (
+                    <iframe
+                      className="w-full rounded-lg"
+                      src={`https://www.youtube.com/embed/${video.videoId}`}
+                      title={video.videoId}
+                    />
+                  )}
                 </div>
                 <div className="w-2/5 h-48 text-xs overflow-x-auto overflow-x-hidden">
                   {extraData.description}
@@ -83,10 +96,13 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
           </p>
         </div>
         <div className="flex flex-col justify-between ">
-          <button type="button" onClick={() => handleDeleteMusic(video.id)}>
+          <button
+            type="button"
+            onClick={() => handleDeleteMusic(video.videoId)}
+          >
             <X />
           </button>
-          <button type="button" onClick={() => handleExtraData(video.id)}>
+          <button type="button" onClick={() => handleExtraData(video.videoId)}>
             {!isOpen && <ChevronsDown />}
             {isOpen && <ChevronsUp />}
           </button>
