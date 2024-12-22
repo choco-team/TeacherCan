@@ -6,7 +6,6 @@ import {
   type SetStateAction,
   useState,
   useTransition,
-  useEffect,
 } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { Input } from '@/components/input';
@@ -17,6 +16,7 @@ import { Button } from '@/components/button';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/badge';
 import { Heading4 } from '@/components/heading';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import type { QRCode } from '../qr-code.type';
 
 type Props = {
@@ -32,16 +32,11 @@ function QRCodeGenerator(
 
   const [isPending, startTransition] = useTransition();
 
-  const [savedQRCodes, setSavedQRCodes] = useState<
+  const [savedQRCodes, setSavedQRCodes] = useLocalStorage<
     { date: string; url: string; title: string }[]
-  >([]);
+  >('qrcodes', []);
 
   const { toast } = useToast();
-
-  useEffect(() => {
-    const storedData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
-    setSavedQRCodes(storedData);
-  }, []);
 
   const handleGenerate = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -61,9 +56,7 @@ function QRCodeGenerator(
       title: qrCode.name,
     };
 
-    const existingData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
-
-    if (existingData.length >= 10) {
+    if (savedQRCodes.length >= 10) {
       toast({
         title: '최대 10개의 QR코드만 저장할 수 있습니다.',
         variant: 'error',
@@ -71,21 +64,17 @@ function QRCodeGenerator(
       return;
     }
 
-    const updatedData = [...existingData, newEntry];
+    const updatedData = [...savedQRCodes, newEntry];
 
-    localStorage.setItem('qrcodes', JSON.stringify(updatedData));
     setSavedQRCodes(updatedData);
     toast({ title: 'QR코드가 저장되었습니다.', variant: 'success' });
   };
 
   const handleDeleteQRCode = (url: string) => {
-    const existingData = JSON.parse(localStorage.getItem('qrcodes') || '[]');
-
-    const updatedData = existingData.filter(
+    const updatedData = savedQRCodes.filter(
       (entry: { url: string }) => entry.url !== url,
     );
 
-    localStorage.setItem('qrcodes', JSON.stringify(updatedData));
     setSavedQRCodes(updatedData);
     toast({ title: 'QR코드가 삭제되었습니다.', variant: 'success' });
   };
