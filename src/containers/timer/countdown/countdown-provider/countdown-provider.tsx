@@ -25,7 +25,6 @@ type CountdownState = {
   setupTime: number;
   leftTime: number;
   isActive: boolean;
-  isHourUsed: boolean;
   isMusicUsed: boolean;
   youtubePlayerRef: MutableRefObject<YT.Player>;
   musicAnimationRef: LottieRef;
@@ -39,11 +38,14 @@ type CountdownAction = {
   handleStop: () => void;
   handleReset: () => void;
   updateHours: (_hou: number, keepPreviousState?: boolean) => void;
-  updateMinutes: (_min: number, keepPreviousState?: boolean) => void;
+  updateMinutes: (
+    _min: number,
+    keepPreviousState?: boolean,
+    allowMaxMinuteTime?: boolean,
+  ) => void;
   updateSeconds: (_sec: number, keepPreviousState?: boolean) => void;
   setIsMusicUsed: (value: SetStateAction<boolean>) => void;
   toggleMusicPlay: (to: 'on' | 'off') => void;
-  toggleHourUsed: () => void;
 };
 
 export const CountdownActionContext = createContext<CountdownAction | null>(
@@ -57,7 +59,6 @@ type Props = {
 export default function CountdownProvider({ children }: Props) {
   const [leftTime, setLeftTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
-  const [isHourUsed, setIsHourUsed] = useState(false);
   const [isMusicUsed, setIsMusicUsed] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -71,12 +72,7 @@ export default function CountdownProvider({ children }: Props) {
   );
   const seconds = Math.floor(leftTime % MINUTE_TO_SECONDS);
 
-  const toggleHourUsed = () => {
-    if (isHourUsed) setLeftTime((prev) => prev - hours * HOUR_TO_SECONDS);
-    setIsHourUsed((prev) => !prev);
-  };
-
-  const toggleMusicPlay = (to: 'on' | 'off') => {
+  const toggleMusicPlay = useCallback((to: 'on' | 'off') => {
     const isToPlay = to === 'on';
 
     if (!youtubePlayerRef.current) {
@@ -89,7 +85,7 @@ export default function CountdownProvider({ children }: Props) {
       youtubePlayerRef.current.pauseVideo();
       musicAnimationRef.current.pause();
     }
-  };
+  }, []);
 
   const handleStart = useCallback(() => {
     if (leftTime < 1) {
@@ -115,13 +111,13 @@ export default function CountdownProvider({ children }: Props) {
         return newTime;
       });
     }, 1000);
-  }, [leftTime, isMusicUsed]);
+  }, [leftTime, isMusicUsed, toggleMusicPlay]);
 
   const handlePause = useCallback(() => {
     setIsActive(false);
     if (isMusicUsed) toggleMusicPlay('off');
     if (timerRef.current) clearInterval(timerRef.current);
-  }, [isMusicUsed]);
+  }, [isMusicUsed, toggleMusicPlay]);
 
   const handleStop = useCallback(() => {
     setIsActive(false);
@@ -132,7 +128,7 @@ export default function CountdownProvider({ children }: Props) {
     }
 
     if (timerRef.current) clearInterval(timerRef.current);
-  }, [isMusicUsed]);
+  }, [isMusicUsed, toggleMusicPlay]);
 
   const handleReset = useCallback(() => {
     if (setupTimeRef.current) {
@@ -154,36 +150,48 @@ export default function CountdownProvider({ children }: Props) {
       if (isMusicUsed) toggleMusicPlay('off');
       if (timerRef.current) clearInterval(timerRef.current);
     }
-  }, [leftTime, isActive, isMusicUsed]);
+  }, [leftTime, isActive, isMusicUsed, toggleMusicPlay]);
 
   const updateHours = useCallback(
     (hou: number, keepPreviousState: boolean = false) => {
-      let newHour = hou;
-      if (hou > MAX_TIME_INPUT.HOUR) newHour = MAX_TIME_INPUT.HOUR;
+      setLeftTime((prev) => {
+        let newHour = hou;
+        if (hou > MAX_TIME_INPUT.HOUR) newHour = MAX_TIME_INPUT.HOUR;
 
-      const newLeftTime =
-        (keepPreviousState
-          ? (hours + newHour) * HOUR_TO_SECONDS
-          : newHour * HOUR_TO_SECONDS) +
-        minutes * MINUTE_TO_SECONDS +
-        seconds;
+        const newHours = Math.floor(prev / HOUR_TO_SECONDS);
+        const newMinutes = Math.floor(
+          (prev - newHours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
+        );
+        const newSeconds = Math.floor(prev % MINUTE_TO_SECONDS);
 
-      if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
-        return;
-      }
+        const newLeftTime =
+          (keepPreviousState
+            ? (newHour + newHours) * HOUR_TO_SECONDS
+            : newHour * HOUR_TO_SECONDS) +
+          newMinutes * MINUTE_TO_SECONDS +
+          newSeconds;
 
-      setLeftTime(newLeftTime);
+        if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
+          return prev;
+        }
+
+        return newLeftTime;
+      });
     },
-    [hours, minutes, seconds],
+    [],
   );
 
   const updateMinutes = useCallback(
-    (min: number, keepPreviousState: boolean = false) => {
+    (
+      min: number,
+      keepPreviousState: boolean = false,
+      allowMaxMinuteTime: boolean = false,
+    ) => {
       setLeftTime((prev) => {
         let newMinute = min;
-        if (min > MAX_TIME_INPUT.MINUTE) newMinute = MAX_TIME_INPUT.MINUTE;
+        if (min > MAX_TIME_INPUT.MINUTE && !allowMaxMinuteTime)
+          newMinute = MAX_TIME_INPUT.MINUTE;
 
-        // 이전 값을(prev)를 바탕으로 시, 분, 초 값 할당
         const newHours = Math.floor(prev / HOUR_TO_SECONDS);
         const newMinutes = Math.floor(
           (prev - newHours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
@@ -197,16 +205,13 @@ export default function CountdownProvider({ children }: Props) {
             : newMinute * MINUTE_TO_SECONDS) +
           newSeconds;
 
-        // 아래 조건인 경우엔 이전 값을 return
         if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
           return prev;
         }
 
-        // 그렇지 않으면 새로운 남은 시간을 return 하여 상태 업데이트
         return newLeftTime;
       });
     },
-
     [],
   );
 
@@ -245,7 +250,6 @@ export default function CountdownProvider({ children }: Props) {
       setupTime: setupTimeRef.current,
       leftTime,
       isActive,
-      isHourUsed,
       isMusicUsed,
       youtubePlayerRef,
       musicAnimationRef,
@@ -257,7 +261,6 @@ export default function CountdownProvider({ children }: Props) {
       setupTimeRef,
       leftTime,
       isActive,
-      isHourUsed,
       isMusicUsed,
       youtubePlayerRef,
       musicAnimationRef,
@@ -275,7 +278,6 @@ export default function CountdownProvider({ children }: Props) {
       handleReset,
       setIsMusicUsed,
       toggleMusicPlay,
-      toggleHourUsed,
     }),
     [
       updateHours,
@@ -287,7 +289,6 @@ export default function CountdownProvider({ children }: Props) {
       handleReset,
       setIsMusicUsed,
       toggleMusicPlay,
-      toggleHourUsed,
     ],
   );
 
