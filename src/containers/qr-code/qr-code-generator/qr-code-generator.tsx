@@ -12,6 +12,11 @@ import { Input } from '@/components/input';
 import { Label } from '@/components/label';
 import { cn } from '@/styles/utils';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
+import { Button } from '@/components/button';
+import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/badge';
+import { Heading4 } from '@/components/heading';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import type { QRCode } from '../qr-code.type';
 
 type Props = {
@@ -27,6 +32,12 @@ function QRCodeGenerator(
 
   const [isPending, startTransition] = useTransition();
 
+  const [savedQRCodes, setSavedQRCodes] = useLocalStorage<
+    { date: string; url: string; title: string }[]
+  >('qrcodes', []);
+
+  const { toast } = useToast();
+
   const handleGenerate = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setQrCodeInputValue(value);
@@ -37,9 +48,42 @@ function QRCodeGenerator(
     setQrCode((prev) => ({ ...prev, name: event.target.value }));
   };
 
+  const handleSaveToLocalStorage = () => {
+    const currentDate = new Date().toISOString();
+    const newEntry = {
+      date: currentDate,
+      url: qrCode.value,
+      title: qrCode.name,
+    };
+
+    if (savedQRCodes.length >= 10) {
+      toast({
+        title: '최대 10개의 QR코드만 저장할 수 있습니다.',
+        variant: 'error',
+      });
+      return;
+    }
+
+    const updatedData = [...savedQRCodes, newEntry];
+
+    setSavedQRCodes(updatedData);
+    toast({ title: 'QR코드가 저장되었습니다.', variant: 'success' });
+  };
+
+  const handleDeleteQRCode = (url: string) => {
+    const updatedData = savedQRCodes.filter(
+      (entry: { url: string }) => entry.url !== url,
+    );
+
+    setSavedQRCodes(updatedData);
+    toast({ title: 'QR코드가 삭제되었습니다.', variant: 'success' });
+  };
+
+  const isButtonDisabled = !qrCode.value || !qrCode.name;
+
   return (
     <section className="flex flex-col items-center gap-y-10 w-full">
-      <div className="flex flex-col gap-y-4 w-full max-w-96">
+      <div className="flex flex-col gap-y-4 w-full max-w-96 mt-8">
         <Label className="space-y-1.5">
           <span className="font-semibold">
             URL 링크 <span className="text-red">*</span>
@@ -55,13 +99,22 @@ function QRCodeGenerator(
 
         <Label className="space-y-1">
           <span className="font-semibold">제목</span>
-          <Input
-            name="name"
-            value={qrCode.name}
-            placeholder="티처캔"
-            maxLength={12}
-            onChange={handleChangeName}
-          />
+          <div className="flex items-center space-x-4">
+            <Input
+              name="name"
+              value={qrCode.name}
+              placeholder="티처캔"
+              maxLength={12}
+              onChange={handleChangeName}
+              className="flex-1"
+            />
+            <Button
+              onClick={handleSaveToLocalStorage}
+              disabled={isButtonDisabled}
+            >
+              QR코드 북마크
+            </Button>
+          </div>
         </Label>
       </div>
 
@@ -85,6 +138,37 @@ function QRCodeGenerator(
               </p>
             )}
           </div>
+        </div>
+      </div>
+      <div className="w-full max-w-96">
+        <Heading4 className="font-semibold text-lg mb-4">
+          북마크된 QR 코드 목록
+        </Heading4>
+        <div className="flex flex-wrap gap-2">
+          {savedQRCodes.map((entry) => (
+            <Badge
+              key={entry.url}
+              variant="primary"
+              size="sm"
+              className="cursor-pointer flex items-center space-x-2 relative"
+              onClick={() => {
+                setQrCode({ value: entry.url, name: entry.title });
+                setQrCodeInputValue(entry.url);
+              }}
+            >
+              {entry.title}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteQRCode(entry.url);
+                }}
+                className="ml-2 text-red-300 hover:text-red-700 text-xs"
+              >
+                ✕
+              </button>
+            </Badge>
+          ))}
         </div>
       </div>
     </section>
