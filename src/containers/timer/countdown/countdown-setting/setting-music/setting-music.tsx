@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Switch } from '@/components/switch';
-import { SheetSubTitle } from '@/components/sheet';
 import {
   Collapsible,
   CollapsibleContent,
@@ -22,6 +21,7 @@ import {
 import { cn } from '@/styles/utils';
 import { Label } from '@/components/label';
 import { Slider } from '@/components/slider';
+import DualPanel from '@/components/dual-panel';
 import {
   useCountdownMusicAction,
   useCountdownMusicState,
@@ -74,10 +74,10 @@ export default function SettingMusic() {
   return (
     <Collapsible open={isMusicUsed} className="space-y-4">
       <Label className="flex items-center justify-between gap-x-2">
-        <SheetSubTitle>
+        <DualPanel.SubTitle>
           <MusicIcon />
           배경 음악
-        </SheetSubTitle>
+        </DualPanel.SubTitle>
 
         <CollapsibleTrigger asChild>
           <Switch

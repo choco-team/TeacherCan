@@ -1,7 +1,7 @@
 import { Label } from '@/components/label';
-import { SheetDescription, SheetSubTitle } from '@/components/sheet';
 import { Switch } from '@/components/switch';
 import { InfoIcon, Settings2Icon } from 'lucide-react';
+import DualPanel from '@/components/dual-panel';
 import {
   useRandomPickAction,
   useRandomPickState,
@@ -16,16 +16,16 @@ export default function SettingOptions() {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <SheetSubTitle>
+      <DualPanel.SubTitle>
         <Settings2Icon />
         옵션
-      </SheetSubTitle>
-      <SheetDescription>
+      </DualPanel.SubTitle>
+      <DualPanel.Description>
         <span className="flex gap-x-1 text-start">
           <InfoIcon className="mt-0.5 size-4 text-secondary" />
           랜덤뽑기 진헹 중에도 변경할 수 있어요.
         </span>
-      </SheetDescription>
+      </DualPanel.Description>
       <Label className="flex items-center justify-between">
         <span>결과 숨기기</span>
         <Switch

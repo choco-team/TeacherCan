@@ -1,6 +1,6 @@
 import { PictureInPicture2 as PictureInPicture2Icon } from 'lucide-react';
 import { Button } from '@/components/button';
-import { SheetSubTitle } from '@/components/sheet';
+import DualPanel from '@/components/dual-panel';
 import { resizeBrowserSizeByScreen } from './setting-screen-size.utils';
 
 const SCREEN_SIZE = {
@@ -12,10 +12,10 @@ const SCREEN_SIZE = {
 export default function SettingScreenSize() {
   return (
     <div className="flex flex-col gap-y-4">
-      <SheetSubTitle>
+      <DualPanel.SubTitle>
         <PictureInPicture2Icon />
         화면 크기
-      </SheetSubTitle>
+      </DualPanel.SubTitle>
       <div className="w-full grid grid-cols-3 gap-4">
         <Button
           variant="primary-outline"

@@ -1,36 +1,33 @@
 'use client';
 
 import { Button } from '@/components/button';
-import { Sheet, SheetTrigger } from '@/components/sheet';
 import { SettingsIcon } from 'lucide-react';
-import { useState } from 'react';
+import DualPanel from '@/components/dual-panel';
 import RandomPickSetting from './random-pick-setting/random-pick-setting';
 import RandomPickProvider from './random-pick-provider/random-pick-provider';
 import PlayGround from './playground/playground';
 import RandomPickPlaygroundProvider from './random-pick-playground-provider.tsx/random-pick-playground-provider';
 
 export default function RandomPickContainer() {
-  const [isOpen, setIsOpen] = useState(false);
   return (
     <RandomPickProvider>
       <RandomPickPlaygroundProvider>
-        <div
-          data-state={isOpen ? 'open' : 'closed'}
-          className="transition-all data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:mr-[24rem]"
-        >
-          <PlayGround />
-          <Sheet open={isOpen} onOpenChange={setIsOpen} modal={false}>
-            <SheetTrigger asChild>
+        <DualPanel.Root>
+          <DualPanel.Main>
+            <PlayGround />
+          </DualPanel.Main>
+          <DualPanel.Side>
+            <DualPanel.Trigger asChild>
               <Button
                 variant="primary-ghost"
                 className="fixed max-sm:top-2 max-sm:right-2 top-4 right-4 max-sm:size-6 max-sm:p-1 size-12 lg:size-20 p-2 lg:p-3 rounded-full"
               >
                 <SettingsIcon className="max-sm:size-4 size-8 lg:size-16" />
               </Button>
-            </SheetTrigger>
+            </DualPanel.Trigger>
             <RandomPickSetting />
-          </Sheet>
-        </div>
+          </DualPanel.Side>
+        </DualPanel.Root>
       </RandomPickPlaygroundProvider>
     </RandomPickProvider>
   );

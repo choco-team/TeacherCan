@@ -4,7 +4,7 @@ import {
   Plus as PlusIcon,
 } from 'lucide-react';
 import { Button } from '@/components/button';
-import { SheetSubTitle } from '@/components/sheet';
+import DualPanel from '@/components/dual-panel';
 import { useCountdownAction } from '../../countdown-provider/countdown-provider.hooks';
 
 const SETTING_TIMES = [5, 10, 60, -5, -10, -60] as const;
@@ -14,10 +14,10 @@ export default function SettingTime() {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <SheetSubTitle>
+      <DualPanel.SubTitle>
         <AlarmClockPlusIcon />
         시간 증감
-      </SheetSubTitle>
+      </DualPanel.SubTitle>
       <div className="grid grid-cols-3 gap-2">
         {SETTING_TIMES.map((time) => (
           <Button
