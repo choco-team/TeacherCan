@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/badge';
 import { Heading4 } from '@/components/heading';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { v4 as uuidv4 } from 'uuid';
 import type { QRCode } from '../qr-code.type';
 
 type Props = {
@@ -33,7 +34,7 @@ function QRCodeGenerator(
   const [isPending, startTransition] = useTransition();
 
   const [savedQRCodes, setSavedQRCodes] = useLocalStorage<
-    { date: string; url: string; title: string }[]
+    { id: string; date: string; url: string; title: string }[]
   >('qrcodes', []);
 
   const { toast } = useToast();
@@ -51,6 +52,7 @@ function QRCodeGenerator(
   const handleSaveToLocalStorage = () => {
     const currentDate = new Date().toISOString();
     const newEntry = {
+      id: uuidv4(),
       date: currentDate,
       url: qrCode.value,
       title: qrCode.name,
@@ -70,9 +72,9 @@ function QRCodeGenerator(
     toast({ title: 'QR코드가 저장되었습니다.', variant: 'success' });
   };
 
-  const handleDeleteQRCode = (url: string) => {
+  const handleDeleteQRCode = (id: string) => {
     const updatedData = savedQRCodes.filter(
-      (entry: { url: string }) => entry.url !== url,
+      (entry: { id: string }) => entry.id !== id,
     );
 
     setSavedQRCodes(updatedData);
@@ -147,7 +149,7 @@ function QRCodeGenerator(
         <div className="flex flex-wrap gap-2">
           {savedQRCodes.map((entry) => (
             <Badge
-              key={entry.url}
+              key={entry.id}
               variant="primary"
               size="sm"
               className="cursor-pointer flex items-center space-x-2 relative"
@@ -161,7 +163,7 @@ function QRCodeGenerator(
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDeleteQRCode(entry.url);
+                  handleDeleteQRCode(entry.id);
                 }}
                 className="ml-2 text-red-300 hover:text-red-700 text-xs"
               >
