@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 
-type LocalStorageKey = 'random-pick-numbers' | 'random-pick-names' | 'qrcodes';
+type LocalStorageKey =
+  | 'random-pick-numbers'
+  | 'random-pick-names'
+  | 'qrcodes'
+  | 'dDays';
 
 /**
  * @description 페이지 새로 고침을 통해 상태가 유지되도록 로컬 저장소에 동기화합니다.
