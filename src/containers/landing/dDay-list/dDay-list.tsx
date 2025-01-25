@@ -86,16 +86,16 @@ function DdayList() {
       <Button
         onClick={() => {
           setIsDialogOpen(true);
-          setEventName(''); // 입력 필드 초기화
+          setEventName('');
           setEventDate('');
-          setEditId(null); // 추가 모드로 설정
+          setEditId(null);
         }}
         className='"fixed right-6 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-600 transition"'
       >
         <span className="text-lg">D</span>
       </Button>
 
-      {/* 이벤트 목록 */}
+      {/* 디데이 목록 */}
       <div className="space-y-4">
         {ddays.map((dday) => (
           <Card
