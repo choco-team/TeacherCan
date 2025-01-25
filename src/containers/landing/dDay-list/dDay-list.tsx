@@ -12,10 +12,12 @@ import {
   DialogTitle,
 } from '@/components/dialog';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { X } from 'lucide-react';
 
 function DdayList() {
   const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [editId, setEditId] = useState<string | null>(null);
   const [ddays, setDdays] = useLocalStorage<
     { id: string; date: string; title: string; dDay: string }[]
   >('dDays', []);
@@ -28,52 +30,105 @@ function DdayList() {
     return difference > 0 ? `D-${difference}` : `D+${Math.abs(difference)}`;
   };
 
-  const handleAddEvent = () => {
+  const handleAddOrEditEvent = () => {
     if (eventName && eventDate) {
       const formattedDate = new Date(eventDate);
-      setDdays([
-        ...ddays,
-        {
-          id: uuidv4(),
-          title: eventName,
-          date: eventDate,
-          dDay: calculateDays(formattedDate),
-        },
-      ]);
+
+      if (editId) {
+        setDdays(
+          ddays.map((d) =>
+            d.id === editId
+              ? {
+                  ...d,
+                  title: eventName,
+                  date: eventDate,
+                  dDay: calculateDays(formattedDate),
+                }
+              : d,
+          ),
+        );
+      } else {
+        setDdays([
+          ...ddays,
+          {
+            id: uuidv4(),
+            title: eventName,
+            date: eventDate,
+            dDay: calculateDays(formattedDate),
+          },
+        ]);
+      }
+
       setEventName('');
       setEventDate('');
+      setEditId(null);
       setIsDialogOpen(false);
+    }
+  };
+
+  const handleDeleteEvent = (id: string) => {
+    setDdays(ddays.filter((d) => d.id !== id));
+  };
+
+  const handleCardClick = (id: string) => {
+    const event = ddays.find((d) => d.id === id);
+    if (event) {
+      setEventName(event.title);
+      setEventDate(event.date);
+      setEditId(id);
+      setIsDialogOpen(true);
     }
   };
 
   return (
     <div className="p-4 space-y-4 max-w-md mx-auto">
-      {/* D-Day 설정 버튼 */}
-      <Button onClick={() => setIsDialogOpen(true)}>D-Day 설정</Button>
+      {/* D-Day 추가 버튼 */}
+      <Button
+        onClick={() => {
+          setIsDialogOpen(true);
+          setEventName(''); // 입력 필드 초기화
+          setEventDate('');
+          setEditId(null); // 추가 모드로 설정
+        }}
+        className='"fixed right-6 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-600 transition"'
+      >
+        <span className="text-lg">D</span>
+      </Button>
 
       {/* 이벤트 목록 */}
       <div className="space-y-4">
         {ddays.map((dday) => (
-          <Card key={dday.id} className="border shadow">
-            <CardHeader className="flex">
-              {/* 왼쪽: 이벤트 제목과 날짜 */}
-              <div>
-                {dday.title}
-                <p className="text-xs">{dday.date}</p>
-              </div>
-              <div>
-                <p>{dday.dDay}</p>
+          <Card
+            key={dday.id}
+            className="relative border shadow cursor-pointer p-0"
+            onClick={() => handleCardClick(dday.id)}
+          >
+            <button
+              type="button"
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteEvent(dday.id);
+              }}
+            >
+              <X size={16} />
+            </button>
+            <CardHeader className="flex justify-between p-4">
+              <div className="flex flex-row p-2">
+                <div className="flex flex-col">
+                  <p className="font-semibold">{dday.title}</p>
+                  <p className="text-xs text-gray-500">{dday.date}</p>
+                </div>
+                <div className="text-lg font-bold ml-4">{dday.dDay}</div>
               </div>
             </CardHeader>
           </Card>
         ))}
       </div>
-
-      {/* 모달 창 */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-sm mx-auto">
           <DialogHeader>
-            <DialogTitle>D-Day 설정</DialogTitle>
+            <DialogTitle>{editId ? '이벤트 수정' : 'D-Day 추가'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Input
@@ -86,8 +141,8 @@ function DdayList() {
               value={eventDate}
               onChange={(e) => setEventDate(e.target.value)}
             />
-            <Button onClick={handleAddEvent} className="w-full">
-              추가
+            <Button onClick={handleAddOrEditEvent} className="w-full">
+              {editId ? '수정 완료' : '추가'}
             </Button>
           </div>
         </DialogContent>
