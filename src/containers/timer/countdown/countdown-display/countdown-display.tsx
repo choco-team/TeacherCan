@@ -1,9 +1,10 @@
-import { useState, type ChangeEvent } from 'react';
+import { useContext, useState, type ChangeEvent } from 'react';
 import { SquareIcon, PlayIcon, PauseIcon, RotateCcwIcon } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
+import { DualPanelContext } from '@/components/dual-panel';
 import {
   useCountdownAction,
   useCountdownState,
@@ -17,6 +18,7 @@ import {
 } from '../countdown-provider/countdown-provider.constants';
 import Colon from './colon';
 import CountdownStepper from '../countdown-components/countdown-stepper';
+import { useTimerPIP } from './countdown-display.hooks';
 
 const timerButtonClassName =
   'size-10 max-md:p-1.5 md:size-16 lg:size-32 rounded-full';
@@ -25,6 +27,7 @@ const timerButtonIconClassName = 'size-6 md:size-12 lg:size-20 fill-inherit';
 const TIMER_NAME_MAX_LENGTH = 20;
 
 export default function CountdownDisplay() {
+  const { isOpen } = useContext(DualPanelContext);
   const [timerName, setTimerName] = useState('');
 
   const { hours, minutes, seconds, setupTime, leftTime, isActive } =
@@ -39,6 +42,12 @@ export default function CountdownDisplay() {
     handleReset,
   } = useCountdownAction();
 
+  const { canvasRef, videoRef, startPiP, handlePlay } = useTimerPIP(
+    hours,
+    minutes,
+    seconds,
+  );
+
   const shouldRenderHours = hours > 0;
 
   const handleChangeTimerName = (event: ChangeEvent<HTMLInputElement>) => {
@@ -48,7 +57,10 @@ export default function CountdownDisplay() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-y-4 lg:gap-y-12 px-6 lg:px-8 pt-8 md:pt-4 lg:pt-12 pb-4 md:pb-12 lg:pb-20 w-full">
+    <div
+      onMouseMove={handlePlay}
+      className="flex flex-col items-center gap-y-4 lg:gap-y-12 px-6 lg:px-8 pt-8 md:pt-4 lg:pt-12 pb-4 md:pb-12 lg:pb-20 w-full"
+    >
       {isActive ? (
         <Heading1 className="max-md:hidden pt-3 lg:pt-5 h-16 lg:h-28 text-4xl lg:text-7xl">
           {timerName}
@@ -64,7 +76,6 @@ export default function CountdownDisplay() {
           onChange={handleChangeTimerName}
         />
       )}
-
       <div className="flex flex-col items-center gap-y-2 lg:gap-y-8">
         <div className="flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4">
           {shouldRenderHours && (
@@ -153,6 +164,37 @@ export default function CountdownDisplay() {
               <span className="sr-only">Reset</span>
             </Button>
           )}
+        </div>
+
+        <Button
+          variant="primary-ghost"
+          size="sm"
+          className="transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 absolute cursor-pointer bottom-4 data-[state=open]:right-[404px] data-[state=closed]:right-[20px]"
+          onClick={startPiP}
+          data-state={isOpen ? 'open' : 'closed'}
+        >
+          <svg height="32px" width="32px" version="1.1" viewBox="0 0 36 36">
+            <path
+              d="M25,17 L17,17 L17,23 L25,23 L25,17 L25,17 Z M29,25 L29,10.98 C29,9.88 28.1,9 27,9 L9,9 C7.9,9 7,9.88 7,10.98 L7,25 C7,26.1 7.9,27 9,27 L27,27 C28.1,27 29,26.1 29,25 L29,25 Z M27,25.02 L9,25.02 L9,10.97 L27,10.97 L27,25.02 L27,25.02 Z"
+              fill="#000"
+            />
+          </svg>
+        </Button>
+
+        <div>
+          <canvas
+            ref={canvasRef}
+            width="200"
+            height="100"
+            style={{ display: 'none' }}
+          />
+          {/* eslint-disable jsx-a11y/media-has-caption */}
+          <video
+            ref={videoRef}
+            width="200"
+            height="100"
+            style={{ display: 'none' }}
+          />
         </div>
       </div>
     </div>

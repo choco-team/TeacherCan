@@ -9,12 +9,38 @@ import {
   useContext,
   useState,
 } from 'react';
-
 import * as React from 'react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { cva } from 'class-variance-authority';
 import { X as XIcon } from 'lucide-react';
 import { cn } from '@/styles/utils';
+
+/**
+ * <DualPanel.Root>
+ *
+ *  <DualPanel.Main>
+ *    메인 영역
+ *  </DualPanel.Main>
+ *
+ *  <DualPanel.Side>
+ *    <DualPanel.Trigger>
+ *      사이드 영역 트리거
+ *    </DualPanel.Trigger>
+ *
+ *    <DualPanel.Content>
+ *      사이드 영역: 사이드 영역어느 Header, Title, Description 등으로 구성
+ *      <DualPanel.Header>
+ *        <DualPanel.Title>제목<DualPanel.Title>
+ *        <DualPanel.Description>설명</DualPanel.Description>
+ *      </DualPanel.Header>
+ *
+ *      </DualPanel.SubTitle>부제목</DualPanel.SubTitle>
+ *      // ...
+ *    </DualPanel.Content>
+ *  </DualPanel.Side>
+ *
+ * </DualPanel.Root>
+ */
 
 const Sheet = SheetPrimitive.Root;
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -27,7 +53,7 @@ type DualPanelType = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const DualPanelContext = createContext<DualPanelType | null>(null);
+export const DualPanelContext = createContext<DualPanelType | null>(null);
 
 type DualPanelProviderProps = {
   children: ReactNode;
@@ -68,7 +94,7 @@ function DualPanelRoot({ defaultOpen, side, children }: Props) {
 }
 
 const mainVariants = cva(
-  'transition-all data-[state=closed]:duration-300 data-[state=open]:duration-500',
+  'transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
   {
     variants: {
       side: {
