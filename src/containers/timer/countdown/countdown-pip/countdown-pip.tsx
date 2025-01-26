@@ -1,11 +1,19 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
-import { formatFont, formatTime } from './countdown-display.utils';
+import { ReactNode, useEffect, useLayoutEffect, useRef } from 'react';
+import { formatFont, formatTime } from './countdown-pip.utiles';
 
-export const useTimerPIP = (
-  hours: number,
-  minutes: number,
-  seconds: number,
-) => {
+type Props = {
+  hours: number;
+  minutes: number;
+  seconds: number;
+  action: ReactNode;
+};
+
+export default function CountdownPIP({
+  hours,
+  minutes,
+  seconds,
+  action,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -44,10 +52,9 @@ export const useTimerPIP = (
 
     const stream = canvas.captureStream();
     video.srcObject = stream;
-    video.muted = true;
   }, []);
 
-  const handlePlay = () => {
+  const playVideo = () => {
     const video = videoRef.current;
 
     if (!video.paused || !video) {
@@ -57,29 +64,32 @@ export const useTimerPIP = (
     video.play();
   };
 
-  const startPiP = async () => {
+  const startPIP = async () => {
     const video = videoRef.current;
 
     if (document.pictureInPictureElement) {
-      document.exitPictureInPicture().then(() => {});
+      document.exitPictureInPicture();
       return;
     }
 
-    if (document.pictureInPictureEnabled) {
-      try {
-        await video.requestPictureInPicture();
-      } catch (error) {
-        console.error('PiP 모드 요청 중 오류 발생:', error);
-      }
-    } else {
-      console.error('브라우저가 PiP 모드를 지원하지 않습니다.');
+    try {
+      await video.requestPictureInPicture();
+    } catch (error) {
+      console.error('PIP 오류: ', error);
     }
   };
 
-  return {
-    canvasRef,
-    videoRef,
-    startPiP,
-    handlePlay,
+  const handleClickButton = () => {
+    playVideo();
+    startPIP();
   };
-};
+
+  return (
+    <>
+      <div onClick={handleClickButton}>{action}</div>
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+      {/* eslint-disable jsx-a11y/media-has-caption */}
+      <video ref={videoRef} style={{ display: 'none' }} />
+    </>
+  );
+}
