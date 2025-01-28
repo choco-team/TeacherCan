@@ -16,9 +16,7 @@ import { X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 function DdayList() {
-  const [eventName, setEventName] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [editId, setEditId] = useState<string | null>(null);
+  const [event, setEvent] = useState({ title: '', date: '', id: null });
   const [ddays, setDdays] = useLocalStorage<
     { id: string; date: string; title: string; dDay: string }[]
   >('dDays', []);
@@ -32,20 +30,20 @@ function DdayList() {
   };
 
   const handleAddOrEditEvent = () => {
-    if (!eventName || !eventDate) {
+    if (!event.title || !event.date) {
       return;
     }
 
-    const formattedDate = new Date(eventDate);
+    const formattedDate = new Date(event.date);
 
-    if (editId) {
+    if (event.id) {
       setDdays(
         ddays.map((d) =>
-          d.id === editId
+          d.id === event.id
             ? {
                 ...d,
-                title: eventName,
-                date: eventDate,
+                title: event.title,
+                date: event.date,
                 dDay: calculateDays(formattedDate),
               }
             : d,
@@ -61,16 +59,14 @@ function DdayList() {
         ...ddays,
         {
           id: uuidv4(),
-          title: eventName,
-          date: eventDate,
+          title: event.title,
+          date: event.date,
           dDay: calculateDays(formattedDate),
         },
       ]);
     }
 
-    setEventName('');
-    setEventDate('');
-    setEditId(null);
+    setEvent({ title: '', date: '', id: null });
     setIsDialogOpen(false);
   };
 
@@ -79,11 +75,13 @@ function DdayList() {
   };
 
   const handleCardClick = (id: string) => {
-    const event = ddays.find((d) => d.id === id);
-    if (event) {
-      setEventName(event.title);
-      setEventDate(event.date);
-      setEditId(id);
+    const foundEvent = ddays.find((d) => d.id === id);
+    if (foundEvent) {
+      setEvent({
+        title: foundEvent.title,
+        date: foundEvent.date,
+        id,
+      });
       setIsDialogOpen(true);
     }
   };
@@ -94,9 +92,7 @@ function DdayList() {
       <Button
         onClick={() => {
           setIsDialogOpen(true);
-          setEventName('');
-          setEventDate('');
-          setEditId(null);
+          setEvent({ title: '', date: '', id: null });
         }}
         className='"fixed right-6 w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center hover:bg-primary-600 transition"'
       >
@@ -136,21 +132,21 @@ function DdayList() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-sm mx-auto">
           <DialogHeader>
-            <DialogTitle>{editId ? '이벤트 수정' : 'D-Day 추가'}</DialogTitle>
+            <DialogTitle>{event.id ? '이벤트 수정' : 'D-Day 추가'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Input
               placeholder="이벤트 이름"
-              value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
+              value={event.title}
+              onChange={(e) => setEvent({ ...event, title: e.target.value })}
             />
             <Input
               type="date"
-              value={eventDate}
-              onChange={(e) => setEventDate(e.target.value)}
+              value={event.date}
+              onChange={(e) => setEvent({ ...event, date: e.target.value })}
             />
             <Button onClick={handleAddOrEditEvent} className="w-full">
-              {editId ? '수정 완료' : '추가'}
+              {event.id ? '수정 완료' : '추가'}
             </Button>
           </div>
         </DialogContent>
