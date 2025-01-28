@@ -13,6 +13,7 @@ import {
 } from '@/components/dialog';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { X } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 function DdayList() {
   const [eventName, setEventName] = useState('');
@@ -31,39 +32,46 @@ function DdayList() {
   };
 
   const handleAddOrEditEvent = () => {
-    if (eventName && eventDate) {
-      const formattedDate = new Date(eventDate);
-
-      if (editId) {
-        setDdays(
-          ddays.map((d) =>
-            d.id === editId
-              ? {
-                  ...d,
-                  title: eventName,
-                  date: eventDate,
-                  dDay: calculateDays(formattedDate),
-                }
-              : d,
-          ),
-        );
-      } else {
-        setDdays([
-          ...ddays,
-          {
-            id: uuidv4(),
-            title: eventName,
-            date: eventDate,
-            dDay: calculateDays(formattedDate),
-          },
-        ]);
-      }
-
-      setEventName('');
-      setEventDate('');
-      setEditId(null);
-      setIsDialogOpen(false);
+    if (!eventName || !eventDate) {
+      return;
     }
+
+    const formattedDate = new Date(eventDate);
+
+    if (editId) {
+      setDdays(
+        ddays.map((d) =>
+          d.id === editId
+            ? {
+                ...d,
+                title: eventName,
+                date: eventDate,
+                dDay: calculateDays(formattedDate),
+              }
+            : d,
+        ),
+      );
+    } else if (ddays.length === 1) {
+      toast({
+        title: '1개의 디데이만 저장할 수 있습니다.',
+        variant: 'error',
+      });
+    } else {
+      setDdays([
+        ...ddays,
+        {
+          id: uuidv4(),
+          title: eventName,
+          date: eventDate,
+          dDay: calculateDays(formattedDate),
+        },
+      ]);
+    }
+
+    setEventName('');
+    setEventDate('');
+    setEditId(null);
+    setIsDialogOpen(false);
   };
 
   const handleDeleteEvent = (id: string) => {
