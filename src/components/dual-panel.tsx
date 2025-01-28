@@ -53,7 +53,7 @@ type DualPanelType = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const DualPanelContext = createContext<DualPanelType | null>(null);
+export const DualPanelContext = createContext<DualPanelType | null>(null);
 
 type DualPanelProviderProps = {
   children: ReactNode;
@@ -94,7 +94,7 @@ function DualPanelRoot({ defaultOpen, side, children }: Props) {
 }
 
 const mainVariants = cva(
-  'transition-all data-[state=closed]:duration-300 data-[state=open]:duration-500',
+  'transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
   {
     variants: {
       side: {

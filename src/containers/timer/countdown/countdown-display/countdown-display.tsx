@@ -1,9 +1,11 @@
-import { useState, type ChangeEvent } from 'react';
+import { useContext, useState, type ChangeEvent } from 'react';
 import { SquareIcon, PlayIcon, PauseIcon, RotateCcwIcon } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
+import { DualPanelContext } from '@/components/dual-panel';
+import SmallPlayerIcon from '@/assets/icons/SmallPlayerIcon';
 import {
   useCountdownAction,
   useCountdownState,
@@ -17,6 +19,7 @@ import {
 } from '../countdown-provider/countdown-provider.constants';
 import Colon from './colon';
 import CountdownStepper from '../countdown-components/countdown-stepper';
+import CountdownPIP from '../countdown-pip/countdown-pip';
 
 const timerButtonClassName =
   'size-10 max-md:p-1.5 md:size-16 lg:size-32 rounded-full';
@@ -25,6 +28,7 @@ const timerButtonIconClassName = 'size-6 md:size-12 lg:size-20 fill-inherit';
 const TIMER_NAME_MAX_LENGTH = 20;
 
 export default function CountdownDisplay() {
+  const { isOpen } = useContext(DualPanelContext);
   const [timerName, setTimerName] = useState('');
 
   const { hours, minutes, seconds, setupTime, leftTime, isActive } =
@@ -64,7 +68,6 @@ export default function CountdownDisplay() {
           onChange={handleChangeTimerName}
         />
       )}
-
       <div className="flex flex-col items-center gap-y-2 lg:gap-y-8">
         <div className="flex items-center gap-x-1 md:gap-x-2 lg:gap-x-4">
           {shouldRenderHours && (
@@ -154,6 +157,22 @@ export default function CountdownDisplay() {
             </Button>
           )}
         </div>
+
+        <CountdownPIP
+          hours={hours}
+          minutes={minutes}
+          seconds={seconds}
+          action={
+            <Button
+              variant="primary-ghost"
+              size="sm"
+              className="transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 absolute cursor-pointer bottom-4 data-[state=open]:right-[404px] data-[state=closed]:right-[20px]"
+              data-state={isOpen ? 'open' : 'closed'}
+            >
+              <SmallPlayerIcon width="32px" height="32px" />
+            </Button>
+          }
+        />
       </div>
     </div>
   );
