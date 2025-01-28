@@ -1,8 +1,8 @@
-import { SheetSubTitle } from '@/components/sheet';
 import { BellRing as BellRingIcon } from 'lucide-react';
 import { Checkbox } from '@/components/checkbox';
 import { Switch } from '@/components/switch';
 import { Label } from '@/components/label';
+import DualPanel from '@/components/dual-panel';
 import {
   useCountdownAlarmAction,
   useCountdownAlarmState,
@@ -19,10 +19,10 @@ export default function SettingAlarm() {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <SheetSubTitle>
+      <DualPanel.SubTitle>
         <BellRingIcon />
         종료 알림
-      </SheetSubTitle>
+      </DualPanel.SubTitle>
       <Label className="flex items-center justify-between gap-x-2">
         <span>타이머 종료 시 알림음 울리기</span>
         <Switch
