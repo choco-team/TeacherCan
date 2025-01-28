@@ -60,6 +60,8 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
                   className="w-7 rounded-full mr-2"
                   src={extraData.channelThumbnails}
                   alt=""
+                  width={28}
+                  height={28}
                 />
                 <div className="flex flex-col">
                   <p className="text-s">
@@ -75,6 +77,8 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
                       className="w-full rounded-lg cursor-pointer"
                       src={extraData.thumbnails}
                       alt=""
+                      width={28}
+                      height={28}
                     />
                   )}
                   {isVideo && (
