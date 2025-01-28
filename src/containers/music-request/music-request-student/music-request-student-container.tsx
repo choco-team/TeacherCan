@@ -1,7 +1,9 @@
 'use client';
 
 import MusicRequestStudentMain from './music-request-student-main/music-request-student-main';
-import MusicRequestStudentProvider from './music-request-student-provider/music-request-student-provider';
+import MusicRequestStudentProvider, {
+  MusicRequestStudentParams,
+} from './music-request-student-provider/music-request-student-provider';
 
 export default function MusicRequestStudentContainer({
   params,
