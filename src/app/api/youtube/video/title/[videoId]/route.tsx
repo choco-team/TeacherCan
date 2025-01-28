@@ -4,10 +4,15 @@ interface IParams {
   params: { videoId: string };
 }
 
-async function getVideos(videoId: string) {
+async function getVideoTitle(videoId: string) {
   try {
+    const queryParams = new URLSearchParams({
+      part: 'snippet',
+      id: videoId,
+      key: process.env.YOUTUBE_DATA_API_KEY,
+    }).toString();
     const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.YOUTUBE_DATA_API_KEY}`,
+      `https://www.googleapis.com/youtube/v3/videos?${queryParams}`,
     );
     const json = await response.json();
     const result = json.items[0].snippet.title;
@@ -19,6 +24,6 @@ async function getVideos(videoId: string) {
 
 export async function GET(req: NextRequest, { params: { videoId } }: IParams) {
   return NextResponse.json({
-    title: await getVideos(videoId),
+    title: await getVideoTitle(videoId),
   });
 }
