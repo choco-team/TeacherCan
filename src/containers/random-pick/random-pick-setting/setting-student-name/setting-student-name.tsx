@@ -15,7 +15,10 @@ import {
   useRandomPickAction,
   useRandomPickState,
 } from '../../random-pick-provider/random-pick-provider.hooks';
-import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+
+type Props = {
+  startPlay: () => void;
+};
 
 const formSchema = z.object({
   names: z.preprocess(
@@ -42,10 +45,9 @@ const formSchema = z.object({
   ),
 });
 
-export default function SettingStudentName() {
+export default function SettingStudentName({ startPlay }: Props) {
   const { pickList } = useRandomPickState();
   const { modifyPickList } = useRandomPickAction();
-  const { isRunning } = useRandomPickPlaygroundState();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -64,37 +66,39 @@ export default function SettingStudentName() {
         isUsed: true,
       })),
     );
+
+    startPlay();
   };
 
   return (
     <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-y-10 min-h-60"
+        >
           <FormField
             control={form.control}
             name="names"
             render={({ field }) => (
-              <>
-                <div className="flex gap-x-4">
-                  <FormControl>
-                    <Textarea
-                      className="min-h-[120px]"
-                      placeholder="학생 이름 입력"
-                      disabled={isRunning}
-                      {...field}
-                    />
-                  </FormControl>
-                  <Button type="submit" disabled={isRunning}>
-                    생성
-                  </Button>
-                </div>
+              <div className="flex-grow flex flex-col gap-y-2">
+                <FormControl className="flex-grow">
+                  <Textarea placeholder="학생 이름 입력" {...field} />
+                </FormControl>
                 <FormDescription>
                   학생 이름을 쉼표(,) 혹은 Enter로 구분하여 입력해주세요.
                 </FormDescription>
                 <FormMessage />
-              </>
+              </div>
             )}
           />
+          <Button
+            type="submit"
+            size="lg"
+            className="self-center p-8 rounded-2xl text-2xl hover:scale-105 active:scale-95"
+          >
+            시작
+          </Button>
         </form>
       </Form>
     </div>

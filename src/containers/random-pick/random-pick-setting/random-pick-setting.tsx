@@ -1,29 +1,22 @@
-import { Button } from '@/components/button';
-import DualPanel from '@/components/dual-panel';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import SettingPickType from './setting-pick-type/setting-pick-type';
-import SettingOptions from './setting-options/setting-options';
-import { useRandomPickPlaygroundAction } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
-export default function RandomPickSetting() {
-  const { resetPick } = useRandomPickPlaygroundAction();
+type Props = {
+  startPlay: () => void;
+};
+
+export default function RandomPickSetting({ startPlay }: Props) {
   return (
-    <DualPanel.Content>
-      <DualPanel.Header>
-        <DualPanel.Title>랜덤뽑기 설정</DualPanel.Title>
-      </DualPanel.Header>
+    <div className="flex flex-col items-center justify-center gap-y-6 p-8 min-h-dvh">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>랜덤 뽑기 만들기</CardTitle>
+        </CardHeader>
 
-      <div className="space-y-10 py-10">
-        <SettingPickType />
-        <SettingOptions />
-        <Button
-          onClick={resetPick}
-          size="lg"
-          variant="primary-outline"
-          className="w-full"
-        >
-          뽑기 초기화
-        </Button>
-      </div>
-    </DualPanel.Content>
+        <CardContent className="pt-4 w-full">
+          <SettingPickType startPlay={startPlay} />
+        </CardContent>
+      </Card>
+    </div>
   );
 }

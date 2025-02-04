@@ -22,9 +22,9 @@ export type InnerPickListType = {
 type PickType = (typeof PICK_TYPES)[number]['type'];
 type PickListType = Record<PickType, InnerPickListType[]>;
 type OptionsType = {
-  isHideResult: boolean;
   isExcludingSelected: boolean;
-  isSeparateSelectedStudent: boolean;
+  isHideResult: boolean;
+  isMixingAnimation: boolean;
 };
 
 type RandomPickState = {
@@ -65,9 +65,9 @@ export default function RandomPickProvider({
   );
 
   const [options, setOptions] = useState<OptionsType>({
-    isHideResult: true,
     isExcludingSelected: true,
-    isSeparateSelectedStudent: false,
+    isHideResult: true,
+    isMixingAnimation: true,
   });
   const [pickType, setPickType] = useState<PickType>('numbers');
 

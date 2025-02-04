@@ -4,10 +4,15 @@ import Card from '../card/card';
 import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
 type Props = {
-  isOpenModal: boolean;
+  isMixingCards: boolean;
 };
 
-export default function CardList({ isOpenModal }: Props) {
+const INTERVAL_TIME = {
+  INITIAL: 50,
+  MAX: 5000,
+};
+
+export default function CardList({ isMixingCards }: Props) {
   const cardMixRef = useRef<NodeJS.Timeout | null>(null);
 
   const { pickList, pickType } = useRandomPickState();
@@ -15,30 +20,36 @@ export default function CardList({ isOpenModal }: Props) {
   const winnerIds = winners.map((winner) => winner.id);
 
   const [students, setStudents] = useState(pickList[pickType]);
+  const [intervalTime, setIntervalTime] = useState(INTERVAL_TIME.INITIAL);
 
   useEffect(() => {
-    if (isOpenModal) {
+    if (isMixingCards) {
       cardMixRef.current = setInterval(() => {
         setStudents((prev) => [...prev].sort(() => Math.random() - 0.5));
-      }, 100);
+        setIntervalTime((prev) => Math.min(prev * 20, INTERVAL_TIME.MAX));
+      }, intervalTime);
     } else {
       clearInterval(cardMixRef.current);
+      setIntervalTime(INTERVAL_TIME.INITIAL);
     }
-    return () => clearInterval(cardMixRef.current);
-  }, [isOpenModal]);
+    return () => {
+      clearInterval(cardMixRef.current);
+      setIntervalTime(INTERVAL_TIME.INITIAL);
+    };
+  }, [isMixingCards, intervalTime]);
 
   useEffect(() => {
     setStudents(pickList[pickType]);
   }, [pickList[pickType]]);
 
   return (
-    <div className="grid gap-2 p-4 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-      {(isOpenModal ? students : pickList[pickType]).map(({ id, value }) => (
+    <div className="flex-grow grid gap-2 grid-cols-4 md:grid-cols-6 lg:grid-cols-8 content-start">
+      {(isMixingCards ? students : pickList[pickType]).map(({ id, value }) => (
         <Card
           key={id}
           title={value}
           isWinner={winnerIds.includes(id)}
-          isOpenModal={isOpenModal}
+          isMixingCards={isMixingCards}
         />
       ))}
     </div>
