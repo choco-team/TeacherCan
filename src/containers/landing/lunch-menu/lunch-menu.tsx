@@ -32,11 +32,9 @@ function LunchMenu() {
         setSchoolList(schoolData);
         setSelectedSchool(null);
       } else {
-        console.error('학교 정보를 찾을 수 없습니다.');
         setSchoolList([]);
       }
     } catch (error) {
-      console.error('학교 검색 실패:', error);
       setSchoolList([]);
     }
   };
@@ -44,7 +42,7 @@ function LunchMenu() {
   const fetchMealData = async (
     schoolCode: string,
     eduOfficeCode: string,
-    school,
+    school: string,
   ) => {
     const today = getTodayDate();
     try {
@@ -53,20 +51,14 @@ function LunchMenu() {
       );
 
       const mealInfo = response.data.mealServiceDietInfo?.[1]?.row?.[0];
-      if (mealInfo) {
-        setMealData(mealInfo);
-        setSelectedSchool(school);
-      } else {
-        console.error('오늘의 식단 정보가 없습니다.');
-        setMealData(null);
-      }
+      setMealData(mealInfo || { MLSV_YMD: today, DDISH_NM: null });
+      setSelectedSchool(school);
     } catch (error) {
-      console.error('식단 정보 조회 실패:', error);
-      setMealData(null);
+      setMealData({ MLSV_YMD: today, DDISH_NM: null });
     }
   };
 
-  const formatDate = (dateStr) => {
+  const formatDate = (dateStr: string) => {
     const year = dateStr.substring(0, 4);
     const month = dateStr.substring(4, 6);
     const day = dateStr.substring(6, 8);
@@ -127,7 +119,11 @@ function LunchMenu() {
             <h2 className="text-lg font-semibold">
               {formatDate(mealData.MLSV_YMD)} 식단표
             </h2>
-            <p>{mealData.DDISH_NM.replace(/<br\/>/g, '\n')}</p>
+            <p>
+              {mealData.DDISH_NM
+                ? mealData.DDISH_NM.replace(/<br\/>/g, '\n')
+                : '식단 정보를 찾을 수 없습니다.'}
+            </p>
           </CardContent>
         </Card>
       )}
