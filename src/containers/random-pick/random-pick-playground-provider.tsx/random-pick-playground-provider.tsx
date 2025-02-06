@@ -11,7 +11,7 @@ export type WinnersType = {
 type RandomPickPlaygroundState = {
   students: InnerPickListType[];
   winners: WinnersType[];
-  isRunning: boolean;
+  isAllStudentsPicked: boolean;
 };
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
@@ -39,7 +39,7 @@ export default function RandomPickPlaygroundProvider({
   const defaultRandomPickPlaygroundStateValue = {
     students: pickList[pickType],
     winners,
-    isRunning: tempWinners.length > 0,
+    isAllStudentsPicked: pickList[pickType].length === winners.length,
   };
 
   const updateWinner = (countNum: number) => {

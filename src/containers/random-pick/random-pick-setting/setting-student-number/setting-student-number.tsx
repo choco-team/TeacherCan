@@ -15,7 +15,10 @@ import {
   useRandomPickAction,
   useRandomPickState,
 } from '../../random-pick-provider/random-pick-provider.hooks';
-import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+
+type Props = {
+  startPlay: () => void;
+};
 
 const formSchema = z.object({
   number: z.coerce
@@ -28,10 +31,9 @@ const formSchema = z.object({
     }),
 });
 
-export default function SettingStudentNumber() {
+export default function SettingStudentNumber({ startPlay }: Props) {
   const { pickList } = useRandomPickState();
   const { modifyPickList } = useRandomPickAction();
-  const { isRunning } = useRandomPickPlaygroundState();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,31 +53,37 @@ export default function SettingStudentNumber() {
     );
 
     modifyPickList('numbers', newStudentNumbers);
+    startPlay();
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-y-10 min-h-60"
+      >
         <FormField
           control={form.control}
           name="number"
           render={({ field }) => (
-            <>
-              <div className="flex gap-x-4">
-                <FormControl>
-                  <Input type="number" disabled={isRunning} {...field} />
-                </FormControl>
-                <Button type="submit" disabled={isRunning}>
-                  생성
-                </Button>
-              </div>
+            <div className="flex-grow flex flex-col gap-y-2">
+              <FormControl>
+                <Input type="number" {...field} />
+              </FormControl>
               <FormDescription>
-                2 ~ 100 사이의 숫자를 입력하고 생성하기 버튼을 누르세요.
+                2 ~ 100 사이의 숫자를 입력하세요.
               </FormDescription>
               <FormMessage />
-            </>
+            </div>
           )}
         />
+        <Button
+          type="submit"
+          size="lg"
+          className="self-center p-8 rounded-2xl text-2xl hover:scale-105 active:scale-95"
+        >
+          시작
+        </Button>
       </form>
     </Form>
   );

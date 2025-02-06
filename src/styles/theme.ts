@@ -68,6 +68,7 @@ const theme = {
     },
     beige: {
       DEFAULT: '#dcd9c9',
+      foreground: zinc[950],
       '50': '#f9f9f7',
       '100': '#f7f7f4',
       '200': '#f3f3ed',
