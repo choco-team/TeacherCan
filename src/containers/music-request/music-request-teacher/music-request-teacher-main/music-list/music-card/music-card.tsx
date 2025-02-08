@@ -39,6 +39,7 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
         if (extraData) {
           setExtraData(extraData);
         } else {
+          console.log(await getMusicExtraData(videoId));
           setExtraData(await getMusicExtraData(videoId));
         }
         setIsOpen(true);
@@ -53,7 +54,7 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
       <div className="flex flex-row">
         <div className="flex flex-col w-full">
           <p className="font-semibold">{video.title}</p>
-          {isOpen && (
+          {isOpen && extraData && (
             <div className="bg-white rounded pr-2 pl-2 pb-2 mb-2 mt-2">
               <div className="flex flex-row p-1">
                 <Image
