@@ -10,14 +10,6 @@ export type MusicRequestTeacherParams = {
   roomId: string;
 };
 
-// type ExtraData = {
-//   publishedAt: string;
-//   channelTitle: string;
-//   thumbnails: string;
-//   channelId: string;
-//   description: string;
-// }
-
 type Video = {
   videoId: string;
   title: string;
