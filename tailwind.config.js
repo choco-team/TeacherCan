@@ -5,6 +5,11 @@ const { colors, keyframes } = theme;
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ['class'],
+  safelist: [
+    {
+      pattern: /group-\[data-status=open\]/,
+    },
+  ],
   content: [
     './src/app/**/*.{ts,tsx}',
     './src/containers/**/*.{ts,tsx}',
@@ -17,13 +22,13 @@ module.exports = {
         border: colors.gray[200],
         input: colors.gray[200],
         ring: colors.gray[400],
-        background: colors.white,
+        background: '#fefefe',
         foreground: colors.gray[900],
         text: colors.gray[700],
         disabled: colors.gray[300],
         destructive: colors.red,
         body: {
-          DEFAULT: colors.beige[100],
+          DEFAULT: '#fefefe',
           foreground: colors.gray[950],
         },
         muted: {
@@ -82,6 +87,10 @@ module.exports = {
       },
       transform: {
         'rotate-y-180': 'rotateY(180deg)',
+      },
+      boxShadow: {
+        custom:
+          'rgba(0, 0, 0, 0.02) 0px 12px 32px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px',
       },
     },
   },
