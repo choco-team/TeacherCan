@@ -4,7 +4,8 @@ type LocalStorageKey =
   | 'random-pick-numbers'
   | 'random-pick-names'
   | 'qrcodes'
-  | 'dDays';
+  | 'schedule'
+  | 'recently-visited';
 
 /**
  * @description 페이지 새로 고침을 통해 상태가 유지되도록 로컬 저장소에 동기화합니다.
@@ -47,6 +48,10 @@ function useLocalStorage<T>(key: LocalStorageKey, initialValue: T) {
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  if (!hasMounted) {
+    return [null, setValue] as const;
+  }
 
   if (hasMounted) {
     return [storedValue, setValue] as const;
