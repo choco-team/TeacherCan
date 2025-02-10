@@ -1,4 +1,4 @@
-import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
+import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
 import { cn } from '@/styles/utils';
 
 type TitleType = {
@@ -21,7 +21,7 @@ export default function Card({ title, isWinner, isMixingCards }: TitleType) {
     >
       {isAlreadyPicked ? (
         <div className="flex flex-col gap-y-1 items-center">
-          <TeacherCanLogo width="60" height="60" />
+          <TeacherCanIcon width={60} height={60} />
         </div>
       ) : (
         <span className="text-4xl font-semibold">{title}</span>

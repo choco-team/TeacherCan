@@ -39,7 +39,8 @@ export default function RandomPickPlaygroundProvider({
   const defaultRandomPickPlaygroundStateValue = {
     students: pickList[pickType],
     winners,
-    isAllStudentsPicked: pickList[pickType].length === winners.length,
+    isAllStudentsPicked:
+      pickList[pickType] && pickList[pickType].length === winners.length,
   };
 
   const updateWinner = (countNum: number) => {

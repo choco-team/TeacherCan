@@ -53,10 +53,7 @@ export default function PlayGround({ makeNewPlay }: Props) {
   }, [isMixingCards]);
 
   return (
-    <div
-      ref={cardListRef}
-      className="relative flex flex-col gap-y-6 p-8 min-h-dvh"
-    >
+    <div ref={cardListRef} className="relative flex flex-col gap-y-6">
       <WhilePlaySettings
         title={title}
         setTitle={setTitle}
