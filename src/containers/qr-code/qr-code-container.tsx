@@ -1,29 +1,28 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { cn } from '@/styles/utils';
-import QRCodeGenerator from './qr-code-generator/qr-code-generator';
-import QRCodeDownloader from './qr-code-downloader/qr-code-downloader';
-import QRCodeClipboard from './qr-code-clipboard/qr-code-clipboard';
-import QRCodeExpansion from './qr-code-expansion/qr-code-expansion';
-import QRCodePrinter from './qr-code-printer/qr-code-printer';
-import type { QRCode } from './qr-code.type';
+import { useRef, useState, useTransition } from 'react';
+import type { QRCode } from './qr-code.types';
+import QrCodeAction from './qr-code-action/qr-code-action';
+import QrCodePreview from './qr-code-preview/qr-code-preview';
+import QrCodeEditor from './qr-code-editor/qr-code-editor';
 
 function QrCodeContainer() {
   const [qrCode, setQrCode] = useState<QRCode>({ value: '', name: '' });
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-y-10 px-6 bg-body">
-      <QRCodeGenerator ref={qrCodeRef} qrCode={qrCode} setQrCode={setQrCode} />
+  const [isPending, startTransition] = useTransition();
 
-      <div className={cn('grid grid-cols-2 gap-4', 'sm:grid-cols-4')}>
-        <QRCodeClipboard qrCodeRef={qrCodeRef} qrCode={qrCode} />
-        <QRCodeDownloader qrCodeRef={qrCodeRef} qrCode={qrCode} />
-        <QRCodePrinter qrCode={qrCode} />
-        <QRCodeExpansion qrCode={qrCode} />
+  return (
+    <div className="flex flex-col gap-12 max-w-[900px] mx-auto items-start lg:flex-row">
+      <QrCodeEditor
+        qrCode={qrCode}
+        setQrCode={setQrCode}
+        startTransition={startTransition}
+      />
+      <div className="flex-1 w-full">
+        <QrCodePreview isPending={isPending} ref={qrCodeRef} qrCode={qrCode} />
+        <QrCodeAction qrCode={qrCode} qrCodeRef={qrCodeRef} />
       </div>
-      <div />
     </div>
   );
 }

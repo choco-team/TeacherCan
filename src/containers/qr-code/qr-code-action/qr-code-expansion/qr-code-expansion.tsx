@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/dialog';
 import { cn } from '@/styles/utils';
-import type { QRCode } from '../qr-code.type';
+import type { QRCode } from '../../qr-code.types';
 
 type Props = {
   qrCode: QRCode;
