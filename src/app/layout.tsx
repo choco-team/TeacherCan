@@ -1,8 +1,11 @@
+import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-
 import { Toaster } from '@/components/toaster';
-import './globals.css';
+import { headers } from 'next/headers';
+import Navigation from '@/components/navigation/navigation';
+import Header from '@/components/header/header';
+import { ROUTE } from '@/constants/route';
 
 export const metadata: Metadata = {
   title: '티처캔',
@@ -29,18 +32,36 @@ const pyeongtaek = localFont({
   variable: '--font-pyeongtaek-anbo',
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = headers();
+  const currentPath = headersList.get('X-Current-Path') || '/';
+
   return (
     <html
       lang="ko"
       className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable}`}
     >
       <body>
-        <main className="w-full min-h-screen">{children}</main>
+        {currentPath === ROUTE.TIMER ? (
+          <main className="bg-beige-50">
+            <div>{children}</div>
+          </main>
+        ) : (
+          <>
+            <Navigation />
+            <main
+              id="teacher-can-main"
+              className="bg-body transition-all ease-in-out duration-500 lg:data-[status=closed]:ml-0 lg:ml-[260px]"
+            >
+              <Header />
+              <div className="pt-[68px] px-4 mb-8">{children}</div>
+            </main>
+          </>
+        )}
         <Toaster />
       </body>
     </html>

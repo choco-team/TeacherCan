@@ -17,7 +17,7 @@ export default function Countdown() {
       <CountdownMusicProvider>
         <CountdownAlarmProvider>
           <DualPanel.Root defaultOpen>
-            <div className="relative flex flex-col items-center justify-center min-h-screen bg-body">
+            <div className="relative flex flex-col items-center justify-center min-h-screen">
               <DualPanel.Main>
                 <CountdownDisplay />
                 <CountdownMusic />

@@ -1,7 +1,7 @@
 import QrCodeContainer from '@/containers/qr-code/qr-code-container';
 
 export const metadata = {
-  title: 'QR Code',
+  title: 'QR코드',
 };
 
 function QrCode() {
