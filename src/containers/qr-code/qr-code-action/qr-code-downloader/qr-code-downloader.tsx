@@ -5,7 +5,7 @@ import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
 import { DownloadIcon } from 'lucide-react';
 import { Button } from '@/components/button';
-import type { QRCode } from '../qr-code.type';
+import type { QRCode } from '../../qr-code.types';
 
 type Props = {
   qrCodeRef: MutableRefObject<HTMLDivElement>;

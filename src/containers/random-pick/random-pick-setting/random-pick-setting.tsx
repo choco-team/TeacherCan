@@ -7,7 +7,7 @@ type Props = {
 
 export default function RandomPickSetting({ startPlay }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center gap-y-6 p-8 min-h-dvh">
+    <div className="flex flex-col items-center justify-center gap-y-6 p-8 min-h-[calc(100dvh-120px)]">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>랜덤 뽑기 만들기</CardTitle>

@@ -18,7 +18,7 @@ import { Button } from '@/components/button';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Label } from '@/components/label';
 import { QR_CODE_PRINT_GRID_OPTIONS } from './qr-code-printer.constants';
-import type { QRCode } from '../qr-code.type';
+import type { QRCode } from '../../qr-code.types';
 
 type Props = {
   qrCode: QRCode;

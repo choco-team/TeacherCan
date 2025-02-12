@@ -1,13 +1,13 @@
-import DdayList from './dDay-list/dDay-list';
-import LogoTitle from './logo-title/logo-title';
-import MenuList from './menu-list/menu-list';
+import History from './history/history';
+import Schedule from './schedules/schedules';
+import Welcome from './welcome/welcome';
 
 function LandingContainer() {
   return (
-    <div className="flex flex-col items-center justify-center gap-y-24 p-12 min-h-screen">
-      <LogoTitle />
-      <MenuList />
-      <DdayList />
+    <div className="flex flex-col gap-16 max-w-[900px] mx-auto items-start mt-4 lg:mt-8">
+      <Welcome />
+      <History />
+      <Schedule />
     </div>
   );
 }

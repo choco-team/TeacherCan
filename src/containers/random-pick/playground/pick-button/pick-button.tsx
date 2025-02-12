@@ -65,7 +65,7 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-x-4 px-6 py-4 bg-body rounded-3xl"
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-x-4 px-6 py-4 bg-primary-50 rounded-3xl"
       >
         <FormField
           control={form.control}

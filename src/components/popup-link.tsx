@@ -3,7 +3,7 @@
 import { cn } from '@/styles/utils';
 import { getScreenSize } from '@/utils/getScreenSize';
 import Link from 'next/link';
-import { ComponentPropsWithoutRef } from 'react';
+import { ComponentPropsWithoutRef, MouseEventHandler } from 'react';
 
 const POPUP_SCALE = {
   'x-large': 1,
@@ -23,9 +23,12 @@ function PopupLink({
   url,
   size = 'medium',
   className,
+  onClick,
   ...rest
 }: Props) {
-  const handleClick = () => {
+  const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    onClick?.(e);
+
     const { width, height } = getScreenSize();
 
     const scale = typeof size === 'number' ? size : POPUP_SCALE[size];
@@ -46,12 +49,12 @@ function PopupLink({
   };
 
   return (
-    <div
-      onClick={handleClick}
-      {...rest}
-      className={cn(className, 'cursor-pointer')}
-    >
-      <Link href="/timer" onClick={(e) => e.preventDefault()}>
+    <div onClick={handleClick} {...rest}>
+      <Link
+        href="/timer"
+        onClick={(e) => e.preventDefault()}
+        className={cn(className, 'cursor-pointer')}
+      >
         {children}
       </Link>
     </div>

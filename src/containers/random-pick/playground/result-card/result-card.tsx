@@ -1,5 +1,5 @@
-import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { motion, AnimatePresence } from 'framer-motion';
+import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
 import { WinnersType } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider';
 
 type Winner = {
@@ -35,7 +35,7 @@ export default function ResultCard({ winner, isOpen, handleOpenOne }: Winner) {
             transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
             className="bg-primary-200 absolute w-full h-full backface-hidden flex items-center justify-center p-6 text-card-foreground rounded-2xl"
           >
-            <TeacherCanLogo width="100%" height="100%" />
+            <TeacherCanIcon />
           </motion.button>
         )}
       </AnimatePresence>

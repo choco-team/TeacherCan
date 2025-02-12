@@ -38,7 +38,7 @@ export default function SettingStudentNumber({ startPlay }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      number: pickList.numbers.length,
+      number: (pickList.numbers && pickList.numbers.length) ?? 30,
     },
   });
 

@@ -5,7 +5,7 @@ import html2canvas from 'html2canvas';
 import { ClipboardIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/button';
-import type { QRCode } from '../qr-code.type';
+import type { QRCode } from '../../qr-code.types';
 
 type Props = {
   qrCodeRef: MutableRefObject<HTMLDivElement>;
@@ -38,17 +38,15 @@ function QRCodeClipboard({ qrCodeRef, qrCode }: Props) {
   };
 
   return (
-    <div>
-      <Button
-        disabled={!qrCode.value}
-        variant="gray-outline"
-        className="flex items-center gap-x-1.5"
-        onClick={handleCopy}
-      >
-        <ClipboardIcon className="size-5" />
-        코드 복사
-      </Button>
-    </div>
+    <Button
+      disabled={!qrCode.value}
+      variant="gray-outline"
+      className="flex items-center gap-x-1.5"
+      onClick={handleCopy}
+    >
+      <ClipboardIcon className="size-5" />
+      코드 복사
+    </Button>
   );
 }
 
