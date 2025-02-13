@@ -27,6 +27,7 @@ type MusicRequestTeacherState = {
   roomTitle: string;
   videos: Video[];
   numberOfVideos: number;
+  currentMusicIdx: number;
 };
 
 export const MusicRequestTeacherStateContext =
@@ -37,6 +38,7 @@ type MusicRequestTeacherAction = {
   settingRoomTitle: Dispatch<SetStateAction<string>>;
   settingVideos: Dispatch<SetStateAction<Video[]>>;
   settingNumberOfVideos: Dispatch<SetStateAction<number>>;
+  settingCurrentMusicIdx: Dispatch<SetStateAction<number>>;
 };
 
 export const MusicRequestTeacherActionContext =
@@ -50,6 +52,7 @@ export default function MusicRequestTeacherProvider({
   const [roomTitle, setRoomTitle] = useState();
   const [videos, setVideos] = useState([]);
   const [numberOfVideos, setNumberOfVideos] = useState(0);
+  const [currentMusicIdx, setCurrentMusicIdx] = useState(0);
 
   const defaultMusicRequestTeacherStateValue = {
     roomId,
@@ -57,6 +60,7 @@ export default function MusicRequestTeacherProvider({
     videos,
     params,
     numberOfVideos,
+    currentMusicIdx,
   };
 
   const defaultMusicRequestTeacherActionValue = {
@@ -64,6 +68,7 @@ export default function MusicRequestTeacherProvider({
     settingRoomTitle: setRoomTitle,
     settingVideos: setVideos,
     settingNumberOfVideos: setNumberOfVideos,
+    settingCurrentMusicIdx: setCurrentMusicIdx,
   };
 
   return (

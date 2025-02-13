@@ -1,8 +1,13 @@
+import { Button } from '@/components/button';
 import { deleteMusic } from '@/utils/api/firebaseAPI';
 import { getMusicExtraData } from '@/utils/api/youtubeAPI';
 import { ChevronsDown, ChevronsUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import {
+  useMusicRequestTeacherAction,
+  useMusicRequestTeacherState,
+} from '../../../music-request-teacher-provider/music-request-teacher-provider.hooks';
 
 interface MusicCardProps {
   video: any;
@@ -21,6 +26,8 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
   const [extraData, setExtraData] = useState<ExtraData>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isVideo, setIsVideo] = useState<boolean>(false);
+  const { videos } = useMusicRequestTeacherState();
+  const { settingCurrentMusicIdx } = useMusicRequestTeacherAction();
 
   const handleDeleteMusic = async (videoId: string) => {
     try {
@@ -46,6 +53,12 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
     } catch (e) {
       throw new Error(e.message);
     }
+  };
+
+  const handlePlayButton = () => {
+    settingCurrentMusicIdx(
+      videos.findIndex((item) => item.videoId === video.videoId),
+    );
   };
 
   return (
@@ -95,9 +108,14 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
               </div>
             </div>
           )}
-          <p className="text-xs text-gray-600	text-right pr-2">
-            신청: {video.proposer} / 재생횟수 : {video.playCount}
-          </p>
+          <div className="flex flex-row justify-between ">
+            <p className="text-xs text-gray-600 pr-2">
+              신청: {video.proposer} / 재생횟수 : {video.playCount}
+            </p>
+            <Button size="xs" onClick={() => handlePlayButton()}>
+              재생하기
+            </Button>
+          </div>
         </div>
         <div className="flex flex-col justify-between ">
           <button

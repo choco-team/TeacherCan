@@ -7,9 +7,10 @@ import {
 } from '../../music-request-teacher-provider/music-request-teacher-provider.hooks';
 
 export default function MusicPlayer() {
-  const { videos, numberOfVideos } = useMusicRequestTeacherState();
-  const { settingVideos } = useMusicRequestTeacherAction();
-  const [currentMusicIdx, setCurrentMusicIdx] = useState(0);
+  const { videos, numberOfVideos, currentMusicIdx } =
+    useMusicRequestTeacherState();
+  const { settingVideos, settingCurrentMusicIdx } =
+    useMusicRequestTeacherAction();
   const [fulledPlayCount, setFulledPlayCount] = useState(0);
   const youtubePlayerRef = useRef<YT.Player>(null);
 
@@ -39,11 +40,11 @@ export default function MusicPlayer() {
 
   const handleMusicShuffle = () => {
     const randomIdx = createRandomIdx();
-    setCurrentMusicIdx(randomIdx);
+    settingCurrentMusicIdx(randomIdx);
   };
 
   return (
-    <div>
+    <div className="m-4">
       {videos.length > 0 && videos[currentMusicIdx].videoId && (
         <YouTube
           onReady={(event: YT.PlayerEvent) => {
@@ -55,6 +56,8 @@ export default function MusicPlayer() {
               autoplay: 0,
               loop: 0,
             },
+            width: '100%',
+            height: '100%',
           }}
         />
       )}
