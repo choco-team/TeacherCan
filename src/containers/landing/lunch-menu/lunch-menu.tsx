@@ -1,16 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 function LunchMenu() {
   const [schoolName, setSchoolName] = useState('');
   const [schoolList, setSchoolList] = useState([]);
   const [mealData, setMealData] = useState(null);
-  const [selectedSchool, setSelectedSchool] = useState(null);
+  const [selectedSchool, setSelectedSchool] = useLocalStorage<{
+    SD_SCHUL_CODE: string; // 학교 코드
+    ATPT_OFCDC_SC_CODE: string; // 교육청 코드
+    SCHUL_NM: string; // 학교명
+    ORG_RDNMA?: string; // 주소 (없을 수도 있으므로 optional)
+  } | null>('selectedSchool', null);
 
   const API_KEY = '20c508e0b2de4cc3a012ec9b61cafbbe'; // 나이스 API 키
 
@@ -28,26 +34,22 @@ function LunchMenu() {
         `https://open.neis.go.kr/hub/schoolInfo?KEY=${API_KEY}&Type=json&SCHUL_NM=${schoolName}`,
       );
       const schoolData = response.data.schoolInfo?.[1]?.row;
-      if (schoolData) {
-        setSchoolList(schoolData);
-        setSelectedSchool(null);
-      } else {
-        setSchoolList([]);
-      }
+      setSchoolList(schoolData || []);
     } catch (error) {
       setSchoolList([]);
     }
   };
 
-  const fetchMealData = async (
-    schoolCode: string,
-    eduOfficeCode: string,
-    school: string,
-  ) => {
+  const fetchMealData = async (school: {
+    SD_SCHUL_CODE: string;
+    ATPT_OFCDC_SC_CODE: string;
+    SCHUL_NM: string;
+    ORG_RDNMA?: string;
+  }) => {
     const today = getTodayDate();
     try {
       const response = await axios.get(
-        `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${eduOfficeCode}&SD_SCHUL_CODE=${schoolCode}&MLSV_YMD=${today}`,
+        `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${school.ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${school.SD_SCHUL_CODE}&MLSV_YMD=${today}`,
       );
 
       const mealInfo = response.data.mealServiceDietInfo?.[1]?.row?.[0];
@@ -57,6 +59,12 @@ function LunchMenu() {
       setMealData({ MLSV_YMD: today, DDISH_NM: null });
     }
   };
+
+  useEffect(() => {
+    if (selectedSchool) {
+      fetchMealData(selectedSchool);
+    }
+  }, []);
 
   const formatDate = (dateStr: string) => {
     const year = dateStr.substring(0, 4);
@@ -69,13 +77,18 @@ function LunchMenu() {
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">학교 식단 조회</h1>
       <div className="flex gap-2 mb-4">
-        <Input
-          type="text"
-          value={schoolName}
-          onChange={(e) => setSchoolName(e.target.value)}
-          placeholder="학교명을 입력하세요"
-        />
-        <Button onClick={handleSearch}>검색</Button>
+        <div className="flex gap-2 mb-4">
+          <Input
+            type="text"
+            value={schoolName}
+            onChange={(e) => setSchoolName(e.target.value)}
+            placeholder="학교명을 입력하세요"
+          />
+          <Button onClick={handleSearch}>검색</Button>
+          {selectedSchool && (
+            <Button onClick={() => setSelectedSchool(null)}>학교 변경</Button>
+          )}
+        </div>
       </div>
       <div>
         {selectedSchool ? (
@@ -96,11 +109,12 @@ function LunchMenu() {
               key={school.SD_SCHUL_CODE}
               className="mb-2 cursor-pointer"
               onClick={() =>
-                fetchMealData(
-                  school.SD_SCHUL_CODE,
-                  school.ATPT_OFCDC_SC_CODE,
-                  school,
-                )
+                fetchMealData({
+                  SD_SCHUL_CODE: school.SD_SCHUL_CODE,
+                  ATPT_OFCDC_SC_CODE: school.ATPT_OFCDC_SC_CODE,
+                  SCHUL_NM: school.SCHUL_NM,
+                  ORG_RDNMA: school.ORG_RDNMA,
+                })
               }
             >
               <CardContent className="p-4">
