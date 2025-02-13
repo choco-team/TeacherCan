@@ -18,7 +18,6 @@ export default function MusicList() {
       const value = snapshot.val();
       if (value) {
         const videoArray = Object.keys(value).map((key) => ({
-          videoId: key,
           ...value[key],
           playCount: 0,
         }));
