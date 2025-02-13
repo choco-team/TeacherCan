@@ -39,7 +39,6 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
         if (extraData) {
           setExtraData(extraData);
         } else {
-          console.log(await getMusicExtraData(videoId));
           setExtraData(await getMusicExtraData(videoId));
         }
         setIsOpen(true);
@@ -97,7 +96,7 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
             </div>
           )}
           <p className="text-xs text-gray-600	text-right pr-2">
-            {video.proposer}
+            신청: {video.proposer} / 재생횟수 : {video.playCount}
           </p>
         </div>
         <div className="flex flex-col justify-between ">

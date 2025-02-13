@@ -9,7 +9,8 @@ import MusicCard from './music-card/music-card';
 
 export default function MusicList() {
   const { params, videos } = useMusicRequestTeacherState();
-  const { settingVideos } = useMusicRequestTeacherAction();
+  const { settingVideos, settingNumberOfVideos } =
+    useMusicRequestTeacherAction();
 
   useEffect(() => {
     const dbRef = ref(firebaseDB, `musicRooms/${params.roomId}/musics`);
@@ -19,14 +20,17 @@ export default function MusicList() {
         const videoArray = Object.keys(value).map((key) => ({
           videoId: key,
           ...value[key],
+          playCount: 0,
         }));
         settingVideos(videoArray);
+        settingNumberOfVideos(videoArray.length);
       } else {
         settingVideos([]);
+        settingNumberOfVideos(0);
       }
     });
     return () => unsubscribe();
-  }, [params.roomId, settingVideos]);
+  }, [params.roomId, settingVideos, settingNumberOfVideos]);
 
   return (
     <div>
