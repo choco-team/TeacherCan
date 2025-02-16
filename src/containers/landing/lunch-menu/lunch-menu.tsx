@@ -18,7 +18,7 @@ function LunchMenu() {
     ORG_RDNMA?: string; // 주소 (없을 수도 있으므로 optional)
   } | null>('selectedSchool', null);
 
-  const API_KEY = '20c508e0b2de4cc3a012ec9b61cafbbe'; // 나이스 API 키
+  const API_KEY = process.env.NEXT_PUBLIC_NICE_API_KEY; // 나이스 API 키
 
   const getTodayDate = () => {
     const today = new Date();
