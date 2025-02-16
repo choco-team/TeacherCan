@@ -55,6 +55,8 @@ function LunchMenu() {
       const mealInfo = response.data.mealServiceDietInfo?.[1]?.row?.[0];
       setMealData(mealInfo || { MLSV_YMD: today, DDISH_NM: null });
       setSelectedSchool(school);
+      setSchoolName('');
+      setSchoolList([]);
     } catch (error) {
       setMealData({ MLSV_YMD: today, DDISH_NM: null });
     }
@@ -64,7 +66,7 @@ function LunchMenu() {
     if (selectedSchool) {
       fetchMealData(selectedSchool);
     }
-  }, []);
+  }, [selectedSchool]);
 
   const formatDate = (dateStr: string) => {
     const year = dateStr.substring(0, 4);
@@ -85,37 +87,15 @@ function LunchMenu() {
             placeholder="학교명을 입력하세요"
           />
           <Button onClick={handleSearch}>검색</Button>
-          {selectedSchool && (
-            <Button onClick={() => setSelectedSchool(null)}>학교 변경</Button>
-          )}
         </div>
       </div>
       <div>
-        {selectedSchool ? (
-          <Card
-            key={selectedSchool.SD_SCHUL_CODE}
-            className="mb-2 cursor-pointer"
-          >
-            <CardContent className="p-4">
-              <p className="font-semibold">{selectedSchool.SCHUL_NM}</p>
-              <p className="text-sm text-gray-600">
-                {selectedSchool.ORG_RDNMA || '주소 정보 없음'}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
+        {schoolList.length > 0 &&
           schoolList.map((school) => (
             <Card
               key={school.SD_SCHUL_CODE}
               className="mb-2 cursor-pointer"
-              onClick={() =>
-                fetchMealData({
-                  SD_SCHUL_CODE: school.SD_SCHUL_CODE,
-                  ATPT_OFCDC_SC_CODE: school.ATPT_OFCDC_SC_CODE,
-                  SCHUL_NM: school.SCHUL_NM,
-                  ORG_RDNMA: school.ORG_RDNMA,
-                })
-              }
+              onClick={() => fetchMealData(school)}
             >
               <CardContent className="p-4">
                 <p className="font-semibold">{school.SCHUL_NM}</p>
@@ -124,7 +104,17 @@ function LunchMenu() {
                 </p>
               </CardContent>
             </Card>
-          ))
+          ))}
+
+        {schoolList.length === 0 && selectedSchool && (
+          <Card key={selectedSchool.SD_SCHUL_CODE} className="mb-2">
+            <CardContent className="p-4">
+              <p className="font-semibold">{selectedSchool.SCHUL_NM}</p>
+              <p className="text-sm text-gray-600">
+                {selectedSchool.ORG_RDNMA || '주소 정보 없음'}
+              </p>
+            </CardContent>
+          </Card>
         )}
       </div>
       {mealData && (
