@@ -26,8 +26,8 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
   const [extraData, setExtraData] = useState<ExtraData>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isVideo, setIsVideo] = useState<boolean>(false);
-  const { videos } = useMusicRequestTeacherState();
-  const { settingCurrentMusicIdx } = useMusicRequestTeacherAction();
+  const { videos, currentMusicIndex } = useMusicRequestTeacherState();
+  const { setCurrentMusicByIndex } = useMusicRequestTeacherAction();
 
   const handleDeleteMusic = async (videoId: string) => {
     try {
@@ -56,9 +56,13 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
   };
 
   const handlePlayButton = () => {
-    settingCurrentMusicIdx(
-      videos.findIndex((item) => item.videoId === video.videoId),
+    const thisMusicIdx = videos.findIndex(
+      (item) => item.videoId === video.videoId,
     );
+    if (thisMusicIdx === currentMusicIndex) {
+      return;
+    }
+    setCurrentMusicByIndex(thisMusicIdx);
   };
 
   return (

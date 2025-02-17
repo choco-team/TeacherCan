@@ -21,6 +21,7 @@ export default function MusicList() {
           ...value[key],
           playCount: 0,
         }));
+        videoArray[0].playCount = 1;
         settingVideos(videoArray);
         settingNumberOfVideos(videoArray.length);
       } else {

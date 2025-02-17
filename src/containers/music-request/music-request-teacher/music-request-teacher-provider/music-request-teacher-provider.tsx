@@ -27,7 +27,9 @@ type MusicRequestTeacherState = {
   roomTitle: string;
   videos: Video[];
   numberOfVideos: number;
-  currentMusicIdx: number;
+  currentMusicIndex: number;
+  maxPlayCount: number;
+  isVideoLoading: boolean;
 };
 
 export const MusicRequestTeacherStateContext =
@@ -38,7 +40,8 @@ type MusicRequestTeacherAction = {
   settingRoomTitle: Dispatch<SetStateAction<string>>;
   settingVideos: Dispatch<SetStateAction<Video[]>>;
   settingNumberOfVideos: Dispatch<SetStateAction<number>>;
-  settingCurrentMusicIdx: Dispatch<SetStateAction<number>>;
+  setCurrentMusicByIndex: (index: number) => void;
+  settingIsVideoLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export const MusicRequestTeacherActionContext =
@@ -52,7 +55,9 @@ export default function MusicRequestTeacherProvider({
   const [roomTitle, setRoomTitle] = useState();
   const [videos, setVideos] = useState([]);
   const [numberOfVideos, setNumberOfVideos] = useState(0);
-  const [currentMusicIdx, setCurrentMusicIdx] = useState(0);
+  const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
+  const [maxPlayCount, setMaxPlayCount] = useState(1);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
 
   const defaultMusicRequestTeacherStateValue = {
     roomId,
@@ -60,7 +65,9 @@ export default function MusicRequestTeacherProvider({
     videos,
     params,
     numberOfVideos,
-    currentMusicIdx,
+    currentMusicIndex,
+    maxPlayCount,
+    isVideoLoading,
   };
 
   const defaultMusicRequestTeacherActionValue = {
@@ -68,7 +75,23 @@ export default function MusicRequestTeacherProvider({
     settingRoomTitle: setRoomTitle,
     settingVideos: setVideos,
     settingNumberOfVideos: setNumberOfVideos,
-    settingCurrentMusicIdx: setCurrentMusicIdx,
+    setCurrentMusicByIndex: (index: number) => {
+      setCurrentMusicIndex(index);
+      setIsVideoLoading(true);
+      setVideos((prevVideos) =>
+        prevVideos.map((video, i) => {
+          if (i === index) {
+            const plusedPlayCount = video.playCount + 1;
+            if (plusedPlayCount > maxPlayCount) {
+              setMaxPlayCount(plusedPlayCount);
+            }
+            return { ...video, playCount: plusedPlayCount };
+          }
+          return video;
+        }),
+      );
+    },
+    settingIsVideoLoading: setIsVideoLoading,
   };
 
   return (

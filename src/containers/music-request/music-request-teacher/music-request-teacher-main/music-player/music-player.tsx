@@ -1,67 +1,109 @@
 import YouTube from 'react-youtube';
-import { Button } from '@/components/button';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { Switch } from '@/components/switch';
+import { Label } from '@/components/label';
 import {
   useMusicRequestTeacherAction,
   useMusicRequestTeacherState,
 } from '../../music-request-teacher-provider/music-request-teacher-provider.hooks';
 
 export default function MusicPlayer() {
-  const { videos, numberOfVideos, currentMusicIdx } =
-    useMusicRequestTeacherState();
-  const { settingVideos, settingCurrentMusicIdx } =
+  const {
+    videos,
+    numberOfVideos,
+    currentMusicIndex,
+    maxPlayCount,
+    isVideoLoading,
+  } = useMusicRequestTeacherState();
+  const { setCurrentMusicByIndex, settingIsVideoLoading } =
     useMusicRequestTeacherAction();
-  const [fulledPlayCount, setFulledPlayCount] = useState(0);
+  const [playOrder, setPlayOrder] = useState<'inOrder' | 'shuffle'>('inOrder');
   const youtubePlayerRef = useRef<YT.Player>(null);
 
-  const createRandomIdx = () => {
-    let randomIdx = Math.floor(Math.random() * (numberOfVideos - 1));
+  const handleMusicShuffle = () => {
+    let randomIndex = Math.floor(Math.random() * (numberOfVideos - 1));
     let repeatCount = 0;
-    while (videos[randomIdx].playCount !== fulledPlayCount) {
+    while (videos[randomIndex].playCount === maxPlayCount) {
       if (repeatCount === numberOfVideos) {
-        randomIdx = Math.floor(Math.random() * (numberOfVideos - 1));
-        setFulledPlayCount((prev) => prev + 1);
         break;
       }
-      if (randomIdx !== numberOfVideos - 1) {
-        randomIdx += 1;
+      if (randomIndex !== numberOfVideos - 1) {
+        randomIndex += 1;
       } else {
-        randomIdx = 0;
+        randomIndex = 0;
       }
       repeatCount += 1;
     }
-    settingVideos((prevVideos) =>
-      prevVideos.map((video, i) =>
-        i === randomIdx ? { ...video, playCount: video.playCount + 1 } : video,
-      ),
-    );
-    return randomIdx;
+    setCurrentMusicByIndex(randomIndex);
   };
 
-  const handleMusicShuffle = () => {
-    const randomIdx = createRandomIdx();
-    settingCurrentMusicIdx(randomIdx);
+  const handleMusicPlay = (order: 1 | -1) => {
+    if (playOrder === 'shuffle') {
+      handleMusicShuffle();
+      return;
+    }
+    let nextMusicIndex;
+    if (order === 1 && currentMusicIndex === numberOfVideos - 1) {
+      nextMusicIndex = 0;
+    } else if (order === -1 && currentMusicIndex === 0) {
+      nextMusicIndex = numberOfVideos - 1;
+    } else {
+      nextMusicIndex = currentMusicIndex + order;
+    }
+    setCurrentMusicByIndex(nextMusicIndex);
+  };
+
+  const togglePlayorder = () => {
+    setPlayOrder((prev) => (prev === 'inOrder' ? 'shuffle' : 'inOrder'));
   };
 
   return (
-    <div className="m-4">
-      {videos.length > 0 && videos[currentMusicIdx].videoId && (
-        <YouTube
-          onReady={(event: YT.PlayerEvent) => {
-            youtubePlayerRef.current = event.target;
-          }}
-          videoId={videos[currentMusicIdx].videoId}
-          opts={{
-            playerVars: {
-              autoplay: 0,
-              loop: 0,
-            },
-            width: '100%',
-            height: '100%',
-          }}
-        />
-      )}
-      <Button onClick={() => handleMusicShuffle()}>노래 셔플</Button>
+    <div className="p-4">
+      <Label className="flex items-center gap-x-2">
+        <span>랜덤 재생하기</span>
+        <Switch onClick={() => togglePlayorder()} />
+      </Label>
+      <div className="flex flex-row justify-between mt-4">
+        <button
+          disabled={isVideoLoading}
+          type="button"
+          onClick={() => handleMusicPlay(-1)}
+        >
+          <ChevronsLeft />
+        </button>
+        {videos.length > 0 && videos[currentMusicIndex].videoId && (
+          <YouTube
+            onReady={(event: YT.PlayerEvent) => {
+              youtubePlayerRef.current = event.target;
+              settingIsVideoLoading(false);
+            }}
+            onEnd={() => {
+              if (playOrder === 'shuffle') {
+                handleMusicShuffle();
+              } else if (playOrder === 'inOrder') {
+                handleMusicPlay(1);
+              }
+            }}
+            videoId={videos[currentMusicIndex].videoId}
+            opts={{
+              playerVars: {
+                autoplay: 1,
+                loop: 0,
+              },
+              width: '100%',
+              height: '100%',
+            }}
+          />
+        )}
+        <button
+          disabled={isVideoLoading}
+          type="button"
+          onClick={() => handleMusicPlay(1)}
+        >
+          <ChevronsRight />
+        </button>
+      </div>
     </div>
   );
 }
