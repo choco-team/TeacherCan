@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { firebaseDB } from '@/services/firebase';
-import { onValue, ref } from 'firebase/database';
+import { onValue, orderByChild, query, ref } from 'firebase/database';
 import {
   useMusicRequestTeacherAction,
   useMusicRequestTeacherState,
@@ -14,14 +14,17 @@ export default function MusicList() {
 
   useEffect(() => {
     const dbRef = ref(firebaseDB, `musicRooms/${params.roomId}/musics`);
-    const unsubscribe = onValue(dbRef, (snapshot) => {
+    const q = query(dbRef, orderByChild('timeStamp'));
+    const unsubscribe = onValue(q, (snapshot) => {
       const value = snapshot.val();
+      console.log(value);
       if (value) {
         const videoArray = Object.keys(value).map((key) => ({
           ...value[key],
+          videoId: key,
           playCount: 0,
         }));
-        videoArray[0].playCount = 1;
+        videoArray.sort((a, b) => a.timeStamp - b.timeStamp);
         settingVideos(videoArray);
         settingNumberOfVideos(videoArray.length);
       } else {
