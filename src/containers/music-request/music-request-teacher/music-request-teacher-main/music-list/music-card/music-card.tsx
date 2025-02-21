@@ -29,9 +29,9 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
   const { videos, currentMusicIndex } = useMusicRequestTeacherState();
   const { setCurrentMusicByIndex } = useMusicRequestTeacherAction();
 
-  const handleDeleteMusic = async (videoId: string) => {
+  const handleDeleteMusic = async () => {
     try {
-      deleteMusic(roomId, videoId);
+      deleteMusic(roomId, video);
     } catch (e) {
       throw new Error(e.message);
     }
@@ -122,10 +122,7 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
           </div>
         </div>
         <div className="flex flex-col justify-between ">
-          <button
-            type="button"
-            onClick={() => handleDeleteMusic(video.videoId)}
-          >
+          <button type="button" onClick={() => handleDeleteMusic()}>
             <X />
           </button>
           <button type="button" onClick={() => handleExtraData(video.videoId)}>

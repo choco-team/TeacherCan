@@ -13,6 +13,14 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { youtubeSearch } from '@/utils/api/youtubeAPI';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/alert-dialog';
+import {
   useMusicRequestStudentAction,
   useMusicRequestStudentState,
 } from '../../music-request-student-provider/music-request-student-provider.hooks';
@@ -29,8 +37,9 @@ const formSchema = z.object({
 
 export default function SearchPage() {
   const [isLoading, setIsLoading] = useState<boolean | null>();
-  const { roomId, studentName, videos } = useMusicRequestStudentState();
-  const { settingVideos } = useMusicRequestStudentAction();
+  const { roomId, studentName, videos, alertOpen, alertMessage } =
+    useMusicRequestStudentState();
+  const { settingVideos, settingAlertOpen } = useMusicRequestStudentAction();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,6 +64,16 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col justify-center h-full pr-4 pl-4">
+      <AlertDialog open={alertOpen} onOpenChange={settingAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{alertMessage}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() => handleSearch(form.getValues('q')))}

@@ -28,6 +28,8 @@ type MusicRequestStudentState = {
   roomTitle: string;
   videos: Video[];
   params: MusicRequestStudentParams;
+  alertOpen: boolean;
+  alertMessage: string;
 };
 
 export const MusicRequestStudentStateContext =
@@ -38,6 +40,8 @@ type MusicRequestStudentAction = {
   settingStudentName: Dispatch<SetStateAction<string>>;
   settingRoomTitle: Dispatch<SetStateAction<string>>;
   settingVideos: Dispatch<SetStateAction<Video[]>>;
+  settingAlertOpen: Dispatch<SetStateAction<boolean>>;
+  openAlertWithMessage: (message: string) => void;
 };
 
 export const MusicRequestStudentActionContext =
@@ -51,6 +55,8 @@ export default function MusicRequestStudentProvider({
   const [studentName, setStudentName] = useState<string>();
   const [roomTitle, setRoomTitle] = useState<string>();
   const [videos, setVideos] = useState<Video[]>();
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string>();
 
   const defaultMusicRequestStudentStateValue = {
     roomId,
@@ -58,6 +64,8 @@ export default function MusicRequestStudentProvider({
     roomTitle,
     videos,
     params,
+    alertOpen,
+    alertMessage,
   };
 
   const defaultMusicRequestStudentActionValue = {
@@ -65,6 +73,11 @@ export default function MusicRequestStudentProvider({
     settingStudentName: setStudentName,
     settingRoomTitle: setRoomTitle,
     settingVideos: setVideos,
+    settingAlertOpen: setAlertOpen,
+    openAlertWithMessage: (message: string) => {
+      setAlertOpen(true);
+      setAlertMessage(message);
+    },
   };
 
   return (
