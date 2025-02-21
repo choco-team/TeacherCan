@@ -4,12 +4,13 @@ import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import useLocalStorage from '@/hooks/useLocalStorage';
-import SchoolCard from './school-card/school-card';
+import SchoolPopover from './school-popover/school-popover';
 
 function LunchMenuSearch() {
   const [schoolName, setSchoolName] = useState('');
   const [schoolList, setSchoolList] = useState([]);
   const [mealData, setMealData] = useState(null);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedSchool, setSelectedSchool] = useLocalStorage<{
     SD_SCHUL_CODE: string;
     ATPT_OFCDC_SC_CODE: string;
@@ -29,7 +30,9 @@ function LunchMenuSearch() {
       const response = await axios.get(
         `https://open.neis.go.kr/hub/schoolInfo?KEY=${API_KEY}&Type=json&SCHUL_NM=${schoolName}`,
       );
-      setSchoolList(response.data.schoolInfo?.[1]?.row || []);
+
+      const results = response.data.schoolInfo?.[1]?.row || [];
+      setSchoolList(results);
     } catch (error) {
       setSchoolList([]);
     }
@@ -51,10 +54,15 @@ function LunchMenuSearch() {
       setSelectedSchool(school);
       setSchoolName('');
       setSchoolList([]);
+      setIsPopoverOpen(false);
     } catch (error) {
       setMealData({ MLSV_YMD: today, DDISH_NM: null });
     }
   };
+
+  useEffect(() => {
+    setIsPopoverOpen(schoolList.length > 0);
+  }, [schoolList]);
 
   useEffect(() => {
     if (selectedSchool) fetchMealData(selectedSchool);
@@ -75,22 +83,12 @@ function LunchMenuSearch() {
         />
         <Button onClick={handleSearch}>검색</Button>
       </div>
-      <div className="flex gap-2 overflow-x-auto whitespace-nowrap">
-        {schoolList.length > 0 &&
-          schoolList.map((school) => (
-            <SchoolCard
-              key={school.SD_SCHUL_CODE}
-              school={school}
-              onClick={() => fetchMealData(school)}
-            />
-          ))}
-        {schoolList.length === 0 && selectedSchool && (
-          <SchoolCard
-            school={selectedSchool}
-            onClick={() => fetchMealData(selectedSchool)}
-          />
-        )}
-      </div>
+      <SchoolPopover
+        schoolList={schoolList}
+        fetchMealData={fetchMealData}
+        isOpen={isPopoverOpen}
+        setIsOpen={setIsPopoverOpen}
+      />
       {mealData && (
         <Card className="mt-4">
           <CardContent className="p-4">
