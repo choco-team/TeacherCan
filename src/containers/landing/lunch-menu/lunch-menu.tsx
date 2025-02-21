@@ -7,7 +7,7 @@ import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import useLocalStorage from '@/hooks/useLocalStorage';
 
-function LunchMenu() {
+function SchoolLunchMenu() {
   const [schoolName, setSchoolName] = useState('');
   const [schoolList, setSchoolList] = useState([]);
   const [mealData, setMealData] = useState(null);
@@ -135,4 +135,4 @@ function LunchMenu() {
   );
 }
 
-export default LunchMenu;
+export default SchoolLunchMenu;
