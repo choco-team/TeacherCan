@@ -1,4 +1,5 @@
 import { getHours } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 const TEACHER_GREETINGS = {
   morning: '좋은 아침이에요. 오늘도 힘찬 하루 보내세요.',
@@ -10,7 +11,7 @@ const TEACHER_GREETINGS = {
 };
 
 export default function Welcome() {
-  const currentHour = getHours(new Date());
+  const currentHour = getHours(toZonedTime(new Date(), 'Asia/Seoul'));
 
   function getTeacherGreeting() {
     if (currentHour >= 5 && currentHour < 12) {
