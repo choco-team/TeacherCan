@@ -23,7 +23,10 @@ function LunchMenuSearch() {
   const [schoolList, setSchoolList] = useState<School[]>([]);
   const [mealData, setMealData] = useState<MealData[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
-  const [selectedDays, setSelectedDays] = useState<number>(1);
+  const [selectedDays, setSelectedDays] = useLocalStorage<number>(
+    'selectedDays',
+    1,
+  );
   const [selectedSchool, setSelectedSchool] = useLocalStorage<School | null>(
     'selectedSchool',
     null,
@@ -69,11 +72,10 @@ function LunchMenuSearch() {
       const mealResults = await Promise.all(mealRequests);
       setMealData(mealResults);
     } catch (error) {
-      console.error('식단 데이터 불러오기 실패:', error);
+      return;
     }
 
     setSelectedSchool(school);
-    setSchoolName('');
     setSchoolList([]);
     setIsPopoverOpen(false);
   };
@@ -100,7 +102,7 @@ function LunchMenuSearch() {
           placeholder="학교명을 입력하세요"
         />
         <select
-          value={selectedDays.toString()}
+          value={(selectedDays ?? 1).toString()}
           onChange={(e) => setSelectedDays(Number(e.target.value))}
         >
           {[1, 2, 3, 4, 5].map((day) => (
