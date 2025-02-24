@@ -49,9 +49,8 @@ export default function CreateNamePage() {
       form.setError('studentNameInput', {
         message: STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
       });
-      throw Error(error.message);
-    } finally {
       setIsLoading(false);
+      throw Error(error.message);
     }
   };
 

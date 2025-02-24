@@ -13,11 +13,23 @@ export default function VideoCard({
   roomId,
   studentName,
 }: VideoCardProps) {
-  const { settingVideos } = useMusicRequestStudentAction();
+  const { settingVideos, openAlertWithMessage } =
+    useMusicRequestStudentAction();
 
   const handleRequestMusic = async (musicData) => {
     try {
-      await createMusic(musicData);
+      const response = await createMusic(musicData);
+      const data = await response.json();
+      if (response.ok) {
+        openAlertWithMessage(data.message);
+      } else if (response.status === 409) {
+        openAlertWithMessage(data.message);
+      } else {
+        throw Error('에러발생');
+      }
+    } catch (error) {
+      throw Error(error.message);
+    } finally {
       settingVideos((prev) =>
         prev.map((prevVideo) =>
           prevVideo.videoId === video.videoId
@@ -25,8 +37,6 @@ export default function VideoCard({
             : prevVideo,
         ),
       );
-    } catch (error) {
-      throw Error(error.message);
     }
   };
 

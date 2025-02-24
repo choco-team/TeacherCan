@@ -1,7 +1,15 @@
 import { firebaseDB } from '@/services/firebase';
-import { ref, remove } from 'firebase/database';
+import { ref, update } from 'firebase/database';
 
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+type VideoType = {
+  musicId: string;
+  videoId: string;
+  title: string;
+  proposer: string;
+  playCount: number;
+};
 
 export const getRoomTitle = async (id: string) => {
   try {
@@ -52,19 +60,30 @@ export const createRoom = async (roomTitle: string) => {
 };
 
 export const createMusic = async (musicData: object) => {
-  await fetch(`${originURL}/api/firebase/music-request/musics`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(musicData),
-  });
+  try {
+    const response = await fetch(
+      `${originURL}/api/firebase/music-request/musics`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(musicData),
+      },
+    );
+
+    return response;
+  } catch (e) {
+    throw new Error(e.message);
+  }
 };
 
-export const deleteMusic = async (roomId, videoId) => {
+export const deleteMusic = async (roomId: string, video: VideoType) => {
   try {
-    const dbRef = ref(firebaseDB, `musicRooms/${roomId}/musics/${videoId}`);
-    await remove(dbRef);
+    const updates: any = {};
+    updates[`musicRooms/${roomId}/musics/videoIds/${video.videoId}`] = null;
+    updates[`musicRooms/${roomId}/musics/list/${video.musicId}`] = null;
+    await update(ref(firebaseDB), updates);
   } catch (error) {
     throw new Error(error.message);
   }

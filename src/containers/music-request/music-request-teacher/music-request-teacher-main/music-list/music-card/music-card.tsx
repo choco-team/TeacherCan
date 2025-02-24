@@ -1,8 +1,13 @@
+import { Button } from '@/components/button';
 import { deleteMusic } from '@/utils/api/firebaseAPI';
 import { getMusicExtraData } from '@/utils/api/youtubeAPI';
 import { ChevronsDown, ChevronsUp, X } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import {
+  useMusicRequestTeacherAction,
+  useMusicRequestTeacherState,
+} from '../../../music-request-teacher-provider/music-request-teacher-provider.hooks';
 
 interface MusicCardProps {
   video: any;
@@ -21,10 +26,12 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
   const [extraData, setExtraData] = useState<ExtraData>();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isVideo, setIsVideo] = useState<boolean>(false);
+  const { videos, currentMusicIndex } = useMusicRequestTeacherState();
+  const { setCurrentMusicByIndex } = useMusicRequestTeacherAction();
 
-  const handleDeleteMusic = async (videoId: string) => {
+  const handleDeleteMusic = async () => {
     try {
-      deleteMusic(roomId, videoId);
+      deleteMusic(roomId, video);
     } catch (e) {
       throw new Error(e.message);
     }
@@ -39,7 +46,6 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
         if (extraData) {
           setExtraData(extraData);
         } else {
-          console.log(await getMusicExtraData(videoId));
           setExtraData(await getMusicExtraData(videoId));
         }
         setIsOpen(true);
@@ -47,6 +53,16 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
     } catch (e) {
       throw new Error(e.message);
     }
+  };
+
+  const handlePlayButton = () => {
+    const thisMusicIdx = videos.findIndex(
+      (item) => item.videoId === video.videoId,
+    );
+    if (thisMusicIdx === currentMusicIndex) {
+      return;
+    }
+    setCurrentMusicByIndex(thisMusicIdx);
   };
 
   return (
@@ -96,15 +112,17 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
               </div>
             </div>
           )}
-          <p className="text-xs text-gray-600	text-right pr-2">
-            {video.proposer}
-          </p>
+          <div className="flex flex-row justify-between ">
+            <p className="text-xs text-gray-600 pr-2">
+              신청: {video.proposer} / 재생횟수 : {video.playCount}
+            </p>
+            <Button size="xs" onClick={() => handlePlayButton()}>
+              재생하기
+            </Button>
+          </div>
         </div>
         <div className="flex flex-col justify-between ">
-          <button
-            type="button"
-            onClick={() => handleDeleteMusic(video.videoId)}
-          >
+          <button type="button" onClick={() => handleDeleteMusic()}>
             <X />
           </button>
           <button type="button" onClick={() => handleExtraData(video.videoId)}>
