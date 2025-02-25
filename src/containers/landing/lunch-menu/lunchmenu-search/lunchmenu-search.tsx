@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
-import { Card, CardContent } from '@/components/card';
+import { CardContent } from '@/components/card';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import SchoolPopover from './school-popover/school-popover';
 
@@ -93,8 +93,8 @@ function LunchMenuSearch() {
   };
 
   return (
-    <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full h-64 overflow-auto">
-      <div className="flex gap-2 mb-4">
+    <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full h-auto overflow-auto">
+      <div className="flex gap-2 ">
         <Input
           type="text"
           value={schoolName}
@@ -104,6 +104,7 @@ function LunchMenuSearch() {
         <select
           value={(selectedDays ?? 1).toString()}
           onChange={(e) => setSelectedDays(Number(e.target.value))}
+          className="p-2"
         >
           {[1, 2, 3, 4, 5].map((day) => (
             <option key={day} value={day}>
@@ -120,21 +121,25 @@ function LunchMenuSearch() {
         setIsOpen={setIsPopoverOpen}
       />
       {mealData.length > 0 && (
-        <Card className="mt-4">
-          <CardContent className="p-4">
-            <h2 className="text-lg font-semibold">급식 정보</h2>
+        <CardContent className="p-2">
+          <div className="flex flex-wrap gap-4">
             {mealData.map((meal) => (
-              <div key={meal.MLSV_YMD} className="mt-2 border-b pb-2">
-                <h3 className="font-semibold">{formatDate(meal.MLSV_YMD)}</h3>
-                <p>
+              <div
+                key={meal.MLSV_YMD}
+                className="min-w-[100px] border p-2 rounded-lg shadow-sm bg-primary-50"
+              >
+                <h4 className="font-semibold text-center">
+                  {formatDate(meal.MLSV_YMD)}
+                </h4>
+                <p className="text-sm text-gray-700 whitespace-pre-line">
                   {meal.DDISH_NM
                     ? meal.DDISH_NM.replace(/<br\/>/g, '\n')
-                    : '식단 정보를 찾을 수 없습니다.'}
+                    : '식단 정보 없음'}
                 </p>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
       )}
     </div>
   );
