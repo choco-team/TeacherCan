@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { CardContent } from '@/components/card';
 import useLocalStorage from '@/hooks/useLocalStorage';
-import SchoolPopover from './school-popover/school-popover';
+import axios from 'axios';
+import useSchoolSearch from './useSchoolSearch';
+import SchoolPopover from '../school-popover/school-popover';
 
 interface School {
   SD_SCHUL_CODE: string;
@@ -20,7 +21,7 @@ interface MealData {
 
 function LunchMenuSearch() {
   const [schoolName, setSchoolName] = useState<string>('');
-  const [schoolList, setSchoolList] = useState<School[]>([]);
+  const { schoolList, isLoading, handleSearch } = useSchoolSearch(); // ✅ 새 훅 사용
   const [mealData, setMealData] = useState<MealData[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [selectedDays, setSelectedDays] = useLocalStorage<number>(
@@ -40,20 +41,8 @@ function LunchMenuSearch() {
     return date.toISOString().split('T')[0].replace(/-/g, '');
   };
 
-  const handleSearch = async () => {
-    try {
-      const response = await axios.get(
-        `https://open.neis.go.kr/hub/schoolInfo?KEY=${API_KEY}&Type=json&SCHUL_NM=${schoolName}`,
-      );
-
-      const results: School[] = response.data.schoolInfo?.[1]?.row || [];
-      setSchoolList(results);
-    } catch (error) {
-      setSchoolList([]);
-    }
-  };
-
   const fetchMealData = async (school: School) => {
+    setSchoolName(school.SCHUL_NM);
     const mealRequests = Array.from({ length: selectedDays }, (_, i) => {
       const dateString = getFormattedDate(i);
       return axios
@@ -76,7 +65,6 @@ function LunchMenuSearch() {
     }
 
     setSelectedSchool(school);
-    setSchoolList([]);
     setIsPopoverOpen(false);
   };
 
@@ -94,7 +82,7 @@ function LunchMenuSearch() {
 
   return (
     <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full h-auto overflow-auto">
-      <div className="flex gap-2 ">
+      <div className="flex gap-2">
         <Input
           type="text"
           value={schoolName}
@@ -112,7 +100,9 @@ function LunchMenuSearch() {
             </option>
           ))}
         </select>
-        <Button onClick={handleSearch}>검색</Button>
+        <Button onClick={() => handleSearch(schoolName)} disabled={isLoading}>
+          {isLoading ? '검색 중...' : '검색'}
+        </Button>
       </div>
       <SchoolPopover
         schoolList={schoolList}
