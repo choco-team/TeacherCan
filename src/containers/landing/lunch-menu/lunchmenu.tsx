@@ -2,7 +2,7 @@
 
 import { Utensils } from 'lucide-react';
 import SectionTitle from '../components/section-title';
-import LunchMenuSearch from './lunchmenu-search/lunchmenu-search/lunchmenu-search';
+import LunchMenuSearch from './lunchmenu-search/lunchmenu-search';
 
 function LunchMenu() {
   return (
