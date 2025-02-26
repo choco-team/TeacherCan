@@ -1,14 +1,10 @@
 import { Card, CardContent } from '@/components/card';
+import { School } from '../lunchmenu-search/types';
 
-interface SchoolCardProps {
-  school: {
-    SD_SCHUL_CODE: string;
-    SCHUL_NM: string;
-    ORG_RDNMA?: string;
-    ATPT_OFCDC_SC_CODE: string;
-  };
+type SchoolCardProps = {
+  school: School;
   onClick: () => void;
-}
+};
 
 function SchoolCard({ school, onClick }: SchoolCardProps) {
   return (
