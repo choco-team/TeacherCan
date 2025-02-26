@@ -3,8 +3,8 @@ import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { CardContent } from '@/components/card';
 import useLocalStorage from '@/hooks/useLocalStorage';
-import axios from 'axios';
 import useSchoolSearch from './useSchoolSearch';
+import useMealData from './useMealData';
 import SchoolPopover from '../school-popover/school-popover';
 
 interface School {
@@ -14,15 +14,9 @@ interface School {
   ORG_RDNMA?: string;
 }
 
-interface MealData {
-  MLSV_YMD: string;
-  DDISH_NM: string | null;
-}
-
 function LunchMenuSearch() {
   const [schoolName, setSchoolName] = useState<string>('');
-  const { schoolList, isLoading, handleSearch } = useSchoolSearch(); // ✅ 새 훅 사용
-  const [mealData, setMealData] = useState<MealData[]>([]);
+  const { schoolList, isLoading, handleSearch } = useSchoolSearch();
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [selectedDays, setSelectedDays] = useLocalStorage<number>(
     'selectedDays',
@@ -33,48 +27,11 @@ function LunchMenuSearch() {
     null,
   );
 
-  const API_KEY = process.env.NEXT_PUBLIC_NICE_API_KEY;
-
-  const getFormattedDate = (offset: number = 0): string => {
-    const date = new Date();
-    date.setDate(date.getDate() + offset);
-    return date.toISOString().split('T')[0].replace(/-/g, '');
-  };
-
-  const fetchMealData = async (school: School) => {
-    setSchoolName(school.SCHUL_NM);
-    const mealRequests = Array.from({ length: selectedDays }, (_, i) => {
-      const dateString = getFormattedDate(i);
-      return axios
-        .get(
-          `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${school.ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${school.SD_SCHUL_CODE}&MLSV_YMD=${dateString}`,
-        )
-        .then((response) => ({
-          MLSV_YMD: dateString,
-          DDISH_NM:
-            response.data.mealServiceDietInfo?.[1]?.row?.[0]?.DDISH_NM || null,
-        }))
-        .catch(() => ({ MLSV_YMD: dateString, DDISH_NM: null }));
-    });
-
-    try {
-      const mealResults = await Promise.all(mealRequests);
-      setMealData(mealResults);
-    } catch (error) {
-      return;
-    }
-
-    setSelectedSchool(school);
-    setIsPopoverOpen(false);
-  };
+  const { mealData } = useMealData(selectedSchool, selectedDays, setSchoolName);
 
   useEffect(() => {
     setIsPopoverOpen(schoolList.length > 0);
   }, [schoolList]);
-
-  useEffect(() => {
-    if (selectedSchool) fetchMealData(selectedSchool);
-  }, [selectedSchool, selectedDays]);
 
   const formatDate = (dateStr: string): string => {
     return `${dateStr.substring(0, 4)}년 ${dateStr.substring(4, 6)}월 ${dateStr.substring(6, 8)}일`;
@@ -106,7 +63,7 @@ function LunchMenuSearch() {
       </div>
       <SchoolPopover
         schoolList={schoolList}
-        fetchMealData={fetchMealData}
+        fetchMealData={setSelectedSchool}
         isOpen={isPopoverOpen}
         setIsOpen={setIsPopoverOpen}
       />
