@@ -1,26 +1,18 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { School, API_KEY } from './types';
 
-interface School {
-  SD_SCHUL_CODE: string;
-  ATPT_OFCDC_SC_CODE: string;
-  SCHUL_NM: string;
-  ORG_RDNMA?: string;
-}
-
-interface MealData {
+type MealData = {
   MLSV_YMD: string;
   DDISH_NM: string | null;
-}
+};
 
 function useMealData(
   selectedSchool: School | null,
   selectedDays: number,
-  setSchoolName,
+  setSchoolName: (name: string) => void,
 ) {
   const [mealData, setMealData] = useState<MealData[]>([]);
-
-  const API_KEY = process.env.NEXT_PUBLIC_NICE_API_KEY;
 
   const getFormattedDate = (offset: number = 0): string => {
     const date = new Date();
@@ -48,7 +40,7 @@ function useMealData(
       const mealResults = await Promise.all(mealRequests);
       setMealData(mealResults);
     } catch (error) {
-      console.log('에러');
+      setMealData([]);
     }
   };
 

@@ -3,20 +3,14 @@ import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { CardContent } from '@/components/card';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { School } from './types';
 import useSchoolSearch from './useSchoolSearch';
 import useMealData from './useMealData';
 import SchoolPopover from '../school-popover/school-popover';
 
-interface School {
-  SD_SCHUL_CODE: string;
-  ATPT_OFCDC_SC_CODE: string;
-  SCHUL_NM: string;
-  ORG_RDNMA?: string;
-}
-
 function LunchMenuSearch() {
   const [schoolName, setSchoolName] = useState<string>('');
-  const { schoolList, isLoading, handleSearch } = useSchoolSearch();
+  const { schoolList, handleSearch } = useSchoolSearch();
   const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
   const [selectedDays, setSelectedDays] = useLocalStorage<number>(
     'selectedDays',
@@ -57,9 +51,7 @@ function LunchMenuSearch() {
             </option>
           ))}
         </select>
-        <Button onClick={() => handleSearch(schoolName)} disabled={isLoading}>
-          {isLoading ? '검색 중...' : '검색'}
-        </Button>
+        <Button onClick={() => handleSearch(schoolName)}>검색</Button>
       </div>
       <SchoolPopover
         schoolList={schoolList}
