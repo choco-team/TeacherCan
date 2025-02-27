@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { School, API_KEY } from './types';
+import { School, API_KEY } from './lunchmenu.types';
 
 function useSchoolSearch() {
   const [schoolList, setSchoolList] = useState<School[]>([]);
