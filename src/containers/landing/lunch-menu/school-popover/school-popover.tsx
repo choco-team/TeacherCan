@@ -2,7 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/popover';
 import { ScrollArea } from '@/components/scroll-area';
 import { Button } from '@/components/button';
 import SchoolCard from '../school-card/school-card';
-import { School } from '../lunchmenu-search/types';
+import { School } from '../lunchmenu-search/lunchmenu.types';
 
 function SchoolPopover({ schoolList, fetchMealData, isOpen, setIsOpen }) {
   return (

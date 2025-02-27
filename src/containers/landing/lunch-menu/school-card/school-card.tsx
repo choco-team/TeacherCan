@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/card';
-import { School } from '../lunchmenu-search/types';
+import { School } from '../lunchmenu-search/lunchmenu.types';
 
 type SchoolCardProps = {
   school: School;

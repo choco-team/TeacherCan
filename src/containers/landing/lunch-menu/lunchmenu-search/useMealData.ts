@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { School, API_KEY } from './types';
+import { School, API_KEY } from './lunchmenu.types';
 
 type MealData = {
   MLSV_YMD: string;
@@ -9,7 +9,6 @@ type MealData = {
 
 function useMealData(
   selectedSchool: School | null,
-  selectedDays: number,
   setSchoolName: (name: string) => void,
 ) {
   const [mealData, setMealData] = useState<MealData[]>([]);
@@ -22,7 +21,7 @@ function useMealData(
 
   const fetchMealData = async (school: School) => {
     setSchoolName(school.SCHUL_NM);
-    const mealRequests = Array.from({ length: selectedDays }, (_, i) => {
+    const mealRequests = Array.from({ length: 5 }, (_, i) => {
       const dateString = getFormattedDate(i);
       return axios
         .get(
@@ -46,7 +45,7 @@ function useMealData(
 
   useEffect(() => {
     if (selectedSchool) fetchMealData(selectedSchool);
-  }, [selectedSchool, selectedDays]);
+  }, [selectedSchool]);
 
   return { mealData, fetchMealData };
 }
