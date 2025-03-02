@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 interface IParams {
-  params: { videoID: string };
+  params: { videoId: string };
 }
 
-async function getVideoTitle(videoID: string) {
+async function getVideoTitle(videoId: string) {
   try {
     const queryParams = new URLSearchParams({
       part: 'snippet',
-      id: videoID,
+      id: videoId,
       key: process.env.YOUTUBE_DATA_API_KEY,
     }).toString();
     const response = await fetch(
@@ -22,8 +22,8 @@ async function getVideoTitle(videoID: string) {
   }
 }
 
-export async function GET(req: NextRequest, { params: { videoID } }: IParams) {
+export async function GET(req: NextRequest, { params: { videoId } }: IParams) {
   return NextResponse.json({
-    title: await getVideoTitle(videoID),
+    title: await getVideoTitle(videoId),
   });
 }
