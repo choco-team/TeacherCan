@@ -32,6 +32,12 @@ export default function RecentlyVisited() {
   return (
     <div className="flex gap-3 lg:gap-6 w-full overflow-auto">
       {recentlyVisited.map(({ pathname, date }) => {
+        const isValidPath = Object.keys(PATH_DATA).includes(pathname);
+
+        if (!isValidPath) {
+          return null;
+        }
+
         const { title, Icon } = PATH_DATA[pathname];
 
         return (
