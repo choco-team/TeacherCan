@@ -14,13 +14,13 @@ function MealItem({ date, dishes }: MealItemProps) {
           dishes.split('<br/>').map((dish) => (
             <span
               key={dish}
-              className="text-lg text-gray-700 px-2 py-1 rounded-md leading-none"
+              className="text-sm text-gray-700 px-2 py-1 rounded-md leading-none"
             >
               {dish}
             </span>
           ))
         ) : (
-          <span className="text-lg text-gray-500">식단 정보 없음</span>
+          <span className="text-sm text-gray-500">식단 정보 없음</span>
         )}
       </div>
     </div>
