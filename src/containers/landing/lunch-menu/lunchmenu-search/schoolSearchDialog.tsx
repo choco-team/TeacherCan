@@ -10,7 +10,7 @@ import { Button } from '@/components/button';
 import SchoolCard from '../school-card/school-card';
 import { School } from './lunchmenu.types';
 
-interface SchoolSearchDialogProps {
+type SchoolSearchDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   schoolName: string;
@@ -18,7 +18,7 @@ interface SchoolSearchDialogProps {
   schoolList: School[];
   onSelectSchool: (school: School) => void;
   handleSearch: (name: string) => void;
-}
+};
 
 function SchoolSearchDialog({
   isOpen,
