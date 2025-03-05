@@ -1,9 +1,9 @@
 import React from 'react';
 
-interface MealItemProps {
+type MealItemProps = {
   date: string;
   dishes: string;
-}
+};
 
 function MealItem({ date, dishes }: MealItemProps) {
   return (
