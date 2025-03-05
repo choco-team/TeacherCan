@@ -50,9 +50,8 @@ export default function MusicRequestContainer() {
       form.setError('roomTitle', {
         message: ROOM_TITLE_ERROR_MESSAGE.API_ERROR,
       });
-      throw Error(error.message);
-    } finally {
       setIsLoading(false);
+      throw Error(error.message);
     }
   };
 

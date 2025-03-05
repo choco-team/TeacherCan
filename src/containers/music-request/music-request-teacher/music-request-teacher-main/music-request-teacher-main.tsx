@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { getRoomTitle } from '@/utils/api/firebaseAPI';
 import {
   useMusicRequestTeacherAction,
@@ -13,19 +13,14 @@ export default function MusicRequestTeacherMain() {
   const { params } = useMusicRequestTeacherState();
   const { settingRoomId, settingRoomTitle } = useMusicRequestTeacherAction();
 
-  const settingRoomTitleCallback = useCallback(
-    async (id: string) => {
-      settingRoomTitle(await getRoomTitle(id));
-    },
-    [settingRoomTitle],
-  );
-
   useEffect(() => {
     if (params?.roomId) {
       settingRoomId(params.roomId);
-      settingRoomTitleCallback(params.roomId);
+      getRoomTitle(params.roomId).then((title) => {
+        settingRoomTitle(title);
+      });
     }
-  }, [params?.roomId, settingRoomId, settingRoomTitleCallback]);
+  }, [params?.roomId, settingRoomId, settingRoomTitle]);
 
   return (
     <div className="grid grid-cols-6 h-screen">
