@@ -40,10 +40,10 @@ function MealList({ mealData }: MealListProps) {
   );
 
   return (
-    <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full overflow-auto">
+    <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full overflow-x-auto">
       {filteredMeals.length > 0 && (
         <CardContent className="p-2">
-          <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
             {filteredMeals.map((meal) => (
               <MealItem
                 key={meal.MLSV_YMD}

@@ -7,7 +7,7 @@ type MealItemProps = {
 
 function MealItem({ date, dishes }: MealItemProps) {
   return (
-    <div className="min-w-[100px] h-auto border p-1 rounded-lg shadow-sm bg-primary-50">
+    <div className="min-w-[100px] h-auto border p-1 rounded-lg shadow-sm bg-gray-100">
       <h4 className="font-semibold">{date}</h4>
       <div className="flex flex-row gap-2 flex-wrap">
         {dishes ? (
