@@ -24,7 +24,7 @@ function LunchMenu() {
   const { mealData } = useMealData(selectedSchool, setSchoolName);
 
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 w-full ">
       <SectionTitle
         Icon={Utensils}
         title="점심 메뉴"
@@ -38,8 +38,25 @@ function LunchMenu() {
           </Button>
         }
       />
+      <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full h-64 overflow-auto">
+        {selectedSchool ? (
+          <MealList mealData={mealData} />
+        ) : (
+          <div className="flex flex-col gap-4 h-full justify-center items-center">
+            <div className="text-center text-sm text-gray-500">
+              등록된 학교가 없어요. 학교를 등록해보세요.
+            </div>
+            <Button
+              size="sm"
+              variant="primary-outline"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              학교 등록하기
+            </Button>
+          </div>
+        )}
+      </div>
 
-      {/* 학교 검색 다이얼로그 */}
       <SchoolSearchDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
@@ -52,9 +69,6 @@ function LunchMenu() {
         }}
         handleSearch={handleSearch}
       />
-
-      {/* 식단 리스트 */}
-      <MealList mealData={mealData} />
     </div>
   );
 }

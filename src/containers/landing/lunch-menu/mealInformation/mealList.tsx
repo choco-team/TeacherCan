@@ -40,7 +40,7 @@ function MealList({ mealData }: MealListProps) {
   );
 
   return (
-    <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full overflow-x-auto">
+    <div className="py-4 px-8 rounded-xl w-full overflow-x-auto">
       {filteredMeals.length > 0 && (
         <CardContent className="p-2">
           <div className="flex gap-2">
