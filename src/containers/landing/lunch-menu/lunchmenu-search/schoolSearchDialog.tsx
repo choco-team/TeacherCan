@@ -33,7 +33,10 @@ function SchoolSearchDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-sm lg:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="m-4">
+          <DialogTitle>
+            <span className="text-sm text-gray-500 mb-2 block">
+              학교명을 검색하세요
+            </span>
             <div className="flex gap-2">
               <Input
                 type="text"
