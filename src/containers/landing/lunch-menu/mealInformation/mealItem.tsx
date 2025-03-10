@@ -4,11 +4,15 @@ type MealItemProps = {
   date: string;
   dayOfWeek: string;
   dishes: string;
+  isToday: boolean;
 };
 
-function MealItem({ date, dayOfWeek, dishes }: MealItemProps) {
+function MealItem({ date, dayOfWeek, dishes, isToday }: MealItemProps) {
   return (
-    <div className="w-[150px] min-h-[180px] border p-2 rounded-lg flex flex-col justify-between bg-gray-100">
+    <div
+      className={`w-[150px] min-h-[180px] border p-2 rounded-lg flex flex-col justify-between 
+        ${isToday ? 'bg-primary-100' : 'bg-gray-100'}`}
+    >
       <h4 className="font-semibold text-center leading-tight m-2">
         {date} <br /> {dayOfWeek}
       </h4>

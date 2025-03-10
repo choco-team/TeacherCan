@@ -45,6 +45,8 @@ function getWeekRange(date: Date) {
 
 function MealList({ mealData }: MealListProps) {
   const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10).replace(/-/g, ''); // 'YYYYMMDD' 형식
+
   const { start, end } = getWeekRange(today);
 
   const filteredMeals = mealData.filter((meal) => {
@@ -64,12 +66,15 @@ function MealList({ mealData }: MealListProps) {
           <div className="flex gap-2">
             {filteredMeals.map((meal) => {
               const { formatted, dayOfWeek } = formatDate(meal.MLSV_YMD);
+              const isToday = meal.MLSV_YMD === todayStr;
+
               return (
                 <MealItem
                   key={meal.MLSV_YMD}
                   date={formatted}
                   dayOfWeek={dayOfWeek}
                   dishes={meal.DDISH_NM}
+                  isToday={isToday}
                 />
               );
             })}
