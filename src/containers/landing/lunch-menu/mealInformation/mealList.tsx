@@ -8,7 +8,7 @@ type MealListProps = {
 
 const formatDate = (
   dateStr: string,
-): { formatted: string; isWeekend: boolean } => {
+): { formatted: string; dayOfWeek: string; isWeekend: boolean } => {
   const year = parseInt(dateStr.slice(0, 4), 10);
   const month = parseInt(dateStr.slice(4, 6), 10) - 1;
   const day = parseInt(dateStr.slice(6, 8), 10);
@@ -27,19 +27,19 @@ const formatDate = (
   const isWeekend = dayOfWeek === '토요일' || dayOfWeek === '일요일';
 
   return {
-    formatted: `${year}년 ${month + 1}월 ${day}일 ${dayOfWeek}`,
+    formatted: `${year}년 ${month + 1}월 ${day}일`,
+    dayOfWeek,
     isWeekend,
   };
 };
 
 function getWeekRange(date: Date) {
-  const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+  const dayOfWeek = date.getDay();
   const monday = new Date(date);
-  monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // 🔥 월요일 찾기 (일요일이면 6일 전으로)
+  monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek));
 
   const friday = new Date(monday);
-  friday.setDate(monday.getDate() + 4); // 🔥 월요일에서 4일 뒤 = 금요일
-
+  friday.setDate(monday.getDate() + 5);
   return { start: monday, end: friday };
 }
 
@@ -54,7 +54,7 @@ function MealList({ mealData }: MealListProps) {
       parseInt(meal.MLSV_YMD.slice(6, 8), 10),
     );
 
-    return mealDate >= start && mealDate <= end; // ✅ 월~금 포함 확인
+    return mealDate >= start && mealDate <= end;
   });
 
   return (
@@ -62,13 +62,17 @@ function MealList({ mealData }: MealListProps) {
       {filteredMeals.length > 0 && (
         <CardContent className="p-2">
           <div className="flex gap-2">
-            {filteredMeals.map((meal) => (
-              <MealItem
-                key={meal.MLSV_YMD}
-                date={formatDate(meal.MLSV_YMD).formatted}
-                dishes={meal.DDISH_NM}
-              />
-            ))}
+            {filteredMeals.map((meal) => {
+              const { formatted, dayOfWeek } = formatDate(meal.MLSV_YMD);
+              return (
+                <MealItem
+                  key={meal.MLSV_YMD}
+                  date={formatted}
+                  dayOfWeek={dayOfWeek}
+                  dishes={meal.DDISH_NM}
+                />
+              );
+            })}
           </div>
         </CardContent>
       )}
