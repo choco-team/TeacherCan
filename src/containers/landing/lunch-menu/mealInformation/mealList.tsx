@@ -14,7 +14,6 @@ const formatDate = (
   const day = parseInt(dateStr.slice(6, 8), 10);
 
   const date = new Date(year, month, day);
-
   const daysOfWeek = [
     '일요일',
     '월요일',
@@ -25,7 +24,6 @@ const formatDate = (
     '토요일',
   ];
   const dayOfWeek = daysOfWeek[date.getDay()];
-
   const isWeekend = dayOfWeek === '토요일' || dayOfWeek === '일요일';
 
   return {
@@ -34,13 +32,33 @@ const formatDate = (
   };
 };
 
+function getWeekRange(date: Date) {
+  const dayOfWeek = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+  const monday = new Date(date);
+  monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1)); // 🔥 월요일 찾기 (일요일이면 6일 전으로)
+
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4); // 🔥 월요일에서 4일 뒤 = 금요일
+
+  return { start: monday, end: friday };
+}
+
 function MealList({ mealData }: MealListProps) {
-  const filteredMeals = mealData.filter(
-    (meal) => !formatDate(meal.MLSV_YMD).isWeekend,
-  );
+  const today = new Date();
+  const { start, end } = getWeekRange(today);
+
+  const filteredMeals = mealData.filter((meal) => {
+    const mealDate = new Date(
+      parseInt(meal.MLSV_YMD.slice(0, 4), 10),
+      parseInt(meal.MLSV_YMD.slice(4, 6), 10) - 1,
+      parseInt(meal.MLSV_YMD.slice(6, 8), 10),
+    );
+
+    return mealDate >= start && mealDate <= end; // ✅ 월~금 포함 확인
+  });
 
   return (
-    <div className="py-4 px-8 rounded-xl w-full overflow-x-auto">
+    <div className="rounded-xl w-full overflow-x-auto">
       {filteredMeals.length > 0 && (
         <CardContent className="p-2">
           <div className="flex gap-2">

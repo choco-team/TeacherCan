@@ -7,20 +7,22 @@ type MealItemProps = {
 
 function MealItem({ date, dishes }: MealItemProps) {
   return (
-    <div className="min-w-[100px] h-auto border p-1 rounded-lg shadow-sm bg-gray-100">
-      <h4 className="font-semibold">{date}</h4>
-      <div className="flex flex-row gap-2 flex-wrap">
+    <div className="w-[150px] min-h-[180px] border p-2 rounded-lg flex flex-col justify-between bg-gray-100">
+      <h4 className="font-semibold mb-2 text-center">{date}</h4>
+      <div className="flex flex-col gap-1 flex-grow">
         {dishes ? (
-          dishes.split('<br/>').map((dish) => (
+          dishes.split(/<br\/?>|\n/).map((dish) => (
             <span
               key={dish}
-              className="text-sm text-gray-700 px-2 py-1 rounded-md leading-none"
+              className="text-sm text-gray-700 block rounded-md text-wrap"
             >
-              {dish}
+              {dish.trim()}
             </span>
           ))
         ) : (
-          <span className="text-sm text-gray-500">식단 정보 없음</span>
+          <span className="text-sm text-gray-500 text-center">
+            식단 정보 없음
+          </span>
         )}
       </div>
     </div>
