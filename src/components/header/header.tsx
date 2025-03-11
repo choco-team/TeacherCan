@@ -11,6 +11,7 @@ import { usePathname } from 'next/navigation';
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
+import { compact, head } from 'lodash';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,7 +46,11 @@ const shouldHideHeaderPathname = ['/timer'];
 
 export default function Header() {
   const pathname = usePathname();
-  const pathnames = pathname.split('/');
+  const pathnames = compact(pathname.split('/'));
+  const headPathname = head(pathnames);
+
+  // TODO:(김홍동) header breadcrumb가 복수를 가질 수 있도록 확장하기
+  const breadcrumb = breadcrumbs[headPathname];
 
   const handleClick = () => {
     const main = document.getElementById('teacher-can-main');
@@ -93,35 +98,12 @@ export default function Header() {
           </BreadcrumbItem>
           {pathname !== '/' && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
 
-          {pathnames.map((name, index) => {
-            const breadcrumb = breadcrumbs[name];
-            if (!breadcrumb) {
-              return null;
-            }
-
-            if (pathnames.length > index + 1) {
-              return (
-                <React.Fragment key={name}>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                      <div className="flex items-center gap-2">
-                        {breadcrumb.icon}
-                        <Link href={breadcrumb.url}> {breadcrumb.name}</Link>
-                      </div>
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator>/</BreadcrumbSeparator>
-                </React.Fragment>
-              );
-            }
-
-            return (
-              <BreadcrumbPage key={name} className="flex items-center gap-2">
-                {breadcrumb.icon}
-                {breadcrumb.name}
-              </BreadcrumbPage>
-            );
-          })}
+          {breadcrumb !== undefined ? (
+            <BreadcrumbPage className="flex items-center gap-2">
+              {breadcrumb.icon}
+              {breadcrumb.name}
+            </BreadcrumbPage>
+          ) : null}
         </BreadcrumbList>
       </Breadcrumb>
 
