@@ -1,15 +1,9 @@
 'use client';
 
-import {
-  ChevronsLeft,
-  ChevronsUp,
-  PickaxeIcon,
-  QrCodeIcon,
-  TimerIcon,
-} from 'lucide-react';
+import { ChevronsLeft, ChevronsUp, TimerIcon } from 'lucide-react';
 import Link from 'next/link';
 import PopupLink from '@/components/popup-link';
-import { ROUTE, RoutePath } from '@/constants/route';
+import { PATH_DATA, ROUTE, RoutePath } from '@/constants/route';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { usePathname } from 'next/navigation';
 import useDevice from '@/hooks/use-device';
@@ -120,26 +114,24 @@ export default function Navigation() {
               <span>타이머</span>
             </PopupLink>
           </li>
-          <li>
-            <Link
-              onClick={isMobile ? handelClick : null}
-              href={ROUTE.QR_CODE}
-              className={`${pathname === ROUTE.QR_CODE ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
-            >
-              <QrCodeIcon size="14px" />
-              <span>QR코드</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              onClick={isMobile ? handelClick : null}
-              href={ROUTE.RANDOM_PICK}
-              className={`${pathname === ROUTE.RANDOM_PICK ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
-            >
-              <PickaxeIcon size="14px" />
-              <span>랜덤뽑기</span>
-            </Link>
-          </li>
+          {Object.entries(PATH_DATA).map(([path, { title, Icon }]) => {
+            if (path === ROUTE.TIMER) {
+              return null;
+            }
+
+            return (
+              <li key={path}>
+                <Link
+                  onClick={isMobile ? handelClick : null}
+                  href={path}
+                  className={`${pathname === path ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
+                >
+                  <Icon size="14px" />
+                  <span>{title}</span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </nav>
