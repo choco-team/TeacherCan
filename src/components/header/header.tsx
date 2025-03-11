@@ -3,6 +3,7 @@
 import {
   ChevronsDown,
   ChevronsRight,
+  MusicIcon,
   PickaxeIcon,
   QrCodeIcon,
 } from 'lucide-react';
@@ -32,6 +33,11 @@ const breadcrumbs: Record<
     name: '랜덤뽑기',
     url: '/random-pick',
     icon: <PickaxeIcon size="14px" />,
+  },
+  'music-request': {
+    name: '음악신청',
+    url: '/music-request',
+    icon: <MusicIcon size="14px" />,
   },
 };
 

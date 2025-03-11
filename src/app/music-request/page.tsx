@@ -1,7 +1,7 @@
 import MusicRequestContainer from '@/containers/music-request/music-request-container';
 
 export const metadata = {
-  title: 'Music Request',
+  title: '음악신청',
 };
 
 function MusicRequest() {
