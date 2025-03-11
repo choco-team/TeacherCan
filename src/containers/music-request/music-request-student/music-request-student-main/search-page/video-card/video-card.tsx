@@ -1,11 +1,12 @@
 import { Button } from '@/components/button';
 import { createMusic } from '@/utils/api/firebaseAPI';
 import { useMusicRequestStudentAction } from '../../../music-request-student-provider/music-request-student-provider.hooks';
+import { YoutubeVideo } from '../../../music-request-student-provider/music-request-student-provider';
 
 interface VideoCardProps {
-  video: any;
-  roomId: any;
-  studentName: any;
+  video: YoutubeVideo;
+  roomId: string;
+  studentName: string;
 }
 
 export default function VideoCard({
@@ -16,7 +17,12 @@ export default function VideoCard({
   const { settingVideos, openAlertWithMessage } =
     useMusicRequestStudentAction();
 
-  const handleRequestMusic = async (musicData) => {
+  const handleRequestMusic = async (musicData: {
+    videoId: string;
+    title: string;
+    roomId: string;
+    proposer: string;
+  }) => {
     try {
       const response = await createMusic(musicData);
       const data = await response.json();
@@ -41,23 +47,23 @@ export default function VideoCard({
   };
 
   return (
-    <li key={video.videoId}>
-      <div className="flex flex-col mt-8">
+    <li>
+      <div className="flex flex-col gap-2">
         <iframe
-          className="w-full"
+          className="w-full aspect-video"
           src={`https://www.youtube.com/embed/${video.videoId}`}
           title={video.videoId}
+          style={{
+            pointerEvents: 'none',
+          }}
         />
-        <div className="flex flex-row justify-between m-2">
+        <div className="flex flex-row justify-between">
           <div className="flex flex-col w-full mr-4">
-            <p className="font-semibold">{video.title}</p>
-            <p className="text-xs text-gray-600	text-right">
-              {video.channelTitle} &middot; {video.publishedAt}
-            </p>
+            <p className="text-gray-900">{video.title}</p>
           </div>
           <Button
             disabled={video.isRequested}
-            variant="primary"
+            variant="primary-outline"
             onClick={() => {
               handleRequestMusic({
                 roomId,

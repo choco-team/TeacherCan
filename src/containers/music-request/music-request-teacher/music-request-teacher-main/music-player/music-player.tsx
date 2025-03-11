@@ -91,9 +91,8 @@ export default function MusicPlayer() {
                 autoplay: 1,
                 loop: 0,
               },
-              width: '100%',
-              height: '100%',
             }}
+            className="aspect-video"
           />
         )}
         <button

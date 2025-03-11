@@ -10,7 +10,7 @@ export type MusicRequestStudentParams = {
   roomId: string;
 };
 
-type Video = {
+export type YoutubeVideo = {
   videoId: string;
   title: string;
   publishedAt: string;
@@ -26,7 +26,7 @@ type MusicRequestStudentState = {
   roomId: string;
   studentName: string;
   roomTitle: string;
-  videos: Video[];
+  videos: YoutubeVideo[];
   params: MusicRequestStudentParams;
   alertOpen: boolean;
   alertMessage: string;
@@ -39,7 +39,7 @@ type MusicRequestStudentAction = {
   settingRoomId: Dispatch<SetStateAction<string>>;
   settingStudentName: Dispatch<SetStateAction<string>>;
   settingRoomTitle: Dispatch<SetStateAction<string>>;
-  settingVideos: Dispatch<SetStateAction<Video[]>>;
+  settingVideos: Dispatch<SetStateAction<YoutubeVideo[]>>;
   settingAlertOpen: Dispatch<SetStateAction<boolean>>;
   openAlertWithMessage: (message: string) => void;
 };
@@ -54,7 +54,7 @@ export default function MusicRequestStudentProvider({
   const [roomId, setRoomId] = useState<string>();
   const [studentName, setStudentName] = useState<string>();
   const [roomTitle, setRoomTitle] = useState<string>();
-  const [videos, setVideos] = useState<Video[]>();
+  const [videos, setVideos] = useState<YoutubeVideo[]>();
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string>();
 
