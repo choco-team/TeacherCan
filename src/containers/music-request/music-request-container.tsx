@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createRoom } from '@/utils/api/firebaseAPI';
+import { LoaderCircle } from 'lucide-react';
 
 const ROOM_TITLE_ERROR_MESSAGE = {
   EMPTY_INPUT: '방이름을 입력해 주세요.',
@@ -56,19 +57,19 @@ export default function MusicRequestContainer() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center min-h-[calc(100dvh-120px)]">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() =>
             handleRoomTitleSubmit(form.getValues('roomTitle')),
           )}
-          className="space-y-4"
+          className="space-y-4 mb-12"
         >
           <FormField
             control={form.control}
             name="roomTitle"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="relative">
                 <div className="flex items-center gap-x-2">
                   <FormControl>
                     <Input
@@ -77,11 +78,20 @@ export default function MusicRequestContainer() {
                       placeholder="방 이름을 입력해주세요."
                     />
                   </FormControl>
-                  <Button type="submit" variant="primary">
-                    {isLoading ? '로딩중...' : '방 생성'}
+                  <Button type="submit" variant="primary" className="w-[120px]">
+                    {isLoading ? (
+                      <LoaderCircle
+                        size="18px"
+                        className="animate-spin text-white"
+                      />
+                    ) : (
+                      '방 만들기'
+                    )}
                   </Button>
                 </div>
-                <FormMessage />
+                <div className="absolute bottom-[-28px] left-1">
+                  <FormMessage />
+                </div>
               </FormItem>
             )}
           />

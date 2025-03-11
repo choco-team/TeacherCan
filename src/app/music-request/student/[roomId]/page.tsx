@@ -2,7 +2,7 @@ import MusicRequestStudentContainer from '@/containers/music-request/music-reque
 import { MusicRequestStudentParams } from '@/containers/music-request/music-request-student/music-request-student-provider/music-request-student-provider';
 
 export const metadata = {
-  title: 'Music Request Student',
+  title: '음악신청',
 };
 
 function MusicRequestStudent({

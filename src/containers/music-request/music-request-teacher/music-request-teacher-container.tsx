@@ -11,10 +11,8 @@ export default function MusicRequestTeacherContainer({
   params: MusicRequestTeacherParams;
 }) {
   return (
-    <div>
-      <MusicRequestTeacherProvider params={params}>
-        <MusicRequestTeacherMain />
-      </MusicRequestTeacherProvider>
-    </div>
+    <MusicRequestTeacherProvider params={params}>
+      <MusicRequestTeacherMain />
+    </MusicRequestTeacherProvider>
   );
 }

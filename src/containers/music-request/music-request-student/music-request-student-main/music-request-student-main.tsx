@@ -25,10 +25,10 @@ export default function MusicRequestStudentMain() {
   }, [params.roomId, settingRoomId, settingRoomTitleCallback]);
 
   return (
-    <div>
-      <div className="flex flex-row justify-between	m-4">
-        <div>방 이름: {roomTitle}</div>
-        {studentName && <div>내 이름: {studentName}</div>}
+    <div className="flex flex-col gap-4 lg:max-w-[600px] lg:my-0 lg:mx-auto">
+      <div className="flex flex-col gap-2 text-sm text-gray-700">
+        <span>방 이름: {roomTitle}</span>
+        {studentName && <span>내 이름: {studentName}</span>}
       </div>
       {!studentName && <CreateNamePage />}
       {studentName && <SearchPage />}

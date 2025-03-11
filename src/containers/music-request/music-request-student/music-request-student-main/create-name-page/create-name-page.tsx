@@ -12,6 +12,7 @@ import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createStudentName } from '@/utils/api/firebaseAPI';
+import { LoaderCircle } from 'lucide-react';
 import {
   useMusicRequestStudentAction,
   useMusicRequestStudentState,
@@ -55,7 +56,7 @@ export default function CreateNamePage() {
   };
 
   return (
-    <div className="flex flex-col justify-center h-full pt-8">
+    <div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() =>
@@ -76,8 +77,15 @@ export default function CreateNamePage() {
                       placeholder="이름을 입력해주세요."
                     />
                   </FormControl>
-                  <Button type="submit" variant="primary-outline">
-                    {isLoading ? '로딩중...' : '입장하기'}
+                  <Button type="submit" variant="primary" className="w-[120px]">
+                    {isLoading ? (
+                      <LoaderCircle
+                        size="18px"
+                        className="animate-spin text-white"
+                      />
+                    ) : (
+                      '입장하기'
+                    )}
                   </Button>
                 </div>
                 <FormMessage />
