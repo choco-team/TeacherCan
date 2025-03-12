@@ -6,7 +6,7 @@ async function fetchMealInfo(
   date?: string,
 ) {
   try {
-    const API_KEY = process.env.NICE_API_KEY;
+    const API_KEY = process.env.NEXT_PUBLIC_NICE_API_KEY;
 
     const queryParams = new URLSearchParams({
       KEY: API_KEY,
