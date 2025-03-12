@@ -10,7 +10,7 @@ type MealItemProps = {
 function MealItem({ date, dayOfWeek, dishes, isToday }: MealItemProps) {
   return (
     <div
-      className={`w-[150px] min-h-[180px] border p-2 rounded-lg flex flex-col justify-between 
+      className={`w-[150px] border p-2 rounded-lg flex flex-col justify-between 
         ${isToday ? 'bg-primary-100' : 'bg-gray-100'}`}
     >
       <h4 className="font-semibold text-center leading-tight m-2">
