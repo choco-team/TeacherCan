@@ -35,17 +35,21 @@ const formatDate = (
 
 function getWeekRange(date: Date) {
   const dayOfWeek = date.getDay();
+
+  const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1);
+
   const monday = new Date(date);
-  monday.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek));
+  monday.setDate(date.getDate() + mondayOffset);
 
   const friday = new Date(monday);
-  friday.setDate(monday.getDate() + 5);
+  friday.setDate(monday.getDate() + 4);
+
   return { start: monday, end: friday };
 }
 
 function MealList({ mealData }: MealListProps) {
   const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10).replace(/-/g, ''); // 'YYYYMMDD' 형식
+  const todayStr = today.toISOString().slice(0, 10).replace(/-/g, '');
 
   const { start, end } = getWeekRange(today);
 
@@ -58,7 +62,6 @@ function MealList({ mealData }: MealListProps) {
 
     return mealDate >= start && mealDate <= end;
   });
-
   return (
     <div className="rounded-xl w-full overflow-x-auto">
       {filteredMeals.length > 0 && (
