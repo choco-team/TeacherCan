@@ -28,3 +28,24 @@ export const createMusicRequestStudent = (params: {
     body: JSON.stringify(params),
   });
 };
+
+type CreateMusicRequestMusicResponse = {
+  musicId: string;
+  roomId: string;
+  studentId: number;
+  title: string;
+  id: number;
+  timeStamp: string;
+};
+
+export const createMusicRequestMusic = (params: {
+  roomId: string;
+  student: string;
+  musicId: string;
+  title: string;
+}) => {
+  return fetcher<CreateMusicRequestMusicResponse>('/music-request/music', {
+    method: 'POST',
+    body: JSON.stringify(params),
+  });
+};

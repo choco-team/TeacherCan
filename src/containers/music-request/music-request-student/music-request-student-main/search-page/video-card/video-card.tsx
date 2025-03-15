@@ -1,49 +1,42 @@
 import { Button } from '@/components/button';
-import { createMusic } from '@/utils/api/firebaseAPI';
+import { useCreateMusicRequestMusic } from '@/hooks/apis/music-request/use-create-music-request-music';
+import { LoaderCircle } from 'lucide-react';
+import { YoutubeVideo } from '@/utils/api/firebaseAPI';
 import { useMusicRequestStudentAction } from '../../../music-request-student-provider/music-request-student-provider.hooks';
-import { YoutubeVideo } from '../../../music-request-student-provider/music-request-student-provider';
 
 interface VideoCardProps {
   video: YoutubeVideo;
   roomId: string;
-  studentName: string;
+  student: string;
 }
 
-export default function VideoCard({
-  video,
-  roomId,
-  studentName,
-}: VideoCardProps) {
-  const { settingVideos, openAlertWithMessage } =
-    useMusicRequestStudentAction();
+export default function VideoCard({ video, roomId, student }: VideoCardProps) {
+  const { mutate: requestMusic, isPending } = useCreateMusicRequestMusic();
+  const { openAlertWithMessage } = useMusicRequestStudentAction();
 
-  const handleRequestMusic = async (musicData: {
-    videoId: string;
+  const handleRequestMusic = ({
+    musicId,
+    title,
+  }: {
+    musicId: string;
     title: string;
-    roomId: string;
-    proposer: string;
   }) => {
-    try {
-      const response = await createMusic(musicData);
-      const data = await response.json();
-      if (response.ok) {
-        openAlertWithMessage(data.message);
-      } else if (response.status === 409) {
-        openAlertWithMessage(data.message);
-      } else {
-        throw Error('에러발생');
-      }
-    } catch (error) {
-      throw Error(error.message);
-    } finally {
-      settingVideos((prev) =>
-        prev.map((prevVideo) =>
-          prevVideo.videoId === video.videoId
-            ? { ...prevVideo, isRequested: true }
-            : prevVideo,
-        ),
-      );
-    }
+    requestMusic(
+      {
+        roomId,
+        student,
+        musicId,
+        title,
+      },
+      {
+        onSuccess: () => {
+          openAlertWithMessage('음악 신청이 완료되었습니다.');
+        },
+        onError: (error) => {
+          openAlertWithMessage(error.message);
+        },
+      },
+    );
   };
 
   return (
@@ -62,19 +55,23 @@ export default function VideoCard({
             <p className="text-gray-900">{video.title}</p>
           </div>
           <Button
-            disabled={video.isRequested}
+            className="w-[120px]"
             variant="primary-outline"
             onClick={() => {
               handleRequestMusic({
-                roomId,
                 title: video.title,
-                videoId: video.videoId,
-                proposer: studentName,
+                musicId: video.videoId,
               });
             }}
           >
-            {video.isRequested}
-            신청하기
+            {isPending ? (
+              <LoaderCircle
+                size="18px"
+                className="animate-spin text-primary-500"
+              />
+            ) : (
+              '신청하기'
+            )}
           </Button>
         </div>
       </div>

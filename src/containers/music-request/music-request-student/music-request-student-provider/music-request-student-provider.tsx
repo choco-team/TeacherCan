@@ -6,28 +6,10 @@ import {
   useState,
 } from 'react';
 
-export type MusicRequestStudentParams = {
-  roomId: string;
-};
-
-export type YoutubeVideo = {
-  videoId: string;
-  title: string;
-  publishedAt: string;
-  channelTitle: string;
-  isRequested: boolean;
-};
-
-interface PropsWithChildrenParams extends PropsWithChildren {
-  params: MusicRequestStudentParams;
-}
+interface PropsWithChildrenParams extends PropsWithChildren {}
 
 type MusicRequestStudentState = {
-  roomId: string;
   studentName: string;
-  roomTitle: string;
-  videos: YoutubeVideo[];
-  params: MusicRequestStudentParams;
   alertOpen: boolean;
   alertMessage: string;
 };
@@ -36,10 +18,7 @@ export const MusicRequestStudentStateContext =
   createContext<MusicRequestStudentState | null>(null);
 
 type MusicRequestStudentAction = {
-  settingRoomId: Dispatch<SetStateAction<string>>;
   settingStudentName: Dispatch<SetStateAction<string>>;
-  settingRoomTitle: Dispatch<SetStateAction<string>>;
-  settingVideos: Dispatch<SetStateAction<YoutubeVideo[]>>;
   settingAlertOpen: Dispatch<SetStateAction<boolean>>;
   openAlertWithMessage: (message: string) => void;
 };
@@ -49,30 +28,19 @@ export const MusicRequestStudentActionContext =
 
 export default function MusicRequestStudentProvider({
   children,
-  params,
 }: PropsWithChildrenParams) {
-  const [roomId, setRoomId] = useState<string>();
   const [studentName, setStudentName] = useState<string>();
-  const [roomTitle, setRoomTitle] = useState<string>();
-  const [videos, setVideos] = useState<YoutubeVideo[]>();
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string>();
 
   const defaultMusicRequestStudentStateValue = {
-    roomId,
     studentName,
-    roomTitle,
-    videos,
-    params,
     alertOpen,
     alertMessage,
   };
 
   const defaultMusicRequestStudentActionValue = {
-    settingRoomId: setRoomId,
     settingStudentName: setStudentName,
-    settingRoomTitle: setRoomTitle,
-    settingVideos: setVideos,
     settingAlertOpen: setAlertOpen,
     openAlertWithMessage: (message: string) => {
       setAlertOpen(true);

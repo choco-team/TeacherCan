@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Input } from '@/components/input';
 import {
   Form,
@@ -11,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { youtubeSearch } from '@/utils/api/youtubeAPI';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +27,7 @@ import {
   useMusicRequestStudentState,
 } from '../../music-request-student-provider/music-request-student-provider.hooks';
 import VideoCard from './video-card/video-card';
+import { useSearchMusic } from './search-page.hooks';
 
 const YOUTUBE_SEARCH_ERROR_MESSAGE = {
   EMPTY_INPUT: '검색어를 입력해 주세요.',
@@ -39,11 +38,17 @@ const formSchema = z.object({
   q: z.string().nonempty({ message: YOUTUBE_SEARCH_ERROR_MESSAGE.EMPTY_INPUT }),
 });
 
-export default function SearchPage() {
-  const [isLoading, setIsLoading] = useState<boolean | null>();
-  const { roomId, studentName, videos, alertOpen, alertMessage } =
+type Props = {
+  roomId: string;
+};
+
+export default function SearchPage({ roomId }: Props) {
+  const { videos, isLoading, searchMusic } = useSearchMusic();
+
+  const { studentName, alertOpen, alertMessage } =
     useMusicRequestStudentState();
-  const { settingVideos, settingAlertOpen } = useMusicRequestStudentAction();
+  const { settingAlertOpen } = useMusicRequestStudentAction();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,21 +58,19 @@ export default function SearchPage() {
   });
 
   const handleSearch = async (q: string) => {
-    try {
-      setIsLoading(true);
-      settingVideos(await youtubeSearch(q));
-    } catch (error) {
-      form.setError('q', {
-        message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
-      });
-      throw Error(error.message);
-    } finally {
-      setIsLoading(false);
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
-    }
+    searchMusic(q, {
+      onSuccess: () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
+      },
+      onError: () => {
+        form.setError('q', {
+          message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
+        });
+      },
+    });
   };
 
   return (
@@ -125,7 +128,7 @@ export default function SearchPage() {
               key={video.videoId}
               video={video}
               roomId={roomId}
-              studentName={studentName}
+              student={studentName}
             />
           ))}
       </ul>
