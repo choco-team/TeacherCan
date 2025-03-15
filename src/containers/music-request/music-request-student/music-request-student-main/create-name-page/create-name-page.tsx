@@ -50,8 +50,6 @@ export default function CreateNamePage({ roomId }: Props) {
           settingStudentName(name);
         },
         onError: () => {
-          // TODO:(김홍동) 임시, 나중에 지우기
-          settingStudentName(name);
           form.setError('studentNameInput', {
             message: STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
           });

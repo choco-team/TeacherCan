@@ -9,11 +9,11 @@ export const fetcher = async <T>(
     ...options,
   });
 
-  const data = await response.json();
+  const text = await response.text();
 
   if (!response.ok) {
-    throw new Error(data.message || 'Failed to fetch');
+    throw new Error(text || 'Failed to fetch');
   }
 
-  return data;
+  return text ? JSON.parse(text) : ({} as T);
 };
