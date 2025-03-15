@@ -3,11 +3,12 @@ import { useMusicRequestStudentState } from '../music-request-student-provider/m
 import SearchPage from './search-page/search-page';
 import CreateNamePage from './create-name-page/create-name-page';
 
-export default function MusicRequestStudentMain() {
-  const {
-    studentName,
-    params: { roomId },
-  } = useMusicRequestStudentState();
+type Props = {
+  roomId: string;
+};
+
+export default function MusicRequestStudentMain({ roomId }: Props) {
+  const { studentName } = useMusicRequestStudentState();
 
   const { data, isPending } = useGetMusicRequestRoomTitle({ roomId });
 
@@ -23,7 +24,7 @@ export default function MusicRequestStudentMain() {
         {studentName && <span>내 이름: {studentName}</span>}
       </div>
       {!studentName && roomId ? <CreateNamePage roomId={roomId} /> : null}
-      {studentName && <SearchPage />}
+      {studentName && <SearchPage roomId={roomId} />}
     </div>
   );
 }
