@@ -25,13 +25,13 @@ export default function MusicRequestTeacherMain() {
   }, [params?.roomId, settingRoomId, settingRoomTitle]);
 
   return (
-    <div className="flex">
+    <div className="flex flex-col gap-6 lg:flex-row lg:gap-0">
       <div className="flex flex-col w-full">
         <MusicPlayer />
       </div>
       <Tabs
         defaultValue="music-list"
-        className="flex flex-col min-w-[400px] max-w-[400px] pl-2 h-full"
+        className="flex flex-col w-full mb-[108px] lg:mb-0 lg:min-w-[400px] lg:max-w-[400px] pl-2 h-full"
       >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="music-list">신청목록</TabsTrigger>
