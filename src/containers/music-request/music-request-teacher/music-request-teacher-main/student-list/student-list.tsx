@@ -22,7 +22,7 @@ export default function StudentList() {
   }, [params.roomId]);
 
   return (
-    <div className="py-4">
+    <div className="h-full lg:h-[calc(100vh-200px)] overflow-scroll py-4">
       {students ? (
         <div className="bg-gray-100 flex flex-col gap-[1px]">
           {students.map((student, index) => (

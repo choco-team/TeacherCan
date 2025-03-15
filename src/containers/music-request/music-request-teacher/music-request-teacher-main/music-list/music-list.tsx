@@ -33,7 +33,7 @@ export default function MusicList() {
   }, [params.roomId, settingVideos, settingNumberOfVideos]);
 
   return (
-    <div className="h-[calc(100vh-200px)] overflow-scroll py-4">
+    <div className="h-full lg:h-[calc(100vh-200px)] overflow-scroll py-4">
       {videos ? (
         <div className="flex flex-col gap-[1px] bg-gray-200">
           {videos.map((video, index) => (
