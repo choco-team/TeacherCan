@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Input } from '@/components/input';
 import {
   Form,
@@ -11,12 +10,9 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createStudentName } from '@/utils/api/firebaseAPI';
 import { LoaderCircle } from 'lucide-react';
-import {
-  useMusicRequestStudentAction,
-  useMusicRequestStudentState,
-} from '../../music-request-student-provider/music-request-student-provider.hooks';
+import { useCreateMusicRequestStudent } from '@/hooks/apis/music-request/use-create-music-request-student';
+import { useMusicRequestStudentAction } from '../../music-request-student-provider/music-request-student-provider.hooks';
 
 const STUDENT_NAME_ERROR_MESSAGE = {
   EMPTY_INPUT: '이름을 입력해 주세요.',
@@ -29,9 +25,13 @@ const formSchema = z.object({
     .nonempty({ message: STUDENT_NAME_ERROR_MESSAGE.EMPTY_INPUT }),
 });
 
-export default function CreateNamePage() {
-  const [isLoading, setIsLoading] = useState<boolean | null>();
-  const { roomId } = useMusicRequestStudentState();
+type Props = {
+  roomId: string;
+};
+
+export default function CreateNamePage({ roomId }: Props) {
+  const { mutate, isPending } = useCreateMusicRequestStudent();
+
   const { settingStudentName } = useMusicRequestStudentAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -42,17 +42,22 @@ export default function CreateNamePage() {
     reValidateMode: 'onSubmit',
   });
 
-  const handleStudentName = async (studentNameInput: string) => {
-    try {
-      setIsLoading(true);
-      settingStudentName(await createStudentName(roomId, studentNameInput));
-    } catch (error) {
-      form.setError('studentNameInput', {
-        message: STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
-      });
-      setIsLoading(false);
-      throw Error(error.message);
-    }
+  const handleStudentName = async (name: string) => {
+    mutate(
+      { roomId, name },
+      {
+        onSuccess: () => {
+          settingStudentName(name);
+        },
+        onError: () => {
+          // TODO:(김홍동) 임시, 나중에 지우기
+          settingStudentName(name);
+          form.setError('studentNameInput', {
+            message: STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -78,7 +83,7 @@ export default function CreateNamePage() {
                     />
                   </FormControl>
                   <Button type="submit" variant="primary" className="w-[120px]">
-                    {isLoading ? (
+                    {isPending ? (
                       <LoaderCircle
                         size="18px"
                         className="animate-spin text-white"
