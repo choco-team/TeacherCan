@@ -49,9 +49,9 @@ export default function CreateNamePage({ roomId }: Props) {
         onSuccess: () => {
           settingStudentName(name);
         },
-        onError: () => {
+        onError: (error) => {
           form.setError('studentNameInput', {
-            message: STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
+            message: error.message ?? STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
           });
         },
       },

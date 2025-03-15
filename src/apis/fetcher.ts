@@ -12,7 +12,9 @@ export const fetcher = async <T>(
   const text = await response.text();
 
   if (!response.ok) {
-    throw new Error(text || 'Failed to fetch');
+    const errorMessage = JSON.parse(text)?.message ?? 'Failed to fetch';
+
+    throw new Error(errorMessage);
   }
 
   return text ? JSON.parse(text) : ({} as T);
