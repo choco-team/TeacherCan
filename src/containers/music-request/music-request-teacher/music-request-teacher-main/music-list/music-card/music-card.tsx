@@ -1,33 +1,32 @@
-import { Button } from '@/components/button';
-import { deleteMusic } from '@/utils/api/firebaseAPI';
-import { getMusicExtraData } from '@/utils/api/youtubeAPI';
-import { ChevronsDown, ChevronsUp, X } from 'lucide-react';
+import { deleteMusic, YoutubeVideo } from '@/utils/api/firebaseAPI';
+import { Play, X } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { cva } from 'class-variance-authority';
 import {
   useMusicRequestTeacherAction,
   useMusicRequestTeacherState,
 } from '../../../music-request-teacher-provider/music-request-teacher-provider.hooks';
 
+const layoutVariant = cva('p-2 flex gap-2 cursor-pointer', {
+  variants: {
+    isSelected: {
+      true: 'bg-gray-100',
+      false: 'bg-white',
+    },
+  },
+});
+
 interface MusicCardProps {
-  video: any;
+  video: YoutubeVideo;
   roomId: string;
+  index: number;
 }
 
-type ExtraData = {
-  publishedAt: string;
-  channelTitle: string;
-  thumbnails: string;
-  channelThumbnails: string;
-  description: string;
-};
-
-export default function MusicCard({ video, roomId }: MusicCardProps) {
-  const [extraData, setExtraData] = useState<ExtraData>();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isVideo, setIsVideo] = useState<boolean>(false);
-  const { videos, currentMusicIndex } = useMusicRequestTeacherState();
+export default function MusicCard({ video, roomId, index }: MusicCardProps) {
+  const { currentMusicIndex } = useMusicRequestTeacherState();
   const { setCurrentMusicByIndex } = useMusicRequestTeacherAction();
+
+  const isSelectedMusic = index === currentMusicIndex;
 
   const handleDeleteMusic = async () => {
     try {
@@ -37,99 +36,45 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
     }
   };
 
-  const handleExtraData = async (videoId: string) => {
-    try {
-      if (isOpen) {
-        setIsOpen(false);
-        setIsVideo(false);
-      } else {
-        if (extraData) {
-          setExtraData(extraData);
-        } else {
-          setExtraData(await getMusicExtraData(videoId));
-        }
-        setIsOpen(true);
-      }
-    } catch (e) {
-      throw new Error(e.message);
-    }
-  };
-
   const handlePlayButton = () => {
-    const thisMusicIdx = videos.findIndex(
-      (item) => item.videoId === video.videoId,
-    );
-    if (thisMusicIdx === currentMusicIndex) {
+    if (isSelectedMusic) {
       return;
     }
-    setCurrentMusicByIndex(thisMusicIdx);
+    setCurrentMusicByIndex(index);
   };
 
   return (
-    <div className="flex flex-col m-4 p-2 rounded-lg">
-      <div className="flex flex-row">
-        <div className="flex flex-col w-full">
-          <p className="font-semibold">{video.title}</p>
-          {isOpen && extraData && (
-            <div className="bg-white rounded pr-2 pl-2 pb-2 mb-2 mt-2">
-              <div className="flex flex-row p-1">
-                <Image
-                  className="w-7 rounded-full mr-2"
-                  src={extraData.channelThumbnails}
-                  alt=""
-                  width={28}
-                  height={28}
-                />
-                <div className="flex flex-col">
-                  <p className="text-s">
-                    {extraData.channelTitle} &middot; {extraData.publishedAt}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-row">
-                <div className=" w-3/5 mr-2">
-                  {!isVideo && (
-                    <Image
-                      onClick={() => setIsVideo(true)}
-                      className="w-full rounded-lg cursor-pointer"
-                      src={extraData.thumbnails}
-                      alt=""
-                      width={28}
-                      height={28}
-                    />
-                  )}
-                  {isVideo && (
-                    <iframe
-                      className="w-full rounded-lg"
-                      src={`https://www.youtube.com/embed/${video.videoId}`}
-                      title={video.videoId}
-                    />
-                  )}
-                </div>
-                <div className="w-2/5 h-48 text-xs overflow-x-auto overflow-x-hidden">
-                  {extraData.description}
-                </div>
-              </div>
-            </div>
-          )}
-          <div className="flex flex-row justify-between ">
-            <p className="text-xs text-gray-600 pr-2">
-              신청: {video.proposer} / 재생횟수 : {video.playCount}
-            </p>
-            <Button size="xs" onClick={() => handlePlayButton()}>
-              재생하기
-            </Button>
+    <div
+      className={layoutVariant({
+        isSelected: isSelectedMusic,
+      })}
+      onClick={() => handlePlayButton()}
+    >
+      <div className="relative">
+        <Image
+          className="object-cover aspect-square rounded-sm"
+          src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
+          alt={video.title}
+          width={48}
+          height={48}
+        />
+        {isSelectedMusic ? (
+          <div className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center pointer-events-none">
+            <Play size={24} fill="#52525b" color="#52525b" />
           </div>
-        </div>
-        <div className="flex flex-col justify-between ">
-          <button type="button" onClick={() => handleDeleteMusic()}>
-            <X />
-          </button>
-          <button type="button" onClick={() => handleExtraData(video.videoId)}>
-            {!isOpen && <ChevronsDown />}
-            {isOpen && <ChevronsUp />}
-          </button>
-        </div>
+        ) : null}
+      </div>
+      <div className="flex-1 flex flex-col">
+        <span className="font-medium text-sm truncate">{video.title}</span>
+        <span className="font-light text-gray-600 text-xs">
+          {video.proposer}의 신청곡
+        </span>
+      </div>
+      <div className="flex flex-col justify-between ">
+        {/* TODO:(김홍동) 곡 삭제되면 index가 바뀌는 문제 해결 및 마지막 영상 삭제 시 에러 발생하는 거 해결 */}
+        <button type="button" onClick={() => handleDeleteMusic()}>
+          <X size={12} />
+        </button>
       </div>
     </div>
   );
