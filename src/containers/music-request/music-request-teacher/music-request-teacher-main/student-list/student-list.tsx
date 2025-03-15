@@ -23,7 +23,7 @@ export default function StudentList() {
   }, [params.roomId]);
 
   return (
-    <div className="bg-primary-200 rounded m-2 p-2">
+    <div className="rounded m-2 p-2">
       {students &&
         students.map((student) => <div key={nanoid()}>{student}</div>)}
     </div>

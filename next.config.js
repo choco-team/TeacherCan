@@ -9,6 +9,7 @@ const nextConfig = {
     return config;
   },
   images: {
+    domains: ['img.youtube.com'], // YouTube 썸네일 이미지 도메인 추가
     // 허용할 이미지 도메인
     remotePatterns: [
       {

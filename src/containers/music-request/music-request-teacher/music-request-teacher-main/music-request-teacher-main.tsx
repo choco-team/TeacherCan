@@ -23,14 +23,14 @@ export default function MusicRequestTeacherMain() {
   }, [params?.roomId, settingRoomId, settingRoomTitle]);
 
   return (
-    <div className="grid grid-cols-6 h-screen">
-      <div className="flex flex-col col-span-4">
-        <MusicPlayer />
-        <MusicList />
-      </div>
+    <div className="grid grid-cols-3">
       <div className="flex flex-col col-span-2">
+        <MusicPlayer />
+      </div>
+      <div className="flex flex-col col-span-1">
         <RoomInfo />
         <StudentList />
+        <MusicList />
       </div>
     </div>
   );

@@ -66,7 +66,7 @@ export default function MusicCard({ video, roomId }: MusicCardProps) {
   };
 
   return (
-    <div className="flex flex-col m-4 p-2 rounded-lg	 bg-primary-200">
+    <div className="flex flex-col m-4 p-2 rounded-lg">
       <div className="flex flex-row">
         <div className="flex flex-col w-full">
           <p className="font-semibold">{video.title}</p>
