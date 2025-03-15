@@ -16,6 +16,7 @@ import useDevice from '@/hooks/use-device';
 import { useLayoutEffect } from 'react';
 
 import useRecentlyVisited from '@/hooks/use-recently-visited';
+import KakaoLoginButton from '../AuthButton';
 
 const shouldHideHeaderNavigation = ['/timer'];
 
@@ -106,6 +107,12 @@ export default function Navigation() {
           size="20px"
         />
       </div>
+
+      <div className="flex gap-2 w-full justify-center">
+        <KakaoLoginButton />{' '}
+        {/* 로그인 버튼(카카오 로그인) 컴포넌트 추가, 로그인 상태 점검 로직은 모두 이 컴포넌트 안에서 관리, 필요하다면 이동 */}
+      </div>
+
       <div className="flex gap-2 flex-col mt-6">
         <div className="px-2 text-xs font-medium text-gray-600">메뉴</div>
         <ul className="flex flex-col gap-1">

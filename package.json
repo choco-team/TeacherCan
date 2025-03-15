@@ -35,7 +35,6 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "file-saver": "^2.0.5",
-    "firebase": "^11.0.2",
     "framer-motion": "^11.11.11",
     "html2canvas": "^1.4.1",
     "lottie-react": "^2.4.0",
@@ -58,7 +57,8 @@
     "tailwindcss": "^3.4.10",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.0.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
