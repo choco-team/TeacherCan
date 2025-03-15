@@ -33,13 +33,8 @@ const mediaTypeButtonVariants = cva(
 );
 
 export default function MusicPlayer() {
-  const {
-    videos,
-    numberOfVideos,
-    currentMusicIndex,
-    maxPlayCount,
-    isVideoLoading,
-  } = useMusicRequestTeacherState();
+  const { videos, numberOfVideos, currentMusicIndex, maxPlayCount } =
+    useMusicRequestTeacherState();
   const { setCurrentMusicByIndex, settingIsVideoLoading } =
     useMusicRequestTeacherAction();
   const [playOrder, setPlayOrder] = useState<'inOrder' | 'shuffle'>('inOrder');
@@ -244,13 +239,7 @@ export default function MusicPlayer() {
           <div className="flex items-center gap-4">
             <ChevronFirst
               className="cursor-pointer"
-              onClick={() => {
-                if (!isVideoLoading) {
-                  return;
-                }
-
-                handleMusicPlay(-1);
-              }}
+              onClick={() => handleMusicPlay(-1)}
             />
             {isPlay ? (
               <Pause
@@ -269,13 +258,7 @@ export default function MusicPlayer() {
             )}
             <ChevronLast
               className="cursor-pointer"
-              onClick={() => {
-                if (!isVideoLoading) {
-                  return;
-                }
-
-                handleMusicPlay(1);
-              }}
+              onClick={() => handleMusicPlay(1)}
             />
             <div className="tabular-nums text-sm text-gray-600">
               {formatTime(currentTime)} / {formatTime(duration)}
