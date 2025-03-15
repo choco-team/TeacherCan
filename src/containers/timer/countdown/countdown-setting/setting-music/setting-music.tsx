@@ -8,7 +8,6 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormMessage,
 } from '@/components/form';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
@@ -22,6 +21,7 @@ import { cn } from '@/styles/utils';
 import { Label } from '@/components/label';
 import { Slider } from '@/components/slider';
 import DualPanel from '@/components/dual-panel';
+import { youtubeSearch } from '@/utils/api/youtubeAPI';
 import {
   useCountdownMusicAction,
   useCountdownMusicState,
@@ -29,6 +29,7 @@ import {
 import { useCountdownState } from '../../countdown-provider/countdown-provider.hooks';
 
 export default function SettingMusic() {
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
   const [isPlayingPreview, setIsPlayingPreview] = useState(false);
   const [previousVolumeValue, setPreviousVolumeValue] = useState(50);
   const { isActive, isMusicUsed, youtubePlayerRef } = useCountdownState();
@@ -43,6 +44,8 @@ export default function SettingMusic() {
     controlIsPreviewYoutubeReady,
   } = useCountdownMusicAction();
   const { previewYoutubePlayerRef, volumeValue } = useCountdownMusicState();
+  const { controlOpenMusicSearch, controlVideos } = useCountdownMusicAction();
+
   const form = useFormContext();
 
   const togglePreviewPlay = (isToPlay: boolean) => {
@@ -65,10 +68,26 @@ export default function SettingMusic() {
     youtubePlayerRef.current.setVolume(volume);
   };
 
+  const handleSubmit = async (event: any) => {
+    try {
+      setIsLoadingSearch(true);
+      event.preventDefault();
+      if (!(await form.trigger('youtubeUrl'))) {
+        controlVideos(await youtubeSearch(form.getValues('youtubeUrl')));
+        controlOpenMusicSearch(true);
+        return;
+      }
+      await getYoutubeMusicURL(form.getValues('youtubeUrl'));
+    } catch (error) {
+      throw Error(error.message);
+    } finally {
+      setIsLoadingSearch(false);
+    }
+  };
+
   useEffect(() => {
     if (isActive && isPlayingPreview) setIsPlayingPreview(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActive]);
+  }, [isActive, isPlayingPreview]);
 
   return (
     <Collapsible open={isMusicUsed} className="space-y-4">
@@ -90,37 +109,27 @@ export default function SettingMusic() {
 
       <CollapsibleContent className={cn('space-y-4')}>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(() =>
-              getYoutubeMusicURL(form.getValues('youtubeUrl')),
-            )}
-            className="space-y-4"
-          >
+          <form onSubmit={(event) => handleSubmit(event)} className="space-y-4">
             <FormField
               control={form.control}
               name="youtubeUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormDescription>
-                    유튜브 동영상 URL을 입력해주세요.
+                    유튜브 동영상 URL 또는 검색어를 입력해주세요.
                   </FormDescription>
                   <div className="flex items-center gap-x-2">
                     <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="https://www.youtube.com/watch?v=7uRX00jTSA0"
-                        {...field}
-                      />
+                      <Input type="text" {...field} />
                     </FormControl>
                     <Button
                       type="submit"
                       disabled={isActive || !form.getValues('youtubeUrl')}
                       variant="primary-outline"
                     >
-                      {isActive ? '타이머 실행 중···' : '가져오기'}
+                      {isLoadingSearch ? '검색중..' : '검색'}
                     </Button>
                   </div>
-                  <FormMessage />
                 </FormItem>
               )}
             />
