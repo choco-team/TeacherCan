@@ -7,14 +7,17 @@ import {
   useMusicRequestTeacherState,
 } from '../../../music-request-teacher-provider/music-request-teacher-provider.hooks';
 
-const layoutVariant = cva('p-2 flex gap-2 cursor-pointer', {
-  variants: {
-    isSelected: {
-      true: 'bg-gray-100',
-      false: 'bg-white',
+const layoutVariant = cva(
+  'p-2 grid grid-cols-[auto_1fr_auto] gap-2 cursor-pointer w-full',
+  {
+    variants: {
+      isSelected: {
+        true: 'bg-gray-100',
+        false: 'bg-white',
+      },
     },
   },
-});
+);
 
 interface MusicCardProps {
   video: YoutubeVideo;
@@ -50,13 +53,13 @@ export default function MusicCard({ video, roomId, index }: MusicCardProps) {
       })}
       onClick={() => handlePlayButton()}
     >
-      <div className="relative">
+      <div className="relative w-12 h-12">
         <Image
           className="object-cover aspect-square rounded-sm"
-          src={`https://img.youtube.com/vi/${video.videoId}/maxresdefault.jpg`}
-          alt={video.title}
-          width={48}
-          height={48}
+          src={`https://i.ytimg.com/vi/${video.videoId}/hqdefault.jpg`}
+          alt=""
+          width={600}
+          height={600}
         />
         {isSelectedMusic ? (
           <div className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center pointer-events-none">
@@ -64,7 +67,7 @@ export default function MusicCard({ video, roomId, index }: MusicCardProps) {
           </div>
         ) : null}
       </div>
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-col truncate">
         <span className="font-medium text-sm truncate">{video.title}</span>
         <span className="font-light text-gray-600 text-xs">
           {video.proposer}의 신청곡

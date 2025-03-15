@@ -138,7 +138,7 @@ export default function MusicPlayer() {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 items-center">
       <div className="bg-gray-200 w-fit h-8 my-0 mx-auto rounded-3xl">
         <button
           type="button"
@@ -159,7 +159,7 @@ export default function MusicPlayer() {
           이미지
         </button>
       </div>
-      <div className="aspect-video relative">
+      <div className="aspect-video relative max-w-[1230px] w-full">
         <YouTube
           className="aspect-video"
           iframeClassName="w-full h-full"
@@ -196,15 +196,15 @@ export default function MusicPlayer() {
 
         {mediaType === 'image' ? (
           <Image
-            className="absolute top-0 bottom-0 left-0 right-0"
-            src={`https://img.youtube.com/vi/${currentVideo.videoId}/maxresdefault.jpg`}
+            className="absolute top-0 bottom-0 left-0 right-0 object-cover"
+            src={`https://i.ytimg.com/vi/${currentVideo.videoId}/hqdefault.jpg`}
             alt={currentVideo.title}
             fill
           />
         ) : null}
       </div>
       <div
-        className="fixed bottom-0 left-0 right-0 text-gray-700 bg-gradient-to-r from-primary-100 to-primary-300 z-[100] shadow-xl"
+        className="h-[100px] fixed bottom-0 left-0 right-0 text-gray-700 bg-gradient-to-r from-primary-100 to-primary-300 z-[100] shadow-xl"
         onMouseLeave={() => setHoverVolume(false)}
       >
         <div
@@ -235,7 +235,8 @@ export default function MusicPlayer() {
             </div>
           )}
         </div>
-        <div className="grid grid-cols-3 px-8 py-6">
+
+        <div className="grid grid-cols-[1fr_auto] lg:grid-cols-3 px-8 py-6">
           <div className="flex items-center gap-4">
             <ChevronFirst
               className="cursor-pointer"
@@ -264,10 +265,11 @@ export default function MusicPlayer() {
               {formatTime(currentTime)} / {formatTime(duration)}
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="items-center gap-4 hidden lg:flex">
             <Image
-              src={`https://img.youtube.com/vi/${currentVideo.videoId}/maxresdefault.jpg`}
-              alt={currentVideo.title}
+              className="object-cover"
+              src={`https://i.ytimg.com/vi/${currentVideo.videoId}/hqdefault.jpg`}
+              alt=""
               width={80}
               height={45}
             />

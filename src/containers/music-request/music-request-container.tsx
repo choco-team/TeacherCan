@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/button';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { Input } from '@/components/input';
 import {
   Form,
@@ -14,8 +13,8 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createRoom } from '@/utils/api/firebaseAPI';
 import { LoaderCircle } from 'lucide-react';
+import { useCreateMusicRequestRoom } from '@/hooks/apis/music-request/use-create-music-request-room';
 
 const ROOM_TITLE_ERROR_MESSAGE = {
   EMPTY_INPUT: '방이름을 입력해 주세요.',
@@ -29,9 +28,10 @@ const formSchema = z.object({
 });
 
 export default function MusicRequestContainer() {
-  const [isLoading, setIsLoading] = useState<boolean | null>(false);
   const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
+
+  const { mutate: createRoom, isPending } = useCreateMusicRequestRoom();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,19 +41,20 @@ export default function MusicRequestContainer() {
     reValidateMode: 'onSubmit',
   });
 
-  const handleRoomTitleSubmit = async (roomTitle: string) => {
-    try {
-      setIsLoading(true);
-      router.push(
-        `${originURL}/music-request/teacher/${await createRoom(roomTitle)}`,
-      );
-    } catch (error) {
-      form.setError('roomTitle', {
-        message: ROOM_TITLE_ERROR_MESSAGE.API_ERROR,
-      });
-      setIsLoading(false);
-      throw Error(error.message);
-    }
+  const handleRoomTitleSubmit = (roomTitle: string) => {
+    createRoom(
+      { roomTitle },
+      {
+        onSuccess: ({ roomId }) => {
+          router.push(`${originURL}/music-request/teacher/${roomId}`);
+        },
+        onError: () => {
+          form.setError('roomTitle', {
+            message: ROOM_TITLE_ERROR_MESSAGE.API_ERROR,
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -79,7 +80,7 @@ export default function MusicRequestContainer() {
                     />
                   </FormControl>
                   <Button type="submit" variant="primary" className="w-[120px]">
-                    {isLoading ? (
+                    {isPending ? (
                       <LoaderCircle
                         size="18px"
                         className="animate-spin text-white"

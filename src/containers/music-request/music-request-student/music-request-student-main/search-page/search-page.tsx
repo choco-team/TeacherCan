@@ -20,7 +20,10 @@ import {
   AlertDialogHeader,
 } from '@/components/alert-dialog';
 import { LoaderCircle } from 'lucide-react';
-import { AlertDialogDescription } from '@radix-ui/react-alert-dialog';
+import {
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from '@radix-ui/react-alert-dialog';
 import {
   useMusicRequestStudentAction,
   useMusicRequestStudentState,
@@ -60,6 +63,10 @@ export default function SearchPage() {
       throw Error(error.message);
     } finally {
       setIsLoading(false);
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
     }
   };
 
@@ -68,6 +75,7 @@ export default function SearchPage() {
       <AlertDialog open={alertOpen} onOpenChange={settingAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
+            <AlertDialogTitle className="hidden">title</AlertDialogTitle>
             <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
