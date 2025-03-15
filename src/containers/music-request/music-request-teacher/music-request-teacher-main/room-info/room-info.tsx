@@ -11,7 +11,7 @@ export default function RoomInfo() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col bg-primary-200 p-2 m-2 rounded">
+    <div className="flex flex-col p-2 m-2 rounded">
       <div className="flex flex-row mb-2 justify-center">
         <button
           className="mr-2"
