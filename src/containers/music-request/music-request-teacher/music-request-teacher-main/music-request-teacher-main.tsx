@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { getRoomTitle } from '@/utils/api/firebaseAPI';
+import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
+import { TabsContent } from '@radix-ui/react-tabs';
 import {
   useMusicRequestTeacherAction,
   useMusicRequestTeacherState,
@@ -23,15 +25,26 @@ export default function MusicRequestTeacherMain() {
   }, [params?.roomId, settingRoomId, settingRoomTitle]);
 
   return (
-    <div className="grid grid-cols-3">
-      <div className="flex flex-col col-span-2">
+    <div className="flex">
+      <div className="flex flex-col w-full">
         <MusicPlayer />
       </div>
-      <div className="flex flex-col col-span-1">
-        <RoomInfo />
-        <StudentList />
-        <MusicList />
-      </div>
+      <Tabs defaultValue="music-list" className="flex flex-col w-[600px] pl-2">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="music-list">신청목록</TabsTrigger>
+          <TabsTrigger value="student-list">학생목록</TabsTrigger>
+          <TabsTrigger value="rome-info">방 정보</TabsTrigger>
+        </TabsList>
+        <TabsContent value="music-list">
+          <MusicList />
+        </TabsContent>
+        <TabsContent value="student-list">
+          <StudentList />
+        </TabsContent>
+        <TabsContent value="rome-info">
+          <RoomInfo />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
