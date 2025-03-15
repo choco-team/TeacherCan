@@ -33,11 +33,27 @@ export default function MusicList() {
   }, [params.roomId, settingVideos, settingNumberOfVideos]);
 
   return (
-    <div>
-      {videos &&
-        videos.map((video) => (
-          <MusicCard video={video} roomId={params.roomId} key={video.videoId} />
-        ))}
+    <div className="h-[calc(100vh-200px)] overflow-scroll py-4">
+      {videos ? (
+        <div className="flex flex-col gap-[1px] bg-gray-200">
+          {videos.map((video, index) => (
+            <MusicCard
+              video={video}
+              roomId={params.roomId}
+              key={video.videoId}
+              index={index}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4 mt-12 justify-center items-center">
+          <div className="text-center text-sm text-gray-500">
+            <span>신청된 음악이 없어요. </span>
+            <br />
+            <span>방 정보에서 QR코드를 통해 학생을 초대해보세요.</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

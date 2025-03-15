@@ -1,3 +1,4 @@
+import { YoutubeVideo } from '@/utils/api/firebaseAPI';
 import {
   createContext,
   Dispatch,
@@ -10,13 +11,6 @@ export type MusicRequestTeacherParams = {
   roomId: string;
 };
 
-type Video = {
-  videoId: string;
-  title: string;
-  proposer: string;
-  playCount: number;
-};
-
 interface PropsWithChildrenParams extends PropsWithChildren {
   params: MusicRequestTeacherParams;
 }
@@ -25,7 +19,7 @@ type MusicRequestTeacherState = {
   params: MusicRequestTeacherParams;
   roomId: string;
   roomTitle: string;
-  videos: Video[];
+  videos: YoutubeVideo[];
   numberOfVideos: number;
   currentMusicIndex: number;
   maxPlayCount: number;
@@ -38,7 +32,7 @@ export const MusicRequestTeacherStateContext =
 type MusicRequestTeacherAction = {
   settingRoomId: Dispatch<SetStateAction<string>>;
   settingRoomTitle: Dispatch<SetStateAction<string>>;
-  settingVideos: Dispatch<SetStateAction<Video[]>>;
+  settingVideos: Dispatch<SetStateAction<YoutubeVideo[]>>;
   settingNumberOfVideos: Dispatch<SetStateAction<number>>;
   setCurrentMusicByIndex: (index: number) => void;
   settingIsVideoLoading: Dispatch<SetStateAction<boolean>>;

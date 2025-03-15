@@ -29,7 +29,10 @@ export default function MusicRequestTeacherMain() {
       <div className="flex flex-col w-full">
         <MusicPlayer />
       </div>
-      <Tabs defaultValue="music-list" className="flex flex-col w-[600px] pl-2">
+      <Tabs
+        defaultValue="music-list"
+        className="flex flex-col min-w-[400px] max-w-[400px] pl-2 h-full"
+      >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="music-list">신청목록</TabsTrigger>
           <TabsTrigger value="student-list">학생목록</TabsTrigger>
