@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import Navigation from '@/components/navigation/navigation';
 import Header from '@/components/header/header';
 import { ROUTE } from '@/constants/route';
+import QueryProvider from '@/components/provider/query-provider';
 
 export const metadata: Metadata = {
   title: '티처캔',
@@ -48,23 +49,25 @@ export default async function RootLayout({
     >
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       <body>
-        {currentPath === ROUTE.TIMER ? (
-          <main className="bg-beige-50">
-            <div>{children}</div>
-          </main>
-        ) : (
-          <>
-            <Navigation />
-            <main
-              id="teacher-can-main"
-              className="bg-body transition-all ease-in-out duration-500 lg:data-[status=closed]:ml-0 lg:ml-[260px]"
-            >
-              <Header />
-              <div className="pt-[68px] px-4 mb-8">{children}</div>
+        <QueryProvider>
+          {currentPath === ROUTE.TIMER ? (
+            <main className="bg-beige-50">
+              <div>{children}</div>
             </main>
-          </>
-        )}
-        <Toaster />
+          ) : (
+            <>
+              <Navigation />
+              <main
+                id="teacher-can-main"
+                className="bg-body transition-all ease-in-out duration-500 lg:data-[status=closed]:ml-0 lg:ml-[260px]"
+              >
+                <Header />
+                <div className="pt-[68px] px-4 mb-8">{children}</div>
+              </main>
+            </>
+          )}
+          <Toaster />
+        </QueryProvider>
       </body>
     </html>
   );

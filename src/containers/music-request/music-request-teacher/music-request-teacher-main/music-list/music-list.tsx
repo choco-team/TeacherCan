@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { firebaseDB } from '@/services/firebase';
 import { onValue, ref } from 'firebase/database';
 import {
@@ -8,9 +8,10 @@ import {
 import MusicCard from './music-card/music-card';
 
 export default function MusicList() {
-  const { params, videos } = useMusicRequestTeacherState();
+  const { params, videos, currentMusicIndex } = useMusicRequestTeacherState();
   const { settingVideos, settingNumberOfVideos } =
     useMusicRequestTeacherAction();
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const dbRef = ref(firebaseDB, `musicRooms/${params.roomId}/musics/list`);
@@ -32,10 +33,29 @@ export default function MusicList() {
     return () => unsubscribe();
   }, [params.roomId, settingVideos, settingNumberOfVideos]);
 
+  useEffect(() => {
+    if (!listRef || !listRef.current) {
+      return;
+    }
+
+    const listItems = listRef.current.children;
+
+    if (!listItems[currentMusicIndex]) {
+      return;
+    }
+
+    listItems[currentMusicIndex].scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  }, [listRef, currentMusicIndex]);
+
+  const hasVideo = videos.length > 0;
+
   return (
     <div className="h-full lg:h-[calc(100vh-200px)] overflow-scroll py-4">
-      {videos ? (
-        <div className="flex flex-col gap-[1px] bg-gray-200">
+      {hasVideo ? (
+        <div className="flex flex-col gap-[1px] bg-gray-200" ref={listRef}>
           {videos.map((video, index) => (
             <MusicCard
               video={video}
