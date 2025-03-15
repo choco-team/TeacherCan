@@ -38,7 +38,7 @@ function LunchMenu() {
           </Button>
         }
       />
-      <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full overflow-auto">
+      <div className="bg-white shadow-custom py-4 rounded-xl w-full overflow-auto">
         {selectedSchool ? (
           <MealList mealData={mealData} />
         ) : (

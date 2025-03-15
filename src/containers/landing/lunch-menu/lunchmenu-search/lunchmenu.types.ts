@@ -5,4 +5,4 @@ export type School = {
   ORG_RDNMA?: string;
 };
 
-export const API_KEY = process.env.NEXT_PUBLIC_NICE_API_KEY;
+// export const API_KEY = process.env.NEXT_PUBLIC_NICE_API_KEY;

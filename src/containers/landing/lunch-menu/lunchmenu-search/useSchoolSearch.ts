@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { School, API_KEY } from './lunchmenu.types';
+import { School } from './lunchmenu.types';
 
 function useSchoolSearch() {
   const [schoolList, setSchoolList] = useState<School[]>([]);
@@ -10,11 +10,9 @@ function useSchoolSearch() {
 
     try {
       const response = await axios.get(
-        `https://open.neis.go.kr/hub/schoolInfo?KEY=${API_KEY}&Type=json&SCHUL_NM=${schoolName}`,
+        `/api/lunchmenu/school-search?SCHUL_NM=${schoolName}`,
       );
-
-      const results: School[] = response.data.schoolInfo?.[1]?.row || [];
-      setSchoolList(results);
+      setSchoolList(response.data);
     } catch (error) {
       setSchoolList([]);
     }

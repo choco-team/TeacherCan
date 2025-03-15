@@ -33,41 +33,16 @@ const formatDate = (
   };
 };
 
-function getWeekRange(date: Date) {
-  const dayOfWeek = date.getDay();
-
-  const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1);
-
-  const monday = new Date(date);
-  monday.setDate(date.getDate() + mondayOffset);
-
-  const friday = new Date(monday);
-  friday.setDate(monday.getDate() + 4);
-
-  return { start: monday, end: friday };
-}
-
 function MealList({ mealData }: MealListProps) {
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10).replace(/-/g, '');
 
-  const { start, end } = getWeekRange(today);
-
-  const filteredMeals = mealData.filter((meal) => {
-    const mealDate = new Date(
-      parseInt(meal.MLSV_YMD.slice(0, 4), 10),
-      parseInt(meal.MLSV_YMD.slice(4, 6), 10) - 1,
-      parseInt(meal.MLSV_YMD.slice(6, 8), 10),
-    );
-
-    return mealDate >= start && mealDate <= end;
-  });
   return (
     <div className="rounded-xl w-full overflow-x-auto">
-      {filteredMeals.length > 0 && (
+      {mealData.length > 0 && (
         <CardContent className="p-2">
           <div className="flex gap-2">
-            {filteredMeals.map((meal) => {
+            {mealData.map((meal) => {
               const { formatted, dayOfWeek } = formatDate(meal.MLSV_YMD);
               const isToday = meal.MLSV_YMD === todayStr;
 
