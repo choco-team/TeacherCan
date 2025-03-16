@@ -8,3 +8,32 @@ export const formatTime = (seconds: number) => {
   }
   return `${m}:${String(s).padStart(2, '0')}`;
 };
+
+export const findNextVideIndex = (
+  order: 'next' | 'prev',
+  playerType: 'order' | 'shuffle',
+  currentVideoIndex: number,
+  musicCount: number,
+) => {
+  if (playerType === 'shuffle') {
+    return Math.floor(Math.random() * musicCount);
+  }
+
+  if (order === 'next' && currentVideoIndex + 1 === musicCount) {
+    return 0;
+  }
+
+  if (order === 'next') {
+    return currentVideoIndex + 1;
+  }
+
+  if (order === 'prev' && currentVideoIndex === 0) {
+    return musicCount - 1;
+  }
+
+  if (order === 'prev') {
+    return currentVideoIndex - 1;
+  }
+
+  return 0;
+};
