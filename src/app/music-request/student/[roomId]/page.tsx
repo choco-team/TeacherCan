@@ -1,5 +1,4 @@
 import MusicRequestStudentContainer from '@/containers/music-request/music-request-student/music-request-student-container';
-import { MusicRequestStudentParams } from '@/containers/music-request/music-request-student/music-request-student-provider/music-request-student-provider';
 
 export const metadata = {
   title: '음악신청',
@@ -8,7 +7,9 @@ export const metadata = {
 function MusicRequestStudent({
   params,
 }: {
-  params: MusicRequestStudentParams;
+  params: {
+    roomId: string;
+  };
 }) {
   return <MusicRequestStudentContainer params={params} />;
 }

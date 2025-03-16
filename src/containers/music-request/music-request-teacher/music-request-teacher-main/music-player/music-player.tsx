@@ -14,11 +14,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/styles/utils';
 import { Slider } from '@/components/slider';
-import {
-  useMusicRequestTeacherAction,
-  useMusicRequestTeacherState,
-} from '../../music-request-teacher-provider/music-request-teacher-provider.hooks';
-import { formatTime } from './music-player.utiles';
+import { YoutubeVideo } from '@/apis/music-request/musicRequest';
+import { formatTime } from './music-player.utils';
 
 const mediaTypeButtonVariants = cva(
   'px-4 h-8 rounded-3xl text-white font-normal',
@@ -32,12 +29,22 @@ const mediaTypeButtonVariants = cva(
   },
 );
 
-export default function MusicPlayer() {
-  const { videos, numberOfVideos, currentMusicIndex, maxPlayCount } =
-    useMusicRequestTeacherState();
-  const { setCurrentMusicByIndex, settingIsVideoLoading } =
-    useMusicRequestTeacherAction();
-  const [playOrder, setPlayOrder] = useState<'inOrder' | 'shuffle'>('inOrder');
+type Props = {
+  musicList: YoutubeVideo[];
+  currentVideoIndex: number;
+  updateCurrentVideoIndex: (index: number) => void;
+};
+
+export default function MusicPlayer({
+  musicList,
+  currentVideoIndex,
+  updateCurrentVideoIndex,
+}: Props) {
+  const currentVideo =
+    musicList.length > 0 ? musicList[currentVideoIndex] : null;
+  const videoCount = musicList.length;
+
+  const [playOrder, setPlayOrder] = useState<'order' | 'shuffle'>('order');
   const [mediaType, setMediaType] = useState<'video' | 'image'>('video');
   const youtubePlayerRef = useRef<YT.Player | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -49,43 +56,40 @@ export default function MusicPlayer() {
   const [volume, setVolume] = useState(50);
 
   const handleMusicShuffle = () => {
-    let randomIndex = Math.floor(Math.random() * (numberOfVideos - 1));
-    let repeatCount = 0;
-    while (videos[randomIndex].playCount === maxPlayCount) {
-      if (repeatCount === numberOfVideos) {
-        break;
-      }
-      if (randomIndex !== numberOfVideos - 1) {
-        randomIndex += 1;
-      } else {
-        randomIndex = 0;
-      }
-      repeatCount += 1;
-    }
-    setCurrentMusicByIndex(randomIndex);
+    const randomIndex = Math.floor(Math.random() * (videoCount - 1));
+
+    updateCurrentVideoIndex(randomIndex);
   };
 
-  const handleMusicPlay = (order: 1 | -1) => {
+  const handleMusicPlay = (order: 'next' | 'prev') => {
     if (playOrder === 'shuffle') {
       handleMusicShuffle();
       return;
     }
-    let nextMusicIndex;
-    if (order === 1 && currentMusicIndex === numberOfVideos - 1) {
-      nextMusicIndex = 0;
-    } else if (order === -1 && currentMusicIndex === 0) {
-      nextMusicIndex = numberOfVideos - 1;
-    } else {
-      nextMusicIndex = currentMusicIndex + order;
+
+    if (order === 'next' && currentVideoIndex + 1 === videoCount) {
+      updateCurrentVideoIndex(0);
+      return;
     }
-    setCurrentMusicByIndex(nextMusicIndex);
+
+    if (order === 'next') {
+      updateCurrentVideoIndex(currentVideoIndex + 1);
+      return;
+    }
+
+    if (order === 'prev' && currentVideoIndex === 0) {
+      updateCurrentVideoIndex(videoCount - 1);
+      return;
+    }
+
+    if (order === 'prev') {
+      updateCurrentVideoIndex(currentVideoIndex - 1);
+    }
   };
 
-  const togglePlayorder = () => {
-    setPlayOrder((prev) => (prev === 'inOrder' ? 'shuffle' : 'inOrder'));
+  const togglePlayOrder = () => {
+    setPlayOrder((prev) => (prev === 'order' ? 'shuffle' : 'order'));
   };
-
-  const hasVideos = videos.length > 0;
 
   useEffect(() => {
     if (!youtubePlayerRef.current) {
@@ -95,12 +99,11 @@ export default function MusicPlayer() {
     youtubePlayerRef.current.setVolume(volume);
   }, [volume]);
 
-  if (!hasVideos) {
-    // TODO:(김홍동) 아직 비디오 신청이 없는 경우 대응
+  if (!currentVideo) {
+    // TODO:(김홍동) 아직 비디오가 없는 경우
     return null;
   }
 
-  const currentVideo = videos[currentMusicIndex];
   const progress = duration === 0 ? 0 : (currentTime / duration) * 100;
 
   const clearIntervalFunc = () => {
@@ -165,7 +168,7 @@ export default function MusicPlayer() {
           iframeClassName="w-full h-full"
           onReady={(event: YT.PlayerEvent) => {
             youtubePlayerRef.current = event.target;
-            settingIsVideoLoading(false);
+            youtubePlayerRef.current.setVolume(volume);
             setCurrentTime(0);
             setDuration(event.target.getDuration());
           }}
@@ -179,12 +182,12 @@ export default function MusicPlayer() {
           onEnd={() => {
             if (playOrder === 'shuffle') {
               handleMusicShuffle();
-            } else if (playOrder === 'inOrder') {
-              handleMusicPlay(1);
+            } else if (playOrder === 'order') {
+              handleMusicPlay('next');
             }
           }}
           onPause={() => setIsPlay(false)}
-          videoId={currentVideo.videoId}
+          videoId={currentVideo.musicId}
           opts={{
             playerVars: {
               autoplay: 1,
@@ -197,7 +200,7 @@ export default function MusicPlayer() {
         {mediaType === 'image' ? (
           <Image
             className="absolute top-0 bottom-0 left-0 right-0 object-cover"
-            src={`https://i.ytimg.com/vi/${currentVideo.videoId}/hqdefault.jpg`}
+            src={`https://i.ytimg.com/vi/${currentVideo.musicId}/hqdefault.jpg`}
             alt={currentVideo.title}
             fill
           />
@@ -240,7 +243,7 @@ export default function MusicPlayer() {
           <div className="flex items-center gap-4">
             <ChevronFirst
               className="cursor-pointer"
-              onClick={() => handleMusicPlay(-1)}
+              onClick={() => handleMusicPlay('prev')}
             />
             {isPlay ? (
               <Pause
@@ -259,7 +262,7 @@ export default function MusicPlayer() {
             )}
             <ChevronLast
               className="cursor-pointer"
-              onClick={() => handleMusicPlay(1)}
+              onClick={() => handleMusicPlay('next')}
             />
             <div className="tabular-nums text-sm text-gray-600">
               {formatTime(currentTime)} / {formatTime(duration)}
@@ -268,7 +271,7 @@ export default function MusicPlayer() {
           <div className="items-center gap-4 hidden lg:flex">
             <Image
               className="object-cover"
-              src={`https://i.ytimg.com/vi/${currentVideo.videoId}/hqdefault.jpg`}
+              src={`https://i.ytimg.com/vi/${currentVideo.musicId}/hqdefault.jpg`}
               alt=""
               width={80}
               height={45}
@@ -276,7 +279,7 @@ export default function MusicPlayer() {
             <div className="truncate flex flex-col">
               <span className="font-bold">{currentVideo.title}</span>
               <span className="font-light text-gray-600 text-sm">
-                {currentVideo.proposer}의 신청곡
+                {currentVideo.student}의 신청곡
               </span>
             </div>
           </div>
@@ -316,7 +319,7 @@ export default function MusicPlayer() {
                 'cursor-pointer',
                 playOrder === 'shuffle' ? 'text-gray-600' : 'text-primary-200',
               )}
-              onClick={() => togglePlayorder()}
+              onClick={() => togglePlayOrder()}
             />
           </div>
         </div>

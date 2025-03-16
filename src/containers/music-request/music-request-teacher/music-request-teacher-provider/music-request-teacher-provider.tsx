@@ -11,13 +11,9 @@ export type MusicRequestTeacherParams = {
   roomId: string;
 };
 
-interface PropsWithChildrenParams extends PropsWithChildren {
-  params: MusicRequestTeacherParams;
-}
+interface PropsWithChildrenParams extends PropsWithChildren {}
 
 type MusicRequestTeacherState = {
-  params: MusicRequestTeacherParams;
-  roomId: string;
   roomTitle: string;
   videos: YoutubeVideo[];
   numberOfVideos: number;
@@ -43,7 +39,6 @@ export const MusicRequestTeacherActionContext =
 
 export default function MusicRequestTeacherProvider({
   children,
-  params,
 }: PropsWithChildrenParams) {
   const [roomId, setRoomId] = useState();
   const [roomTitle, setRoomTitle] = useState();
@@ -57,7 +52,6 @@ export default function MusicRequestTeacherProvider({
     roomId,
     roomTitle,
     videos,
-    params,
     numberOfVideos,
     currentMusicIndex,
     maxPlayCount,

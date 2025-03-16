@@ -49,3 +49,24 @@ export const createMusicRequestMusic = (params: {
     body: JSON.stringify(params),
   });
 };
+
+export type YoutubeVideo = {
+  musicId: string;
+  title: string;
+  student: string;
+  timeStamp: string;
+};
+
+type GetMusicRequestRoomResponse = {
+  roomTitle: string;
+  studentList: string[];
+  musicList: YoutubeVideo[];
+};
+
+export const getMusicRequestRoom = (params: { roomId: string }) => {
+  const searchParams = new URLSearchParams(params);
+
+  return fetcher<GetMusicRequestRoomResponse>(
+    `/music-request/?${searchParams}`,
+  );
+};

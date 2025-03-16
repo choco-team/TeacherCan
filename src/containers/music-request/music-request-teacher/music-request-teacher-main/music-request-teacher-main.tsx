@@ -1,36 +1,43 @@
-import { useEffect } from 'react';
-import { getRoomTitle } from '@/utils/api/firebaseAPI';
 import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
-import {
-  useMusicRequestTeacherAction,
-  useMusicRequestTeacherState,
-} from '../music-request-teacher-provider/music-request-teacher-provider.hooks';
+import { useGetMusicRequestRoom } from '@/hooks/apis/music-request/use-get-music-request-room';
+import { useState } from 'react';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import StudentList from './student-list/student-list';
 import MusicList from './music-list/music-list';
 
-export default function MusicRequestTeacherMain() {
-  const { params } = useMusicRequestTeacherState();
-  const { settingRoomId, settingRoomTitle } = useMusicRequestTeacherAction();
+type Props = {
+  roomId: string;
+};
 
-  useEffect(() => {
-    if (params?.roomId) {
-      settingRoomId(params.roomId);
-      getRoomTitle(params.roomId).then((title) => {
-        settingRoomTitle(title);
-      });
-    }
-  }, [params?.roomId, settingRoomId, settingRoomTitle]);
+export default function MusicRequestTeacherMain({ roomId }: Props) {
+  const { data, isPending } = useGetMusicRequestRoom({ roomId });
+  const [currentMusicIndex, setCurrentMusicIndex] = useState<number>(0);
+
+  const updateCurrentVideoIndex = (index: number) => {
+    setCurrentMusicIndex(index);
+  };
+
+  if (isPending) {
+    // TODO:(김홍동) 로딩상태 구현하기
+    return null;
+  }
+
+  const defaultTabMenu =
+    data.studentList.length === 0 ? 'rome-info' : 'music-list';
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-0">
       <div className="flex flex-col w-full">
-        <MusicPlayer />
+        <MusicPlayer
+          currentVideoIndex={currentMusicIndex}
+          updateCurrentVideoIndex={updateCurrentVideoIndex}
+          musicList={data.musicList}
+        />
       </div>
       <Tabs
-        defaultValue="music-list"
+        defaultValue={defaultTabMenu}
         className="flex flex-col w-full mb-[108px] lg:mb-0 lg:min-w-[400px] lg:max-w-[400px] pl-2 h-full"
       >
         <TabsList className="grid w-full grid-cols-3">
@@ -39,13 +46,18 @@ export default function MusicRequestTeacherMain() {
           <TabsTrigger value="rome-info">방 정보</TabsTrigger>
         </TabsList>
         <TabsContent value="music-list">
-          <MusicList />
+          <MusicList
+            videos={data.musicList}
+            roomId={roomId}
+            currentVideoIndex={currentMusicIndex}
+            updateCurrentVideoIndex={updateCurrentVideoIndex}
+          />
         </TabsContent>
         <TabsContent value="student-list">
-          <StudentList />
+          <StudentList students={data.studentList} />
         </TabsContent>
         <TabsContent value="rome-info">
-          <RoomInfo />
+          <RoomInfo roomId={roomId} roomTitle={data.roomTitle} />
         </TabsContent>
       </Tabs>
     </div>
