@@ -1,54 +1,39 @@
 import { useEffect, useRef } from 'react';
-import { firebaseDB } from '@/services/firebase';
-import { onValue, ref } from 'firebase/database';
-import {
-  useMusicRequestTeacherAction,
-  useMusicRequestTeacherState,
-} from '../../music-request-teacher-provider/music-request-teacher-provider.hooks';
+import { YoutubeVideo } from '@/apis/music-request/musicRequest';
 import MusicCard from './music-card/music-card';
 
-export default function MusicList() {
-  const { params, videos, currentMusicIndex } = useMusicRequestTeacherState();
-  const { settingVideos, settingNumberOfVideos } =
-    useMusicRequestTeacherAction();
+type Props = {
+  videos: YoutubeVideo[];
+  roomId: string;
+  currentVideoIndex: number;
+  updateCurrentVideoIndex: (index: number) => void;
+};
+
+export default function MusicList({
+  videos,
+  roomId,
+  currentVideoIndex,
+  updateCurrentVideoIndex,
+}: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const dbRef = ref(firebaseDB, `musicRooms/${params.roomId}/musics/list`);
-    const unsubscribe = onValue(dbRef, (snapshot) => {
-      const value = snapshot.val();
-      if (value) {
-        const videoArray = Object.keys(value).map((key) => ({
-          ...value[key],
-          musicId: key,
-          playCount: 0,
-        }));
-        settingVideos(videoArray);
-        settingNumberOfVideos(videoArray.length);
-      } else {
-        settingVideos([]);
-        settingNumberOfVideos(0);
-      }
-    });
-    return () => unsubscribe();
-  }, [params.roomId, settingVideos, settingNumberOfVideos]);
-
-  useEffect(() => {
+    // TODO:(김홍동) 0 대신 현재 클릭한 비디오
     if (!listRef || !listRef.current) {
       return;
     }
 
     const listItems = listRef.current.children;
 
-    if (!listItems[currentMusicIndex]) {
+    if (!listItems[0]) {
       return;
     }
 
-    listItems[currentMusicIndex].scrollIntoView({
+    listItems[0].scrollIntoView({
       behavior: 'smooth',
       block: 'center',
     });
-  }, [listRef, currentMusicIndex]);
+  }, [listRef, 0]);
 
   const hasVideo = videos.length > 0;
 
@@ -59,9 +44,11 @@ export default function MusicList() {
           {videos.map((video, index) => (
             <MusicCard
               video={video}
-              roomId={params.roomId}
-              key={video.videoId}
+              roomId={roomId}
+              key={video.musicId}
               index={index}
+              currentVideoIndex={currentVideoIndex}
+              updateCurrentVideoIndex={updateCurrentVideoIndex}
             />
           ))}
         </div>

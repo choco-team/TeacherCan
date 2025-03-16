@@ -1,11 +1,7 @@
-import { deleteMusic, YoutubeVideo } from '@/utils/api/firebaseAPI';
 import { Play, X } from 'lucide-react';
 import Image from 'next/image';
 import { cva } from 'class-variance-authority';
-import {
-  useMusicRequestTeacherAction,
-  useMusicRequestTeacherState,
-} from '../../../music-request-teacher-provider/music-request-teacher-provider.hooks';
+import { YoutubeVideo } from '@/apis/music-request/musicRequest';
 
 const layoutVariant = cva(
   'p-2 grid grid-cols-[auto_1fr_auto] gap-2 cursor-pointer w-full',
@@ -19,31 +15,36 @@ const layoutVariant = cva(
   },
 );
 
-interface MusicCardProps {
+type Props = {
   video: YoutubeVideo;
   roomId: string;
   index: number;
-}
+  currentVideoIndex: number;
+  updateCurrentVideoIndex: (index: number) => void;
+};
 
-export default function MusicCard({ video, roomId, index }: MusicCardProps) {
-  const { currentMusicIndex } = useMusicRequestTeacherState();
-  const { setCurrentMusicByIndex } = useMusicRequestTeacherAction();
-
-  const isSelectedMusic = index === currentMusicIndex;
+export default function MusicCard({
+  video,
+  roomId,
+  index,
+  currentVideoIndex,
+  updateCurrentVideoIndex,
+}: Props) {
+  const isSelectedMusic =
+    currentVideoIndex !== null && currentVideoIndex === index;
 
   const handleDeleteMusic = async () => {
-    try {
-      deleteMusic(roomId, video);
-    } catch (e) {
-      throw new Error(e.message);
-    }
+    // TODO:(김홍동) 음악 지우기
+    console.log(roomId);
+    // try {
+    //   deleteMusic(roomId, video);
+    // } catch (e) {
+    //   throw new Error(e.message);
+    // }
   };
 
   const handlePlayButton = () => {
-    if (isSelectedMusic) {
-      return;
-    }
-    setCurrentMusicByIndex(index);
+    updateCurrentVideoIndex(index);
   };
 
   return (
@@ -56,7 +57,7 @@ export default function MusicCard({ video, roomId, index }: MusicCardProps) {
       <div className="relative w-12 h-12">
         <Image
           className="object-cover aspect-square rounded-sm"
-          src={`https://i.ytimg.com/vi/${video.videoId}/hqdefault.jpg`}
+          src={`https://i.ytimg.com/vi/${video.musicId}/hqdefault.jpg`}
           alt=""
           width={600}
           height={600}
@@ -70,7 +71,7 @@ export default function MusicCard({ video, roomId, index }: MusicCardProps) {
       <div className="flex flex-col truncate">
         <span className="font-medium text-sm truncate">{video.title}</span>
         <span className="font-light text-gray-600 text-xs">
-          {video.proposer}의 신청곡
+          {video.student}의 신청곡
         </span>
       </div>
       <div className="flex flex-col justify-between ">
