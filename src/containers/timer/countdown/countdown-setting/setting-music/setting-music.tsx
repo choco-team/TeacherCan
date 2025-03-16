@@ -42,6 +42,7 @@ export default function SettingMusic() {
     toggleMusicUsed,
     controlVolume,
     controlIsPreviewYoutubeReady,
+    controlSearchInput,
   } = useCountdownMusicAction();
   const { previewYoutubePlayerRef, volumeValue } = useCountdownMusicState();
   const { controlOpenMusicSearch, controlVideos } = useCountdownMusicAction();
@@ -70,14 +71,16 @@ export default function SettingMusic() {
 
   const handleSubmit = async (event: any) => {
     try {
-      setIsLoadingSearch(true);
       event.preventDefault();
+      setIsLoadingSearch(true);
+      const inputValue = form.getValues('youtubeUrl');
       if (!(await form.trigger('youtubeUrl'))) {
-        controlVideos(await youtubeSearch(form.getValues('youtubeUrl')));
+        controlVideos(await youtubeSearch(inputValue));
         controlOpenMusicSearch(true);
+        controlSearchInput(inputValue);
         return;
       }
-      await getYoutubeMusicURL(form.getValues('youtubeUrl'));
+      await getYoutubeMusicURL(inputValue);
     } catch (error) {
       throw Error(error.message);
     } finally {
@@ -127,7 +130,11 @@ export default function SettingMusic() {
                       disabled={isActive || !form.getValues('youtubeUrl')}
                       variant="primary-outline"
                     >
-                      {isLoadingSearch ? '검색중..' : '검색'}
+                      {isLoadingSearch ? (
+                        <div className="w-6 h-6 border-4 border-gray-300 border-t-primary-500 rounded-full animate-spin" />
+                      ) : (
+                        '검색'
+                      )}
                     </Button>
                   </div>
                 </FormItem>

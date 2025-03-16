@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogTitle,
 } from '@/components/dialog';
 import {
@@ -36,7 +35,9 @@ const YOUTUBE_SEARCH_ERROR_MESSAGE = {
 } as const;
 
 const formSchema = z.object({
-  q: z.string().nonempty({ message: YOUTUBE_SEARCH_ERROR_MESSAGE.EMPTY_INPUT }),
+  youtubeSearchValue: z
+    .string()
+    .nonempty({ message: YOUTUBE_SEARCH_ERROR_MESSAGE.EMPTY_INPUT }),
 });
 
 export default function MusicSearchModal({
@@ -44,13 +45,13 @@ export default function MusicSearchModal({
   toggleMusicSearchOpen,
 }: Props) {
   const [isLoading, setIsLoading] = useState<boolean | null>();
-  const { videos } = useCountdownMusicState();
+  const { videos, searchInput } = useCountdownMusicState();
   const { controlVideos } = useCountdownMusicAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      q: '',
+      youtubeSearchValue: '',
     },
     reValidateMode: 'onSubmit',
   });
@@ -59,12 +60,13 @@ export default function MusicSearchModal({
     toggleMusicSearchOpen(open);
   };
 
-  const handleSearch = async (q: string) => {
+  const handleSearch = async (event: any) => {
     try {
+      event.preventDefault();
       setIsLoading(true);
-      controlVideos(await youtubeSearch(q));
+      controlVideos(await youtubeSearch(form.getValues('youtubeSearchValue')));
     } catch (error) {
-      form.setError('q', {
+      form.setError('youtubeSearchValue', {
         message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
       });
       throw Error(error.message);
@@ -85,14 +87,12 @@ export default function MusicSearchModal({
         <div className="flex flex-col h-full w-full">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(() =>
-                handleSearch(form.getValues('q')),
-              )}
+              onSubmit={(event) => handleSearch(event)}
               className="space-y-4"
             >
               <FormField
                 control={form.control}
-                name="q"
+                name="youtubeSearchValue"
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center gap-x-2">
@@ -101,10 +101,15 @@ export default function MusicSearchModal({
                           type="text"
                           {...field}
                           placeholder="검색어를 입력해주세요."
+                          value={searchInput}
                         />
                       </FormControl>
                       <Button type="submit" variant="primary-outline">
-                        {isLoading ? '로딩중...' : '검색'}
+                        {isLoading ? (
+                          <div className="w-6 h-6 border-4 border-gray-300 border-t-primary-500 rounded-full animate-spin" />
+                        ) : (
+                          '검색'
+                        )}
                       </Button>
                     </div>
                     <FormMessage />
@@ -117,16 +122,6 @@ export default function MusicSearchModal({
             {videos && videos.map((video) => <VideoCard video={video} />)}
           </ul>
         </div>
-
-        <DialogFooter>
-          {/* <Button
-              size="lg"
-              className="p-10 rounded-2xl text-3xl hover:scale-105 active:scale-95"
-              // onClick={}
-            >
-              모두 뒤집기
-            </Button> */}
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

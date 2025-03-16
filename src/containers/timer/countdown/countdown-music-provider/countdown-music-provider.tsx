@@ -36,6 +36,7 @@ type CountdownMusicState = {
   isPreviewYoutubeReady: boolean;
   isOpenMusicSearch: boolean;
   videos: Video[];
+  searchInput: string;
 };
 
 export const CountdownMusicStateContext =
@@ -49,6 +50,7 @@ type CountdownMusicAction = {
   controlOpenMusicSearch: Dispatch<SetStateAction<boolean>>;
   controlVideos: Dispatch<SetStateAction<Video[]>>;
   controlMusic: (music: Music) => void;
+  controlSearchInput: Dispatch<SetStateAction<string>>;
 };
 
 export const CountdownMusicActionContext =
@@ -78,6 +80,7 @@ export default function CountdownMusicProvider({ children }: Props) {
   const previewYoutubePlayerRef = useRef<YT.Player>(null);
   const [isOpenMusicSearch, setIsOpenMusicSearch] = useState<boolean>(false);
   const [videos, setVideos] = useState<Video[]>();
+  const [searchInput, setSearchInput] = useState<string>();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -120,7 +123,7 @@ export default function CountdownMusicProvider({ children }: Props) {
         throw Error(error.message);
       }
     },
-    [toggleMusicPlay, setIsMusicUsed, form, music, controlMusic],
+    [music, controlMusic],
   );
 
   const toggleMusicUsed = useCallback(() => {
@@ -141,6 +144,8 @@ export default function CountdownMusicProvider({ children }: Props) {
 
   const controlVideos = useCallback(setVideos, [setVideos]);
 
+  const controlSearchInput = useCallback(setSearchInput, [setSearchInput]);
+
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(
     () => ({
       music,
@@ -149,6 +154,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       isPreviewYoutubeReady,
       isOpenMusicSearch,
       videos,
+      searchInput,
     }),
     [
       music,
@@ -157,6 +163,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       isPreviewYoutubeReady,
       isOpenMusicSearch,
       videos,
+      searchInput,
     ],
   );
 
@@ -169,6 +176,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       controlOpenMusicSearch,
       controlVideos,
       controlMusic,
+      controlSearchInput,
     }),
     [
       getYoutubeMusicURL,
@@ -178,6 +186,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       controlOpenMusicSearch,
       controlVideos,
       controlMusic,
+      controlSearchInput,
     ],
   );
 
