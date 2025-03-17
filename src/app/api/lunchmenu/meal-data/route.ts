@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { startOfWeek, format } from 'date-fns';
+import { startOfWeek, format, parse } from 'date-fns';
+import { ko } from 'date-fns/locale';
+
+type MealData = {
+  MLSV_YMD: string;
+  DDISH_NM: string | null;
+};
 
 async function fetchMealInfo(schoolCode: string, officeCode: string) {
   try {
@@ -44,14 +50,16 @@ async function fetchMealInfo(schoolCode: string, officeCode: string) {
       { row },
     ] = data.mealServiceDietInfo;
 
-    // TODO: 응답이 실패한 경우 케이스 대응
-    // TODO: 이쁘게 데이터를 잘 만들어서 내려주기 + 타입까지 같이 세팅해줘서 내려주기
-    // '오늘'은 다른색으로
-    // 디자인 수정
-
     if (CODE === 'INFO-000') {
       if (data.mealServiceDietInfo) {
-        return row;
+        return (row as MealData[]).map((meal) => ({
+          ...meal,
+          formattedDate: format(
+            parse(meal.MLSV_YMD, 'yyyyMMdd', new Date()),
+            'M월 d일 EEEE',
+            { locale: ko },
+          ),
+        }));
       }
       return [];
     }

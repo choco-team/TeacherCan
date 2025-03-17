@@ -5,6 +5,7 @@ import { School } from './lunchmenu.types';
 type MealData = {
   MLSV_YMD: string;
   DDISH_NM: string | null;
+  formattedDate: string;
 };
 
 function useMealData(selectedSchool: School | null) {
@@ -29,3 +30,5 @@ function useMealData(selectedSchool: School | null) {
 }
 
 export default useMealData;
+
+// TODO: 응답이 실패한 경우 케이스 대응

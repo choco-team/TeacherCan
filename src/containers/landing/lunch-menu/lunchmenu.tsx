@@ -21,7 +21,7 @@ function LunchMenu() {
     null,
   );
 
-  const { mealData } = useMealData(selectedSchool, setSchoolName);
+  const { mealData } = useMealData(selectedSchool);
 
   return (
     <div className="flex flex-col gap-4 w-full ">
