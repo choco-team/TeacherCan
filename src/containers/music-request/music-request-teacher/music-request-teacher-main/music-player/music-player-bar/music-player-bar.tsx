@@ -105,7 +105,7 @@ export function MusicPlayerBar({
           </div>
         )}
       </div>
-      <div className="grid grid-cols-[1fr_auto] lg:grid-cols-3 px-8 py-6">
+      <div className="grid grid-cols-[1fr_auto] lg:grid-cols-3 px-8 h-full items-center">
         <div className="flex items-center gap-4">
           <ChevronFirst
             className="cursor-pointer"

@@ -57,7 +57,7 @@ export type YoutubeVideo = {
   timeStamp: string;
 };
 
-type GetMusicRequestRoomResponse = {
+export type GetMusicRequestRoomResponse = {
   roomTitle: string;
   studentList: string[];
   musicList: YoutubeVideo[];
