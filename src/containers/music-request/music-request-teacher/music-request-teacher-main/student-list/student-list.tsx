@@ -6,7 +6,13 @@ export default function StudentList({ students }: Props) {
   const hasStudent = students.length > 0;
 
   return (
-    <div className="h-full lg:h-[calc(100vh-200px)] overflow-scroll py-4">
+    <div
+      className="h-full lg:h-[calc(100vh-200px)] overflow-scroll py-4"
+      style={{
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+      }}
+    >
       {hasStudent ? (
         <div className="bg-gray-100 flex flex-col gap-[1px]">
           {students.map((student, index) => (

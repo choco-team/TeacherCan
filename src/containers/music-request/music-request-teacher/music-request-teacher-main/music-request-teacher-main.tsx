@@ -6,13 +6,16 @@ import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import StudentList from './student-list/student-list';
 import MusicList from './music-list/music-list';
+import { MusicRefresh } from './music-refresh/music-refresh';
 
 type Props = {
   roomId: string;
 };
 
 export default function MusicRequestTeacherMain({ roomId }: Props) {
-  const { data, isPending } = useGetMusicRequestRoom({ roomId });
+  const { data, isPending, refetch, isRefetching } = useGetMusicRequestRoom({
+    roomId,
+  });
   const [currentMusicIndex, setCurrentMusicIndex] = useState<number>(0);
 
   const updateCurrentVideoIndex = (index: number) => {
@@ -60,6 +63,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           <RoomInfo roomId={roomId} roomTitle={data.roomTitle} />
         </TabsContent>
       </Tabs>
+      <MusicRefresh musicRefetch={refetch} isRefetching={isRefetching} />
     </div>
   );
 }

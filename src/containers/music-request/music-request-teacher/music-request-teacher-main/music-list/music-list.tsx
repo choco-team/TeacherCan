@@ -18,29 +18,37 @@ export default function MusicList({
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // TODO:(김홍동) 0 대신 현재 클릭한 비디오
     if (!listRef || !listRef.current) {
       return;
     }
 
     const listItems = listRef.current.children;
 
-    if (!listItems[0]) {
+    if (!listItems[currentVideoIndex]) {
       return;
     }
 
-    listItems[0].scrollIntoView({
+    listItems[currentVideoIndex].scrollIntoView({
       behavior: 'smooth',
       block: 'center',
     });
-  }, [listRef, 0]);
+  }, [listRef, currentVideoIndex]);
 
   const hasVideo = videos.length > 0;
 
   return (
-    <div className="h-full lg:h-[calc(100vh-200px)] overflow-scroll py-4">
+    <div
+      className="h-full lg:h-[calc(100vh-200px)] overflow-scroll pb-6 pt-2 mt-2 relative"
+      style={{
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+      }}
+    >
       {hasVideo ? (
-        <div className="flex flex-col gap-[1px] bg-gray-200" ref={listRef}>
+        <div
+          className="flex flex-col gap-[1px] mb-12 bg-gray-200"
+          ref={listRef}
+        >
           {videos.map((video, index) => (
             <MusicCard
               video={video}
