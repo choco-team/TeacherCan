@@ -10,7 +10,7 @@ function SchoolCard({ school, onClick }: SchoolCardProps) {
   return (
     <Card
       key={school.SD_SCHUL_CODE}
-      className="mb-2 cursor-pointer"
+      className="cursor-pointer self-start shadow-none"
       onClick={onClick}
     >
       <CardContent className="p-4">

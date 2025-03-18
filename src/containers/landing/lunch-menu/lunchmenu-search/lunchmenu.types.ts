@@ -1,6 +1,6 @@
 export type School = {
-  SD_SCHUL_CODE: string;
-  ATPT_OFCDC_SC_CODE: string;
-  SCHUL_NM: string;
-  ORG_RDNMA?: string;
+  SD_SCHUL_CODE: string | null;
+  ATPT_OFCDC_SC_CODE: string | null;
+  SCHUL_NM: string | null;
+  ORG_RDNMA?: string | null;
 };

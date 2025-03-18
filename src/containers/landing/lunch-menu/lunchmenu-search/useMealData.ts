@@ -12,6 +12,10 @@ function useMealData(selectedSchool: School | null) {
   const [mealData, setMealData] = useState<MealData[]>([]);
 
   const fetchMealData = async (school: School) => {
+    if (!school || !school.SCHUL_NM) {
+      return;
+    }
+
     const data = await axios('/api/lunchmenu/meal-data', {
       params: {
         ATPT_OFCDC_SC_CODE: school.ATPT_OFCDC_SC_CODE,
