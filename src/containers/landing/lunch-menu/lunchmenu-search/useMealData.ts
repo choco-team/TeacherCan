@@ -10,7 +10,7 @@ type MealData = {
 
 function useMealData(selectedSchool: School | null) {
   const [mealData, setMealData] = useState<MealData[]>([]);
-  // 급식 데이터를 가져오는 함수 (Next.js API 사용)
+
   const fetchMealData = async (school: School) => {
     const data = await axios('/api/lunchmenu/meal-data', {
       params: {
@@ -30,5 +30,3 @@ function useMealData(selectedSchool: School | null) {
 }
 
 export default useMealData;
-
-// TODO: 응답이 실패한 경우 케이스 대응

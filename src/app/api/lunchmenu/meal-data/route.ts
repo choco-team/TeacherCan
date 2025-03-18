@@ -18,13 +18,11 @@ async function fetchMealInfo(schoolCode: string, officeCode: string) {
       SD_SCHUL_CODE: schoolCode,
     });
 
-    // 기준 날짜 (오늘)
     const today = new Date();
 
-    // 주의 시작 (월요일) 및 끝 (금요일) 가져오기
-    const monday = startOfWeek(today, { weekStartsOn: 1 }); // 월요일 시작
+    const monday = startOfWeek(today, { weekStartsOn: 1 });
     const friday = new Date(monday);
-    friday.setDate(monday.getDate() + 4); // 월요일 기준 4일 후가 금요일
+    friday.setDate(monday.getDate() + 4);
 
     const formattedMonday = format(monday, 'yyyyMMdd');
     const formattedFriday = format(friday, 'yyyyMMdd');
@@ -34,16 +32,26 @@ async function fetchMealInfo(schoolCode: string, officeCode: string) {
 
     const response = await fetch(
       `https://open.neis.go.kr/hub/mealServiceDietInfo?${queryParams.toString()}`,
-    );
+    ).catch(() => {
+      throw new Error('급식 API 서버에 접속할 수 없습니다.');
+    });
+
+    if (!response.ok) {
+      throw new Error(`API 요청 실패: HTTP ${response.status}`);
+    }
 
     const data = await response.json();
+
+    if (!data.mealServiceDietInfo || !Array.isArray(data.mealServiceDietInfo)) {
+      throw new Error('급식 데이터 형식이 올바르지 않습니다.');
+    }
 
     const [
       {
         head: [
           ,
           {
-            RESULT: { CODE },
+            RESULT: { CODE, MESSAGE },
           },
         ],
       },
@@ -51,20 +59,17 @@ async function fetchMealInfo(schoolCode: string, officeCode: string) {
     ] = data.mealServiceDietInfo;
 
     if (CODE === 'INFO-000') {
-      if (data.mealServiceDietInfo) {
-        return (row as MealData[]).map((meal) => ({
-          ...meal,
-          formattedDate: format(
-            parse(meal.MLSV_YMD, 'yyyyMMdd', new Date()),
-            'M월 d일 EEEE',
-            { locale: ko },
-          ),
-        }));
-      }
-      return [];
+      return (row as MealData[]).map((meal) => ({
+        ...meal,
+        formattedDate: format(
+          parse(meal.MLSV_YMD, 'yyyyMMdd', new Date()),
+          'M월 d일 EEEE',
+          { locale: ko },
+        ),
+      }));
     }
 
-    throw new Error(data.RESULT?.MESSAGE || '알 수 없는 오류가 발생했습니다.');
+    throw new Error(`API 오류 발생: ${MESSAGE || '알 수 없는 오류'}`);
   } catch (error) {
     throw new Error(error.message);
   }
@@ -84,7 +89,6 @@ export async function GET(req: NextRequest) {
 
   try {
     const mealData = await fetchMealInfo(schoolCode, officeCode);
-
     return NextResponse.json(mealData);
   } catch (error) {
     return NextResponse.json(
