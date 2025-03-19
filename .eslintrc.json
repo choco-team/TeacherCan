@@ -23,6 +23,7 @@
     "jsx-a11y/label-has-associated-control": [
       "error",
       { "some": ["nesting", "id"] }
-    ]
+    ],
+    "no-nested-ternary": "warn"
   }
 }

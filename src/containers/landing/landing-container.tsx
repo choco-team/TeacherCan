@@ -1,4 +1,5 @@
 import History from './history/history';
+import LunchMenu from './lunch-menu/lunchmenu';
 import Schedule from './schedules/schedules';
 import Welcome from './welcome/welcome';
 
@@ -8,6 +9,7 @@ function LandingContainer() {
       <Welcome />
       <History />
       <Schedule />
+      <LunchMenu />
     </div>
   );
 }
