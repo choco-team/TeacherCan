@@ -36,6 +36,7 @@ export default function SettingMusic() {
   const {
     music: { videoId, title },
     isPreviewYoutubeReady,
+    searchInput,
   } = useCountdownMusicState();
   const {
     getYoutubeMusicURL,
@@ -77,7 +78,6 @@ export default function SettingMusic() {
       if (!(await form.trigger('youtubeUrl'))) {
         controlVideos(await youtubeSearch(inputValue));
         controlOpenMusicSearch(true);
-        controlSearchInput(inputValue);
         return;
       }
       await getYoutubeMusicURL(inputValue);
@@ -123,11 +123,16 @@ export default function SettingMusic() {
                   </FormDescription>
                   <div className="flex items-center gap-x-2">
                     <FormControl>
-                      <Input type="text" {...field} />
+                      <Input
+                        type="text"
+                        {...field}
+                        value={searchInput}
+                        onChange={(e) => controlSearchInput(e.target.value)}
+                      />
                     </FormControl>
                     <Button
                       type="submit"
-                      disabled={isActive || !form.getValues('youtubeUrl')}
+                      disabled={isActive}
                       variant="primary-outline"
                     >
                       {isLoadingSearch ? (

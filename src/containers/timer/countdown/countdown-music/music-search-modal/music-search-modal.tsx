@@ -46,7 +46,7 @@ export default function MusicSearchModal({
 }: Props) {
   const [isLoading, setIsLoading] = useState<boolean | null>();
   const { videos, searchInput } = useCountdownMusicState();
-  const { controlVideos } = useCountdownMusicAction();
+  const { controlVideos, controlSearchInput } = useCountdownMusicAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -102,6 +102,7 @@ export default function MusicSearchModal({
                           {...field}
                           placeholder="검색어를 입력해주세요."
                           value={searchInput}
+                          onChange={(e) => controlSearchInput(e.target.value)}
                         />
                       </FormControl>
                       <Button type="submit" variant="primary-outline">
@@ -119,7 +120,10 @@ export default function MusicSearchModal({
             </form>
           </Form>
           <ul className="grid grid-cols-3 gap-4 mt-4">
-            {videos && videos.map((video) => <VideoCard video={video} />)}
+            {videos &&
+              videos.map((video) => (
+                <VideoCard video={video} key={video.videoId} />
+              ))}
           </ul>
         </div>
       </DialogContent>

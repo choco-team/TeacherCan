@@ -80,7 +80,7 @@ export default function CountdownMusicProvider({ children }: Props) {
   const previewYoutubePlayerRef = useRef<YT.Player>(null);
   const [isOpenMusicSearch, setIsOpenMusicSearch] = useState<boolean>(false);
   const [videos, setVideos] = useState<Video[]>();
-  const [searchInput, setSearchInput] = useState<string>();
+  const [searchInput, setSearchInput] = useState<string>('');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
