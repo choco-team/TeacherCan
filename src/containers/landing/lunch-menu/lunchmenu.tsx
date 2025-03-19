@@ -28,7 +28,7 @@ function LunchMenu() {
   );
 
   const { mealData } = useMealData(selectedSchool);
-
+  console.log(mealData);
   return (
     <div className="flex flex-col gap-4 w-full ">
       <SectionTitle
@@ -55,7 +55,17 @@ function LunchMenu() {
             ))}
           </div>
         ) : selectedSchool.SCHUL_NM !== null ? (
-          <MealList mealData={mealData} />
+          mealData.length > 0 ? (
+            <MealList mealData={mealData} />
+          ) : (
+            <div className="flex gap-2 px-4 h-[250px]">
+              {Array.from({ length: 5 }).map((_, index) => (
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                // eslint-disable-next-line react/no-array-index-key
+                <Skeleton className="flex-1" key={index} />
+              ))}
+            </div>
+          )
         ) : (
           <div className="flex flex-col gap-4 justify-center items-center min-h-[140px]">
             <div className="text-center text-sm text-gray-500">
