@@ -60,14 +60,14 @@ async function fetchMealInfo(schoolCode: string, officeCode: string) {
 
     if (CODE === 'INFO-000') {
       return (row as MealData[]).map((meal) => ({
-        ...meal,
+        mlsvYmd: meal.MLSV_YMD,
         formattedDate: format(
           parse(meal.MLSV_YMD, 'yyyyMMdd', new Date()),
           'M월 d일 EEEE',
           { locale: ko },
         ),
         dishes: meal.DDISH_NM
-          ? meal.DDISH_NM.split(/<br\/?>|\n/).map((dish) => dish.trim()) // 여기서 배열로 변환
+          ? meal.DDISH_NM.split(/<br\/?>|\n/).map((dish) => dish.trim())
           : [],
       }));
     }

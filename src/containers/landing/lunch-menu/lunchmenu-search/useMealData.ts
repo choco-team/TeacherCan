@@ -3,8 +3,7 @@ import axios from 'axios';
 import { School } from './lunchmenu.types';
 
 type MealData = {
-  MLSV_YMD: string;
-  // DDISH_NM: string | null;
+  mlsvYmd: string;
   dishes: string[];
   formattedDate: string;
 };

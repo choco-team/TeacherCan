@@ -1,6 +1,6 @@
 'use client';
 
-import { Utensils, PlusIcon } from 'lucide-react';
+import { Utensils } from 'lucide-react';
 import { Button } from '@/components/button';
 import React, { useState } from 'react';
 import useLocalStorage from '@/hooks/useLocalStorage';
@@ -28,7 +28,48 @@ function LunchMenu() {
   );
 
   const { mealData } = useMealData(selectedSchool);
-  console.log(mealData);
+
+  const renderContent = () => {
+    if (!selectedSchool) {
+      return (
+        <div className="flex gap-2 px-4 h-[250px]">
+          {Array.from({ length: 5 }).map(() => (
+            <Skeleton className="flex-1" key={crypto.randomUUID()} />
+          ))}
+        </div>
+      );
+    }
+
+    if (selectedSchool.SCHUL_NM === null) {
+      return (
+        <div className="flex flex-col gap-4 justify-center items-center min-h-[140px]">
+          <div className="text-center text-sm text-gray-500">
+            등록된 학교가 없어요. 학교를 등록해보세요.
+          </div>
+          <Button
+            size="sm"
+            variant="primary-outline"
+            onClick={() => setIsDialogOpen(true)}
+          >
+            학교 등록하기
+          </Button>
+        </div>
+      );
+    }
+
+    if (mealData.length > 0) {
+      return <MealList mealData={mealData} />;
+    }
+
+    return (
+      <div className="flex gap-2 px-4 h-[250px]">
+        {Array.from({ length: 5 }).map(() => (
+          <Skeleton className="flex-1" key={crypto.randomUUID()} />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-4 w-full ">
       <SectionTitle
@@ -36,50 +77,16 @@ function LunchMenu() {
         title="점심 메뉴"
         buttonSection={
           <Button
-            size="xs"
+            size="md"
             variant="primary-ghost"
             onClick={() => setIsDialogOpen(true)}
           >
-            <PlusIcon size={14} />
+            학교등록
           </Button>
         }
       />
       <div className="bg-white shadow-custom py-4 rounded-xl w-full overflow-auto">
-        {/* TODO:(김홍동) 분기가 많아 컴포넌트 분리하기 */}
-        {!selectedSchool ? (
-          <div className="flex gap-2 px-4 h-[250px]">
-            {Array.from({ length: 5 }).map((_, index) => (
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              // eslint-disable-next-line react/no-array-index-key
-              <Skeleton className="flex-1" key={index} />
-            ))}
-          </div>
-        ) : selectedSchool.SCHUL_NM !== null ? (
-          mealData.length > 0 ? (
-            <MealList mealData={mealData} />
-          ) : (
-            <div className="flex gap-2 px-4 h-[250px]">
-              {Array.from({ length: 5 }).map((_, index) => (
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                // eslint-disable-next-line react/no-array-index-key
-                <Skeleton className="flex-1" key={index} />
-              ))}
-            </div>
-          )
-        ) : (
-          <div className="flex flex-col gap-4 justify-center items-center min-h-[140px]">
-            <div className="text-center text-sm text-gray-500">
-              등록된 학교가 없어요. 학교를 등록해보세요.
-            </div>
-            <Button
-              size="sm"
-              variant="primary-outline"
-              onClick={() => setIsDialogOpen(true)}
-            >
-              학교 등록하기
-            </Button>
-          </div>
-        )}
+        {renderContent()}
       </div>
 
       <SchoolSearchDialog

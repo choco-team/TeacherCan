@@ -3,7 +3,7 @@ import { CardContent } from '@/components/card';
 import MealItem from './mealItem';
 
 type MealListProps = {
-  mealData: { MLSV_YMD: string; dishes: string[]; formattedDate: string }[];
+  mealData: { mlsvYmd: string; dishes: string[]; formattedDate: string }[];
 };
 
 function MealList({ mealData }: MealListProps) {
@@ -19,7 +19,7 @@ function MealList({ mealData }: MealListProps) {
                 key={meal.formattedDate}
                 date={meal.formattedDate}
                 dishes={meal.dishes}
-                isToday={meal.MLSV_YMD === today}
+                isToday={meal.mlsvYmd === today}
               />
             ))}
           </div>
