@@ -4,7 +4,8 @@ import { School } from './lunchmenu.types';
 
 type MealData = {
   MLSV_YMD: string;
-  DDISH_NM: string | null;
+  // DDISH_NM: string | null;
+  dishes: string[];
   formattedDate: string;
 };
 

@@ -2,8 +2,7 @@ import React from 'react';
 
 type MealItemProps = {
   date: string;
-
-  dishes: string;
+  dishes: string[];
   isToday: boolean;
 };
 
@@ -18,10 +17,10 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
       </h4>
 
       <div className="flex flex-col gap-1 p-1 flex-grow text-center">
-        {dishes ? (
-          dishes.split(/<br\/?>|\n/).map((dish) => (
+        {dishes.length > 0 ? (
+          dishes.map((dish) => (
             <span key={dish} className="text-sm text-gray-700">
-              {dish.trim()}
+              {dish}
             </span>
           ))
         ) : (
