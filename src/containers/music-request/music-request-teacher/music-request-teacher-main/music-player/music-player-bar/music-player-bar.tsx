@@ -135,19 +135,23 @@ export function MusicPlayerBar({
           </div>
         </div>
         <div className="items-center gap-4 hidden lg:flex">
-          <Image
-            className="object-cover"
-            src={`https://i.ytimg.com/vi/${currentMusic.musicId}/hqdefault.jpg`}
-            alt=""
-            width={80}
-            height={45}
-          />
-          <div className="truncate flex flex-col">
-            <span className="font-bold">{currentMusic.title}</span>
-            <span className="font-light text-gray-600 text-sm">
-              {currentMusic.student}의 신청곡
-            </span>
-          </div>
+          {currentMusic ? (
+            <>
+              <Image
+                className="object-cover"
+                src={`https://i.ytimg.com/vi/${currentMusic.musicId}/hqdefault.jpg`}
+                alt=""
+                width={80}
+                height={45}
+              />
+              <div className="truncate flex flex-col">
+                <span className="font-bold">{currentMusic.title}</span>
+                <span className="font-light text-gray-600 text-sm">
+                  {currentMusic.student}의 신청곡
+                </span>
+              </div>
+            </>
+          ) : null}
         </div>
         <div className="flex items-center justify-end gap-4">
           {hoverVolume ? (

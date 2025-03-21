@@ -36,6 +36,18 @@ export function MusicVideo({
   musicHandler,
   updateMusicOption,
 }: Props) {
+  if (!currentMusic) {
+    return (
+      <div className="h-full min-h-[200px] max-h-[500px] text-center text-sm text-gray-500 flex items-center justify-center">
+        <div>
+          <span>신청된 음악이 없어요.</span>
+          <br />
+          <span>방 정보에서 QR코드를 통해 학생을 초대해보세요.</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4 items-center">
       <div className="bg-gray-200 w-fit h-8 my-0 mx-auto rounded-3xl">

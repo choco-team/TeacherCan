@@ -8,12 +8,17 @@ import { useToast } from '@/hooks/use-toast';
 
 type Props = {
   isRefetching: boolean;
+  isAutoRefetch: boolean;
   musicRefetch: () => Promise<
     QueryObserverResult<GetMusicRequestRoomResponse, Error>
   >;
 };
 
-export function MusicRefresh({ isRefetching, musicRefetch }: Props) {
+export function MusicRefresh({
+  isRefetching,
+  isAutoRefetch,
+  musicRefetch,
+}: Props) {
   const { toast } = useToast();
 
   const [countdown, setCountdown] = useState(15);
@@ -30,12 +35,16 @@ export function MusicRefresh({ isRefetching, musicRefetch }: Props) {
       return;
     }
 
+    if (!isAutoRefetch) {
+      musicRefetch();
+    }
+
     setCountdown(0);
   };
 
   useEffect(() => {
     if (countdown === 0) {
-      setRotation((prev) => prev - 360); // 회전을 누적
+      setRotation((prev) => prev - 360);
     }
   }, [countdown]);
 
@@ -54,12 +63,16 @@ export function MusicRefresh({ isRefetching, musicRefetch }: Props) {
   }, []);
 
   useEffect(() => {
-    if (countdown !== 0 || isRefetching) {
+    if (countdown !== 0 || isRefetching || !isAutoRefetch) {
       return;
     }
 
     musicRefetch();
-  }, [musicRefetch, countdown]);
+  }, [musicRefetch, isAutoRefetch, countdown]);
+
+  useEffect(() => {
+    setCountdown(15);
+  }, [isAutoRefetch]);
 
   return (
     <Button
@@ -69,7 +82,9 @@ export function MusicRefresh({ isRefetching, musicRefetch }: Props) {
       onClick={handleClick}
     >
       <div className="relative flex justify-center items-center">
-        <span className="absolute text-[10px] font-bold">{countdown}</span>
+        {isAutoRefetch ? (
+          <span className="absolute text-[10px] font-bold">{countdown}</span>
+        ) : null}
         <motion.div
           animate={{
             rotate: rotation,

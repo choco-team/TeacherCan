@@ -2,6 +2,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { useGetMusicRequestRoom } from '@/hooks/apis/music-request/use-get-music-request-room';
 import { useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import StudentList from './student-list/student-list';
@@ -17,14 +18,19 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
     roomId,
   });
   const [currentMusicIndex, setCurrentMusicIndex] = useState<number>(0);
+  const [isAutoRefetch, setIsAutoRefetch] = useState(false);
 
   const updateCurrentVideoIndex = (index: number) => {
     setCurrentMusicIndex(index);
   };
 
   if (isPending) {
-    // TODO:(김홍동) 로딩상태 구현하기
-    return null;
+    return (
+      <LoaderCircle
+        size="36px"
+        className="animate-spin h-[600px] text-primary-500 mx-auto my-0"
+      />
+    );
   }
 
   const defaultTabMenu =
@@ -60,10 +66,19 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           <StudentList students={data.studentList} />
         </TabsContent>
         <TabsContent value="rome-info">
-          <RoomInfo roomId={roomId} roomTitle={data.roomTitle} />
+          <RoomInfo
+            roomId={roomId}
+            roomTitle={data.roomTitle}
+            isAutoRefetch={isAutoRefetch}
+            setIsAutoRefetch={setIsAutoRefetch}
+          />
         </TabsContent>
       </Tabs>
-      <MusicRefresh musicRefetch={refetch} isRefetching={isRefetching} />
+      <MusicRefresh
+        musicRefetch={refetch}
+        isAutoRefetch={isAutoRefetch}
+        isRefetching={isRefetching}
+      />
     </div>
   );
 }
