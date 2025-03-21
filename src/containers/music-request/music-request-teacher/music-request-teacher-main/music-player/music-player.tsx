@@ -5,23 +5,28 @@ import { MusicVideo } from './music-video/music-video';
 
 type Props = {
   musicList: YoutubeVideo[];
-  currentVideoIndex: number;
-  updateCurrentVideoIndex: (index: number) => void;
+  currentMusicId: string;
+  updateCurrentVideoId: (musicId: string) => void;
 };
 
 export default function MusicPlayer({
   musicList,
-  currentVideoIndex,
-  updateCurrentVideoIndex,
+  currentMusicId,
+  updateCurrentVideoId,
 }: Props) {
+  const currentVideoIndex = musicList.findIndex(
+    ({ musicId }) => musicId === currentMusicId,
+  );
+
   const currentMusic =
     musicList.length > 0 ? musicList[currentVideoIndex] : null;
 
   const { youtubePlayerRef, musicOptions, updateMusicOption, musicHandler } =
     useMusicPlayer({
-      currentVideoIndex,
-      updateCurrentVideoIndex,
+      musicList,
       musicCount: musicList.length,
+      currentVideoIndex,
+      updateCurrentVideoId,
     });
 
   return (

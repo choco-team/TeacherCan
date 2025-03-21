@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { YouTubeEvent } from 'react-youtube';
+import { YoutubeVideo } from '@/apis/music-request/musicRequest';
 import { findNextVideIndex } from './music-player.utils';
 
 export type MusicOptions = {
@@ -22,15 +23,17 @@ export type MusicHandler = {
 export type MusicOptionKeys = keyof MusicOptions;
 
 type Props = {
+  musicList: YoutubeVideo[];
   musicCount: number;
   currentVideoIndex: number;
-  updateCurrentVideoIndex: (index: number) => void;
+  updateCurrentVideoId: (musicId: string) => void;
 };
 
 export const useMusicPlayer = ({
+  musicList,
   musicCount,
   currentVideoIndex,
-  updateCurrentVideoIndex,
+  updateCurrentVideoId,
 }: Props) => {
   const youtubePlayerRef = useRef<YT.Player | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -71,7 +74,7 @@ export const useMusicPlayer = ({
       musicCount,
     );
 
-    updateCurrentVideoIndex(nextVideoIndex);
+    updateCurrentVideoId(musicList[nextVideoIndex].musicId);
   };
 
   const handleMusicReady = (event: YouTubeEvent) => {

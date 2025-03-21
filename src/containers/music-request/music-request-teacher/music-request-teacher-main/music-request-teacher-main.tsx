@@ -1,8 +1,9 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { useGetMusicRequestRoom } from '@/hooks/apis/music-request/use-get-music-request-room';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import { head } from 'lodash';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import StudentList from './student-list/student-list';
@@ -17,12 +18,29 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
   const { data, isPending, refetch, isRefetching } = useGetMusicRequestRoom({
     roomId,
   });
-  const [currentMusicIndex, setCurrentMusicIndex] = useState<number>(0);
+  const [currentMusicId, setCurrentMusicId] = useState<string | null>(null);
+
   const [isAutoRefetch, setIsAutoRefetch] = useState(false);
 
-  const updateCurrentVideoIndex = (index: number) => {
-    setCurrentMusicIndex(index);
+  const updateCurrentVideoId = (musicId: string) => {
+    setCurrentMusicId(musicId);
   };
+
+  useEffect(() => {
+    if (currentMusicId) {
+      return;
+    }
+
+    if (!data) {
+      return;
+    }
+
+    if (data.musicList.length === 0) {
+      return;
+    }
+
+    setCurrentMusicId(head(data.musicList).musicId);
+  }, [data]);
 
   if (isPending) {
     return (
@@ -40,8 +58,8 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-0">
       <div className="flex flex-col w-full">
         <MusicPlayer
-          currentVideoIndex={currentMusicIndex}
-          updateCurrentVideoIndex={updateCurrentVideoIndex}
+          currentMusicId={currentMusicId}
+          updateCurrentVideoId={updateCurrentVideoId}
           musicList={data.musicList}
         />
       </div>
@@ -58,8 +76,8 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           <MusicList
             videos={data.musicList}
             roomId={roomId}
-            currentVideoIndex={currentMusicIndex}
-            updateCurrentVideoIndex={updateCurrentVideoIndex}
+            currentMusicId={currentMusicId}
+            updateCurrentVideoId={updateCurrentVideoId}
           />
         </TabsContent>
         <TabsContent value="student-list">

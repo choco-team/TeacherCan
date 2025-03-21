@@ -70,3 +70,13 @@ export const getMusicRequestRoom = (params: { roomId: string }) => {
     `/music-request/?${searchParams}`,
   );
 };
+
+export const DeleteMusicRequestMusic = (params: {
+  roomId: string;
+  musicId: string;
+}) => {
+  return fetcher<{}>('/music-request/music', {
+    method: 'DELETE',
+    body: JSON.stringify(params),
+  });
+};
