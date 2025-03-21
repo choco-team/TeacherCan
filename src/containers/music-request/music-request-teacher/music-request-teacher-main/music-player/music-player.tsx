@@ -24,11 +24,6 @@ export default function MusicPlayer({
       musicCount: musicList.length,
     });
 
-  if (!currentMusic) {
-    // TODO:(김홍동) 아직 비디오가 없는 경우
-    return null;
-  }
-
   return (
     <>
       <MusicVideo
