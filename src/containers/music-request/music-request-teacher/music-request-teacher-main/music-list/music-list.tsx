@@ -5,15 +5,15 @@ import MusicCard from './music-card/music-card';
 type Props = {
   videos: YoutubeVideo[];
   roomId: string;
-  currentVideoIndex: number;
-  updateCurrentVideoIndex: (index: number) => void;
+  currentMusicId: string;
+  updateCurrentVideoId: (musicId: string) => void;
 };
 
 export default function MusicList({
   videos,
   roomId,
-  currentVideoIndex,
-  updateCurrentVideoIndex,
+  currentMusicId,
+  updateCurrentVideoId,
 }: Props) {
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -24,6 +24,10 @@ export default function MusicList({
 
     const listItems = listRef.current.children;
 
+    const currentVideoIndex = videos.findIndex(
+      ({ musicId }) => musicId === currentMusicId,
+    );
+
     if (!listItems[currentVideoIndex]) {
       return;
     }
@@ -32,7 +36,7 @@ export default function MusicList({
       behavior: 'smooth',
       block: 'center',
     });
-  }, [listRef, currentVideoIndex]);
+  }, [listRef, currentMusicId]);
 
   const hasVideo = videos.length > 0;
 
@@ -49,14 +53,13 @@ export default function MusicList({
           className="flex flex-col gap-[1px] mb-12 bg-gray-200"
           ref={listRef}
         >
-          {videos.map((video, index) => (
+          {videos.map((video) => (
             <MusicCard
               video={video}
               roomId={roomId}
               key={video.musicId}
-              index={index}
-              currentVideoIndex={currentVideoIndex}
-              updateCurrentVideoIndex={updateCurrentVideoIndex}
+              currentMusicId={currentMusicId}
+              updateCurrentVideoId={updateCurrentVideoId}
             />
           ))}
         </div>
