@@ -76,7 +76,7 @@ export default function MusicSearchModal({
   };
 
   return (
-    <Dialog open={isOpenMusicSearch} onOpenChange={onOpenChange}>
+    <Dialog open={isOpenMusicSearch} onOpenChange={onOpenChange} modal={false}>
       <DialogContent className="max-w-[80%] h-[80%] flex flex-col items-center overflow-auto transition-none">
         <div className="flex flex-row w-full">
           <DialogTitle className="self-start mr-4">배경음악</DialogTitle>

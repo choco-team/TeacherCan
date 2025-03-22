@@ -30,13 +30,13 @@ import { useCountdownState } from '../../countdown-provider/countdown-provider.h
 
 export default function SettingMusic() {
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
-  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
   const [previousVolumeValue, setPreviousVolumeValue] = useState(50);
   const { isActive, isMusicUsed, youtubePlayerRef } = useCountdownState();
   const {
     music: { videoId, title },
     isPreviewYoutubeReady,
     searchInput,
+    isPlayingPreview,
   } = useCountdownMusicState();
   const {
     getYoutubeMusicURL,
@@ -44,6 +44,7 @@ export default function SettingMusic() {
     controlVolume,
     controlIsPreviewYoutubeReady,
     controlSearchInput,
+    controlIsPlayingPreview,
   } = useCountdownMusicAction();
   const { previewYoutubePlayerRef, volumeValue } = useCountdownMusicState();
   const { controlOpenMusicSearch, controlVideos } = useCountdownMusicAction();
@@ -59,7 +60,7 @@ export default function SettingMusic() {
     } else {
       previewYoutubePlayerRef.current.pauseVideo();
     }
-    setIsPlayingPreview(isToPlay);
+    controlIsPlayingPreview(isToPlay);
   };
 
   const handleVolumeChange = (volume: number) => {
@@ -89,7 +90,7 @@ export default function SettingMusic() {
   };
 
   useEffect(() => {
-    if (isActive && isPlayingPreview) setIsPlayingPreview(false);
+    if (isActive && isPlayingPreview) controlIsPlayingPreview(false);
   }, [isActive, isPlayingPreview]);
 
   return (
@@ -127,7 +128,10 @@ export default function SettingMusic() {
                         type="text"
                         {...field}
                         value={searchInput}
-                        onChange={(e) => controlSearchInput(e.target.value)}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          controlSearchInput(e.target.value);
+                        }}
                       />
                     </FormControl>
                     <Button

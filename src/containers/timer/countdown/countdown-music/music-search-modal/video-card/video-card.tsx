@@ -10,12 +10,14 @@ interface VideoCardProps {
 }
 
 export default function VideoCard({ video }: VideoCardProps) {
-  const { controlMusic, controlOpenMusicSearch } = useCountdownMusicAction();
+  const { controlMusic, controlOpenMusicSearch, controlIsPlayingPreview } =
+    useCountdownMusicAction();
 
   const handleMusic = async (music: Music) => {
     try {
       controlMusic(music);
       controlOpenMusicSearch(false);
+      controlIsPlayingPreview(false);
     } catch (error) {
       throw Error(error.message);
     }

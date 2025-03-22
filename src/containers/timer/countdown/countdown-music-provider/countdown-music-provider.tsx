@@ -32,6 +32,7 @@ export type Music = {
 type CountdownMusicState = {
   music: Music;
   previewYoutubePlayerRef: React.MutableRefObject<YT.Player>;
+  isPlayingPreview: boolean;
   volumeValue: number;
   isPreviewYoutubeReady: boolean;
   isOpenMusicSearch: boolean;
@@ -51,6 +52,7 @@ type CountdownMusicAction = {
   controlVideos: Dispatch<SetStateAction<Video[]>>;
   controlMusic: (music: Music) => void;
   controlSearchInput: Dispatch<SetStateAction<string>>;
+  controlIsPlayingPreview: Dispatch<SetStateAction<boolean>>;
 };
 
 export const CountdownMusicActionContext =
@@ -78,6 +80,7 @@ export default function CountdownMusicProvider({ children }: Props) {
   const { isActive, isMusicUsed } = useCountdownState();
   const { setIsMusicUsed, toggleMusicPlay } = useCountdownAction();
   const previewYoutubePlayerRef = useRef<YT.Player>(null);
+  const [isPlayingPreview, setIsPlayingPreview] = useState<boolean>(false);
   const [isOpenMusicSearch, setIsOpenMusicSearch] = useState<boolean>(false);
   const [videos, setVideos] = useState<Video[]>();
   const [searchInput, setSearchInput] = useState<string>('');
@@ -145,6 +148,9 @@ export default function CountdownMusicProvider({ children }: Props) {
   const controlVideos = useCallback(setVideos, [setVideos]);
 
   const controlSearchInput = useCallback(setSearchInput, [setSearchInput]);
+  const controlIsPlayingPreview = useCallback(setIsPlayingPreview, [
+    setIsPlayingPreview,
+  ]);
 
   const defaultCountdownMusicStateValue = useMemo<CountdownMusicState>(
     () => ({
@@ -155,6 +161,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       isOpenMusicSearch,
       videos,
       searchInput,
+      isPlayingPreview,
     }),
     [
       music,
@@ -164,6 +171,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       isOpenMusicSearch,
       videos,
       searchInput,
+      isPlayingPreview,
     ],
   );
 
@@ -177,6 +185,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       controlVideos,
       controlMusic,
       controlSearchInput,
+      controlIsPlayingPreview,
     }),
     [
       getYoutubeMusicURL,
@@ -187,6 +196,7 @@ export default function CountdownMusicProvider({ children }: Props) {
       controlVideos,
       controlMusic,
       controlSearchInput,
+      controlIsPlayingPreview,
     ],
   );
 
