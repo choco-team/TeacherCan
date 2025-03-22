@@ -6,6 +6,7 @@ async function searchVideos(q: string) {
       key: process.env.YOUTUBE_DATA_API_KEY,
       part: 'snippet',
       type: 'video',
+      maxResults: '9',
       q,
     }).toString();
     const response = await fetch(
