@@ -1,26 +1,15 @@
-import { useAuthStore } from '@/store/use-auth-store';
+// kakaoLogin.ts
+import { API_URL, fetchWithAuth } from '@/utils/api/fetchWithAuth';
 
-export async function kakaoLogin() {
-  const API_URL = process.env.NEXT_PUBLIC_SERVER_URL;
+export async function kakaoLogin(setUser: (id: number) => void) {
+  if (typeof window === 'undefined') return;
 
-  if (typeof window === 'undefined') {
-    console.error(
-      'window 객체가 존재하지 않습니다. 클라이언트 환경에서 실행해야 합니다.',
-    );
-    return;
-  }
-
-  // ✅ `URLSearchParams`를 사용하여 `code` 가져오기 (useSearchParams 사용 안함)
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
-
-  if (!API_URL || !code) {
-    console.error('API URL 또는 인증 코드가 없습니다.');
-    return;
-  }
+  if (!API_URL || !code) return;
 
   try {
-    const response = await fetch(`${API_URL}/login/kakao?code=${code}`, {
+    const response = await fetchWithAuth(`/login/kakao?code=${code}`, {
       method: 'GET',
       credentials: 'include',
     });
@@ -28,8 +17,7 @@ export async function kakaoLogin() {
     if (response.ok) {
       const data = await response.json();
       if (data.userId) {
-        const { setUser } = useAuthStore.getState();
-        setUser(data.userId);
+        setUser(data.userId); // ✅ 훅 아님, 함수만 받아서 사용
         console.log('✅ 카카오 로그인 성공');
       }
     } else {

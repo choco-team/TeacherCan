@@ -33,6 +33,11 @@ const breadcrumbs: Record<
     url: '/random-pick',
     icon: <PickaxeIcon size="14px" />,
   },
+  evaluation: {
+    name: '학생평가',
+    url: '/evaluation',
+    icon: <PickaxeIcon size="14px" />,
+  },
 };
 
 const shouldHideHeaderPathname = ['/timer'];

@@ -1,13 +1,13 @@
 'use client';
 
 import { loginWithKakao } from '@/utils/kakaoAuth';
-import { useAuthState, useAuthStore } from '@/store/use-auth-store';
+import { useAuthState } from '@/store/use-auth-store';
 import { useSessionCheck } from '@/hooks/use-session';
 import { LogoutDialog } from '@/components/logout-dialog';
+import { logout } from '@/utils/logout';
 
 function AuthButton() {
   const isAuthenticated = useAuthState();
-  const { logout } = useAuthStore();
   useSessionCheck(); // ✅ 세션 유지 체크
 
   return (

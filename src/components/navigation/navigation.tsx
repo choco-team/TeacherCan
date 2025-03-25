@@ -147,6 +147,16 @@ export default function Navigation() {
               <span>랜덤뽑기</span>
             </Link>
           </li>
+          <li>
+            <Link
+              onClick={isMobile ? handelClick : null}
+              href="/evaluation/prepare"
+              className={`${pathname === '/evaluation/prepare' ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
+            >
+              <PickaxeIcon size="14px" />
+              <span>학생평가</span>
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>

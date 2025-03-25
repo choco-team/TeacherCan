@@ -1,15 +1,14 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/use-auth-store';
+import { fetchWithAuth } from '@/utils/api/fetchWithAuth';
 
 export function useSessionCheck() {
   const { setUser } = useAuthStore();
-  const API_URL = process.env.NEXT_PUBLIC_SERVER_URL;
 
   async function checkSession() {
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetchWithAuth(`/login`, {
         method: 'GET',
-        credentials: 'include',
       });
 
       if (response.ok) {
