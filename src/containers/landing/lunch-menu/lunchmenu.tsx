@@ -11,11 +11,13 @@ import useSchoolSearch from './lunchmenu-search/useSchoolSearch';
 import useMealData from './lunchmenu-search/useMealData';
 import SchoolSearchDialog from './lunchmenu-search/schoolSearchDialog';
 import MealList from './mealInformation/mealList';
+import AllergyDialog from './allergy/allergy';
 
 function LunchMenu() {
   const [schoolName, setSchoolName] = useState<string>('');
   const { schoolList, isLoading, handleSearch } = useSchoolSearch();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAllergyDialogOpen, setIsAllergyDialogOpen] = useState(false);
 
   const [selectedSchool, setSelectedSchool] = useLocalStorage<School | null>(
     'selectedSchool',
@@ -51,7 +53,7 @@ function LunchMenu() {
             variant="primary-outline"
             onClick={() => setIsDialogOpen(true)}
           >
-            학교 등록하기
+            학교 등록
           </Button>
         </div>
       );
@@ -76,13 +78,22 @@ function LunchMenu() {
         Icon={Utensils}
         title="점심 메뉴"
         buttonSection={
-          <Button
-            size="md"
-            variant="primary-ghost"
-            onClick={() => setIsDialogOpen(true)}
-          >
-            학교등록
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              size="md"
+              variant="primary-ghost"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              학교 등록
+            </Button>
+            <Button
+              size="md"
+              variant="primary-ghost"
+              onClick={() => setIsAllergyDialogOpen(true)}
+            >
+              알러지 등록
+            </Button>
+          </div>
         }
       />
       <div className="bg-white shadow-custom py-4 rounded-xl w-full overflow-auto">
@@ -101,6 +112,10 @@ function LunchMenu() {
           setIsDialogOpen(false);
         }}
         handleSearch={handleSearch}
+      />
+      <AllergyDialog
+        isOpen={isAllergyDialogOpen}
+        onClose={() => setIsAllergyDialogOpen(false)}
       />
     </div>
   );
