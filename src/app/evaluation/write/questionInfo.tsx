@@ -59,9 +59,9 @@ export default function QuestionInfo() {
       }
 
       // ✅ uuid 추가
-      const subjectsWithId = data.map((subject) => ({
-        ...subject,
-        uuid: uuidv4(), // 고유 uuid 필드 추가
+      const subjectsWithId = data.map((name) => ({
+        name,
+        uuid: uuidv4(),
       }));
 
       setSubjectList(subjectsWithId);
