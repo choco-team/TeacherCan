@@ -19,6 +19,7 @@ export function MusicRefresh({
   isAutoRefetch,
   musicRefetch,
 }: Props) {
+  // TODO:(김홍동) isAutoRefetch가 아닌 경우 icon rotation 금지
   const { toast } = useToast();
 
   const [countdown, setCountdown] = useState(15);
