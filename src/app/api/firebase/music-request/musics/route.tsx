@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       proposer: musicData.proposer,
     });
     return NextResponse.json(
-      { message: '성공적으로 저장하였습니다.' },
+      { message: '음악 신청이 완료되었습니다.' },
       { status: 200 },
     );
   } catch (error) {

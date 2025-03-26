@@ -1,74 +1,77 @@
 import { Button } from '@/components/button';
-import { createMusic } from '@/utils/api/firebaseAPI';
+import { useCreateMusicRequestMusic } from '@/hooks/apis/music-request/use-create-music-request-music';
+import { LoaderCircle } from 'lucide-react';
+import { YoutubeVideo } from '@/utils/api/firebaseAPI';
 import { useMusicRequestStudentAction } from '../../../music-request-student-provider/music-request-student-provider.hooks';
 
 interface VideoCardProps {
-  video: any;
-  roomId: any;
-  studentName: any;
+  video: YoutubeVideo;
+  roomId: string;
+  student: string;
 }
 
-export default function VideoCard({
-  video,
-  roomId,
-  studentName,
-}: VideoCardProps) {
-  const { settingVideos, openAlertWithMessage } =
-    useMusicRequestStudentAction();
+export default function VideoCard({ video, roomId, student }: VideoCardProps) {
+  const { mutate: requestMusic, isPending } = useCreateMusicRequestMusic();
+  const { openAlertWithMessage } = useMusicRequestStudentAction();
 
-  const handleRequestMusic = async (musicData) => {
-    try {
-      const response = await createMusic(musicData);
-      const data = await response.json();
-      if (response.ok) {
-        openAlertWithMessage(data.message);
-      } else if (response.status === 409) {
-        openAlertWithMessage(data.message);
-      } else {
-        throw Error('에러발생');
-      }
-    } catch (error) {
-      throw Error(error.message);
-    } finally {
-      settingVideos((prev) =>
-        prev.map((prevVideo) =>
-          prevVideo.videoId === video.videoId
-            ? { ...prevVideo, isRequested: true }
-            : prevVideo,
-        ),
-      );
-    }
+  const handleRequestMusic = ({
+    musicId,
+    title,
+  }: {
+    musicId: string;
+    title: string;
+  }) => {
+    requestMusic(
+      {
+        roomId,
+        student,
+        musicId,
+        title,
+      },
+      {
+        onSuccess: () => {
+          openAlertWithMessage('음악 신청이 완료되었습니다.');
+        },
+        onError: (error) => {
+          openAlertWithMessage(error.message);
+        },
+      },
+    );
   };
 
   return (
-    <li key={video.videoId}>
-      <div className="flex flex-col mt-8">
+    <li>
+      <div className="flex flex-col gap-2">
         <iframe
-          className="w-full"
+          className="w-full aspect-video"
           src={`https://www.youtube.com/embed/${video.videoId}`}
           title={video.videoId}
+          style={{
+            pointerEvents: 'none',
+          }}
         />
-        <div className="flex flex-row justify-between m-2">
+        <div className="flex flex-row justify-between">
           <div className="flex flex-col w-full mr-4">
-            <p className="font-semibold">{video.title}</p>
-            <p className="text-xs text-gray-600	text-right">
-              {video.channelTitle} &middot; {video.publishedAt}
-            </p>
+            <p className="text-gray-900">{video.title}</p>
           </div>
           <Button
-            disabled={video.isRequested}
-            variant="primary"
+            className="w-[120px]"
+            variant="primary-outline"
             onClick={() => {
               handleRequestMusic({
-                roomId,
                 title: video.title,
-                videoId: video.videoId,
-                proposer: studentName,
+                musicId: video.videoId,
               });
             }}
           >
-            {video.isRequested}
-            신청하기
+            {isPending ? (
+              <LoaderCircle
+                size="18px"
+                className="animate-spin text-primary-500"
+              />
+            ) : (
+              '신청하기'
+            )}
           </Button>
         </div>
       </div>

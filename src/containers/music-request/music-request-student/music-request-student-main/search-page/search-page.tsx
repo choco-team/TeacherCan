@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Input } from '@/components/input';
 import {
   Form,
@@ -11,20 +10,24 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { youtubeSearch } from '@/utils/api/youtubeAPI';
 import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
 } from '@/components/alert-dialog';
+import { LoaderCircle } from 'lucide-react';
+import {
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from '@radix-ui/react-alert-dialog';
 import {
   useMusicRequestStudentAction,
   useMusicRequestStudentState,
 } from '../../music-request-student-provider/music-request-student-provider.hooks';
 import VideoCard from './video-card/video-card';
+import { useSearchMusic } from './search-page.hooks';
 
 const YOUTUBE_SEARCH_ERROR_MESSAGE = {
   EMPTY_INPUT: '검색어를 입력해 주세요.',
@@ -35,11 +38,17 @@ const formSchema = z.object({
   q: z.string().nonempty({ message: YOUTUBE_SEARCH_ERROR_MESSAGE.EMPTY_INPUT }),
 });
 
-export default function SearchPage() {
-  const [isLoading, setIsLoading] = useState<boolean | null>();
-  const { roomId, studentName, videos, alertOpen, alertMessage } =
+type Props = {
+  roomId: string;
+};
+
+export default function SearchPage({ roomId }: Props) {
+  const { videos, isLoading, searchMusic } = useSearchMusic();
+
+  const { studentName, alertOpen, alertMessage } =
     useMusicRequestStudentState();
-  const { settingVideos, settingAlertOpen } = useMusicRequestStudentAction();
+  const { settingAlertOpen } = useMusicRequestStudentAction();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,25 +58,28 @@ export default function SearchPage() {
   });
 
   const handleSearch = async (q: string) => {
-    try {
-      setIsLoading(true);
-      settingVideos(await youtubeSearch(q));
-    } catch (error) {
-      form.setError('q', {
-        message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
-      });
-      throw Error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+    searchMusic(q, {
+      onSuccess: () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
+      },
+      onError: () => {
+        form.setError('q', {
+          message: YOUTUBE_SEARCH_ERROR_MESSAGE.API_ERROR,
+        });
+      },
+    });
   };
 
   return (
-    <div className="flex flex-col justify-center h-full pr-4 pl-4">
+    <div className="flex flex-col gap-4">
       <AlertDialog open={alertOpen} onOpenChange={settingAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{alertMessage}</AlertDialogTitle>
+            <AlertDialogTitle className="hidden">title</AlertDialogTitle>
+            <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction>확인</AlertDialogAction>
@@ -77,14 +89,14 @@ export default function SearchPage() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() => handleSearch(form.getValues('q')))}
-          className="space-y-4"
+          className="sticky top-[44px] bg-white z-10"
         >
           <FormField
             control={form.control}
             name="q"
             render={({ field }) => (
               <FormItem>
-                <div className="flex items-center gap-x-2">
+                <div className="flex items-center gap-x-2 py-4">
                   <FormControl>
                     <Input
                       type="text"
@@ -92,8 +104,15 @@ export default function SearchPage() {
                       placeholder="유튜브 검색어를 입력해주세요."
                     />
                   </FormControl>
-                  <Button type="submit" variant="primary-outline">
-                    {isLoading ? '로딩중...' : '검색'}
+                  <Button type="submit" variant="primary" className="w-[120px]">
+                    {isLoading ? (
+                      <LoaderCircle
+                        size="18px"
+                        className="animate-spin text-white"
+                      />
+                    ) : (
+                      '검색'
+                    )}
                   </Button>
                 </div>
                 <FormMessage />
@@ -102,13 +121,14 @@ export default function SearchPage() {
           />
         </form>
       </Form>
-      <ul>
+      <ul className="flex flex-col gap-8">
         {videos &&
           videos.map((video) => (
             <VideoCard
+              key={video.videoId}
               video={video}
               roomId={roomId}
-              studentName={studentName}
+              student={studentName}
             />
           ))}
       </ul>

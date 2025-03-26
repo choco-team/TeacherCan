@@ -3,7 +3,7 @@ import { ref, update } from 'firebase/database';
 
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-type VideoType = {
+export type YoutubeVideo = {
   musicId: string;
   videoId: string;
   title: string;
@@ -78,7 +78,7 @@ export const createMusic = async (musicData: object) => {
   }
 };
 
-export const deleteMusic = async (roomId: string, video: VideoType) => {
+export const deleteMusic = async (roomId: string, video: YoutubeVideo) => {
   try {
     const updates: any = {};
     updates[`musicRooms/${roomId}/musics/videoIds/${video.videoId}`] = null;

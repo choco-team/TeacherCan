@@ -1,20 +1,13 @@
 'use client';
 
-import MusicRequestTeacherProvider, {
-  MusicRequestTeacherParams,
-} from './music-request-teacher-provider/music-request-teacher-provider';
 import MusicRequestTeacherMain from './music-request-teacher-main/music-request-teacher-main';
 
 export default function MusicRequestTeacherContainer({
   params,
 }: {
-  params: MusicRequestTeacherParams;
+  params: {
+    roomId: string;
+  };
 }) {
-  return (
-    <div>
-      <MusicRequestTeacherProvider params={params}>
-        <MusicRequestTeacherMain />
-      </MusicRequestTeacherProvider>
-    </div>
-  );
+  return <MusicRequestTeacherMain roomId={params.roomId} />;
 }
