@@ -12,9 +12,3 @@ export const youtubeSearch = async (q: string) => {
   const response = await fetch(`${originURL}/api/youtube/search?q=${q}`);
   return response.json();
 };
-
-export const getMusicExtraData = async (videoId: string) => {
-  const response = await fetch(`${originURL}/api/youtube/video/${videoId}`);
-  const json = await response.json();
-  return json;
-};
