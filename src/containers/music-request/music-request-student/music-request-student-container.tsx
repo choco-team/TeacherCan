@@ -11,7 +11,7 @@ export default function MusicRequestStudentContainer({
   };
 }) {
   return (
-    <div>
+    <div className="bg-body transition-all ease-in-out duration-500 lg:data-[status=closed]:ml-0 px-4 py-8">
       <MusicRequestStudentProvider>
         <MusicRequestStudentMain roomId={params.roomId} />
       </MusicRequestStudentProvider>
