@@ -1,8 +1,8 @@
 import { Button } from '@/components/button';
 import { useCreateMusicRequestMusic } from '@/hooks/apis/music-request/use-create-music-request-music';
 import { LoaderCircle } from 'lucide-react';
-import { YoutubeVideo } from '@/utils/api/firebaseAPI';
 import { useMusicRequestStudentAction } from '../../../music-request-student-provider/music-request-student-provider.hooks';
+import { YoutubeVideo } from '../search-page.hooks';
 
 interface VideoCardProps {
   video: YoutubeVideo;

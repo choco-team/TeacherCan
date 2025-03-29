@@ -1,6 +1,13 @@
-import { YoutubeVideo } from '@/utils/api/firebaseAPI';
 import { youtubeSearch } from '@/utils/api/youtubeAPI';
 import { useState } from 'react';
+
+export type YoutubeVideo = {
+  musicId: string;
+  videoId: string;
+  title: string;
+  proposer: string;
+  playCount: number;
+};
 
 export const useSearchMusic = () => {
   const [isLoading, setIsLoading] = useState<boolean | null>();
