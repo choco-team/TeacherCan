@@ -3,6 +3,7 @@
 import {
   ChevronsDown,
   ChevronsRight,
+  MessageCircleHeartIcon,
   MusicIcon,
   PickaxeIcon,
   QrCodeIcon,
@@ -39,6 +40,11 @@ const breadcrumbs: Record<
     name: '음악신청',
     url: '/music-request',
     icon: <MusicIcon size="14px" />,
+  },
+  feedback: {
+    name: '피드백',
+    url: '/feedback',
+    icon: <MessageCircleHeartIcon size="14px" />,
   },
 };
 

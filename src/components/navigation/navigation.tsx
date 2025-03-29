@@ -3,7 +3,12 @@
 import { ChevronsLeft, ChevronsUp, TimerIcon } from 'lucide-react';
 import Link from 'next/link';
 import PopupLink from '@/components/popup-link';
-import { PATH_DATA, ROUTE, RoutePath } from '@/constants/route';
+import {
+  HELP_PATH_DATA,
+  MENU_PATH_DATA,
+  MENU_ROUTE,
+  MenuRoutePath,
+} from '@/constants/route';
 import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import { usePathname } from 'next/navigation';
 import useDevice from '@/hooks/use-device';
@@ -13,7 +18,9 @@ import useRecentlyVisited from '@/hooks/use-recently-visited';
 
 export default function Navigation() {
   const pathname = usePathname();
-  const { updateRecentlyVisited } = useRecentlyVisited(pathname as RoutePath);
+  const { updateRecentlyVisited } = useRecentlyVisited(
+    pathname as MenuRoutePath,
+  );
 
   const { isMobile } = useDevice();
 
@@ -75,8 +82,8 @@ export default function Navigation() {
       <div className="flex w-full items-center">
         <Link
           onClick={isMobile ? handelClick : null}
-          href={ROUTE.LANDING}
-          className={`${pathname === ROUTE.LANDING ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
+          href={MENU_ROUTE.LANDING}
+          className={`${pathname === MENU_ROUTE.LANDING ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
         >
           <TeacherCanLogo width="14" height="14" />
           <span>티처캔</span>
@@ -100,16 +107,40 @@ export default function Navigation() {
           <li>
             <PopupLink
               size={7 / 8}
-              url={`${ROUTE.TIMER}`}
-              onClick={() => updateRecentlyVisited(ROUTE.TIMER)}
+              url={`${MENU_ROUTE.TIMER}`}
+              onClick={() => updateRecentlyVisited(MENU_ROUTE.TIMER)}
               className="w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all"
             >
               <TimerIcon size="14px" />
               <span>타이머</span>
             </PopupLink>
           </li>
-          {Object.entries(PATH_DATA).map(([path, { title, Icon }]) => {
-            if (path === ROUTE.TIMER) {
+          {Object.entries(MENU_PATH_DATA).map(([path, { title, Icon }]) => {
+            if (path === MENU_ROUTE.TIMER) {
+              return null;
+            }
+
+            return (
+              <li key={path}>
+                <Link
+                  onClick={isMobile ? handelClick : null}
+                  href={path}
+                  className={`${pathname === path ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
+                >
+                  <Icon size="14px" />
+                  <span>{title}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div className="flex gap-2 flex-col mt-6">
+        <div className="px-2 text-xs font-medium text-gray-600">도움</div>
+        <ul className="flex flex-col gap-1">
+          {Object.entries(HELP_PATH_DATA).map(([path, { title, Icon }]) => {
+            if (path === MENU_ROUTE.TIMER) {
               return null;
             }
 

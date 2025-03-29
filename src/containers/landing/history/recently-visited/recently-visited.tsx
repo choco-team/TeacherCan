@@ -1,6 +1,6 @@
 'use client';
 
-import { PATH_DATA } from '@/constants/route';
+import { MENU_PATH_DATA } from '@/constants/route';
 import useRecentlyVisited from '@/hooks/use-recently-visited';
 import { ClockIcon } from 'lucide-react';
 import { Skeleton } from '@/components/skeleton';
@@ -32,13 +32,13 @@ export default function RecentlyVisited() {
   return (
     <div className="flex gap-3 lg:gap-6 w-full overflow-auto">
       {recentlyVisited.map(({ pathname, date }) => {
-        const isValidPath = Object.keys(PATH_DATA).includes(pathname);
+        const isValidPath = Object.keys(MENU_PATH_DATA).includes(pathname);
 
         if (!isValidPath) {
           return null;
         }
 
-        const { title, Icon } = PATH_DATA[pathname];
+        const { title, Icon } = MENU_PATH_DATA[pathname];
 
         return (
           <LinkCard
