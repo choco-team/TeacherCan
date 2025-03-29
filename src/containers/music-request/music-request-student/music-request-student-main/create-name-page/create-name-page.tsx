@@ -65,7 +65,7 @@ export default function CreateNamePage({ roomId }: Props) {
           onSubmit={form.handleSubmit(() =>
             handleStudentName(form.getValues('studentNameInput')),
           )}
-          className="space-y-4"
+          className="space-b-4"
         >
           <FormField
             control={form.control}

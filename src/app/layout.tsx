@@ -6,7 +6,6 @@ import { Toaster } from '@/components/toaster';
 import { headers } from 'next/headers';
 import Navigation from '@/components/navigation/navigation';
 import Header from '@/components/header/header';
-import { ROUTE } from '@/constants/route';
 import QueryProvider from '@/components/provider/query-provider';
 
 export const metadata: Metadata = {
@@ -34,6 +33,8 @@ const pyeongtaek = localFont({
   variable: '--font-pyeongtaek-anbo',
 });
 
+const isMinimalLayoutPages = ['/timer', '/music-request/student/'];
+
 export default async function RootLayout({
   children,
 }: {
@@ -41,6 +42,10 @@ export default async function RootLayout({
 }) {
   const headersList = headers();
   const currentPath = headersList.get('X-Current-Path') || '/';
+
+  const isMinimalLayout = isMinimalLayoutPages.some((path) =>
+    currentPath.startsWith(path),
+  );
 
   return (
     <html
@@ -50,7 +55,7 @@ export default async function RootLayout({
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       <body>
         <QueryProvider>
-          {currentPath === ROUTE.TIMER ? (
+          {isMinimalLayout ? (
             <main className="bg-beige-50">
               <div>{children}</div>
             </main>

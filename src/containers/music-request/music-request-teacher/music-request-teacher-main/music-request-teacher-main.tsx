@@ -65,7 +65,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
       </div>
       <Tabs
         defaultValue={defaultTabMenu}
-        className="flex flex-col w-full mb-[108px] lg:mb-0 lg:min-w-[400px] lg:max-w-[400px] pl-2 h-full"
+        className="flex flex-col w-full mb-[108px] lg:mb-0 lg:min-w-[400px] lg:max-w-[400px] lg:pl-2 h-full"
       >
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="music-list">신청목록</TabsTrigger>

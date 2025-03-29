@@ -11,8 +11,6 @@ import { useLayoutEffect } from 'react';
 
 import useRecentlyVisited from '@/hooks/use-recently-visited';
 
-const shouldHideHeaderNavigation = ['/timer'];
-
 export default function Navigation() {
   const pathname = usePathname();
   const { updateRecentlyVisited } = useRecentlyVisited(pathname as RoutePath);
@@ -68,10 +66,6 @@ export default function Navigation() {
       { once: true },
     );
   }, [isMobile]);
-
-  if (shouldHideHeaderNavigation.includes(pathname)) {
-    return null;
-  }
 
   return (
     <nav

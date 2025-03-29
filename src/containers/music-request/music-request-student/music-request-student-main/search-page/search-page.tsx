@@ -89,7 +89,7 @@ export default function SearchPage({ roomId }: Props) {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(() => handleSearch(form.getValues('q')))}
-          className="sticky top-[44px] bg-white z-10"
+          className="sticky top-0 bg-white z-10"
         >
           <FormField
             control={form.control}

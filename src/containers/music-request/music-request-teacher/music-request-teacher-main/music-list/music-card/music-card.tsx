@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { cva } from 'class-variance-authority';
 import { YoutubeVideo } from '@/apis/music-request/musicRequest';
 import { useDeleteMusicRequestMusic } from '@/hooks/apis/music-request/use-delete-music-request-music';
+import { useToast } from '@/hooks/use-toast';
 
 const layoutVariant = cva(
   'p-2 grid grid-cols-[1fr_auto] gap-2 cursor-pointer w-full',
@@ -32,12 +33,22 @@ export default function MusicCard({
   currentMusicId,
   updateCurrentVideoId,
 }: Props) {
+  const { toast } = useToast();
+
   const { mutate, isPending } = useDeleteMusicRequestMusic();
 
   const isSelectedMusic =
     currentMusicId !== null && currentMusicId === video.musicId;
 
   const handleDeleteMusic = async () => {
+    if (isSelectedMusic) {
+      toast({
+        title: '재생 중인 곡은 삭제할 수 없어요.',
+        variant: 'default',
+      });
+      return;
+    }
+
     mutate({ roomId, musicId: video.musicId });
   };
 
@@ -78,7 +89,6 @@ export default function MusicCard({
         </div>
       </div>
       <div className="flex flex-col justify-between ">
-        {/* TODO:(김홍동) 곡 삭제되면 index가 바뀌는 문제 해결 및 마지막 영상 삭제 시 에러 발생하는 거 해결 */}
         <button type="button" onClick={() => handleDeleteMusic()}>
           <X size={12} />
         </button>

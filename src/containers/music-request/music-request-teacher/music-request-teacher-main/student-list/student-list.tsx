@@ -1,5 +1,5 @@
 type Props = {
-  students: string[];
+  students: { name: string }[];
 };
 
 export default function StudentList({ students }: Props) {
@@ -21,7 +21,7 @@ export default function StudentList({ students }: Props) {
               // eslint-disable-next-line react/no-array-index-key
               key={index}
             >
-              {student}
+              {student.name}
             </div>
           ))}
         </div>

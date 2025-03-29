@@ -42,8 +42,6 @@ const breadcrumbs: Record<
   },
 };
 
-const shouldHideHeaderPathname = ['/timer'];
-
 export default function Header() {
   const pathname = usePathname();
   const pathnames = compact(pathname.split('/'));
@@ -64,10 +62,6 @@ export default function Header() {
     navigation.classList.add('fixed');
     navigation.classList.remove('hidden');
   };
-
-  if (shouldHideHeaderPathname.includes(pathname)) {
-    return null;
-  }
 
   return (
     <header className="flex justify-between lg:justify-start gap-2 px-4 py-3 fixed w-full bg-background z-10">

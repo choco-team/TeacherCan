@@ -19,49 +19,66 @@ export function MusicRefresh({
   isAutoRefetch,
   musicRefetch,
 }: Props) {
-  // TODO:(김홍동) isAutoRefetch가 아닌 경우 icon rotation 금지
   const { toast } = useToast();
 
-  const [countdown, setCountdown] = useState(15);
+  const initCountdown = isAutoRefetch ? 15 : 5;
+  const [countdown, setCountdown] = useState(initCountdown);
   const [rotation, setRotation] = useState(0);
+
+  const enabledFetchRestTime = isAutoRefetch ? countdown - 10 : countdown;
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleClick = () => {
-    if (countdown > 10) {
+    if (enabledFetchRestTime > 0) {
       toast({
-        title: `조금만 기다려 주세요, ${countdown - 10}초 후에 다시 시도할 수 있어요.`,
+        title: `조금만 기다려 주세요, ${enabledFetchRestTime}초 후에 다시 시도할 수 있어요.`,
         variant: 'error',
       });
       return;
     }
 
-    if (!isAutoRefetch) {
-      musicRefetch();
+    if (isRefetching) {
+      toast({
+        title: '지금 다시 불러오고 있어요.',
+        variant: 'error',
+      });
+      return;
     }
 
-    setCountdown(0);
+    musicRefetch();
+    setCountdown(initCountdown);
+    setRotation((prev) => prev - 360);
   };
-
-  useEffect(() => {
-    if (countdown === 0) {
-      setRotation((prev) => prev - 360);
-    }
-  }, [countdown]);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setCountdown((prev) => {
-        if (prev <= 0) {
-          return 15;
+        if (prev <= 0 && isAutoRefetch) {
+          return initCountdown;
+        }
+
+        if (prev <= 0 && !isAutoRefetch) {
+          return 0;
         }
 
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(intervalRef.current!);
-  }, []);
+    return () => {
+      if (!intervalRef.current) {
+        return;
+      }
+
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    };
+  }, [isAutoRefetch]);
+
+  useEffect(() => {
+    setCountdown(initCountdown);
+  }, [isAutoRefetch]);
 
   useEffect(() => {
     if (countdown !== 0 || isRefetching || !isAutoRefetch) {
@@ -69,11 +86,8 @@ export function MusicRefresh({
     }
 
     musicRefetch();
+    setRotation((prev) => prev - 360);
   }, [musicRefetch, isAutoRefetch, countdown]);
-
-  useEffect(() => {
-    setCountdown(15);
-  }, [isAutoRefetch]);
 
   return (
     <Button
