@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type AllergyContextType = {
   allergies: string[];
@@ -10,10 +10,22 @@ type AllergyContextType = {
 const AllergyContext = createContext<AllergyContextType | undefined>(undefined);
 
 export function AllergyProvider({ children }: { children: React.ReactNode }) {
-  const [allergies, setAllergies] = useState<string[]>(() => {
-    const storedAllergies = localStorage.getItem('allergies');
-    return storedAllergies ? JSON.parse(storedAllergies) : [];
-  });
+  const [allergies, setAllergies] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedAllergies = localStorage.getItem('allergies');
+      if (storedAllergies) {
+        setAllergies(JSON.parse(storedAllergies));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('allergies', JSON.stringify(allergies));
+    }
+  }, [allergies]);
 
   return (
     <AllergyContext.Provider value={{ allergies, setAllergies }}>

@@ -15,8 +15,13 @@ function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
 
   const handleAddAllergy = () => {
     const trimmedAllergy = allergyInput.trim();
-    if (trimmedAllergy && !allergies.includes(trimmedAllergy)) {
-      const updatedAllergies = [...allergies, trimmedAllergy];
+    const allergyArray = trimmedAllergy.split(',').map((item) => item.trim());
+    const newAllergies = allergyArray.filter(
+      (allergy) => allergy && !allergies.includes(allergy),
+    );
+
+    if (newAllergies.length > 0) {
+      const updatedAllergies = [...allergies, ...newAllergies];
       setAllergies(updatedAllergies);
       localStorage.setItem('allergies', JSON.stringify(updatedAllergies));
       setAllergyInput('');
@@ -36,7 +41,7 @@ function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
           <Input
             value={allergyInput}
             onChange={(e) => setAllergyInput(e.target.value)}
-            placeholder="알러지 번호 입력 (예: 12)"
+            placeholder="알러지 번호 입력 (예: 12, 3, 4)"
           />
           <Button onClick={handleAddAllergy}>추가</Button>
         </div>
