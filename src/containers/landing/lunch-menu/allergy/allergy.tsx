@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/dialog';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { useAllergy } from './allergyContext';
 
 type AllergyDialogProps = {
   isOpen: boolean;
@@ -11,23 +11,22 @@ type AllergyDialogProps = {
 
 function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
   const [allergyInput, setAllergyInput] = useState('');
-  const [allergies, setAllergies] = useLocalStorage<string[]>('allergies', []);
-  const [safeAllergies, setSafeAllergies] = useState<string[]>(allergies ?? []);
-
-  useEffect(() => {
-    setSafeAllergies(allergies ?? []);
-  }, [allergies]);
+  const { allergies, setAllergies } = useAllergy();
 
   const handleAddAllergy = () => {
     const trimmedAllergy = allergyInput.trim();
-    if (trimmedAllergy && !safeAllergies.includes(trimmedAllergy)) {
-      setAllergies([...safeAllergies, trimmedAllergy]);
+    if (trimmedAllergy && !allergies.includes(trimmedAllergy)) {
+      const updatedAllergies = [...allergies, trimmedAllergy];
+      setAllergies(updatedAllergies);
+      localStorage.setItem('allergies', JSON.stringify(updatedAllergies));
       setAllergyInput('');
     }
   };
 
   const handleRemoveAllergy = (allergy: string) => {
-    setAllergies(safeAllergies.filter((a) => a !== allergy));
+    const updatedAllergies = allergies.filter((a) => a !== allergy);
+    setAllergies(updatedAllergies);
+    localStorage.setItem('allergies', JSON.stringify(updatedAllergies));
   };
 
   return (
@@ -42,8 +41,8 @@ function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
           <Button onClick={handleAddAllergy}>추가</Button>
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
-          {safeAllergies.length > 0 ? (
-            safeAllergies.map((allergy) => (
+          {allergies.length > 0 ? (
+            allergies.map((allergy) => (
               <div
                 key={allergy}
                 className="relative bg-primary-100 text-gray-700 rounded-4 flex items-center justify-center px-4 py-2"

@@ -1,5 +1,5 @@
 import React from 'react';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { useAllergy } from '../allergy/allergyContext';
 
 type MealItemProps = {
   date: string;
@@ -8,13 +8,12 @@ type MealItemProps = {
 };
 
 function MealItem({ date, dishes, isToday }: MealItemProps) {
-  const [allergies] = useLocalStorage<string[]>('allergies', []);
-  const safeAllergies = allergies ?? [];
+  const { allergies } = useAllergy();
 
   const formatDish = (dish: string) => {
-    const parts = dish.split(/(\d+)/g); // 숫자 기준으로 분리
+    const parts = dish.split(/(\d+)/g);
     return parts.map((part) => {
-      if (safeAllergies.includes(part)) {
+      if (allergies.includes(part)) {
         return <span className="text-red-500 font-bold">{part}</span>;
       }
       return part;
