@@ -17,6 +17,10 @@ import { Textarea } from '@/components/textarea';
 import { LoaderCircle } from 'lucide-react';
 import { useFeedbackForm } from './feedback-form.hooks';
 
+const typeItems = ['버그', '개선', '제안', '응원', '기타'];
+
+const pageItems = ['홈', '타이머', 'QR코드', '랜덤뽑기', '음악신청', '기타'];
+
 export default function FeedbackForm() {
   const { form, isValid, isPending, onSubmit } = useFeedbackForm();
 
@@ -31,7 +35,7 @@ export default function FeedbackForm() {
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-semibold">
+              <FormLabel>
                 유형 <span className="text-red">*</span>
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -41,11 +45,11 @@ export default function FeedbackForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="버그">버그</SelectItem>
-                  <SelectItem value="개선">개선</SelectItem>
-                  <SelectItem value="제안">제안</SelectItem>
-                  <SelectItem value="응원">응원</SelectItem>
-                  <SelectItem value="기타">기타</SelectItem>
+                  {typeItems.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -56,7 +60,7 @@ export default function FeedbackForm() {
           name="page"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-semibold">
+              <FormLabel>
                 페이지 <span className="text-red">*</span>
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -66,12 +70,11 @@ export default function FeedbackForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="홈">홈</SelectItem>
-                  <SelectItem value="타이머">타이머</SelectItem>
-                  <SelectItem value="QR코드">QR코드</SelectItem>
-                  <SelectItem value="랜덤뽑기">랜덤뽑기</SelectItem>
-                  <SelectItem value="음악신청">음악신청</SelectItem>
-                  <SelectItem value="기타">기타</SelectItem>
+                  {pageItems.map((item) => (
+                    <SelectItem key={item} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </FormItem>
@@ -82,14 +85,14 @@ export default function FeedbackForm() {
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-semibold">
+              <FormLabel>
                 내용 <span className="text-red">*</span>
               </FormLabel>
               <Textarea
                 placeholder="피드백 내용을 입력해주세요."
                 value={field.value}
                 onChange={field.onChange}
-                className="h-40"
+                className="min-h-60 resize-y"
               />
             </FormItem>
           )}

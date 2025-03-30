@@ -10,9 +10,9 @@ export default function FeedbackContainer() {
   const feedbackId = searchParams.get('id');
 
   return (
-    <div className="max-w-[800px] mx-auto items-start lg:flex-row">
+    <div className="max-w-[600px] mx-auto items-start lg:flex-row">
       <Heading4 className="font-semibold mb-4">
-        티처캔은 여러분의 소중한 피드백을 기다리고 있어요.
+        티처캔은 선생님의 소중한 피드백을 기다리고 있어요.
       </Heading4>
       <FeedbackForm />
       {feedbackId ? <FeedbackResult feedbackId={feedbackId} /> : null}

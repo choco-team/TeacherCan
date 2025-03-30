@@ -38,7 +38,7 @@ export default function FeedbackResult({ feedbackId }: Props) {
   };
 
   const handleClickNewFeedback = () => {
-    router.push(HELP_ROUTE.FEEDBACK);
+    window.location.href = HELP_ROUTE.FEEDBACK;
   };
 
   const handleClickMoveHome = () => {
@@ -53,9 +53,9 @@ export default function FeedbackResult({ feedbackId }: Props) {
             <CheckCircle color="green" />
             <span className="text-green-700">피드백 요청 성공</span>
           </DialogTitle>
-          <DialogDescription className="pt-2">
+          <DialogDescription className="pt-2 text-start">
             소중한 피드백을 남겨주셔서 감사합니다. <br />
-            여러분의 의견을 바탕으로 더 나은 서비스를 제공할 수 있도록
+            선생님의 의견을 바탕으로 더 나은 서비스를 제공할 수 있도록
             노력하겠습니다.
           </DialogDescription>
         </DialogHeader>
@@ -94,7 +94,7 @@ export default function FeedbackResult({ feedbackId }: Props) {
             </span>
           </span>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-2 lg:gap-1">
           <Button onClick={handleClickNewFeedback} variant="primary-outline">
             새로운 피드백 작성하기
           </Button>
