@@ -1,4 +1,5 @@
 import React from 'react';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 type MealItemProps = {
   date: string;
@@ -7,6 +8,19 @@ type MealItemProps = {
 };
 
 function MealItem({ date, dishes, isToday }: MealItemProps) {
+  const [allergies] = useLocalStorage<string[]>('allergies', []);
+  const safeAllergies = allergies ?? [];
+
+  const formatDish = (dish: string) => {
+    const parts = dish.split(/(\d+)/g); // 숫자 기준으로 분리
+    return parts.map((part) => {
+      if (safeAllergies.includes(part)) {
+        return <span className="text-red-500 font-bold">{part}</span>;
+      }
+      return part;
+    });
+  };
+
   return (
     <div
       className={`flex-1 border rounded-md flex flex-col justify-between text-sm
@@ -20,7 +34,7 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
         {dishes.length > 0 ? (
           dishes.map((dish) => (
             <span key={dish} className="text-sm text-gray-700">
-              {dish}
+              {formatDish(dish)}
             </span>
           ))
         ) : (

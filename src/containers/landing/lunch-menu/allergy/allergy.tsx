@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/dialog';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogContent } from '@/components/dialog';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import useLocalStorage from '@/hooks/useLocalStorage';
@@ -12,8 +12,11 @@ type AllergyDialogProps = {
 function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
   const [allergyInput, setAllergyInput] = useState('');
   const [allergies, setAllergies] = useLocalStorage<string[]>('allergies', []);
+  const [safeAllergies, setSafeAllergies] = useState<string[]>(allergies ?? []);
 
-  const safeAllergies = allergies ?? [];
+  useEffect(() => {
+    setSafeAllergies(allergies ?? []);
+  }, [allergies]);
 
   const handleAddAllergy = () => {
     const trimmedAllergy = allergyInput.trim();
@@ -29,7 +32,6 @@ function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogTitle>알러지 등록</DialogTitle>
       <DialogContent>
         <div className="flex gap-2 pt-4">
           <Input
@@ -47,7 +49,7 @@ function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
                 className="relative bg-primary-100 text-gray-700 rounded-4 flex items-center justify-center px-4 py-2"
               >
                 <span
-                  className="text-xl cursor-pointer "
+                  className="text-xl cursor-pointer"
                   onClick={() => handleRemoveAllergy(allergy)}
                 >
                   {allergy}
