@@ -88,7 +88,7 @@ function LunchMenu() {
     return (
       <div className="flex gap-2 px-4 h-[250px]">
         {Array.from({ length: 5 }).map(() => (
-          <Skeleton className="flex-1" key={crypto.randomUUID()} />
+          <Skeleton className="flex-1" />
         ))}
       </div>
     );

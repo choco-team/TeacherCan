@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dialog, DialogContent } from '@/components/dialog';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { useAllergy } from './allergyContext';
 
 type AllergyDialogProps = {
@@ -10,7 +11,10 @@ type AllergyDialogProps = {
 };
 
 function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
-  const [allergyInput, setAllergyInput] = useState('');
+  const [allergyInput, setAllergyInput] = useLocalStorage<string | null>(
+    'allergies',
+    null,
+  );
   const { allergies, setAllergies } = useAllergy();
 
   const handleAddAllergy = () => {
