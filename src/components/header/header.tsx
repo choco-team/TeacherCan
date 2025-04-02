@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BellIcon,
   ChevronsDown,
   ChevronsRight,
   MusicIcon,
@@ -12,6 +13,7 @@ import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
 import { compact, head } from 'lodash';
+import { ROUTE } from '@/constants/route';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,6 +41,11 @@ const breadcrumbs: Record<
     name: '음악신청',
     url: '/music-request',
     icon: <MusicIcon size="14px" />,
+  },
+  'notice-suggestion': {
+    name: '알림장 문구 추천',
+    url: ROUTE.NOTICE_SUGGESTION,
+    icon: <BellIcon size="14px" />,
   },
 };
 

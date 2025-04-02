@@ -58,7 +58,7 @@ module.exports = {
         point: ['var(--font-byeolbichhaneul)'],
         number: ['var(--font-pyeongtaek-anbo)'],
       },
-      fontSize: { '2.5xl': '1.75rem', '3.5xl': '2rem' },
+      fontSize: { '2xs': '0.625rem', '2.5xl': '1.75rem', '3.5xl': '2rem' },
       keyframes: {
         ...keyframes,
         'accordion-down': {
