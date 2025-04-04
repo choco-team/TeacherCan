@@ -4,14 +4,14 @@ import React, { createContext, useContext } from 'react';
 import useLocalStorage from '@/hooks/useLocalStorage';
 
 type AllergyContextType = {
-  allergies: string[];
-  setAllergies: React.Dispatch<React.SetStateAction<string[]>>;
+  allergies: number[];
+  setAllergies: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 const AllergyContext = createContext<AllergyContextType | undefined>(undefined);
 
 export function AllergyProvider({ children }: { children: React.ReactNode }) {
-  const [allergies, setAllergies] = useLocalStorage<string[]>('allergies', []);
+  const [allergies, setAllergies] = useLocalStorage<number[]>('allergies', []);
 
   const safeAllergies = Array.isArray(allergies) ? allergies : [];
 

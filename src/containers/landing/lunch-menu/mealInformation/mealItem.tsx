@@ -13,8 +13,8 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
   const formatDish = (dish: string) => {
     const parts = dish.split(/(\d+)/g);
     return parts.map((part) => {
-      if (allergies.includes(part)) {
-        return <span className="text-red-500 font-bold">{part}</span>;
+      if (allergies.includes(Number(part))) {
+        return <span className="text-red-500">{part}</span>;
       }
       return part;
     });
