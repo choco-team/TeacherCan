@@ -1,4 +1,10 @@
-import { LucideProps, PickaxeIcon, QrCodeIcon, TimerIcon } from 'lucide-react';
+import {
+  LucideProps,
+  MusicIcon,
+  PickaxeIcon,
+  QrCodeIcon,
+  TimerIcon,
+} from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
 export const ROUTE = {
@@ -39,10 +45,9 @@ export const PATH_DATA: Partial<
     Icon: TimerIcon,
     href: ROUTE.TIMER,
   },
-  // TODO:(김홍동) 내부 테스트 후 메뉴 오픈하기
-  // '/music-request': {
-  //   title: '음악신청',
-  //   Icon: MusicIcon,
-  //   href: ROUTE.MUSIC_REQUEST,
-  // },
+  '/music-request': {
+    title: '음악신청',
+    Icon: MusicIcon,
+    href: ROUTE.MUSIC_REQUEST,
+  },
 };
