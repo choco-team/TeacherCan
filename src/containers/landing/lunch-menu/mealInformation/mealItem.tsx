@@ -12,9 +12,14 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
 
   const formatDish = (dish: string) => {
     const parts = dish.split(/(\d+)/g);
-    return parts.map((part) => {
+    return parts.map((part, index) => {
+      const uniqueKey = `${dish}-part-${index}`;
       if (allergies.includes(Number(part))) {
-        return <span className="text-red-500">{part}</span>;
+        return (
+          <span key={uniqueKey} className="text-red-500 font-bold">
+            {part}
+          </span>
+        );
       }
       return part;
     });
@@ -32,7 +37,9 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
       <div className="flex flex-col gap-1 p-1 flex-grow text-center">
         {dishes.length > 0 ? (
           dishes.map((dish) => (
-            <span className="text-sm text-gray-700">{formatDish(dish)}</span>
+            <span key={dish} className="text-sm text-gray-700">
+              {formatDish(dish)}
+            </span>
           ))
         ) : (
           <span className="text-sm text-gray-500">식단 정보 없음</span>

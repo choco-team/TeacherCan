@@ -34,8 +34,11 @@ function LunchMenu() {
     if (!selectedSchool) {
       return (
         <div className="flex gap-2 px-4 h-[250px]">
-          {Array.from({ length: 5 }).map(() => (
-            <Skeleton className="flex-1" />
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton
+              key={`skeleton-${selectedSchool?.SD_SCHUL_CODE || 'none'}-position-${index * 20}%`}
+              className="flex-1"
+            />
           ))}
         </div>
       );
@@ -64,8 +67,11 @@ function LunchMenu() {
 
     return (
       <div className="flex gap-2 px-4 h-[250px]">
-        {Array.from({ length: 5 }).map(() => (
-          <Skeleton className="flex-1" />
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Skeleton
+            key={`skeleton-${selectedSchool?.SD_SCHUL_CODE || 'none'}-position-${index * 20}%`}
+            className="flex-1"
+          />
         ))}
       </div>
     );
