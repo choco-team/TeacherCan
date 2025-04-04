@@ -32,9 +32,7 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
       <div className="flex flex-col gap-1 p-1 flex-grow text-center">
         {dishes.length > 0 ? (
           dishes.map((dish) => (
-            <span key={dish} className="text-sm text-gray-700">
-              {formatDish(dish)}
-            </span>
+            <span className="text-sm text-gray-700">{formatDish(dish)}</span>
           ))
         ) : (
           <span className="text-sm text-gray-500">식단 정보 없음</span>

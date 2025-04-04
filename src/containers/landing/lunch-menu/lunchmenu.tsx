@@ -58,7 +58,7 @@ function LunchMenu() {
       return (
         <div className="flex gap-2 px-4 h-[250px]">
           {Array.from({ length: 5 }).map(() => (
-            <Skeleton className="flex-1" key={crypto.randomUUID()} />
+            <Skeleton className="flex-1" />
           ))}
         </div>
       );
@@ -121,12 +121,12 @@ function LunchMenu() {
       <div className="bg-white shadow-custom py-4 rounded-xl w-full overflow-auto">
         {renderContent()}
         <div className="mt-4 p-4">
-          <h3 className="text-lg font-semibold">알러지 정보</h3>
+          <h3 className="text-sm font-semibold">알러지 정보</h3>
           <ul className="flex flex-wrap gap-2 mt-2">
             {allergyList.map((allergy) => (
               <li
                 key={allergy.id}
-                className="px-2 py-1 bg-white rounded-md shadow"
+                className="text-sm px-2 py-1 bg-white rounded-md shadow"
               >
                 {allergy.id}. {allergy.name}
               </li>

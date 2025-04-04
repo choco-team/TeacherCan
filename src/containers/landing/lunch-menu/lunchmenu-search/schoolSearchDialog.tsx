@@ -32,6 +32,33 @@ function SchoolSearchDialog({
   onSelectSchool,
   handleSearch,
 }: SchoolSearchDialogProps) {
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <LoaderCircle
+          size="24px"
+          className="animate-spin h-full text-gray-800 mx-auto"
+        />
+      );
+    }
+
+    if (schoolList === null || schoolList.length === 0) {
+      return (
+        <div className="h-full text-gray-800 flex items-center justify-center">
+          <span>검색된 학교가 없습니다.</span>
+        </div>
+      );
+    }
+
+    return schoolList.map((school) => (
+      <SchoolCard
+        key={school.SD_SCHUL_CODE}
+        school={school}
+        onClick={() => onSelectSchool(school)}
+      />
+    ));
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-sm lg:max-w-lg">
@@ -60,25 +87,7 @@ function SchoolSearchDialog({
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-2 max-h-60 min-h-60 overflow-y-auto">
-          {/* TODO:(김홍동) 분기가 많아 컴포넌트 분리하기 */}
-          {isLoading ? (
-            <LoaderCircle
-              size="24px"
-              className="animate-spin h-full text-gray-800 mx-auto"
-            />
-          ) : schoolList === null ? null : schoolList.length > 0 ? (
-            schoolList.map((school) => (
-              <SchoolCard
-                key={school.SD_SCHUL_CODE}
-                school={school}
-                onClick={() => onSelectSchool(school)}
-              />
-            ))
-          ) : (
-            <div className="h-full text-gray-800 flex items-center justify-center">
-              <span>검색된 학교가 없습니다.</span>
-            </div>
-          )}
+          {renderContent()}
         </div>
       </DialogContent>
     </Dialog>

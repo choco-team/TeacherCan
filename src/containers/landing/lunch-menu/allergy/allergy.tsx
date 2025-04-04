@@ -2,7 +2,6 @@ import React from 'react';
 import { Dialog, DialogContent } from '@/components/dialog';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import useLocalStorage from '@/hooks/useLocalStorage';
 import { useAllergy } from './allergyContext';
 
 type AllergyDialogProps = {
@@ -11,10 +10,7 @@ type AllergyDialogProps = {
 };
 
 function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
-  const [allergyInput, setAllergyInput] = useLocalStorage<string | null>(
-    'allergies',
-    null,
-  );
+  const [allergyInput, setAllergyInput] = React.useState('');
   const { allergies, setAllergies } = useAllergy();
 
   const handleAddAllergy = () => {
@@ -27,7 +23,6 @@ function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
     if (newAllergies.length > 0) {
       const updatedAllergies = [...allergies, ...newAllergies];
       setAllergies(updatedAllergies);
-      localStorage.setItem('allergies', JSON.stringify(updatedAllergies));
       setAllergyInput('');
     }
   };
@@ -35,13 +30,13 @@ function AllergyDialog({ isOpen, onClose }: AllergyDialogProps) {
   const handleRemoveAllergy = (allergy: string) => {
     const updatedAllergies = allergies.filter((a) => a !== allergy);
     setAllergies(updatedAllergies);
-    localStorage.setItem('allergies', JSON.stringify(updatedAllergies));
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
-        <div className="flex gap-2 pt-4">
+        <span className="text-xm font-semibold mb-4">알러지를 등록하세요.</span>
+        <div className="flex gap-2">
           <Input
             value={allergyInput}
             onChange={(e) => setAllergyInput(e.target.value)}
