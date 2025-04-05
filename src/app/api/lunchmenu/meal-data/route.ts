@@ -60,15 +60,17 @@ async function fetchMealInfo(schoolCode: string, officeCode: string) {
 
     if (CODE === 'INFO-000') {
       return (row as MealData[]).map((meal) => ({
-        ...meal,
+        mlsvYmd: meal.MLSV_YMD,
         formattedDate: format(
           parse(meal.MLSV_YMD, 'yyyyMMdd', new Date()),
           'M월 d일 EEEE',
           { locale: ko },
         ),
+        dishes: meal.DDISH_NM
+          ? meal.DDISH_NM.split(/<br\/?>|\n/).map((dish) => dish.trim())
+          : [],
       }));
     }
-
     throw new Error(`API 오류 발생: ${MESSAGE || '알 수 없는 오류'}`);
   } catch (error) {
     throw new Error(error.message);

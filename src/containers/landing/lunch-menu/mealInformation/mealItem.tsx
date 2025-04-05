@@ -1,13 +1,30 @@
 import React from 'react';
+import { useAllergy } from '../allergy/allergyContext';
 
 type MealItemProps = {
   date: string;
-
-  dishes: string;
+  dishes: string[];
   isToday: boolean;
 };
 
 function MealItem({ date, dishes, isToday }: MealItemProps) {
+  const { allergies } = useAllergy();
+
+  const formatDish = (dish: string) => {
+    const parts = dish.split(/(\d+)/g);
+    return parts.map((part, index) => {
+      const uniqueKey = `${dish}-part-${index}`;
+      if (allergies.includes(Number(part))) {
+        return (
+          <span key={uniqueKey} className="text-red-500 font-bold">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <div
       className={`flex-1 border rounded-md flex flex-col justify-between text-sm
@@ -18,10 +35,10 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
       </h4>
 
       <div className="flex flex-col gap-1 p-1 flex-grow text-center">
-        {dishes ? (
-          dishes.split(/<br\/?>|\n/).map((dish) => (
+        {dishes.length > 0 ? (
+          dishes.map((dish) => (
             <span key={dish} className="text-sm text-gray-700">
-              {dish.trim()}
+              {formatDish(dish)}
             </span>
           ))
         ) : (
