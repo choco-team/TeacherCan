@@ -15,7 +15,7 @@ export default function FeedbackContainer() {
         티처캔은 선생님의 소중한 피드백을 기다리고 있어요.
       </Heading4>
       <FeedbackForm />
-      {feedbackId ? <FeedbackResult feedbackId={feedbackId} /> : null}
+      {feedbackId ? <FeedbackResult /> : null}
     </div>
   );
 }

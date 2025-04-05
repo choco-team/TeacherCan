@@ -4,6 +4,7 @@ export const createFeedback = async (params: {
   type: string;
   page: string;
   content: string;
+  email?: string;
 }): Promise<CreateFeedbackResponse> => {
   const res = await fetch('/api/notion/feedback', {
     method: 'POST',
@@ -12,6 +13,10 @@ export const createFeedback = async (params: {
     },
     body: JSON.stringify(params),
   });
+
+  if (!res.ok) {
+    throw new Error('');
+  }
 
   return res.json();
 };

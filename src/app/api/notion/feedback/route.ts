@@ -12,8 +12,9 @@ export async function POST(request: Request) {
       type: string;
       page: string;
       content: string;
+      email?: string;
     };
-    const { type, page, content } = body;
+    const { type, page, content, email } = body;
 
     const pageEmojiByType = {
       버그: '🐛',
@@ -57,6 +58,20 @@ export async function POST(request: Request) {
         상태: {
           status: {
             name: '접수',
+          },
+        },
+        이메일: {
+          rich_text: [
+            {
+              text: {
+                content: email ?? '',
+              },
+            },
+          ],
+        },
+        공유여부: {
+          select: {
+            name: email ? '공유 전' : '공유대상아님',
           },
         },
       },

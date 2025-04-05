@@ -1,6 +1,6 @@
 import { Button } from '@/components/button';
 import { HELP_ROUTE, MENU_ROUTE } from '@/constants/route';
-import { CheckCircle, Copy, ExternalLink, InfoIcon } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
   Dialog,
@@ -10,32 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/dialog';
-import { Label } from '@/components/label';
-import { Input } from '@/components/input';
-import { useToast } from '@/hooks/use-toast';
 
-type Props = {
-  feedbackId: string;
-};
-
-export default function FeedbackResult({ feedbackId }: Props) {
-  const { toast } = useToast();
-
+export default function FeedbackResult() {
   const router = useRouter();
-
-  const feedbackLink = `https://interesting-sherbet-fe5.notion.site/${feedbackId.split('-').join('')}`;
-
-  const handleClickCopyLink = () => {
-    toast({
-      title: '클립보드에 복사되어있습니다.',
-      variant: 'success',
-    });
-    navigator.clipboard.writeText(feedbackLink);
-  };
-
-  const handleClickFeedbackLink = () => {
-    window.open(feedbackLink, '_blank');
-  };
 
   const handleClickNewFeedback = () => {
     window.location.href = HELP_ROUTE.FEEDBACK;
@@ -59,42 +36,7 @@ export default function FeedbackResult({ feedbackId }: Props) {
             노력하겠습니다.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-[2px]">
-          <Label htmlFor="link" className="mb-2">
-            피드백 페이지 주소
-          </Label>
-          <div className="flex items-center space-x-2">
-            <div className="grid flex-1 gap-2">
-              <Input id="link" defaultValue={feedbackLink} readOnly />
-            </div>
-            <Button
-              onClick={handleClickCopyLink}
-              size="sm"
-              variant="gray-outline"
-              className="px-3"
-            >
-              <span className="sr-only">Copy</span>
-              <Copy />
-            </Button>
-            <Button
-              onClick={handleClickFeedbackLink}
-              size="sm"
-              variant="gray-outline"
-              className="px-3"
-            >
-              <span className="sr-only">Copy</span>
-              <ExternalLink />
-            </Button>
-          </div>
-          <span className="w-full grid grid-cols-[auto_1fr] gap-x-1 text-start text-sm text-gray-500 mb-2 mt-1">
-            <InfoIcon className="mt-0.5 size-4 text-primary" />
-            <span>
-              피드백 페이지 주소는 이후에 다시 확인할 수 없습니다. 피드백 진행
-              상황을 확인하고 싶으시면, 주소를 복사 후 저장해 주세요.
-            </span>
-          </span>
-        </div>
-        <DialogFooter className="gap-2 lg:gap-1">
+        <DialogFooter className="gap-2 lg:gap-1 mt-4">
           <Button onClick={handleClickNewFeedback} variant="primary-outline">
             새로운 피드백 작성하기
           </Button>

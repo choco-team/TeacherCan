@@ -1,9 +1,11 @@
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from '@/components/form';
 import {
   Select,
@@ -15,14 +17,22 @@ import {
 import { Button } from '@/components/button';
 import { Textarea } from '@/components/textarea';
 import { LoaderCircle } from 'lucide-react';
+import { Input } from '@/components/input';
 import { useFeedbackForm } from './feedback-form.hooks';
 
 const typeItems = ['버그', '개선', '제안', '응원', '기타'];
-
-const pageItems = ['홈', '타이머', 'QR코드', '랜덤뽑기', '음악신청', '기타'];
+const pageItems = [
+  '홈',
+  '타이머',
+  'QR코드',
+  '랜덤뽑기',
+  '음악신청',
+  '알림장 문구 추천',
+  '기타',
+];
 
 export default function FeedbackForm() {
-  const { form, isValid, isPending, onSubmit } = useFeedbackForm();
+  const { form, isPending, onSubmit } = useFeedbackForm();
 
   return (
     <Form {...form}>
@@ -97,7 +107,25 @@ export default function FeedbackForm() {
             </FormItem>
           )}
         />
-        <Button className="mt-4" disabled={!isValid} type="submit">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>이메일</FormLabel>
+              <Input
+                placeholder="이메일을 입력해주세요."
+                onChange={field.onChange}
+              />
+              <FormDescription>
+                이메일을 적어주시면, 피드백 반영 결과나 관련 소식을 나중에
+                보내드릴 수 있어요.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button className="mt-4" type="submit">
           {isPending ? (
             <LoaderCircle size="18px" className="animate-spin text-white" />
           ) : (

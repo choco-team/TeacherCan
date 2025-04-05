@@ -17,6 +17,11 @@ const FormSchema = z.object({
       required_error: '내용을 입력해주세요.',
     })
     .min(1),
+  email: z
+    .string()
+    .email({ message: '이메일 형식이 올바르지 않습니다.' })
+    .optional()
+    .or(z.literal('')),
 });
 
 export const useFeedbackForm = () => {
@@ -26,7 +31,7 @@ export const useFeedbackForm = () => {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
   });
 
   const {
@@ -38,12 +43,13 @@ export const useFeedbackForm = () => {
       return;
     }
 
-    const { type, page, content } = data;
+    const { type, page, content, email } = data;
     mutate(
       {
         type,
         page,
         content,
+        email,
       },
       {
         onSuccess: ({ id }) => {
@@ -51,7 +57,7 @@ export const useFeedbackForm = () => {
         },
         onError: () => {
           toast({
-            content: '피드백 요청을 실패했어요. 잠시 뒤 다시 시도해주세요.',
+            title: '피드백 요청을 실패했어요. 잠시 뒤 다시 시도해주세요.',
             variant: 'error',
           });
         },
