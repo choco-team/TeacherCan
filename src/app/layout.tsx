@@ -1,5 +1,5 @@
 import './globals.css';
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Toaster } from '@/components/toaster';
@@ -53,6 +53,7 @@ export default async function RootLayout({
       className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable}`}
     >
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_TAG_ID} />
       <body>
         <QueryProvider>
           {isMinimalLayout ? (
