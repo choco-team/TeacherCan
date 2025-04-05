@@ -79,6 +79,7 @@ export default function CountdownDisplay() {
                 disabledDown={leftTime < HOUR_TO_SECONDS}
                 length={1}
                 className="max-w-20 md:max-w-40 lg:max-w-60"
+                target="hour"
                 onIncrease={() => updateHours(1, true)}
                 onDecrease={() => updateHours(-1, true)}
                 onChange={(value) => updateHours(value)}
@@ -94,6 +95,7 @@ export default function CountdownDisplay() {
               MAX_TIME_INPUT.HOUR * 60 * 60 + MAX_TIME_INPUT.MINUTE * 60
             }
             disabledDown={leftTime <= MINUTE_TO_SECONDS}
+            target="minute"
             onIncrease={() => updateMinutes(1, true)}
             onDecrease={() => updateMinutes(-1, true)}
             onChange={(value) => updateMinutes(value)}
@@ -104,6 +106,7 @@ export default function CountdownDisplay() {
             isActive={isActive}
             disabledUp={leftTime >= MAX_TIME}
             disabledDown={leftTime <= NO_TIME}
+            target="second"
             onIncrease={() => updateSeconds(1, true)}
             onDecrease={() => updateSeconds(-1, true)}
             onChange={(value) => updateSeconds(value)}

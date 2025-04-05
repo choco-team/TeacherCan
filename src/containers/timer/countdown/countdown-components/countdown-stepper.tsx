@@ -17,6 +17,7 @@ type Props = {
   disabledDown: boolean;
   length?: number;
   className?: string;
+  target: 'hour' | 'minute' | 'second';
   onIncrease: () => void;
   onDecrease: () => void;
   onChange: (value: number) => void;
@@ -29,6 +30,7 @@ export default function CountdownStepper({
   disabledDown,
   className,
   length = 2,
+  target,
   onIncrease,
   onDecrease,
   onChange,
@@ -76,6 +78,7 @@ export default function CountdownStepper({
   return (
     <div className="flex flex-col items-center gap-y-1.5 lg:gap-y-4">
       <Button
+        id={`timer-arrow-up-${target}`}
         size="icon"
         variant="primary-ghost"
         className="max-md:hidden size-6 lg:size-12 rounded-full"
@@ -97,6 +100,7 @@ export default function CountdownStepper({
         readOnly={isActive}
       />
       <Button
+        id={`timer-arrow-down-${target}`}
         size="icon"
         variant="primary-ghost"
         className="max-md:hidden size-6 lg:size-12 rounded-full"

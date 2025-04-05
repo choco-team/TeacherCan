@@ -27,6 +27,7 @@ export default function SettingTime() {
             size="sm"
             className="flex-1 flex items-center gap-x-0.5 [&_svg]:size-4"
             onClick={() => updateMinutes(time, true, true)}
+            id={`timer-${time > 0 ? 'increase' : 'decrease'}-${Math.abs(time)}`}
           >
             {time > 0 ? <PlusIcon /> : <MinusIcon />}
             {Math.abs(time)}분
