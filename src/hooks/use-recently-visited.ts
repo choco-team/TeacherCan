@@ -1,16 +1,16 @@
 import { useCallback, useEffect } from 'react';
-import { ROUTE, RoutePath } from '@/constants/route';
+import { MENU_ROUTE, MenuRoutePath } from '@/constants/route';
 import useLocalStorage from './useLocalStorage';
 
-export type RecentlyVisited = { pathname: RoutePath; date: Date }[];
+export type RecentlyVisited = { pathname: MenuRoutePath; date: Date }[];
 
-export default function useRecentlyVisited(pathname?: RoutePath) {
+export default function useRecentlyVisited(pathname?: MenuRoutePath) {
   const [recentlyVisited, setRecentlyVisited] =
     useLocalStorage<RecentlyVisited>('recently-visited', []);
 
   const updateRecentlyVisited = useCallback(
-    (_pathname?: RoutePath) => {
-      if (!_pathname || _pathname === ROUTE.LANDING) {
+    (_pathname?: MenuRoutePath) => {
+      if (!_pathname || _pathname === MENU_ROUTE.LANDING) {
         return;
       }
 

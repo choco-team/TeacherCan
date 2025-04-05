@@ -1,14 +1,14 @@
 import PopupLink from '@/components/popup-link';
-import { ROUTE, RoutePath } from '@/constants/route';
+import { MENU_ROUTE, MenuRoutePath } from '@/constants/route';
 import Link from 'next/link';
 
 import { ReactNode } from 'react';
 
 type Props = {
   className: string;
-  pathname: RoutePath;
+  pathname: MenuRoutePath;
   children: ReactNode;
-  updateRecentlyVisited: (_pathname?: RoutePath) => void;
+  updateRecentlyVisited: (_pathname?: MenuRoutePath) => void;
 };
 
 export default function LinkCard({
@@ -17,12 +17,12 @@ export default function LinkCard({
   className,
   updateRecentlyVisited,
 }: Props) {
-  if (pathname === ROUTE.TIMER) {
+  if (pathname === MENU_ROUTE.TIMER) {
     return (
       <PopupLink
         size={7 / 8}
-        url={`${ROUTE.TIMER}`}
-        onClick={() => updateRecentlyVisited(ROUTE.TIMER)}
+        url={`${MENU_ROUTE.TIMER}`}
+        onClick={() => updateRecentlyVisited(MENU_ROUTE.TIMER)}
         className={className}
       >
         {children}

@@ -37,5 +37,8 @@ export const fetcher = async <T>(
     throw new Error(errorMessage);
   }
 
+  const newCsrfToken = response.headers.get('X-CSRF-Token');
+  useAuthStore.setState({ csrfToken: newCsrfToken });
+
   return text ? JSON.parse(text) : ({} as T);
 };

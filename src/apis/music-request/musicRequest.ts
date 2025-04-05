@@ -66,9 +66,7 @@ export type GetMusicRequestRoomResponse = {
 export const getMusicRequestRoom = (params: { roomId: string }) => {
   const searchParams = new URLSearchParams(params);
 
-  return fetcher<GetMusicRequestRoomResponse>(
-    `/music-request/?${searchParams}`,
-  );
+  return fetcher<GetMusicRequestRoomResponse>(`/music-request?${searchParams}`);
 };
 
 export const DeleteMusicRequestMusic = (params: {
