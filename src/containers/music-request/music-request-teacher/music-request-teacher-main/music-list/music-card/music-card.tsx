@@ -47,6 +47,8 @@ export default function MusicCard({
         title: '이 페이지에서는 음악을 삭제할 수 없어요.',
         variant: 'default',
       });
+
+      return;
     }
 
     if (isSelectedMusic) {
