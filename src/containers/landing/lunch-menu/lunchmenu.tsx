@@ -88,6 +88,7 @@ function LunchMenu() {
               size="md"
               variant="primary-ghost"
               onClick={() => setIsDialogOpen(true)}
+              className="p-1"
             >
               학교 등록
             </Button>
