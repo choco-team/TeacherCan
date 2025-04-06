@@ -36,7 +36,7 @@ function AllergyList() {
   };
 
   return (
-    <div className="p-4">
+    <div className="pt-4">
       <h3 className="text-sm font-semibold">등록할 알러지를 클릭하세요.</h3>
       <ul className="flex flex-wrap gap-2 mt-2">
         {allergyList.map((allergy) => (

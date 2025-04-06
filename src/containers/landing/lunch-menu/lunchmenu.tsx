@@ -83,11 +83,12 @@ function LunchMenu() {
         Icon={Utensils}
         title="점심 메뉴"
         buttonSection={
-          <div className="flex gap-2">
+          <div className="flex">
             <Button
               size="md"
               variant="primary-ghost"
               onClick={() => setIsDialogOpen(true)}
+              className="p-1"
             >
               학교 등록
             </Button>
@@ -96,9 +97,11 @@ function LunchMenu() {
       />
       <div className="bg-white shadow-custom py-4 rounded-xl w-full overflow-auto">
         {renderContent()}
-        <div className="mt-4 p-4">
-          <AllergyList />
-        </div>
+        {mealData.length > 0 && (
+          <div className="px-4">
+            <AllergyList />
+          </div>
+        )}
       </div>
 
       <SchoolSearchDialog
