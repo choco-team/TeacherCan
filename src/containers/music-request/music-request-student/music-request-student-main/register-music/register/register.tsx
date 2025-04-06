@@ -18,7 +18,7 @@ type MusicTitleProps = {
 };
 
 function MusicTitle({ musicId, setTitle }: MusicTitleProps) {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: [musicId],
     queryFn: () =>
       fetch(`${originURL}/api/youtube/video/title/${musicId}`).then((res) =>
@@ -36,6 +36,10 @@ function MusicTitle({ musicId, setTitle }: MusicTitleProps) {
 
   if (isLoading) {
     return <Skeleton className="w-full h-[20px]" />;
+  }
+
+  if (error) {
+    return '음악 제목을 찾지 못했어요. 다시 시도해주세요.';
   }
 
   return data.title;
@@ -158,7 +162,12 @@ export default function Register({ roomId, studentName }: Props) {
             />
           </div>
           <MusicTitle musicId={result.musicId} setTitle={setTitle} />
-          <Button variant="primary" size="sm" onClick={handleRequestMusic}>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleRequestMusic}
+            disabled={!title}
+          >
             {isPending ? (
               <LoaderCircle
                 size="18px"
