@@ -41,6 +41,14 @@ export default function MusicCard({
     currentMusicId !== null && currentMusicId === video.musicId;
 
   const handleDeleteMusic = async () => {
+    // NOTE:(김홍동) 예시 페이지에서는 음악 삭제 기능 막기
+    if (roomId === 'c15fa864-8719-41e9-99f4-4bcf64086d42') {
+      toast({
+        title: '이 페이지에서는 음악을 삭제할 수 없어요.',
+        variant: 'default',
+      });
+    }
+
     if (isSelectedMusic) {
       toast({
         title: '재생 중인 곡은 삭제할 수 없어요.',
