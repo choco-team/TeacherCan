@@ -2,6 +2,7 @@ import {
   LucideProps,
   MusicIcon,
   MessageCircleHeartIcon,
+  BellIcon,
   PickaxeIcon,
   QrCodeIcon,
   TimerIcon,
@@ -10,6 +11,8 @@ import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
 export const MENU_ROUTE = {
   LANDING: '/',
+  NOTICE: '/notice',
+  NOTICE_SUGGESTION: '/notice-suggestion',
   QR_CODE: '/qr-code',
   TIMER: '/timer',
   RANDOM_PICK: '/random-pick',
@@ -56,6 +59,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '음악신청',
     Icon: MusicIcon,
     href: MENU_ROUTE.MUSIC_REQUEST,
+  },
+  '/notice-suggestion': {
+    title: '알림장 문구 추천',
+    Icon: BellIcon,
+    href: MENU_ROUTE.NOTICE_SUGGESTION,
   },
 };
 

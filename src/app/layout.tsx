@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import Navigation from '@/components/navigation/navigation';
 import Header from '@/components/header/header';
 import QueryProvider from '@/components/provider/query-provider';
+import { MENU_ROUTE } from '@/constants/route';
 
 export const metadata: Metadata = {
   title: '티처캔',
@@ -33,7 +34,10 @@ const pyeongtaek = localFont({
   variable: '--font-pyeongtaek-anbo',
 });
 
-const isMinimalLayoutPages = ['/timer', '/music-request/student/'];
+const isMinimalLayoutPages = {
+  startsWith: ['/timer', '/music-request/student/'],
+  equal: [MENU_ROUTE.NOTICE],
+};
 
 export default async function RootLayout({
   children,
@@ -43,9 +47,10 @@ export default async function RootLayout({
   const headersList = headers();
   const currentPath = headersList.get('X-Current-Path') || '/';
 
-  const isMinimalLayout = isMinimalLayoutPages.some((path) =>
-    currentPath.startsWith(path),
-  );
+  const isMinimalLayout =
+    isMinimalLayoutPages.startsWith.some((path) =>
+      currentPath.startsWith(path),
+    ) || isMinimalLayoutPages.equal.some((path) => path === currentPath);
 
   return (
     <html

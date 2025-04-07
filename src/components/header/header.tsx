@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BellIcon,
   ChevronsDown,
   ChevronsRight,
   MessageCircleHeartIcon,
@@ -45,6 +46,11 @@ const breadcrumbs: Record<
     name: '피드백',
     url: '/feedback',
     icon: <MessageCircleHeartIcon size="14px" />,
+  },
+  'notice-suggestion': {
+    name: '알림장 문구 추천',
+    url: '/notice-suggestion',
+    icon: <BellIcon size="14px" />,
   },
 };
 
