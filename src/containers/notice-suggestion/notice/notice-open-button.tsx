@@ -2,7 +2,7 @@
 
 import { PencilIcon } from 'lucide-react';
 import { Button } from '@/components/button';
-import { ROUTE } from '@/constants/route';
+import { MENU_ROUTE } from '@/constants/route';
 
 export default function NoticeTextareaOpenButton() {
   return (
@@ -11,7 +11,7 @@ export default function NoticeTextareaOpenButton() {
       size="sm"
       className="self-center flex items-center gap-x-1"
       onClick={() => {
-        window.open(ROUTE.NOTICE, '_blank');
+        window.open(MENU_ROUTE.NOTICE, '_blank');
       }}
     >
       <PencilIcon className="size-3.5" />

@@ -21,7 +21,15 @@ import { Input } from '@/components/input';
 import { useFeedbackForm } from './feedback-form.hooks';
 
 const typeItems = ['버그', '개선', '제안', '응원', '기타'];
-const pageItems = ['홈', '타이머', 'QR코드', '랜덤뽑기', '음악신청', '기타'];
+const pageItems = [
+  '홈',
+  '타이머',
+  'QR코드',
+  '랜덤뽑기',
+  '음악신청',
+  '알림장 문구 추천',
+  '기타',
+];
 
 export default function FeedbackForm() {
   const { form, isPending, onSubmit } = useFeedbackForm();

@@ -7,7 +7,7 @@ import { headers } from 'next/headers';
 import Navigation from '@/components/navigation/navigation';
 import Header from '@/components/header/header';
 import QueryProvider from '@/components/provider/query-provider';
-import { ROUTE } from '@/constants/route';
+import { MENU_ROUTE } from '@/constants/route';
 
 export const metadata: Metadata = {
   title: '티처캔',
@@ -36,7 +36,7 @@ const pyeongtaek = localFont({
 
 const isMinimalLayoutPages = {
   startsWith: ['/timer', '/music-request/student/'],
-  equal: [ROUTE.NOTICE],
+  equal: [MENU_ROUTE.NOTICE],
 };
 
 export default async function RootLayout({
