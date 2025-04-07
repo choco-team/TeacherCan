@@ -2,7 +2,7 @@ import {
   LucideProps,
   MusicIcon,
   MessageCircleHeartIcon,
-  BellIcon,
+  // BellIcon,
   PickaxeIcon,
   QrCodeIcon,
   TimerIcon,
@@ -60,11 +60,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: MusicIcon,
     href: MENU_ROUTE.MUSIC_REQUEST,
   },
-  '/notice-suggestion': {
-    title: '알림장 문구 추천',
-    Icon: BellIcon,
-    href: MENU_ROUTE.NOTICE_SUGGESTION,
-  },
+  // '/notice-suggestion': {
+  //   title: '알림장 문구 추천',
+  //   Icon: BellIcon,
+  //   href: MENU_ROUTE.NOTICE_SUGGESTION,
+  // },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
