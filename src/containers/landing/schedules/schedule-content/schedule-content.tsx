@@ -20,7 +20,7 @@ export default function ScheduleContent({
 }: Props) {
   if (schedules === null) {
     return (
-      <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full h-64 overflow-auto">
+      <div className="bg-white shadow-custom py-4 px-8 rounded-2xl w-full h-64 overflow-auto">
         <div className="flex gap-4">
           <Skeleton className="w-36 h-6" />
           <div className="flex flex-col gap-2">
@@ -43,7 +43,7 @@ export default function ScheduleContent({
   const reshapedSchedule = reshapeSchedule(schedules);
 
   return (
-    <div className="bg-white shadow-custom py-4 px-8 rounded-xl w-full h-64 overflow-auto">
+    <div className="bg-white shadow-custom py-4 px-8 rounded-2xl w-full h-64 overflow-auto">
       {hasSchedule ? (
         <div className="flex flex-col gap-8">
           {reshapedSchedule.map(([date, _schedules]) => (

@@ -18,6 +18,7 @@ type SchoolSearchDialogProps = {
   isLoading: boolean;
   setSchoolName: (name: string) => void;
   schoolList: School[];
+  selectedSchool: School | null;
   onSelectSchool: (school: School) => void;
   handleSearch: (name: string) => void;
 };
@@ -29,6 +30,7 @@ function SchoolSearchDialog({
   isLoading,
   setSchoolName,
   schoolList,
+  selectedSchool,
   onSelectSchool,
   handleSearch,
 }: SchoolSearchDialogProps) {
@@ -45,7 +47,7 @@ function SchoolSearchDialog({
     if (schoolList === null || schoolList.length === 0) {
       return (
         <div className="h-full text-gray-800 flex items-center justify-center">
-          <span>검색된 학교가 없습니다.</span>
+          <span>검색된 학교가 없어요.</span>
         </div>
       );
     }
@@ -65,7 +67,7 @@ function SchoolSearchDialog({
         <DialogHeader>
           <DialogTitle>
             <span className="text-sm text-gray-500 mb-2 block">
-              학교명을 검색하세요
+              {selectedSchool?.SCHUL_NM ? '학교 변경' : '학교 등록'}
             </span>
             <form
               onSubmit={(event) => {
@@ -86,7 +88,7 @@ function SchoolSearchDialog({
             </form>
           </DialogTitle>
         </DialogHeader>
-        <div className="grid gap-2 max-h-60 min-h-60 overflow-y-auto">
+        <div className="flex flex-col gap-y-2 w-full h-60 overflow-y-auto">
           {renderContent()}
         </div>
       </DialogContent>
