@@ -33,7 +33,7 @@ function LunchMenu() {
   const renderContent = () => {
     if (!selectedSchool) {
       return (
-        <div className="flex gap-2 px-4 h-[250px]">
+        <div className="flex gap-2 px-4 h-64">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton
               key={`skeleton-${selectedSchool?.SD_SCHUL_CODE || 'none'}-position-${index * 20}%`}
@@ -46,9 +46,9 @@ function LunchMenu() {
 
     if (selectedSchool.SCHUL_NM === null) {
       return (
-        <div className="flex flex-col gap-4 justify-center items-center min-h-[140px]">
+        <div className="flex flex-col gap-4 justify-center items-center min-h-64">
           <div className="text-center text-sm text-gray-500">
-            등록된 학교가 없어요. 학교를 등록해보세요.
+            학교를 등록하고 점심 식단을 확인해보세요.
           </div>
           <Button
             size="sm"
@@ -66,7 +66,7 @@ function LunchMenu() {
     }
 
     return (
-      <div className="flex gap-2 px-4 h-[250px]">
+      <div className="flex gap-2 px-4 h-64">
         {Array.from({ length: 5 }).map((_, index) => (
           <Skeleton
             key={`skeleton-${selectedSchool?.SD_SCHUL_CODE || 'none'}-position-${index * 20}%`}
@@ -78,30 +78,30 @@ function LunchMenu() {
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full ">
+    <div className="flex flex-col gap-4 w-full">
       <SectionTitle
         Icon={Utensils}
-        title="점심 메뉴"
+        title="점심 식단"
         buttonSection={
-          <div className="flex">
-            <Button
-              size="md"
-              variant="primary-ghost"
-              onClick={() => setIsDialogOpen(true)}
-              className="p-1"
-            >
-              학교 등록
-            </Button>
-          </div>
+          selectedSchool?.SCHUL_NM ? (
+            <div className="flex items-center gap-x-1">
+              <span className="text-sm font-normal">
+                {selectedSchool?.SCHUL_NM}
+              </span>
+              <Button
+                size="sm"
+                variant="primary-ghost"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                변경
+              </Button>
+            </div>
+          ) : null
         }
       />
-      <div className="bg-white shadow-custom py-4 rounded-xl w-full overflow-auto">
+      <div className="bg-white shadow-custom py-4 rounded-2xl w-full overflow-auto">
         {renderContent()}
-        {mealData.length > 0 && (
-          <div className="px-4">
-            <AllergyList />
-          </div>
-        )}
+        {mealData.length > 0 && <AllergyList />}
       </div>
 
       <SchoolSearchDialog
@@ -111,6 +111,7 @@ function LunchMenu() {
         schoolName={schoolName}
         setSchoolName={setSchoolName}
         schoolList={schoolList}
+        selectedSchool={selectedSchool}
         onSelectSchool={(school) => {
           setSelectedSchool(school);
           setIsDialogOpen(false);
