@@ -2,8 +2,12 @@ import Lottie from 'lottie-react';
 import { cn } from '@/styles/utils';
 import musicWaveAnimation from '@/assets/lottie/music-wave.json';
 import YouTube from 'react-youtube';
-import { useCountdownMusicState } from '../countdown-music-provider/countdown-music-provider.hooks';
+import {
+  useCountdownMusicAction,
+  useCountdownMusicState,
+} from '../countdown-music-provider/countdown-music-provider.hooks';
 import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
+import MusicSearchModal from './music-search-modal/music-search-modal';
 
 export default function CountdownMusic() {
   const { isMusicUsed, musicAnimationRef, youtubePlayerRef } =
@@ -11,7 +15,17 @@ export default function CountdownMusic() {
   const {
     music: { videoId, title },
     volumeValue,
+    isOpenMusicSearch,
   } = useCountdownMusicState();
+  const { controlOpenMusicSearch } = useCountdownMusicAction();
+
+  const toggleMusicSearchOpen = (open: boolean) => {
+    if (open) {
+      controlOpenMusicSearch(true);
+    } else {
+      controlOpenMusicSearch(false);
+    }
+  };
 
   return (
     <>
@@ -29,6 +43,11 @@ export default function CountdownMusic() {
         />
         <span className="text-xs lg:text-lg text-text">{title}</span>
       </div>
+
+      <MusicSearchModal
+        isOpenMusicSearch={isOpenMusicSearch}
+        toggleMusicSearchOpen={toggleMusicSearchOpen}
+      />
 
       <YouTube
         className="hidden"
