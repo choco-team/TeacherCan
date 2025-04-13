@@ -3,8 +3,10 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button } from '@/components/button';
+import { Input } from '@/components/input';
+import { Heading4 } from '@/components/heading';
 
-function ActivityCountInput() {
+function ActivityCount() {
   const [count, setCount] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -18,9 +20,9 @@ function ActivityCountInput() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-4 bg-blue-50">
-      <h1 className="text-2xl font-bold">활동 개수를 입력하세요</h1>
-      <input
+    <div className="flex flex-col items-center justify-center py-32 space-y-4">
+      <Heading4 className="text-2xl font-bold">활동 개수를 입력하세요</Heading4>
+      <Input
         type="number"
         min="1"
         value={count}
@@ -30,7 +32,7 @@ function ActivityCountInput() {
       {error && <p className="text-red-500">{error}</p>}
       <Button
         onClick={handleSubmit}
-        className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded"
+        className="bg-primary-500 hover:bg-primary-400 text-white px-6 py-2 rounded"
       >
         다음
       </Button>
@@ -38,4 +40,4 @@ function ActivityCountInput() {
   );
 }
 
-export default ActivityCountInput;
+export default ActivityCount;
