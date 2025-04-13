@@ -44,7 +44,7 @@ export default function RecentlyVisited() {
           <LinkCard
             key={pathname}
             pathname={pathname}
-            className="bg-white flex flex-col p-4 min-w-[140px] h-[140px] rounded-2xl border border-gray-100 cursor-pointer text-gray-700"
+            className="bg-white flex flex-col p-4 w-36 aspect-square rounded-2xl border border-gray-100 cursor-pointer text-gray-700"
             updateRecentlyVisited={updateRecentlyVisited}
           >
             <Icon size={16} />
