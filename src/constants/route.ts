@@ -6,6 +6,7 @@ import {
   PickaxeIcon,
   QrCodeIcon,
   TimerIcon,
+  Repeat2,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -17,6 +18,7 @@ export const MENU_ROUTE = {
   TIMER: '/timer',
   RANDOM_PICK: '/random-pick',
   MUSIC_REQUEST: '/music-request',
+  ROUTINE_TIMER: '/routine-timer',
 } as const;
 
 export const HELP_ROUTE = {
@@ -65,6 +67,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   //   Icon: BellIcon,
   //   href: MENU_ROUTE.NOTICE_SUGGESTION,
   // },
+  '/routine-timer': {
+    title: '루틴타이머',
+    Icon: Repeat2,
+    href: MENU_ROUTE.ROUTINE_TIMER,
+  },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
