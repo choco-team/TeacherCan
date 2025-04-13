@@ -7,7 +7,7 @@ import {
   MENU_ROUTE,
   MenuRoutePath,
 } from '@/constants/route';
-import { TimerIcon } from 'lucide-react';
+import { ChevronsLeft, TimerIcon } from 'lucide-react';
 import useRecentlyVisited from '@/hooks/use-recently-visited';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -30,7 +30,17 @@ export default function AppSidebar() {
   const { updateRecentlyVisited } = useRecentlyVisited(
     pathname as MenuRoutePath,
   );
-  const { setOpenMobile } = useSidebar();
+  const { setOpenMobile, openMobile, isMobile, open, setOpen } = useSidebar();
+
+  const showSidebarIcon = isMobile ? openMobile : open;
+  const handleClickSidebarIcon = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const handleClickMenu = () => {
     setOpenMobile(false);
@@ -40,7 +50,7 @@ export default function AppSidebar() {
     <Sidebar className="border-none shadow-md">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center justify-between gap-1">
             <Link
               onClick={handleClickMenu}
               href={MENU_ROUTE.LANDING}
@@ -49,6 +59,14 @@ export default function AppSidebar() {
               <TeacherCanLogo width="14" height="14" />
               <span>티처캔</span>
             </Link>
+            {showSidebarIcon ? (
+              <ChevronsLeft
+                color="#3e3e3e"
+                onClick={handleClickSidebarIcon}
+                size="20px"
+                className="cursor-pointer"
+              />
+            ) : null}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
