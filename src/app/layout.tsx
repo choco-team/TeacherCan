@@ -48,6 +48,7 @@ export default async function RootLayout({
 }) {
   const headersList = headers();
   const currentPath = headersList.get('X-Current-Path') || '/';
+  const fontSize = headersList.get('X-Font-Size');
 
   const isMinimalLayout =
     isMinimalLayoutPages.startsWith.some((path) =>
@@ -57,7 +58,7 @@ export default async function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable}`}
+      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable} ${fontSize}`}
     >
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_TAG_ID} />

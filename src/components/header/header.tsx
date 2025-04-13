@@ -8,6 +8,7 @@ import {
   MusicIcon,
   DicesIcon,
   QrCodeIcon,
+  SettingsIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -53,6 +54,11 @@ const breadcrumbs: Record<
     url: '/notice-suggestion',
     icon: <WandSparklesIcon size="14px" />,
   },
+  setting: {
+    name: '설정',
+    url: '/setting',
+    icon: <SettingsIcon size="14px" />,
+  },
 };
 
 export default function Header() {
@@ -77,7 +83,7 @@ export default function Header() {
   const breadcrumb = breadcrumbs[headPathname];
 
   return (
-    <header className="flex justify-start gap-2 px-4 py-3 fixed w-full bg-background z-10">
+    <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-background z-10">
       {showSidebarIcon ? (
         <ChevronsRight
           color="#3e3e3e"

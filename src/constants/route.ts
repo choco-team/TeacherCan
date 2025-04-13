@@ -6,6 +6,7 @@ import {
   DicesIcon,
   QrCodeIcon,
   TimerIcon,
+  SettingsIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -21,6 +22,7 @@ export const MENU_ROUTE = {
 
 export const HELP_ROUTE = {
   FEEDBACK: '/feedback',
+  SETTING: '/setting',
 } as const;
 
 export type MenuRoutePath = (typeof MENU_ROUTE)[keyof typeof MENU_ROUTE];
@@ -75,5 +77,10 @@ export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
     title: '피드백',
     Icon: MessageCircleHeartIcon,
     href: HELP_ROUTE.FEEDBACK,
+  },
+  '/setting': {
+    title: '설정',
+    Icon: SettingsIcon,
+    href: HELP_ROUTE.SETTING,
   },
 };

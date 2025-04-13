@@ -5,6 +5,10 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+
+    --font-size-small: 100%;
+    --font-size-medium: 114.29%;
+    --font-size-large: 128.57%;
   }
 
   * {
@@ -16,6 +20,22 @@
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+  }
+
+  html {
+    font-size: var(--font-size-small);
+  }
+
+  html.small {
+    font-size: var(--font-size-small);
+  }
+
+  html.medium {
+    font-size: var(--font-size-medium);
+  }
+
+  html.large {
+    font-size: var(--font-size-large);
   }
 }
 
