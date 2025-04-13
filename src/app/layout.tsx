@@ -4,10 +4,11 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Toaster } from '@/components/toaster';
 import { headers } from 'next/headers';
-import Navigation from '@/components/navigation/navigation';
 import Header from '@/components/header/header';
 import QueryProvider from '@/components/provider/query-provider';
 import { MENU_ROUTE } from '@/constants/route';
+import { SidebarProvider } from '@/components/sidebar';
+import AppSidebar from '@/components/app-sidebar/app-sidebar';
 
 export const metadata: Metadata = {
   title: '티처캔',
@@ -66,16 +67,13 @@ export default async function RootLayout({
               <div>{children}</div>
             </main>
           ) : (
-            <>
-              <Navigation />
-              <main
-                id="teacher-can-main"
-                className="bg-body transition-all ease-in-out duration-500 lg:data-[status=closed]:ml-0 lg:ml-[260px]"
-              >
+            <SidebarProvider>
+              <AppSidebar />
+              <main id="teacher-can-main" className="bg-body w-full">
                 <Header />
                 <div className="pt-[68px] px-4 mb-8">{children}</div>
               </main>
-            </>
+            </SidebarProvider>
           )}
           <Toaster />
         </QueryProvider>
