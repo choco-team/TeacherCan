@@ -69,7 +69,7 @@ export default async function RootLayout({
           ) : (
             <SidebarProvider>
               <AppSidebar />
-              <main id="teacher-can-main" className="bg-body w-full">
+              <main className="bg-body w-full">
                 <Header />
                 <div className="pt-[68px] px-4 mb-8">{children}</div>
               </main>

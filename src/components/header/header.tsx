@@ -2,7 +2,6 @@
 
 import {
   BellIcon,
-  ChevronsDown,
   ChevronsRight,
   MessageCircleHeartIcon,
   MusicIcon,
@@ -22,6 +21,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '../breadcrumb';
+import { useSidebar } from '../sidebar';
 
 const breadcrumbs: Record<
   string,
@@ -59,31 +59,32 @@ export default function Header() {
   const pathnames = compact(pathname.split('/'));
   const headPathname = head(pathnames);
 
+  const { open, openMobile, setOpen, setOpenMobile, isMobile } = useSidebar();
+
+  const showSidebarIcon = isMobile ? !openMobile : !open;
+  const handleClickSidebarIcon = () => {
+    if (isMobile) {
+      setOpenMobile(true);
+
+      return;
+    }
+
+    setOpen(true);
+  };
+
   // TODO:(김홍동) header breadcrumb가 복수를 가질 수 있도록 확장하기
   const breadcrumb = breadcrumbs[headPathname];
 
-  const handleClick = () => {
-    const main = document.getElementById('teacher-can-main');
-    const navigation = document.getElementById('teacher-can-nav');
-    const headerIcon = document.getElementById('teacher-can-header-icon');
-
-    main.setAttribute('data-status', 'open');
-    headerIcon.setAttribute('data-status', 'open');
-    navigation.setAttribute('data-status', 'open');
-
-    navigation.classList.add('fixed');
-    navigation.classList.remove('hidden');
-  };
-
   return (
-    <header className="flex justify-between lg:justify-start gap-2 px-4 py-3 fixed w-full bg-background z-10">
-      <ChevronsRight
-        color="#3e3e3e"
-        id="teacher-can-header-icon"
-        className="cursor-pointer self-end hidden lg:data-[status=open]:hidden lg:data-[status=closed]:block"
-        onClick={handleClick}
-        size="20px"
-      />
+    <header className="flex justify-start gap-2 px-4 py-3 fixed w-full bg-background z-10">
+      {showSidebarIcon ? (
+        <ChevronsRight
+          color="#3e3e3e"
+          size="20px"
+          onClick={handleClickSidebarIcon}
+          className="cursor-pointer"
+        />
+      ) : null}
 
       <Breadcrumb>
         <BreadcrumbList>
@@ -112,14 +113,6 @@ export default function Header() {
           ) : null}
         </BreadcrumbList>
       </Breadcrumb>
-
-      <ChevronsDown
-        color="#3e3e3e"
-        id="teacher-can-header-icon"
-        className="cursor-pointer self-end lg:hidden"
-        onClick={handleClick}
-        size="20px"
-      />
     </header>
   );
 }
