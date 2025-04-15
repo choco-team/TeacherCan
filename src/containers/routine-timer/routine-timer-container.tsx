@@ -4,9 +4,10 @@ import { useState } from 'react';
 import ActivityCount from './create-routine/activity-count';
 import RoutineForm from './create-routine/routine-form';
 import { RoutineItem } from './create-routine/routine-types';
+import PlayRoutine from './play-routine/play-routine';
 
 function RoutineTimerContainer() {
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [routines, setRoutines] = useState<RoutineItem[]>([]);
   const handleCountSubmit = (selectedCount: number) => {
     setRoutines(
@@ -23,6 +24,9 @@ function RoutineTimerContainer() {
   const handleGoBack = () => {
     setStep(1);
   };
+  const handleStartRoutine = () => {
+    setStep(3);
+  };
 
   return (
     <div className="py-10 px-4 max-w-3xl mx-auto space-y-6">
@@ -32,6 +36,15 @@ function RoutineTimerContainer() {
           routines={routines}
           setRoutines={setRoutines}
           onPrevious={handleGoBack}
+          onStart={handleStartRoutine}
+        />
+      )}
+      {step === 3 && (
+        <PlayRoutine
+          routines={routines}
+          onFinish={() => {
+            setStep(1);
+          }}
         />
       )}
     </div>

@@ -7,27 +7,25 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { RoutineItem } from './routine-types';
 
-interface Props {
+type Props = {
   routines: RoutineItem[];
   setRoutines: (routines: RoutineItem[]) => void;
   onPrevious: () => void;
-}
+  onStart: () => void;
+};
 
 type RoutineItemWithId = RoutineItem & { routineId: string };
 
-function RoutineForm({ routines, setRoutines, onPrevious }: Props) {
+function RoutineForm({ routines, setRoutines, onPrevious, onStart }: Props) {
   const [routinesWithId, setRoutinesWithId] = useState<RoutineItemWithId[]>([]);
 
   useEffect(() => {
-    const withIds = routines.map((routine, index) => {
-      const existing = routinesWithId[index];
-      return {
-        ...routine,
-        routineId: existing?.routineId ?? `routine-${Date.now()}-${index}`,
-      };
-    });
+    const withIds = routines.map((routine, index) => ({
+      ...routine,
+      routineId: `routine-${Date.now()}-${index}`,
+    }));
     setRoutinesWithId(withIds);
-  }, [routines, routinesWithId]);
+  }, []);
 
   const handleChange = (
     id: string,
@@ -61,8 +59,6 @@ function RoutineForm({ routines, setRoutines, onPrevious }: Props) {
     setRoutinesWithId(updated);
     setRoutines(updated.map(({ routineId, ...rest }) => rest));
   };
-
-  const handleSubmit = () => {};
 
   return (
     <div className="space-y-6">
@@ -126,7 +122,7 @@ function RoutineForm({ routines, setRoutines, onPrevious }: Props) {
         >
           이전
         </Button>
-        <Button onClick={handleSubmit} className="flex-1">
+        <Button onClick={onStart} className="flex-1">
           루틴 시작
         </Button>
       </div>
