@@ -50,9 +50,7 @@ export default function SentenceSuggestion() {
       { category },
       {
         onSuccess: (data) => {
-          if (Array.isArray(data?.suggestions)) {
-            setSuggestions((prev) => [...data.suggestions, ...prev]);
-          }
+          setSuggestions((prev) => [...data, ...prev]);
         },
       },
     );

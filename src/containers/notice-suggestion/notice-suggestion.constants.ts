@@ -34,3 +34,8 @@ export const NOTICE_SUGGESTION_CATEGORIES = [
   { label: '건강', value: '건강' },
   { label: '직접 입력...', value: 'custom' },
 ] as const;
+
+export const NOTICE_SUGGESTION_ERROR_CODES = {
+  RATE_LIMIT: 'RATE_LIMIT',
+  INVALID_FORMAT: 'INVALID_FORMAT',
+} as const;
