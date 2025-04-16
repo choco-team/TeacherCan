@@ -19,11 +19,9 @@ function PlayRoutine({ routines, onFinish }: RoutineTimerProps) {
         if (prev <= 1) {
           clearInterval(timer);
           if (currentIndex < routines.length - 1) {
-            // 다음 루틴으로 이동
             setCurrentIndex((prevIndex) => prevIndex + 1);
             return routines[currentIndex + 1].duration;
           }
-          // 모든 루틴 완료
           onFinish();
           return 0;
         }
@@ -32,7 +30,7 @@ function PlayRoutine({ routines, onFinish }: RoutineTimerProps) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [currentIndex]);
+  }, [currentIndex, currentRoutine]);
 
   const formatTime = (s: number) => {
     const min = Math.floor(s / 60)
