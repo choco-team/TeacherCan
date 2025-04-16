@@ -121,7 +121,13 @@ export default function SentenceSuggestion() {
           >
             {isPending &&
               Array.from({ length: 5 }, (_, index) => (
-                <Skeleton key={index} className="col-span-full h-6 my-1.5" />
+                <Skeleton
+                  key={index}
+                  className={cn(
+                    'col-span-full h-6 my-1.5',
+                    'max-sm:my-[0.1375rem]',
+                  )}
+                />
               ))}
 
             {suggestions.map(({ category, sentence }) => (
@@ -130,6 +136,7 @@ export default function SentenceSuggestion() {
                   size="sm"
                   className={cn(
                     'justify-center text-center text-white tracking-tight',
+                    'sm:min-w-20',
                     'max-sm:p-1 max-sm:w-12 max-sm:h-full max-sm:rounded-none max-sm:text-2xs',
                   )}
                   style={{
