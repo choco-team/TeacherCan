@@ -69,9 +69,9 @@ export async function POST(request: Request) {
             },
           ],
         },
-        공유여부: {
+        답변여부: {
           select: {
-            name: email ? '공유 전' : '공유대상아님',
+            name: email ? '답변 전' : '답변 대상 아님',
           },
         },
       },
