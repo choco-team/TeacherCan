@@ -1,6 +1,7 @@
 'use server';
 
 import type { NoticeSuggestionRequest } from '@/containers/notice-suggestion/notice-suggestion.types';
+import { NOTICE_SUGGESTION_ERROR_CODES } from '@/containers/notice-suggestion/notice-suggestion.constants';
 import { createRateLimiter } from './redis';
 import { openai, generateNoticePrompt } from './openai';
 
@@ -18,7 +19,7 @@ export async function generateNoticeSuggestion({
 }: NoticeSuggestionRequest) {
   // Rate limiting 체크
   if (!isDev && (await rateLimiter.isRateLimited(prefix))) {
-    throw new Error('RATE_LIMIT');
+    throw new Error(NOTICE_SUGGESTION_ERROR_CODES.RATE_LIMIT);
   }
 
   try {
@@ -32,7 +33,7 @@ export async function generateNoticeSuggestion({
     // 요청 횟수 증가
     if (!isDev) await rateLimiter.increment(prefix);
 
-    return JSON.parse(completion.choices[0].message.content);
+    return completion.choices[0].message.content;
   } catch (error) {
     throw new Error('OpenAI Error', error);
   }

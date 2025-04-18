@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useState } from 'react';
+import Image from 'next/image';
 import { SparkleIcon } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
@@ -10,8 +11,8 @@ import { useCreateNoticeSuggestion } from '@/hooks/apis/notice-suggestion/use-cr
 import { Skeleton } from '@/components/skeleton';
 import { cn } from '@/styles/utils';
 import theme from '@/styles/theme';
+import sproutBookImage from '@/assets/images/notice-suggestion/sprout-book.png';
 import { getRandomBadgeColor } from '../notice-suggestion.utils';
-import { NOTICE_SUGGESTION_EXAMPLES } from '../notice-suggestion.constants';
 import type {
   NoticeSuggestion,
   NoticeSuggestionCategory,
@@ -22,13 +23,13 @@ export default function SentenceSuggestion() {
   const [selectedCategory, setSelectedCategory] =
     useState<NoticeSuggestionCategory>('');
   const [customCategory, setCustomCategory] = useState('');
-  const [suggestions, setSuggestions] = useState<NoticeSuggestion[]>(
-    NOTICE_SUGGESTION_EXAMPLES,
-  );
+  const [suggestions, setSuggestions] = useState<NoticeSuggestion[]>([]);
 
   const { toast } = useToast();
   const { mutate: generateNoticeSuggestion, isPending } =
     useCreateNoticeSuggestion();
+
+  const isEmpty = !suggestions.length && !isPending;
 
   const copy = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -50,9 +51,7 @@ export default function SentenceSuggestion() {
       { category },
       {
         onSuccess: (data) => {
-          if (Array.isArray(data?.suggestions)) {
-            setSuggestions((prev) => [...data.suggestions, ...prev]);
-          }
+          setSuggestions((prev) => [...data, ...prev]);
         },
       },
     );
@@ -101,24 +100,34 @@ export default function SentenceSuggestion() {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold">추천 문구</h2>
-            <Button variant="gray-ghost" size="sm" onClick={handleCopyAll}>
+            <Button
+              variant="gray-ghost"
+              size="sm"
+              disabled={!suggestions.length}
+              className={cn(!suggestions.length && 'invisible')}
+              onClick={handleCopyAll}
+            >
               모두 복사
             </Button>
           </div>
 
           <Card
             className={cn(
-              'grid grid-cols-[auto_1fr_auto] content-start items-center gap-2 px-5 py-4 h-[50vh] min-h-[20rem] max-h-[40rem] overflow-auto',
+              'grid grid-cols-[auto_1fr_auto] items-center gap-2',
+              isEmpty ? 'content-center' : 'content-start',
+              'px-5 py-4 h-[50vh] min-h-[20rem] max-h-[40rem] overflow-auto',
               'max-sm:p-3 max-sm:gap-y-3 max-sm:h-full',
             )}
           >
             {isPending &&
               Array.from({ length: 5 }, (_, index) => (
-                <Fragment key={index}>
-                  <Skeleton className={cn('w-full h-5', 'max-sm:h-6')} />
-                  <Skeleton className="w-full h-6" />
-                  <Skeleton className={cn('w-full h-9', 'max-sm:h-6')} />
-                </Fragment>
+                <Skeleton
+                  key={index}
+                  className={cn(
+                    'col-span-full h-6 my-1.5',
+                    'max-sm:my-[0.1375rem]',
+                  )}
+                />
               ))}
 
             {suggestions.map(({ category, sentence }) => (
@@ -127,6 +136,7 @@ export default function SentenceSuggestion() {
                   size="sm"
                   className={cn(
                     'justify-center text-center text-white tracking-tight',
+                    'sm:min-w-20',
                     'max-sm:p-1 max-sm:w-12 max-sm:h-full max-sm:rounded-none max-sm:text-2xs',
                   )}
                   style={{
@@ -156,6 +166,23 @@ export default function SentenceSuggestion() {
                 </Button>
               </Fragment>
             ))}
+
+            {isEmpty && (
+              <div className="col-span-full flex flex-col items-center justify-center gap-y-4">
+                <Image
+                  src={sproutBookImage.src}
+                  alt="알림장 문구 추천"
+                  className="size-[50px]"
+                  width={sproutBookImage.width}
+                  height={sproutBookImage.height}
+                />
+                <p
+                  className={cn('text-center text-gray-400', 'max-sm:text-sm')}
+                >
+                  오늘 알림장에 심을 말의 씨앗을 골라볼까요?
+                </p>
+              </div>
+            )}
           </Card>
         </section>
       </div>
