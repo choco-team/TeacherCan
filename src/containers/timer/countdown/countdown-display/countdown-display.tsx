@@ -60,7 +60,7 @@ export default function CountdownDisplay() {
           maxLength={TIMER_NAME_MAX_LENGTH}
           readOnly={isActive}
           placeholder="타이머 이름"
-          className="max-md:hidden max-w-sm md:max-w-xl lg:max-w-7xl h-16 lg:h-28 text-4xl lg:text-7xl rounded-xl lg:rounded-2xl text-center font-extrabold"
+          className="max-md:hidden max-w-sm md:max-w-xl dark:bg-black lg:max-w-7xl h-16 lg:h-28 text-4xl lg:text-7xl rounded-xl lg:rounded-2xl text-center font-extrabold"
           onChange={handleChangeTimerName}
         />
       )}

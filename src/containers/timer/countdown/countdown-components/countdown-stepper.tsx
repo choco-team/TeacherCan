@@ -96,7 +96,7 @@ export default function CountdownStepper({
         }
         onFocus={handleFocus}
         onBlur={handleBlur(value, formatTimeToTwoDigits)}
-        className={cn(timeInputClassName, className)}
+        className={cn(timeInputClassName, 'dark:bg-black', className)}
         readOnly={isActive}
       />
       <Button
