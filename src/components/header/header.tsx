@@ -1,12 +1,12 @@
 'use client';
 
 import {
-  BellIcon,
+  WandSparklesIcon,
   ChevronsDown,
   ChevronsRight,
   MessageCircleHeartIcon,
   MusicIcon,
-  PickaxeIcon,
+  DicesIcon,
   QrCodeIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -35,7 +35,7 @@ const breadcrumbs: Record<
   'random-pick': {
     name: '랜덤뽑기',
     url: '/random-pick',
-    icon: <PickaxeIcon size="14px" />,
+    icon: <DicesIcon size="14px" />,
   },
   'music-request': {
     name: '음악신청',
@@ -50,7 +50,7 @@ const breadcrumbs: Record<
   'notice-suggestion': {
     name: '알림장 문구 추천',
     url: '/notice-suggestion',
-    icon: <BellIcon size="14px" />,
+    icon: <WandSparklesIcon size="14px" />,
   },
 };
 
