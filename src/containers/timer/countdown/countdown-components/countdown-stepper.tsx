@@ -8,7 +8,7 @@ const INIT_HOLD_SPEED = 300;
 const MAX_HOLD_SPEED = 30;
 
 const timeInputClassName =
-  'px-2 md:px-4 md:pb-2 lg:p-6 pt-4 md:pt-6 lg:pt-10 max-w-32 md:max-w-60 lg:max-w-96 text-7xl md:text-9xl lg:text-[13rem] h-auto md:rounded-2xl lg:rounded-3xl bg-white read-only:border-body read-only:bg-body read-only:pointer-events-none text-end font-medium font-number leading-none md:tracking-wide';
+  'px-2 md:px-4 md:pb-2 lg:p-6 pt-4 md:pt-6 lg:pt-10 max-w-32 md:max-w-60 lg:max-w-96 text-7xl md:text-9xl lg:text-[13rem] h-auto md:rounded-2xl lg:rounded-3xl read-only:border-body dark:read-only:border-gray-950 read-only:pointer-events-none text-end font-medium font-number leading-none md:tracking-wide';
 
 type Props = {
   value: number;

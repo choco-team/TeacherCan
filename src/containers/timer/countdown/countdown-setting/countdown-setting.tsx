@@ -1,11 +1,17 @@
 import { Info as InfoIcon } from 'lucide-react';
 import DualPanel from '@/components/dual-panel';
+import { Button } from '@/components/button';
+import SmallPlayerIcon from '@/assets/icons/SmallPlayerIcon';
 import SettingTime from './setting-time/setting-time';
 import SettingAlarm from './setting-alarm/setting-alarm';
 import SettingMusic from './setting-music/setting-music';
 import SettingScreenSize from './setting-screen-size/setting-screen-size';
+import CountdownPIP from '../countdown-pip/countdown-pip';
+import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
 
 export default function CountdownSetting() {
+  const { hours, minutes, seconds } = useCountdownState();
+
   return (
     <DualPanel.Content>
       <DualPanel.Header>
@@ -24,6 +30,22 @@ export default function CountdownSetting() {
         <SettingMusic />
         <SettingScreenSize />
       </div>
+      <DualPanel.Footer>
+        <CountdownPIP
+          hours={hours}
+          minutes={minutes}
+          seconds={seconds}
+          action={
+            <Button variant="primary-ghost" size="sm" className="p-0">
+              <SmallPlayerIcon
+                width="32px"
+                height="32px"
+                className="text-text-title"
+              />
+            </Button>
+          }
+        />
+      </DualPanel.Footer>
     </DualPanel.Content>
   );
 }
