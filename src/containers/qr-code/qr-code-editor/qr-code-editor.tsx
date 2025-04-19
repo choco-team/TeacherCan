@@ -12,7 +12,7 @@ import { Heading4 } from '@/components/heading';
 import { Badge } from '@/components/badge';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { useToast } from '@/hooks/use-toast';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import { QRCode, SavedQRCodes } from '../qr-code.types';
 import SavedQrCodeDescription from '../saved-qr-code-description/saved-qr-code-description';
 
@@ -49,7 +49,7 @@ export default function QrCodeEditor({
   const handleSaveToLocalStorage = () => {
     const currentDate = new Date().toISOString();
     const newEntry = {
-      id: uuidv4(),
+      id: nanoid(),
       date: currentDate,
       url: qrCode.value,
       title: qrCode.name,
