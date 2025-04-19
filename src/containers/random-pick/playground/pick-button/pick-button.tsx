@@ -71,7 +71,7 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className={cn(
-          'fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-x-4 px-6 py-4 bg-primary-50 rounded-3xl',
+          'fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center justify-center gap-x-4 px-6 py-4 bg-primary-50  dark:bg-gray-900 rounded-3xl',
           'transition-[margin] duration-500',
           isNavOpen && 'lg:ms-[130px]',
         )}
@@ -100,13 +100,13 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
                         key={studentNumber}
                         value={studentNumber.toString()}
                       >
-                        {studentNumber}
+                        <span className="text-text-title">{studentNumber}</span>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </FormControl>
-              <span className="text-lg">명</span>
+              <span className="text-lg text-text-title">명</span>
             </div>
           )}
         />

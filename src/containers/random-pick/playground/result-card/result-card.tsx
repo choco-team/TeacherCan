@@ -22,7 +22,7 @@ export default function ResultCard({ winner, isOpen, handleOpenOne }: Winner) {
             animate={{ rotateY: 0 }}
             exit={{ rotateY: -180 }}
             transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
-            className="bg-gray-100 absolute w-full h-full backface-hidden flex items-center justify-center p-4 text-card-foreground rounded-2xl text-[3.5rem] text-center font-bold"
+            className="bg-gray-100 dark:bg-gray-900 text-text-title absolute w-full h-full backface-hidden flex items-center justify-center p-4 text-card-foreground rounded-2xl text-[3.5rem] text-center font-bold"
           >
             {winner.value}
           </motion.div>
