@@ -2,8 +2,8 @@ import {
   LucideProps,
   MusicIcon,
   MessageCircleHeartIcon,
-  // BellIcon,
-  PickaxeIcon,
+  WandSparklesIcon,
+  DicesIcon,
   QrCodeIcon,
   TimerIcon,
 } from 'lucide-react';
@@ -47,7 +47,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   },
   '/random-pick': {
     title: '랜덤뽑기',
-    Icon: PickaxeIcon,
+    Icon: DicesIcon,
     href: MENU_ROUTE.RANDOM_PICK,
   },
   '/timer': {
@@ -60,11 +60,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: MusicIcon,
     href: MENU_ROUTE.MUSIC_REQUEST,
   },
-  // '/notice-suggestion': {
-  //   title: '알림장 문구 추천',
-  //   Icon: BellIcon,
-  //   href: MENU_ROUTE.NOTICE_SUGGESTION,
-  // },
+  '/notice-suggestion': {
+    title: '알림장 문구 추천',
+    Icon: WandSparklesIcon,
+    href: MENU_ROUTE.NOTICE_SUGGESTION,
+  },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
