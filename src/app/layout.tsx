@@ -58,11 +58,11 @@ export default async function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable} ${fontSize}`}
+      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable} ${fontSize} dark`}
     >
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_TAG_ID} />
-      <body>
+      <body className="bg-bg">
         <QueryProvider>
           {isMinimalLayout ? (
             <main className="bg-gray-50 dark:bg-gray-950">

@@ -25,6 +25,9 @@ import {
   useSidebar,
 } from '../sidebar';
 
+const linkClass =
+  'w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-text-subtitle hover:text-text-title hover:bg-bg-secondary hover:cursor-pointer transition-all';
+
 export default function AppSidebar() {
   const pathname = usePathname();
   const { updateRecentlyVisited } = useRecentlyVisited(
@@ -54,17 +57,16 @@ export default function AppSidebar() {
             <Link
               onClick={handleClickMenu}
               href={MENU_ROUTE.LANDING}
-              className={`${pathname === MENU_ROUTE.LANDING ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
+              className={`${pathname === MENU_ROUTE.LANDING ? 'text-text-title bg-bg-secondary' : ''} ${linkClass}`}
             >
               <TeacherCanLogo width="14" height="14" />
               <span>티처캔</span>
             </Link>
             {showSidebarIcon ? (
               <ChevronsLeft
-                color="#3e3e3e"
                 onClick={handleClickSidebarIcon}
                 size="20px"
-                className="cursor-pointer"
+                className="cursor-pointer text-text-subtitle"
               />
             ) : null}
           </SidebarMenuItem>
@@ -80,7 +82,7 @@ export default function AppSidebar() {
                   size={7 / 8}
                   url={`${MENU_ROUTE.TIMER}`}
                   onClick={() => updateRecentlyVisited(MENU_ROUTE.TIMER)}
-                  className="w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all"
+                  className={linkClass}
                 >
                   <TimerIcon size="14px" />
                   <span>타이머</span>
@@ -99,7 +101,7 @@ export default function AppSidebar() {
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname === path ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
+                      className={`${pathname === path ? 'text-text-title bg-bg-secondary' : ''} ${linkClass}`}
                     >
                       <Icon size="14px" />
                       <span>{title}</span>
@@ -124,7 +126,7 @@ export default function AppSidebar() {
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname === path ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
+                      className={`${pathname === path ? '' : ''} ${linkClass}`}
                     >
                       <Icon size="14px" />
                       <span>{title}</span>

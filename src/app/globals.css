@@ -9,6 +9,24 @@
     --font-size-small: 100%;
     --font-size-medium: 114.29%;
     --font-size-large: 128.57%;
+
+    --text-title: theme('colors.gray.900');
+    --text-subtitle: theme('colors.gray.700');
+    --text-description: theme('colors.gray.500');
+
+    --bg: #fefefe;
+    --bg-origin: theme('colors.white');
+    --bg-secondary: theme('colors.primary.200');
+  }
+
+  .dark {
+    --text-title: theme('colors.gray.100');
+    --text-subtitle: theme('colors.gray.400');
+    --text-description: theme('colors.gray.400');
+
+    --bg: theme('colors.gray.950');
+    --bg-origin: theme('colors.black');
+    --bg-secondary: theme('colors.gray.900');
   }
 
   * {
@@ -52,7 +70,7 @@
   }
 
   .dark {
-    --sidebar-background: 240, 5.9%, 10%;
+    --sidebar-background: 0, 0%, 15%;
     --sidebar-foreground: 240, 4.8%, 95.9%;
     --sidebar-primary: 224.3, 76.3%, 48%;
     --sidebar-primary-foreground: 0, 0%, 100%;

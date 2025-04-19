@@ -83,13 +83,12 @@ export default function Header() {
   const breadcrumb = breadcrumbs[headPathname];
 
   return (
-    <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-background z-10">
+    <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-bg z-10">
       {showSidebarIcon ? (
         <ChevronsRight
-          color="#3e3e3e"
           size="20px"
           onClick={handleClickSidebarIcon}
-          className="cursor-pointer"
+          className="cursor-pointer text-text-subtitle"
         />
       ) : null}
 
@@ -97,15 +96,17 @@ export default function Header() {
         <BreadcrumbList>
           <BreadcrumbItem>
             {pathname === '/' ? (
-              <BreadcrumbPage className="flex items-center gap-2">
+              <BreadcrumbPage className="flex items-center gap-2 text-text-title">
                 <TeacherCanIcon width={14} height={14} />
                 티처캔
               </BreadcrumbPage>
             ) : (
               <BreadcrumbLink asChild>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ">
                   <TeacherCanIcon width={14} height={14} />
-                  <Link href="/">티처캔</Link>
+                  <Link className="text-text-subtitle" href="/">
+                    티처캔
+                  </Link>
                 </div>
               </BreadcrumbLink>
             )}
@@ -113,7 +114,7 @@ export default function Header() {
           {pathname !== '/' && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
 
           {breadcrumb !== undefined ? (
-            <BreadcrumbPage className="flex items-center gap-2">
+            <BreadcrumbPage className="flex items-center gap-2 text-text-title">
               {breadcrumb.icon}
               {breadcrumb.name}
             </BreadcrumbPage>

@@ -57,6 +57,16 @@ module.exports = {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        text: {
+          title: 'var(--text-title)',
+          subtitle: 'var(--text-subtitle)',
+          description: 'var(--text-description)',
+        },
+        bg: {
+          DEFAULT: 'var(--bg)',
+          origin: 'var(--bg-origin)',
+          secondary: 'var(--bg-secondary)',
+        },
       },
       borderRadius: {
         lg: `var(--radius)`,
@@ -106,6 +116,8 @@ module.exports = {
       boxShadow: {
         custom:
           'rgba(0, 0, 0, 0.02) 0px 12px 32px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px',
+        'custom-dark':
+          'rgba(255, 255, 255, 0.02) 0px 12px 32px, rgba(225, 225, 225, 0.05) 0px 0px 0px 1px',
       },
     },
   },
