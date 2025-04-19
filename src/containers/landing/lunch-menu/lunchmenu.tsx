@@ -33,7 +33,7 @@ function LunchMenu() {
   const renderContent = () => {
     if (!selectedSchool) {
       return (
-        <div className="flex gap-2 px-4 h-64">
+        <div className="flex gap-2 px-4 h-64 bg-bg-origin">
           {Array.from({ length: 5 }).map((_, index) => (
             <Skeleton
               key={`skeleton-${selectedSchool?.SD_SCHUL_CODE || 'none'}-position-${index * 20}%`}
@@ -46,7 +46,7 @@ function LunchMenu() {
 
     if (selectedSchool.SCHUL_NM === null) {
       return (
-        <div className="flex flex-col gap-4 justify-center items-center min-h-64">
+        <div className="flex flex-col gap-4 justify-center items-center min-h-64 bg-bg-origin">
           <div className="text-center text-sm text-gray-500">
             학교를 등록하고 점심 식단을 확인해보세요.
           </div>
@@ -99,7 +99,7 @@ function LunchMenu() {
           ) : null
         }
       />
-      <div className="bg-white shadow-custom py-4 rounded-2xl w-full overflow-auto">
+      <div className="bg-bg-origin shadow-custom dark:shadow-custom-dark py-4 rounded-2xl w-full overflow-auto">
         {renderContent()}
         {mealData.length > 0 && <AllergyList />}
       </div>

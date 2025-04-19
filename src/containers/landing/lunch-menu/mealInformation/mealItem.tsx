@@ -48,9 +48,9 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
   return (
     <div
       className={`flex-1 p-2 rounded-xl flex flex-col justify-between text-sm
-        ${isToday ? 'bg-primary-50' : 'bg-gray-50'}`}
+        ${isToday ? 'bg-primary-50 dark:bg-gray-900' : 'bg-bg'}`}
     >
-      <h4 className="font-semibold text-center leading-tight my-2">
+      <h4 className="font-semibold text-center text-text-title leading-tight my-2">
         {date} <br />
       </h4>
 
@@ -58,7 +58,7 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
         <TooltipProvider>
           {dishes.length > 0 ? (
             dishes.map((dish) => (
-              <span key={dish} className="text-sm text-gray-700">
+              <span key={dish} className="text-sm text-text-description">
                 {formatDish(dish)}
               </span>
             ))

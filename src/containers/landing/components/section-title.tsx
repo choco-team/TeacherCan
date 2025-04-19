@@ -11,7 +11,7 @@ type Props = {
 
 export default function SectionTitle({ title, Icon, buttonSection }: Props) {
   return (
-    <div className="flex items-center justify-between text-gray-500 font-medium">
+    <div className="flex items-center justify-between text-text-description font-medium">
       <div className="flex items-center gap-2">
         <Icon size={16} />
         <span className="text-sm">{title}</span>
