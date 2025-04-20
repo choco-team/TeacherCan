@@ -65,7 +65,9 @@ export default function FontSizeSetting({ initialFontSize }: Props) {
 
   return (
     <div className="flex flex-col gap-[12px]">
-      <div className="font-semibold text-sm h-[30px]">글씨크기</div>
+      <div className="font-semibold text-sm h-[30px] text-text-title">
+        글씨크기
+      </div>
       <div className="w-full flex-1 grid grid-cols-3 gap-x-[16px]">
         {fontValues.map(({ size, label, value }) => {
           const selected = fontSize === value;

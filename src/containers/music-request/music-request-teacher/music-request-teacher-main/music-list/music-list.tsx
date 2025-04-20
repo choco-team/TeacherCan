@@ -50,7 +50,7 @@ export default function MusicList({
     >
       {hasVideo ? (
         <div
-          className="flex flex-col gap-[1px] mb-12 bg-gray-200"
+          className="flex flex-col gap-[1px] mb-12 bg-gray-200 dark:bg-gray-900"
           ref={listRef}
         >
           {videos.map((video) => (

@@ -73,11 +73,11 @@ export function MusicPlayerBar({
 
   return (
     <div
-      className="h-[100px] fixed bottom-0 left-0 right-0 text-gray-700 bg-gradient-to-r from-primary-100 to-primary-300 z-[100] shadow-xl"
+      className="h-[100px] fixed bottom-0 left-0 right-0 text-gray-700 dark:text-gray-200 bg-gradient-to-r from-primary-100 dark:from-gray-600 to-primary-300 dark:to-gray-800 z-[100] shadow-xl"
       onMouseLeave={() => setHoverVolume(false)}
     >
       <div
-        className="w-full bg-primary-100 h-1 cursor-pointer"
+        className="w-full bg-primary-100 dark:bg-gray-500 h-1 cursor-pointer"
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setHoverTime(null)}
         onClick={(e) => {
@@ -90,7 +90,7 @@ export function MusicPlayerBar({
         }}
       >
         <div
-          className="h-full bg-primary-400"
+          className="h-full bg-primary-400 dark:bg-gray-200"
           style={{ width: `${progress}%` }}
         />
         {hoverTime !== null && (
@@ -115,14 +115,14 @@ export function MusicPlayerBar({
             <Pause
               size={36}
               fill="#3f3f46"
-              className="cursor-pointer"
+              className="cursor-pointer dark:fill-gray-200"
               onClick={pauseVideo}
             />
           ) : (
             <Play
               size={36}
               fill="#3f3f46"
-              className="cursor-pointer"
+              className="cursor-pointer dark:fill-gray-200"
               onClick={playVideo}
             />
           )}
@@ -130,7 +130,7 @@ export function MusicPlayerBar({
             className="cursor-pointer"
             onClick={() => handleMusicChange('next')}
           />
-          <div className="tabular-nums text-sm text-gray-600">
+          <div className="tabular-nums text-sm text-gray-600 dark:text-gray-200">
             {formatTime(currentTime)} / {formatTime(duration)}
           </div>
         </div>
@@ -146,7 +146,7 @@ export function MusicPlayerBar({
               />
               <div className="truncate flex flex-col">
                 <span className="font-bold">{currentMusic.title}</span>
-                <span className="font-light text-gray-600 text-sm">
+                <span className="font-light text-gray-600 dark:text-gray-200 text-sm">
                   {currentMusic.student}의 신청곡
                 </span>
               </div>
@@ -187,7 +187,9 @@ export function MusicPlayerBar({
           <Shuffle
             className={cn(
               'cursor-pointer',
-              playerType === 'shuffle' ? 'text-gray-600' : 'text-primary-200',
+              playerType === 'shuffle'
+                ? 'text-gray-600 dark:text-gray-200'
+                : 'text-primary-200 dark:text-gray-600',
             )}
             onClick={() => {
               const toggledOrder = playerType === 'order' ? 'shuffle' : 'order';

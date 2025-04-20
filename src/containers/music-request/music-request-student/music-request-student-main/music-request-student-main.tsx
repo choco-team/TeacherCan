@@ -22,9 +22,9 @@ export default function MusicRequestStudentMain({ roomId }: Props) {
     <div className="flex flex-col gap-4 lg:max-w-[600px] lg:my-0 lg:mx-auto">
       <div className="flex gap-2 items-center text-lg">
         <TeacherCanIcon width={20} />
-        <span>티처캔 음악 신청</span>
+        <span className="text-text-title">티처캔 음악 신청</span>
       </div>
-      <div className="flex flex-col gap-2 text-sm text-gray-700">
+      <div className="flex flex-col gap-2 text-sm text-text-title">
         <span>방 이름: {data?.roomTitle}</span>
         {studentName && <span>내 이름: {studentName}</span>}
       </div>

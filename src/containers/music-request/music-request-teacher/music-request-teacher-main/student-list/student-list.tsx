@@ -14,10 +14,10 @@ export default function StudentList({ students }: Props) {
       }}
     >
       {hasStudent ? (
-        <div className="bg-gray-100 flex flex-col gap-[1px]">
+        <div className="bg-gray-100 dark:bg-gray-800 flex flex-col gap-[1px]">
           {students.map((student, index) => (
             <div
-              className="p-2 flex gap-2 bg-white text-gray-700"
+              className="p-2 flex gap-2 bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-200"
               // eslint-disable-next-line react/no-array-index-key
               key={index}
             >
