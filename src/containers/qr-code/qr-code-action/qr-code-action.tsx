@@ -12,7 +12,7 @@ type Props = {
 
 export default function QrCodeAction({ qrCode, qrCodeRef }: Props) {
   return (
-    <div className="grid grid-cols-2 gap-2 mt-10">
+    <div className="grid grid-cols-2 gap-2">
       <QRCodeClipboard qrCodeRef={qrCodeRef} qrCode={qrCode} />
       <QRCodeDownloader qrCodeRef={qrCodeRef} qrCode={qrCode} />
       <QRCodePrinter qrCode={qrCode} />

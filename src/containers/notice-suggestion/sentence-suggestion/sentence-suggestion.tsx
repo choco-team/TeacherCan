@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/skeleton';
 import { cn } from '@/styles/utils';
 import theme from '@/styles/theme';
 import sproutBookImage from '@/assets/images/notice-suggestion/sprout-book.png';
+import { Heading1, Heading2 } from '@/components/heading';
 import { getRandomBadgeColor } from '../notice-suggestion.utils';
 import type {
   NoticeSuggestion,
@@ -58,9 +59,9 @@ export default function SentenceSuggestion() {
   };
 
   return (
-    <div className="flex flex-col gap-y-10">
-      <div className="flex items-center gap-x-2">
-        <h1 className="text-xl font-bold">알림장 문구 추천</h1>
+    <div className="flex-grow flex flex-col gap-y-10">
+      <Heading1>
+        알림장 문구 추천
         <Badge
           variant="secondary-outline"
           size="sm"
@@ -69,10 +70,10 @@ export default function SentenceSuggestion() {
           AI
           <SparkleIcon className="size-3" />
         </Badge>
-      </div>
+      </Heading1>
 
       <section className="space-y-4">
-        <h2 className="font-semibold">카테고리 선택</h2>
+        <Heading2 className="font-semibold">카테고리 선택</Heading2>
         <div
           className={cn(
             'flex items-center justify-between gap-x-3',
@@ -96,10 +97,10 @@ export default function SentenceSuggestion() {
         </div>
       </section>
 
-      <div className="space-y-10">
-        <section className="space-y-4">
+      <div className="flex-grow flex flex-col gap-y-10">
+        <section className="flex-grow flex flex-col gap-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">추천 문구</h2>
+            <Heading2>추천 문구</Heading2>
             <Button
               variant="gray-ghost"
               size="sm"
@@ -113,10 +114,10 @@ export default function SentenceSuggestion() {
 
           <Card
             className={cn(
-              'grid grid-cols-[auto_1fr_auto] items-center gap-2',
+              'flex-grow grid grid-cols-[auto_1fr_auto] items-center gap-2',
               isEmpty ? 'content-center' : 'content-start',
               'px-5 py-4 h-[50vh] min-h-[20rem] max-h-[40rem] overflow-auto',
-              'max-sm:p-3 max-sm:gap-y-3 max-sm:h-full',
+              'max-sm:p-3 max-sm:gap-y-3 max-sm:max-h-full',
             )}
           >
             {isPending &&
