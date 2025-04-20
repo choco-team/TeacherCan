@@ -1,152 +1,118 @@
 'use client';
 
-import { Input } from '@/components/input';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/button';
-import { Heading4 } from '@/components/heading';
-import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
-import { Card, CardContent } from '@/components/card';
-import { RoutineItem } from './routine-types';
 
-type Props = {
-  routines: RoutineItem[];
-  setRoutines: (routines: RoutineItem[]) => void;
-  onPrevious: () => void;
-  onStart: () => void;
+type Routine = {
+  key: string;
+  title: string;
+  totalTime: number;
+  routine: Array<{
+    order: number;
+    action: string;
+    time: number;
+  }>;
 };
 
-type RoutineItemWithId = RoutineItem & { routineId: string };
+type RouteParams = {
+  params: {
+    id: string;
+  };
+};
 
-function RoutineForm({ routines, setRoutines, onPrevious, onStart }: Props) {
-  const [routinesWithId, setRoutinesWithId] = useState<RoutineItemWithId[]>([]);
+export default function RoutineForm({ params }: RouteParams): JSX.Element {
+  const routineId = params.id;
 
-  const generateRoutineId = (index: number) => `routine-${Date.now()}-${index}`;
+  const [routine, setRoutine] = useState<Routine>({
+    key: routineId,
+    title: '새 루틴',
+    totalTime: 0,
+    routine: [],
+  });
 
   useEffect(() => {
-    const withIds = routines.map((routine, index) => ({
+    const loadRoutine = () => {
+      try {
+        const savedRoutines = localStorage.getItem('routines');
+        if (savedRoutines) {
+          const routines: Routine[] = JSON.parse(savedRoutines);
+          const foundRoutine = routines.find((r) => r.key === routineId);
+
+          if (foundRoutine) {
+            setRoutine(foundRoutine);
+          }
+        }
+      } catch (e) {
+        console.error('루틴을 불러오는데 실패했습니다', e);
+      }
+    };
+
+    loadRoutine();
+  }, [routineId]);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRoutine({
       ...routine,
-      routineId: generateRoutineId(index),
-    }));
-    setRoutinesWithId(withIds);
-  }, [routines]);
-
-  const handleChange = (
-    id: string,
-    key: keyof RoutineItem,
-    value: string | number,
-  ) => {
-    const index = routinesWithId.findIndex((r) => r.routineId === id);
-    if (index === -1) return;
-
-    const updated = [...routinesWithId];
-    updated[index] = {
-      ...updated[index],
-      [key]: key === 'duration' ? Number(value) : value,
-    };
-    setRoutinesWithId(updated);
-    setRoutines(updated.map(({ routineId, ...rest }) => rest));
+      title: e.target.value,
+    });
   };
 
-  const handleAdd = () => {
-    const newRoutine = {
-      title: '',
-      description: '',
-      duration: 0,
-      music: '',
-    };
+  const saveRoutine = () => {
+    try {
+      const savedRoutines = localStorage.getItem('routines');
+      let routines: Routine[] = [];
 
-    const id = generateRoutineId(routinesWithId.length);
-    const newRoutineWithId: RoutineItemWithId = {
-      ...newRoutine,
-      routineId: id,
-    };
+      if (savedRoutines) {
+        routines = JSON.parse(savedRoutines);
+        const index = routines.findIndex((r) => r.key === routineId);
 
-    const updated = [...routinesWithId, newRoutineWithId];
-    setRoutinesWithId(updated);
-    setRoutines(updated.map(({ routineId, ...rest }) => rest));
-  };
+        if (index !== -1) {
+          routines[index] = routine;
+        } else {
+          routines.push(routine);
+        }
+      } else {
+        routines = [routine];
+      }
 
-  const handleRemove = (id: string) => {
-    const updated = routinesWithId.filter((r) => r.routineId !== id);
-    setRoutinesWithId(updated);
-    setRoutines(updated.map(({ routineId, ...rest }) => rest));
+      localStorage.setItem('routines', JSON.stringify(routines));
+      // alert('루틴 이름이 저장되었습니다.');
+    } catch (e) {
+      console.error('루틴 저장에 실패했습니다', e);
+      // alert('저장에 실패했습니다.');
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <Heading4 className="text-2xl font-bold">루틴 정보 입력</Heading4>
+    <div className="p-4 max-w-3xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex-1">
+          <input
+            type="text"
+            value={routine.title}
+            onChange={handleTitleChange}
+            className="text-xl font-bold p-2 w-full bg-gray-200 rounded border-none"
+            placeholder="루틴 이름 입력"
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            (총 시간: {routine.totalTime}초)
+          </p>
+        </div>
 
-      {routinesWithId.map((routine, idx) => (
-        <Card
-          key={routine.routineId}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border rounded-xl shadow bg-white relative"
-        >
-          <button
-            type="button"
-            onClick={() => handleRemove(routine.routineId)}
-            className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-            aria-label={`활동 ${idx + 1} 삭제`}
+        <div>
+          <Button
+            onClick={saveRoutine}
+            className="bg-gray-200 px-4 py-2 rounded"
           >
-            <X size={20} />
-          </button>
+            저장하기
+          </Button>
+        </div>
+      </div>
 
-          <CardContent className="flex flex-wrap md:flex-nowrap gap-4 w-full py-2">
-            <div className="flex flex-col gap-1 min-w-[120px]">
-              <Input
-                placeholder="활동명"
-                value={routine.title}
-                onChange={(e) =>
-                  handleChange(routine.routineId, 'title', e.target.value)
-                }
-              />
-            </div>
-
-            <Input
-              placeholder="설명"
-              value={routine.description}
-              onChange={(e) =>
-                handleChange(routine.routineId, 'description', e.target.value)
-              }
-              className="flex-1"
-            />
-            <Input
-              type="number"
-              placeholder="시간(초)"
-              value={routine.duration}
-              onChange={(e) =>
-                handleChange(routine.routineId, 'duration', e.target.value)
-              }
-              className="w-28"
-            />
-            <Input
-              placeholder="음악 URL 또는 이름"
-              value={routine.music}
-              onChange={(e) =>
-                handleChange(routine.routineId, 'music', e.target.value)
-              }
-              className="flex-1"
-            />
-          </CardContent>
-        </Card>
-      ))}
-
-      <div className="flex gap-4 flex-wrap">
-        <Button onClick={handleAdd} variant="primary-outline">
-          + 활동 추가하기
-        </Button>
-        <Button
-          onClick={onPrevious}
-          variant="primary-outline"
-          className="flex-1"
-        >
-          이전
-        </Button>
-        <Button onClick={onStart} className="flex-1">
-          루틴 시작
-        </Button>
+      {/* 활동 추가 영역은 여기에 구현할 예정 */}
+      <div className="bg-yellow-300 p-4 rounded-lg">
+        <p className="text-center text-gray-600">여기에 활동들이 표시됩니다.</p>
       </div>
     </div>
   );
 }
-
-export default RoutineForm;

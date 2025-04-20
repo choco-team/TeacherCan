@@ -63,12 +63,12 @@ export default function RoutineTimerList(): JSX.Element {
   function handleAddRoutine(): void {
     const newKey = createNewRoutine();
     if (newKey) {
-      router.push(`/routine/${newKey}`);
+      router.push(`/routine-timer/${newKey}`);
     }
   }
 
   function handleRoutineClick(key: string): void {
-    router.push(`/routine/${key}`);
+    router.push(`/routine-timer/${key}`);
   }
 
   return (
