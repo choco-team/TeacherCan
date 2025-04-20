@@ -26,7 +26,7 @@ import {
 } from '../sidebar';
 
 const linkClass =
-  'w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-text-subtitle hover:text-text-title hover:bg-bg-secondary hover:cursor-pointer transition-all';
+  'w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-text-subtitle hover:text-text-title hover:bg-bg-secondary hover:cursor-pointer';
 
 export default function AppSidebar() {
   const pathname = usePathname();
