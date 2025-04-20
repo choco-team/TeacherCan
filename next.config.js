@@ -25,6 +25,7 @@ const nextConfig = {
         hostname: 'www.google.com',
       },
     ],
+    unoptimized: true,
   },
 };
 
