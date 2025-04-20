@@ -60,9 +60,7 @@ export default function ScheduleForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                이름 <span className="text-red">*</span>
-              </FormLabel>
+              <FormLabel required>이름</FormLabel>
               <Input
                 placeholder="일정 이름"
                 value={field.value}
@@ -90,9 +88,7 @@ export default function ScheduleForm({
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>
-                날짜 <span className="text-red">*</span>
-              </FormLabel>
+              <FormLabel required>날짜</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>

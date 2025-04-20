@@ -15,6 +15,7 @@ import useDevice from '@/hooks/use-device';
 import { useLayoutEffect } from 'react';
 
 import useRecentlyVisited from '@/hooks/use-recently-visited';
+import { useSetNavState } from '@/store/use-nav-store';
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -23,8 +24,9 @@ export default function Navigation() {
   );
 
   const { isMobile } = useDevice();
+  const setIsNavOpen = useSetNavState();
 
-  const handelClick = () => {
+  const handelCloseNav = () => {
     const main = document.getElementById('teacher-can-main');
     const navigation = document.getElementById('teacher-can-nav');
     const headerIcon = document.getElementById('teacher-can-header-icon');
@@ -32,6 +34,8 @@ export default function Navigation() {
     main.setAttribute('data-status', 'closed');
     headerIcon.setAttribute('data-status', 'closed');
     navigation.setAttribute('data-status', 'closed');
+
+    setIsNavOpen(false);
 
     navigation.addEventListener(
       'animationend',
@@ -62,6 +66,8 @@ export default function Navigation() {
     headerIcon.setAttribute('data-status', 'closed');
     navigation.setAttribute('data-status', 'closed');
 
+    setIsNavOpen(false);
+
     navigation.addEventListener(
       'animationend',
       () => {
@@ -81,7 +87,7 @@ export default function Navigation() {
     >
       <div className="flex w-full items-center">
         <Link
-          onClick={isMobile ? handelClick : null}
+          onClick={isMobile ? handelCloseNav : null}
           href={MENU_ROUTE.LANDING}
           className={`${pathname === MENU_ROUTE.LANDING ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
         >
@@ -91,13 +97,13 @@ export default function Navigation() {
         <ChevronsUp
           color="#3e3e3e"
           className="cursor-pointer mx-2 block lg:hidden"
-          onClick={handelClick}
+          onClick={handelCloseNav}
           size="20px"
         />
         <ChevronsLeft
           color="#3e3e3e"
           className="cursor-pointer mx-2 hidden lg:block"
-          onClick={handelClick}
+          onClick={handelCloseNav}
           size="20px"
         />
       </div>
@@ -123,7 +129,7 @@ export default function Navigation() {
             return (
               <li key={path}>
                 <Link
-                  onClick={isMobile ? handelClick : null}
+                  onClick={isMobile ? handelCloseNav : null}
                   href={path}
                   className={`${pathname === path ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
                 >
@@ -147,7 +153,7 @@ export default function Navigation() {
             return (
               <li key={path}>
                 <Link
-                  onClick={isMobile ? handelClick : null}
+                  onClick={isMobile ? handelCloseNav : null}
                   href={path}
                   className={`${pathname === path ? 'text-gray-900 bg-primary-200' : ''} w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-gray-700 hover:text-gray-900 hover:bg-primary-200 hover:cursor-pointer transition-all`}
                 >

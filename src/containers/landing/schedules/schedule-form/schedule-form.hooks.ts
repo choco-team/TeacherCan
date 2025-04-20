@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Dispatch, SetStateAction } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { ScheduleType } from '../schedules.types';
@@ -73,7 +73,7 @@ export const useScheduleForm = ({
     updateSchedules([
       ...schedules,
       {
-        id: uuidv4(),
+        id: nanoid(),
         name,
         date,
         description,

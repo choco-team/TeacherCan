@@ -10,8 +10,10 @@ const badgeVariants = cva(
       variant: {
         primary: 'border-transparent bg-primary-100 text-primary',
         secondary: 'border-transparent bg-secondary-100 text-secondary',
+        gray: 'border-transparent bg-gray-100 text-gray',
         'primary-outline': 'border-primary text-primary',
         'secondary-outline': 'border-secondary text-secondary',
+        'gray-outline': 'border-gray text-gray',
       },
       size: {
         md: 'px-2.5 py-0.5 text-xs',
