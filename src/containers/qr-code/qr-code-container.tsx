@@ -1,15 +1,22 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { cn } from '@/styles/utils';
-import type { QRCode } from './qr-code.types';
 import QrCodeAction from './qr-code-action/qr-code-action';
 import QrCodePreview from './qr-code-preview/qr-code-preview';
 import QrCodeEditor from './qr-code-editor/qr-code-editor';
+import { QR_CODE_LOCAL_STORAGE_KEY } from './qr-code.constants';
+import type { QRCode, SavedQRCodes } from './qr-code.types';
 
 function QrCodeContainer() {
   const [qrCode, setQrCode] = useState<QRCode>({ value: '', name: '' });
   const qrCodeRef = useRef<HTMLDivElement>(null);
+
+  const [savedQRCodes, setSavedQRCodes] = useLocalStorage<SavedQRCodes>(
+    QR_CODE_LOCAL_STORAGE_KEY,
+    [],
+  );
 
   const [isPending, startTransition] = useTransition();
 
@@ -22,12 +29,19 @@ function QrCodeContainer() {
     >
       <QrCodeEditor
         qrCode={qrCode}
-        setQrCode={setQrCode}
+        savedQRCodes={savedQRCodes}
         startTransition={startTransition}
+        setQrCode={setQrCode}
+        setSavedQRCodes={setSavedQRCodes}
       />
-      <div className="flex-1 flex flex-col gap-y-10">
+      <div className="flex-1 flex flex-col gap-y-6">
         <QrCodePreview isPending={isPending} ref={qrCodeRef} qrCode={qrCode} />
-        <QrCodeAction qrCode={qrCode} qrCodeRef={qrCodeRef} />
+        <QrCodeAction
+          qrCode={qrCode}
+          qrCodeRef={qrCodeRef}
+          savedQRCodes={savedQRCodes}
+          setSavedQRCodes={setSavedQRCodes}
+        />
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { type ChangeEvent } from 'react';
 import { Input } from '@/components/input';
-import { Button } from '@/components/button';
 import { Label } from '@/components/label';
 import type { QRCode } from '../../qr-code.types';
 
@@ -9,8 +8,6 @@ type Props = {
   qrCodeInputValue: string;
   handleGenerate: (event: ChangeEvent<HTMLInputElement>) => void;
   handleChangeName: (event: ChangeEvent<HTMLInputElement>) => void;
-  handleSaveToLocalStorage: () => void;
-  isButtonDisabled: boolean;
 };
 
 export default function QrCodeForm({
@@ -18,8 +15,6 @@ export default function QrCodeForm({
   qrCodeInputValue,
   handleGenerate,
   handleChangeName,
-  handleSaveToLocalStorage,
-  isButtonDisabled,
 }: Props) {
   return (
     <section className="flex flex-col gap-y-6">
@@ -36,22 +31,13 @@ export default function QrCodeForm({
 
       <div className="space-y-2">
         <Label>제목</Label>
-        <div className="flex items-center space-x-4">
-          <Input
-            name="name"
-            value={qrCode.name}
-            placeholder="티처캔"
-            maxLength={12}
-            onChange={handleChangeName}
-            className="flex-1"
-          />
-          <Button
-            onClick={handleSaveToLocalStorage}
-            disabled={isButtonDisabled}
-          >
-            QR코드 북마크
-          </Button>
-        </div>
+        <Input
+          name="name"
+          value={qrCode.name}
+          placeholder="티처캔"
+          maxLength={12}
+          onChange={handleChangeName}
+        />
       </div>
     </section>
   );
