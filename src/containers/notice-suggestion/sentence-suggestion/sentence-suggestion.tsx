@@ -11,7 +11,6 @@ import { useCreateNoticeSuggestion } from '@/hooks/apis/notice-suggestion/use-cr
 import { Skeleton } from '@/components/skeleton';
 import { cn } from '@/styles/utils';
 import theme from '@/styles/theme';
-import sproutBookImage from '@/assets/images/notice-suggestion/sprout-book.png';
 import { Heading1, Heading2 } from '@/components/heading';
 import { getRandomBadgeColor } from '../notice-suggestion.utils';
 import type {
@@ -171,11 +170,10 @@ export default function SentenceSuggestion() {
             {isEmpty && (
               <div className="col-span-full flex flex-col items-center justify-center gap-y-4">
                 <Image
-                  src={sproutBookImage.src}
-                  alt="알림장 문구 추천"
-                  className="size-[50px]"
-                  width={sproutBookImage.width}
-                  height={sproutBookImage.height}
+                  src="/image/notice-suggestion/sprout-book.png"
+                  alt="말의 씨앗"
+                  width={50}
+                  height={50}
                 />
                 <p
                   className={cn('text-center text-gray-400', 'max-sm:text-sm')}
