@@ -1,8 +1,8 @@
 import { type ChangeEvent } from 'react';
 import { Input } from '@/components/input';
-import { Label } from '@/components/label';
 import { Button } from '@/components/button';
-import { QRCode } from '../../qr-code.types';
+import { Label } from '@/components/label';
+import type { QRCode } from '../../qr-code.types';
 
 type Props = {
   qrCode: QRCode;
@@ -23,10 +23,8 @@ export default function QrCodeForm({
 }: Props) {
   return (
     <section className="flex flex-col gap-y-6">
-      <Label className="space-y-1.5">
-        <span className="font-semibold">
-          URL 링크 <span className="text-red">*</span>
-        </span>
+      <div className="space-y-2">
+        <Label required>URL 링크</Label>
         <Input
           name="value"
           value={qrCodeInputValue}
@@ -34,9 +32,10 @@ export default function QrCodeForm({
           onChange={handleGenerate}
           placeholder="https://www.teachercan.com"
         />
-      </Label>
-      <Label className="space-y-1.5">
-        <span className="font-semibold">제목</span>
+      </div>
+
+      <div className="space-y-2">
+        <Label>제목</Label>
         <div className="flex items-center space-x-4">
           <Input
             name="name"
@@ -53,7 +52,7 @@ export default function QrCodeForm({
             QR코드 북마크
           </Button>
         </div>
-      </Label>
+      </div>
     </section>
   );
 }

@@ -42,9 +42,7 @@ export default function FeedbackForm() {
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                유형 <span className="text-red">*</span>
-              </FormLabel>
+              <FormLabel required>유형</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -67,9 +65,7 @@ export default function FeedbackForm() {
           name="page"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                페이지 <span className="text-red">*</span>
-              </FormLabel>
+              <FormLabel required>페이지</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -92,9 +88,7 @@ export default function FeedbackForm() {
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                내용 <span className="text-red">*</span>
-              </FormLabel>
+              <FormLabel required>내용</FormLabel>
               <Textarea
                 placeholder="피드백 내용을 입력해주세요."
                 value={field.value}
