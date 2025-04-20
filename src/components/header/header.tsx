@@ -1,5 +1,6 @@
 'use client';
 
+import React, { ReactNode } from 'react';
 import {
   BellIcon,
   ChevronsDown,
@@ -10,9 +11,9 @@ import {
   QrCodeIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
+import { useSetNavState } from '@/store/use-nav-store';
 import { compact, head } from 'lodash';
 import {
   Breadcrumb,
@@ -62,6 +63,8 @@ export default function Header() {
   // TODO:(김홍동) header breadcrumb가 복수를 가질 수 있도록 확장하기
   const breadcrumb = breadcrumbs[headPathname];
 
+  const setIsNavOpen = useSetNavState();
+
   const handleClick = () => {
     const main = document.getElementById('teacher-can-main');
     const navigation = document.getElementById('teacher-can-nav');
@@ -70,6 +73,8 @@ export default function Header() {
     main.setAttribute('data-status', 'open');
     headerIcon.setAttribute('data-status', 'open');
     navigation.setAttribute('data-status', 'open');
+
+    setIsNavOpen(true);
 
     navigation.classList.add('fixed');
     navigation.classList.remove('hidden');

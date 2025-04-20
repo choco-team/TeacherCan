@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/styles/utils';
 import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
 import Card from '../card/card';
 import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
@@ -43,7 +44,12 @@ export default function CardList({ isMixingCards }: Props) {
   }, [pickList[pickType]]);
 
   return (
-    <div className="flex-grow grid gap-2 grid-cols-4 md:grid-cols-6 lg:grid-cols-8 content-start">
+    <div
+      className={cn(
+        'flex-grow grid gap-2 grid-cols-4 md:grid-cols-6 lg:grid-cols-8 content-start',
+        'mb-36 lg:mb-24',
+      )}
+    >
       {(isMixingCards ? students : pickList[pickType]).map(({ id, value }) => (
         <Card
           key={id}
