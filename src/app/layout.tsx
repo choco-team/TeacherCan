@@ -49,6 +49,7 @@ export default async function RootLayout({
   const headersList = headers();
   const currentPath = headersList.get('X-Current-Path') || '/';
   const fontSize = headersList.get('X-Font-Size');
+  const screenMode = headersList.get('X-Screen-Mode');
 
   const isMinimalLayout =
     isMinimalLayoutPages.startsWith.some((path) =>
@@ -58,7 +59,7 @@ export default async function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable} ${fontSize} dark`}
+      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable} ${fontSize} ${screenMode}`}
     >
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_TAG_ID} />

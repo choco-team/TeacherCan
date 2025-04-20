@@ -11,6 +11,14 @@ export default function Setting() {
     | 'small'
     | 'medium'
     | 'large';
+  const initialScreenMode = headersList.get('X-Screen-Mode') as
+    | 'light'
+    | 'dark';
 
-  return <SettingContainer initialFontSize={initialFontSize} />;
+  return (
+    <SettingContainer
+      initialFontSize={initialFontSize}
+      initialScreenMode={initialScreenMode}
+    />
+  );
 }

@@ -16,12 +16,13 @@ const fontValues: {
 ];
 
 const fontSizeBoxVariants = cva(
-  'aspect-square border-2 rounded-lg transition-all cursor-pointer flex flex-col gap-2 items-center justify-center',
+  'aspect-square border-2 rounded-lg cursor-pointer flex flex-col gap-2 items-center justify-center',
   {
     variants: {
       selected: {
         true: 'border-primary-500 text-primary-500 font-bold',
-        false: 'border-gray-200 text-gray-500',
+        false:
+          'border-gray-200 dark:border-gray-800 text-gray-500 dark:text-gray-400',
       },
     },
     defaultVariants: {
@@ -64,7 +65,7 @@ export default function FontSizeSetting({ initialFontSize }: Props) {
   }, [fontSize]);
 
   return (
-    <div className="flex flex-col gap-[12px]">
+    <div className="flex flex-col gap-[12px] w-full">
       <div className="font-semibold text-sm h-[30px] text-text-title">
         글씨크기
       </div>
