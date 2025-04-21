@@ -84,7 +84,10 @@ export default function RoutineTimerList(): JSX.Element {
             <h2 className="font-bold text-lg">
               {routine.title || '제목 없음'}
             </h2>
-            <p className="text-gray-500">총 시간: {routine.totalTime}분</p>
+            <p className="text-gray-500">
+              총 시간: {Math.floor(routine.totalTime / 60)}분{' '}
+              {routine.totalTime % 60}초
+            </p>
             <p className="text-gray-500">활동 수: {routine.routine.length}개</p>
           </div>
         ))}

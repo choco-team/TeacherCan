@@ -1,17 +1,21 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/button';
+import { Input } from '@/components/input';
+import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
+
+type Activity = {
+  order: number;
+  action: string;
+  time: number;
+};
 
 type Routine = {
   key: string;
   title: string;
   totalTime: number;
-  routine: Array<{
-    order: number;
-    action: string;
-    time: number;
-  }>;
+  routine: Activity[];
 };
 
 type RouteParams = {
@@ -30,88 +34,243 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     routine: [],
   });
 
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const currentActivity =
+    selectedIndex !== null ? routine.routine[selectedIndex] : null;
+  const [isTimeEditing, setIsTimeEditing] = useState(false);
+  const [editMinutes, setEditMinutes] = useState('00');
+  const [editSeconds, setEditSeconds] = useState('00');
+
+  // Format time function to convert seconds to MM:SS format
+  const formatTime = (timeInSeconds?: number): string => {
+    if (timeInSeconds === undefined) return '00:00';
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
-    const loadRoutine = () => {
-      try {
-        const savedRoutines = localStorage.getItem('routines');
-        if (savedRoutines) {
-          const routines: Routine[] = JSON.parse(savedRoutines);
-          const foundRoutine = routines.find((r) => r.key === routineId);
-
-          if (foundRoutine) {
-            setRoutine(foundRoutine);
-          }
-        }
-      } catch (e) {
-        console.error('루틴을 불러오는데 실패했습니다', e);
+    const saved = localStorage.getItem('routines');
+    if (saved) {
+      const routines: Routine[] = JSON.parse(saved);
+      const found = routines.find((r) => r.key === routineId);
+      if (found) {
+        setRoutine(found);
+        setSelectedIndex(0); // 첫 번째 활동 선택
       }
-    };
-
-    loadRoutine();
+    }
   }, [routineId]);
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRoutine({
-      ...routine,
-      title: e.target.value,
-    });
+  useEffect(() => {
+    if (currentActivity) {
+      setEditMinutes(
+        Math.floor(currentActivity.time / 60)
+          .toString()
+          .padStart(2, '0'),
+      );
+      setEditSeconds((currentActivity.time % 60).toString().padStart(2, '0'));
+    }
+  }, [currentActivity, selectedIndex]);
+
+  const handleActivityChange = (field: 'action', value: string) => {
+    if (selectedIndex === null) return;
+
+    const updated = [...routine.routine];
+    const target = updated[selectedIndex];
+
+    target.action = value;
+
+    setRoutine({ ...routine, routine: updated });
+  };
+
+  const handleTimeChange = () => {
+    if (selectedIndex === null) return;
+
+    const minutes = parseInt(editMinutes || '0', 10);
+    const seconds = parseInt(editSeconds || '0', 10);
+    const timeInSeconds = minutes * 60 + seconds;
+
+    const updated = [...routine.routine];
+    updated[selectedIndex].time = timeInSeconds;
+
+    setRoutine({ ...routine, routine: updated });
+    setIsTimeEditing(false);
+  };
+
+  const handleAddActivity = () => {
+    const newActivity: Activity = {
+      order: routine.routine.length + 1,
+      action: '',
+      time: 0,
+    };
+    const updated = [...routine.routine, newActivity];
+    setRoutine({ ...routine, routine: updated });
+    setSelectedIndex(updated.length - 1); // 새로 만든 활동 선택
+  };
+
+  const handleRemoveActivity = () => {
+    if (selectedIndex === null) return;
+
+    const updated = routine.routine
+      .filter((_, i) => i !== selectedIndex)
+      .map((a, i) => ({ ...a, order: i + 1 }));
+
+    setRoutine({ ...routine, routine: updated });
+    setSelectedIndex(updated.length > 0 ? 0 : null);
+  };
+
+  const handleSelect = (index: number) => {
+    setSelectedIndex(index);
+    setIsTimeEditing(false);
   };
 
   const saveRoutine = () => {
-    try {
-      const savedRoutines = localStorage.getItem('routines');
-      let routines: Routine[] = [];
+    const saved = localStorage.getItem('routines');
+    let routines: Routine[] = [];
 
-      if (savedRoutines) {
-        routines = JSON.parse(savedRoutines);
-        const index = routines.findIndex((r) => r.key === routineId);
-
-        if (index !== -1) {
-          routines[index] = routine;
-        } else {
-          routines.push(routine);
-        }
+    if (saved) {
+      routines = JSON.parse(saved);
+      const index = routines.findIndex((r) => r.key === routineId);
+      if (index !== -1) {
+        routines[index] = routine;
       } else {
-        routines = [routine];
+        routines.push(routine);
       }
-
-      localStorage.setItem('routines', JSON.stringify(routines));
-      // alert('루틴 이름이 저장되었습니다.');
-    } catch (e) {
-      console.error('루틴 저장에 실패했습니다', e);
-      // alert('저장에 실패했습니다.');
+    } else {
+      routines = [routine];
     }
+
+    const totalTime = routine.routine.reduce((sum, act) => sum + act.time, 0);
+    setRoutine({ ...routine, totalTime });
+    localStorage.setItem('routines', JSON.stringify(routines));
   };
 
-  return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex-1">
-          <input
-            type="text"
-            value={routine.title}
-            onChange={handleTitleChange}
-            className="text-xl font-bold p-2 w-full bg-gray-200 rounded border-none"
-            placeholder="루틴 이름 입력"
-          />
-          <p className="text-sm text-gray-500 mt-1">
-            (총 시간: {routine.totalTime}초)
-          </p>
-        </div>
+  useEffect(() => {
+    const total = routine.routine.reduce(
+      (sum, activity) => sum + activity.time,
+      0,
+    );
+    setRoutine((prev) => ({ ...prev, totalTime: total }));
+  }, [routine.routine]);
 
-        <div>
-          <Button
-            onClick={saveRoutine}
-            className="bg-gray-200 px-4 py-2 rounded"
-          >
-            저장하기
-          </Button>
-        </div>
+  return (
+    <div className="p-4 max-w-4xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <Input
+          type="text"
+          value={routine.title}
+          onChange={(e) => setRoutine({ ...routine, title: e.target.value })}
+          className="text-xl font-bold p-2 w-full bg-gray-100 rounded"
+          placeholder="루틴 이름 입력"
+        />
+        <Button
+          onClick={saveRoutine}
+          className="ml-4 bg-primary-500 text-white px-4 py-2 rounded"
+        >
+          저장
+        </Button>
       </div>
 
-      {/* 활동 추가 영역은 여기에 구현할 예정 */}
-      <div className="bg-yellow-300 p-4 rounded-lg">
-        <p className="text-center text-gray-600">여기에 활동들이 표시됩니다.</p>
+      {/* 단순화된 타이머 UI */}
+      <div className="bg-pink-100 rounded-xl p-6 mb-8">
+        {currentActivity ? (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <input
+                type="text"
+                value={currentActivity.action}
+                onChange={(e) => handleActivityChange('action', e.target.value)}
+                placeholder="활동명 입력"
+                className="text-2xl font-bold text-center w-full bg-transparent border-b-2 border-pink-300 focus:outline-none focus:border-pink-500 px-2"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveActivity}
+                className="p-1 hover:bg-pink-200 rounded-full text-pink-500 ml-2"
+                title="삭제"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="flex flex-col items-center justify-center">
+              {isTimeEditing ? (
+                <div className="flex items-center justify-center mb-4">
+                  <div className="flex items-center bg-white rounded-lg p-2 shadow">
+                    <input
+                      type="number"
+                      min={0}
+                      value={editMinutes}
+                      onChange={(e) => setEditMinutes(e.target.value)}
+                      className="w-16 text-4xl text-center border-0 focus:outline-none"
+                      placeholder="00"
+                    />
+                    <span className="text-4xl mx-1">:</span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={59}
+                      value={editSeconds}
+                      onChange={(e) => setEditSeconds(e.target.value)}
+                      className="w-16 text-4xl text-center border-0 focus:outline-none"
+                      placeholder="00"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleTimeChange}
+                      className="ml-2 bg-pink-500 text-white p-2 rounded-md"
+                    >
+                      적용
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="flex items-center cursor-pointer hover:bg-pink-200 px-6 py-3 rounded-full"
+                  onClick={() => setIsTimeEditing(true)}
+                >
+                  <p className="text-6xl font-bold text-pink-500">
+                    {formatTime(currentActivity.time)}
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-xl text-gray-500">
+              활동을 선택하거나 추가하세요
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* 업데이트된 활동 목록 UI */}
+      <div className="flex gap-4 flex-wrap items-center justify-center">
+        {routine.routine.map((activity, i) => (
+          <div
+            key={`${routine.key}-${activity.order}`}
+            onClick={() => handleSelect(i)}
+            className={`w-24 h-20 rounded-xl flex flex-col items-center justify-center text-xs cursor-pointer transition ${
+              selectedIndex === i
+                ? 'bg-white border-2 border-gray-500 font-bold'
+                : 'bg-pink-100 text-gray-400'
+            }`}
+          >
+            <div className="text-center truncate w-full px-1">
+              {activity.action || `활동 ${i + 1}`}
+            </div>
+            <div className="mt-1">{formatTime(activity.time)}</div>
+          </div>
+        ))}
+
+        {/* + 카드 */}
+        <div
+          onClick={handleAddActivity}
+          className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200"
+        >
+          <span className="text-3xl text-gray-400">+</span>
+        </div>
       </div>
     </div>
   );
