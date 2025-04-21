@@ -19,7 +19,9 @@ export default function QrCodeForm({
   return (
     <section className="flex flex-col gap-y-6">
       <div className="space-y-2">
-        <Label required>URL 링크</Label>
+        <Label className="text-text-title" required>
+          URL 링크
+        </Label>
         <Input
           name="value"
           value={qrCodeInputValue}
@@ -30,7 +32,7 @@ export default function QrCodeForm({
       </div>
 
       <div className="space-y-2">
-        <Label>제목</Label>
+        <Label className="text-text-title">제목</Label>
         <Input
           name="name"
           value={qrCode.name}

@@ -2,7 +2,6 @@ import { useState, type ChangeEvent } from 'react';
 import { SquareIcon, PlayIcon, PauseIcon, RotateCcwIcon } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
 import {
   useCountdownAction,
@@ -50,9 +49,9 @@ export default function CountdownDisplay() {
   return (
     <div className="flex flex-col items-center gap-y-4 lg:gap-y-12 py-6 px-4 w-full">
       {isActive ? (
-        <Heading1 className="max-md:hidden text-text-title pt-3 lg:pt-5 h-16 lg:h-28 text-4xl font-extrabold lg:text-7xl">
+        <div className="max-md:hidden text-text-title pt-3 lg:pt-5 h-16 lg:h-28 text-4xl font-extrabold lg:text-7xl">
           {timerName}
-        </Heading1>
+        </div>
       ) : (
         <Input
           type="text"
