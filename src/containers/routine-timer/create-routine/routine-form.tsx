@@ -41,7 +41,6 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
   const [editMinutes, setEditMinutes] = useState('00');
   const [editSeconds, setEditSeconds] = useState('00');
 
-  // Format time function to convert seconds to MM:SS format
   const formatTime = (timeInSeconds?: number): string => {
     if (timeInSeconds === undefined) return '00:00';
     const minutes = Math.floor(timeInSeconds / 60);
@@ -56,7 +55,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
       const found = routines.find((r) => r.key === routineId);
       if (found) {
         setRoutine(found);
-        setSelectedIndex(0); // 첫 번째 활동 선택
+        setSelectedIndex(0);
       }
     }
   }, [routineId]);
@@ -105,7 +104,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     };
     const updated = [...routine.routine, newActivity];
     setRoutine({ ...routine, routine: updated });
-    setSelectedIndex(updated.length - 1); // 새로 만든 활동 선택
+    setSelectedIndex(updated.length - 1);
   };
 
   const handleRemoveActivity = () => {
@@ -171,8 +170,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
         </Button>
       </div>
 
-      {/* 단순화된 타이머 UI */}
-      <div className="bg-pink-100 rounded-xl p-6 mb-8">
+      <div className="bg-primary-100 rounded-xl p-6 mb-8">
         {currentActivity ? (
           <>
             <div className="flex justify-between items-center mb-4">
@@ -181,12 +179,12 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
                 value={currentActivity.action}
                 onChange={(e) => handleActivityChange('action', e.target.value)}
                 placeholder="활동명 입력"
-                className="text-2xl font-bold text-center w-full bg-transparent border-b-2 border-pink-300 focus:outline-none focus:border-pink-500 px-2"
+                className="text-5xl font-bold text-center w-full bg-transparent border-b-2 border-primary-300 focus:outline-none focus:border-primary-500 px-2"
               />
               <button
                 type="button"
                 onClick={handleRemoveActivity}
-                className="p-1 hover:bg-pink-200 rounded-full text-pink-500 ml-2"
+                className="p-1 hover:text-primary-500 rounded-full text-primary-300 ml-2"
                 title="삭제"
               >
                 <X size={20} />
@@ -218,7 +216,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
                     <button
                       type="button"
                       onClick={handleTimeChange}
-                      className="ml-2 bg-pink-500 text-white p-2 rounded-md"
+                      className="ml-2 bg-primary-500 text-white p-2 rounded-md"
                     >
                       적용
                     </button>
@@ -226,10 +224,10 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
                 </div>
               ) : (
                 <div
-                  className="flex items-center cursor-pointer hover:bg-pink-200 px-6 py-3 rounded-full"
+                  className="flex items-center cursor-pointer hover:bg-primary-200 px-6 py-3 rounded-full"
                   onClick={() => setIsTimeEditing(true)}
                 >
-                  <p className="text-6xl font-bold text-pink-500">
+                  <p className="text-8xl font-bold">
                     {formatTime(currentActivity.time)}
                   </p>
                 </div>
@@ -245,7 +243,6 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
         )}
       </div>
 
-      {/* 업데이트된 활동 목록 UI */}
       <div className="flex gap-4 flex-wrap items-center justify-center">
         {routine.routine.map((activity, i) => (
           <div
@@ -253,8 +250,8 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
             onClick={() => handleSelect(i)}
             className={`w-24 h-20 rounded-xl flex flex-col items-center justify-center text-xs cursor-pointer transition ${
               selectedIndex === i
-                ? 'bg-white border-2 border-gray-500 font-bold'
-                : 'bg-pink-100 text-gray-400'
+                ? 'bg-primary-400 font-bold text-white'
+                : 'bg-primary-100 text-gray-500'
             }`}
           >
             <div className="text-center truncate w-full px-1">
