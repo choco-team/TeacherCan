@@ -142,7 +142,7 @@ function Side({ children }: { children: ReactNode }) {
 }
 
 const sheetVariants = cva(
-  'fixed z-50 gap-4 bg-background dark:bg-black px-6 py-8 overflow-scroll shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+  'fixed z-50 gap-4 bg-background dark:bg-gray-900 px-6 py-8 overflow-scroll shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
   {
     variants: {
       side: {

@@ -1,9 +1,9 @@
 'use client';
 
-import useLocalStorage from '@/hooks/useLocalStorage';
+import theme from '@/styles/theme';
 import { cva } from 'class-variance-authority';
 import Cookies from 'js-cookie';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const screenModeValues: {
   label: string;
@@ -45,8 +45,7 @@ type Props = {
 };
 
 export default function ScreenModeSetting({ initialScreenMode }: Props) {
-  const [screenMode, setScreenMode] = useLocalStorage<'light' | 'dark'>(
-    'screenMode',
+  const [screenMode, setScreenMode] = useState<'light' | 'dark'>(
     initialScreenMode,
   );
 
@@ -80,7 +79,10 @@ export default function ScreenModeSetting({ initialScreenMode }: Props) {
                 style={{
                   position: 'relative',
                   padding: '12px',
-                  backgroundColor: value === 'light' ? '#fefefe' : '#09090b',
+                  backgroundColor:
+                    value === 'light'
+                      ? theme.colors.white
+                      : theme.colors.gray[950],
                 }}
               >
                 <div
@@ -88,7 +90,7 @@ export default function ScreenModeSetting({ initialScreenMode }: Props) {
                     width: '100%',
                     height: '8px',
                     borderRadius: '8px',
-                    backgroundColor: '#e77474',
+                    backgroundColor: theme.colors.primary[500],
                   }}
                 />
                 <div
@@ -96,7 +98,10 @@ export default function ScreenModeSetting({ initialScreenMode }: Props) {
                     width: '60%',
                     height: '8px',
                     borderRadius: '8px',
-                    backgroundColor: value === 'light' ? '#111827' : '#f4f4f5',
+                    backgroundColor:
+                      value === 'light'
+                        ? theme.colors.gray[900]
+                        : theme.colors.gray[50],
                   }}
                 />
                 <div
@@ -104,7 +109,10 @@ export default function ScreenModeSetting({ initialScreenMode }: Props) {
                     width: '80%',
                     height: '8px',
                     borderRadius: '8px',
-                    backgroundColor: value === 'light' ? '#374151' : '#a1a1aa',
+                    backgroundColor:
+                      value === 'light'
+                        ? theme.colors.gray[700]
+                        : theme.colors.gray[400],
                   }}
                 />
                 <div
@@ -112,7 +120,7 @@ export default function ScreenModeSetting({ initialScreenMode }: Props) {
                     width: '100%',
                     height: '8px',
                     borderRadius: '8px',
-                    backgroundColor: '#71717a',
+                    backgroundColor: theme.colors.gray[500],
                   }}
                 />
               </div>

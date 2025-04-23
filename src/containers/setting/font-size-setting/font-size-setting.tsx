@@ -1,16 +1,15 @@
 'use client';
 
-import useLocalStorage from '@/hooks/useLocalStorage';
 import { cva } from 'class-variance-authority';
 import Cookies from 'js-cookie';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const fontValues: {
   size: string;
   label: string;
   value: 'small' | 'medium' | 'large';
 }[] = [
-  { size: '14', label: '축소', value: 'small' },
+  { size: '14', label: '작게', value: 'small' },
   { size: '16', label: '보통', value: 'medium' },
   { size: '18', label: '확대', value: 'large' },
 ];
@@ -48,8 +47,7 @@ type Props = {
 };
 
 export default function FontSizeSetting({ initialFontSize }: Props) {
-  const [fontSize, setFontSize] = useLocalStorage<'small' | 'medium' | 'large'>(
-    'fontSize',
+  const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>(
     initialFontSize,
   );
 

@@ -13,7 +13,6 @@ import {
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
-import { useSetNavState } from '@/store/use-nav-store';
 import { compact, head } from 'lodash';
 import {
   Breadcrumb,
@@ -32,32 +31,32 @@ const breadcrumbs: Record<
   'qr-code': {
     name: 'QR코드',
     url: '/qr-code',
-    icon: <QrCodeIcon size="14px" />,
+    icon: <QrCodeIcon size="1rem" />,
   },
   'random-pick': {
     name: '랜덤뽑기',
     url: '/random-pick',
-    icon: <DicesIcon size="14px" />,
+    icon: <DicesIcon size="1rem" />,
   },
   'music-request': {
     name: '음악신청',
     url: '/music-request',
-    icon: <MusicIcon size="14px" />,
+    icon: <MusicIcon size="1rem" />,
   },
   feedback: {
     name: '피드백',
     url: '/feedback',
-    icon: <MessageCircleHeartIcon size="14px" />,
+    icon: <MessageCircleHeartIcon size="1rem" />,
   },
   'notice-suggestion': {
     name: '알림장 문구 추천',
     url: '/notice-suggestion',
-    icon: <WandSparklesIcon size="14px" />,
+    icon: <WandSparklesIcon size="1rem" />,
   },
   setting: {
     name: '설정',
     url: '/setting',
-    icon: <SettingsIcon size="14px" />,
+    icon: <SettingsIcon size="1rem" />,
   },
 };
 
@@ -86,7 +85,7 @@ export default function Header() {
     <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-bg z-10">
       {showSidebarIcon ? (
         <ChevronsRight
-          size="20px"
+          size="1.2rem"
           onClick={handleClickSidebarIcon}
           className="cursor-pointer text-text-subtitle"
         />
@@ -97,13 +96,13 @@ export default function Header() {
           <BreadcrumbItem>
             {pathname === '/' ? (
               <BreadcrumbPage className="flex items-center gap-2 text-text-title">
-                <TeacherCanIcon width={14} height={14} />
+                <TeacherCanIcon width="1rem" height="1rem" />
                 티처캔
               </BreadcrumbPage>
             ) : (
               <BreadcrumbLink asChild>
                 <div className="flex items-center gap-2 ">
-                  <TeacherCanIcon width={14} height={14} />
+                  <TeacherCanIcon width="1rem" height="1rem" />
                   <Link className="text-text-subtitle" href="/">
                     티처캔
                   </Link>

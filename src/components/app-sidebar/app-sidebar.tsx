@@ -57,15 +57,15 @@ export default function AppSidebar() {
             <Link
               onClick={handleClickMenu}
               href={MENU_ROUTE.LANDING}
-              className={`${pathname === MENU_ROUTE.LANDING ? 'text-text-title bg-bg-secondary' : ''} ${linkClass}`}
+              className={`${pathname === MENU_ROUTE.LANDING ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
             >
-              <TeacherCanLogo width="14" height="14" />
+              <TeacherCanLogo width="1rem" height="1rem" />
               <span>티처캔</span>
             </Link>
             {showSidebarIcon ? (
               <ChevronsLeft
                 onClick={handleClickSidebarIcon}
-                size="20px"
+                size="1.2rem"
                 className="cursor-pointer text-text-subtitle"
               />
             ) : null}
@@ -84,7 +84,7 @@ export default function AppSidebar() {
                   onClick={() => updateRecentlyVisited(MENU_ROUTE.TIMER)}
                   className={linkClass}
                 >
-                  <TimerIcon size="14px" />
+                  <TimerIcon size="1rem" />
                   <span>타이머</span>
                 </PopupLink>
               </SidebarMenuItem>
@@ -101,9 +101,9 @@ export default function AppSidebar() {
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname.includes(path) ? 'text-text-title bg-bg-secondary' : ''} ${linkClass}`}
+                      className={`${pathname.includes(path) ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
                     >
-                      <Icon size="14px" />
+                      <Icon size="1rem" />
                       <span>{title}</span>
                     </Link>
                   </SidebarMenuItem>
@@ -126,9 +126,9 @@ export default function AppSidebar() {
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname === path ? 'text-text-title bg-bg-secondary' : ''} ${linkClass}`}
+                      className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
                     >
-                      <Icon size="14px" />
+                      <Icon size="1rem" />
                       <span>{title}</span>
                     </Link>
                   </SidebarMenuItem>

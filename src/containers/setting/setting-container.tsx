@@ -13,8 +13,8 @@ export default function SettingContainer({
 }: Props) {
   return (
     <div className="max-w-[600px] w-full mx-auto items-start">
-      <Heading1 className="font-semibold mb-10 text-text-title">
-        선생님께 더 편한 화면을 만들어드릴게요.
+      <Heading1 className="font-semibold mb-10">
+        더 편한 화면으로 꾸며보세요.
       </Heading1>
       <div className="flex flex-col gap-8">
         <FontSizeSetting initialFontSize={initialFontSize} />
