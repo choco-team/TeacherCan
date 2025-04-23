@@ -1,6 +1,18 @@
-export type RoutineItem = {
+export type Activity = {
+  order: number;
+  action: string;
+  time: number;
+};
+
+export type Routine = {
+  key: string;
   title: string;
-  description: string;
-  duration: number;
-  music: string;
+  totalTime: number;
+  routine: Activity[];
+};
+
+export type RouteParams = {
+  params: {
+    id: string;
+  };
 };

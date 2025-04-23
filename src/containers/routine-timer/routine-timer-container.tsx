@@ -1,6 +1,6 @@
 'use client';
 
-import RoutineTimerList from './create-routine/routine-timer-list';
+import RoutineTimerList from './routine-timer-list';
 
 function RoutineTimerContainer() {
   return (
