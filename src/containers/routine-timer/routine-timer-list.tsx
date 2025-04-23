@@ -3,19 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
-
-type RoutineStep = {
-  order: number;
-  action: string;
-  time: number;
-};
-
-type Routine = {
-  key: string;
-  title: string;
-  totalTime: number;
-  routine: RoutineStep[];
-};
+import { Routine } from './create-routine/routine-types';
 
 export default function RoutineTimerList(): JSX.Element {
   const router = useRouter();
