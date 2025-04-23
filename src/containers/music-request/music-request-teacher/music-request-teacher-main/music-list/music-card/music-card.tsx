@@ -10,8 +10,8 @@ const layoutVariant = cva(
   {
     variants: {
       isSelected: {
-        true: 'bg-gray-100',
-        false: 'bg-white',
+        true: 'bg-gray-100 dark:bg-gray-800',
+        false: 'bg-white dark:bg-gray-950',
       },
       isDeletePending: {
         true: 'animate-pulse bg-zinc-200',
@@ -87,18 +87,23 @@ export default function MusicCard({
           />
           {isSelectedMusic ? (
             <div className="absolute left-0 right-0 top-0 bottom-0 flex items-center justify-center pointer-events-none">
-              <Play size={24} fill="#52525b" color="#52525b" />
+              <Play
+                size={24}
+                className="fill-gray-800 text-gray-800 dark:fill-gray-50 dark:text-gray-50"
+              />
             </div>
           ) : null}
         </div>
         <div className="flex flex-col truncate">
-          <span className="font-medium text-sm truncate">{video.title}</span>
-          <span className="font-light text-gray-600 text-xs truncate">
+          <span className="font-medium text-sm truncate text-text-title">
+            {video.title}
+          </span>
+          <span className="font-light text-gray-600 dark:text-gray-200 text-xs truncate">
             {video.student}의 신청곡
           </span>
         </div>
       </div>
-      <div className="flex flex-col justify-between ">
+      <div className="flex flex-col justify-between text-text-subtitle">
         <button type="button" onClick={() => handleDeleteMusic()}>
           <X size={12} />
         </button>

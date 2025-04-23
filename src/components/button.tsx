@@ -16,17 +16,16 @@ const buttonVariants = cva(
         red: 'bg-red text-red-foreground hover:bg-red/90 active:bg-red-600',
 
         'primary-outline':
-          'border border-primary text-primary fill-primary hover:bg-primary-100 hover:border-primary-600 hover:text-primary-600 hover:fill-primary-600 active:bg-primary-200 active:border-primary-700 active:text-primary-700 active:fill-primary-700',
+          'border border-primary text-primary fill-primary hover:bg-primary-100 dark:hover:bg-primary-300 hover:border-primary-600 hover:text-primary-600 hover:fill-primary-600 active:bg-primary-200 dark:active:bg-primary-400 active:border-primary-700 active:text-primary-700 active:fill-primary-700',
         'secondary-outline':
-          'border border-secondary text-secondary fill-secondary hover:bg-secondary-100 hover:border-secondary-600 hover:text-secondary-600 hover:fill-secondary-600 active:bg-secondary-200 active:border-secondary-700 active:text-secondary-700 active:fill-secondary-700',
+          'border border-secondary text-secondary fill-secondary hover:bg-secondary-100 dark:hover:bg-secondary-100 hover:border-secondary-600 hover:text-secondary-600 hover:fill-secondary-600 active:bg-secondary-200 dark:active:bg-secondary-400 active:border-secondary-700 active:text-secondary-700 active:fill-secondary-700',
         'gray-outline':
-          'border border-gray-300 text-gray-700 fill-gray-700 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-800 hover:fill-gray-800 active:bg-gray-200 active:border-gray-500 active:text-gray-900 active:fill-gray-900',
+          'border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 fill-gray-700 dark:fill-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:border-gray-400 hover:text-gray-800 hover:fill-gray-800 active:bg-gray-200 dark:active:bg-gray-900 active:border-gray-500 active:text-gray-900 active:fill-gray-900',
 
         'primary-ghost':
-          'text-primary fill-primary hover:bg-primary-100 hover:text-primary-600 hover:fill-primary-600 active:bg-primary-200 active:text-primary-700 active:fill-primary-700',
+          'text-primary fill-primary hover:bg-primary-100 dark:hover:bg-primary-300 hover:text-primary-600 hover:fill-primary-600 active:bg-primary-200 dark:active:bg-primary-400 active:text-primary-700 active:fill-primary-700',
         'gray-ghost':
-          'text-gray-700 fill-gray-700 hover:bg-gray-100 hover:text-gray-800 hover:fill-gray-800 active:bg-gray-200 active:text-gray-900 active:fill-gray-900',
-
+          'text-gray-700 dark:text-gray-300 fill-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900 hover:text-gray-800 hover:fill-gray-800 active:bg-gray-200 active:text-gray-900 active:fill-gray-900',
         'primary-link':
           'text-primary fill-primary underline-offset-4 hover:underline active:text-primary-600 active:fill-primary-600',
       },

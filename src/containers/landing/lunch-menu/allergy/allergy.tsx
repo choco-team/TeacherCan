@@ -11,7 +11,7 @@ function AllergyList() {
   return (
     <div className="flex flex-col px-4 pt-8">
       <h3 className="text-sm font-semibold">알러지 정보</h3>
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm text-text-description">
         알러지를 선택하면 식단에서 확인할 수 있어요.
       </p>
       <ToggleGroup
@@ -26,7 +26,7 @@ function AllergyList() {
               key={id}
               value={id.toString()}
               size="xs"
-              className="font-normal data-[state=on]:bg-primary-100 data-[state=on]:font-medium"
+              className="font-normal text-text-subtitle data-[state=on]:bg-primary-100 data-[state=on]:font-medium"
             >
               {id}. {name}
             </ToggleGroupItem>

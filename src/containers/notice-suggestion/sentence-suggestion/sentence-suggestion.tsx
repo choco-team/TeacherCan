@@ -149,7 +149,7 @@ export default function SentenceSuggestion() {
                 </Badge>
                 <p
                   className={cn(
-                    'text-card-foreground relative w-fit after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-gray-300 after:transition-all after:duration-300 [&:nth-child(3n+2):has(+_button:hover)]:after:w-full',
+                    'text-text-title relative w-fit after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-gray-300 after:transition-all after:duration-300 [&:nth-child(3n+2):has(+_button:hover)]:after:w-full',
                     'max-sm:text-sm',
                   )}
                 >

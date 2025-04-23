@@ -35,14 +35,20 @@ function MusicTitle({ musicId, setTitle }: MusicTitleProps) {
   }, [data]);
 
   if (isLoading) {
-    return <Skeleton className="w-full h-[20px]" />;
+    return (
+      <Skeleton className="w-full h-[20px] bg-gray-100 dark:bg-gray-800" />
+    );
   }
 
   if (error) {
-    return '음악 제목을 찾지 못했어요. 다시 시도해주세요.';
+    return (
+      <span className="text-text-subtitle">
+        음악 제목을 찾지 못했어요. 다시 시도해주세요.
+      </span>
+    );
   }
 
-  return data.title;
+  return <span className="text-text-title">{data.title}</span>;
 }
 
 type Props = {
@@ -128,7 +134,7 @@ export default function Register({ roomId, studentName }: Props) {
   return (
     <div className="mt-4 flex flex-col gap-4">
       <div>
-        <Label htmlFor="link" className="mb-2">
+        <Label htmlFor="link" className="mb-2 text-text-title">
           불러오기 결과
         </Label>
         <div className="flex items-center space-x-2">

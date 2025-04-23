@@ -33,7 +33,7 @@ export default function Welcome() {
   }
   return (
     <div className="text-center w-full">
-      <h2 className="text-2xl lg:text-2.5xl font-semibold">
+      <h2 className="text-2xl lg:text-2.5xl font-semibold text-text-title">
         {getTeacherGreeting()}
       </h2>
     </div>

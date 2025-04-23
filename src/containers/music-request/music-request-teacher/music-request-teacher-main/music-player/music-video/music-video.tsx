@@ -13,8 +13,8 @@ const mediaTypeButtonVariants = cva(
   {
     variants: {
       selected: {
-        true: 'bg-gray-400',
-        false: 'bg-gray-200',
+        true: 'bg-gray-400 dark:bg-gray-700',
+        false: 'bg-gray-200 dark:bg-gray-800',
       },
     },
   },
@@ -50,7 +50,7 @@ export function MusicVideo({
 
   return (
     <div className="flex flex-col gap-4 items-center">
-      <div className="bg-gray-200 w-fit h-8 my-0 mx-auto rounded-3xl">
+      <div className="bg-gray-200 dark:bg-gray-800 w-fit h-8 my-0 mx-auto rounded-3xl">
         <button
           type="button"
           className={mediaTypeButtonVariants({

@@ -42,7 +42,9 @@ export default function FeedbackForm() {
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>유형</FormLabel>
+              <FormLabel className="text-text-title" required>
+                유형
+              </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -52,7 +54,7 @@ export default function FeedbackForm() {
                 <SelectContent>
                   {typeItems.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      <span className="text-text-title">{item}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -65,7 +67,9 @@ export default function FeedbackForm() {
           name="page"
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>페이지</FormLabel>
+              <FormLabel className="text-text-title" required>
+                페이지
+              </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -75,7 +79,7 @@ export default function FeedbackForm() {
                 <SelectContent>
                   {pageItems.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      <span className="text-text-title">{item}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -88,7 +92,9 @@ export default function FeedbackForm() {
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel required>내용</FormLabel>
+              <FormLabel className="text-text-title" required>
+                내용
+              </FormLabel>
               <Textarea
                 placeholder="피드백 내용을 입력해주세요."
                 value={field.value}
@@ -103,7 +109,7 @@ export default function FeedbackForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>이메일</FormLabel>
+              <FormLabel className="text-text-title">이메일</FormLabel>
               <Input
                 placeholder="이메일을 입력해주세요."
                 onChange={field.onChange}

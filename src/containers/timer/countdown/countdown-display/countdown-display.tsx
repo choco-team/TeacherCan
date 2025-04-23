@@ -1,11 +1,8 @@
-import { useContext, useState, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { SquareIcon, PlayIcon, PauseIcon, RotateCcwIcon } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import { Heading1 } from '@/components/heading';
 import { cn } from '@/styles/utils';
-import { DualPanelContext } from '@/components/dual-panel';
-import SmallPlayerIcon from '@/assets/icons/SmallPlayerIcon';
 import {
   useCountdownAction,
   useCountdownState,
@@ -19,7 +16,6 @@ import {
 } from '../countdown-provider/countdown-provider.constants';
 import Colon from './colon';
 import CountdownStepper from '../countdown-components/countdown-stepper';
-import CountdownPIP from '../countdown-pip/countdown-pip';
 
 const timerButtonClassName =
   'size-10 max-md:p-1.5 md:size-16 lg:size-32 rounded-full';
@@ -28,7 +24,6 @@ const timerButtonIconClassName = 'size-6 md:size-12 lg:size-20 fill-inherit';
 const TIMER_NAME_MAX_LENGTH = 20;
 
 export default function CountdownDisplay() {
-  const { isOpen } = useContext(DualPanelContext);
   const [timerName, setTimerName] = useState('');
 
   const { hours, minutes, seconds, setupTime, leftTime, isActive } =
@@ -52,11 +47,11 @@ export default function CountdownDisplay() {
   };
 
   return (
-    <div className="flex flex-col items-center gap-y-4 lg:gap-y-12 px-6 lg:px-8 pt-8 md:pt-4 lg:pt-12 pb-4 md:pb-12 lg:pb-20 w-full">
+    <div className="flex flex-col items-center gap-y-4 lg:gap-y-12 py-6 px-4 w-full">
       {isActive ? (
-        <Heading1 className="max-md:hidden pt-3 lg:pt-5 h-16 lg:h-28 text-4xl font-extrabold lg:text-7xl">
+        <div className="max-md:hidden text-text-title pt-3 lg:pt-5 h-16 lg:h-28 text-4xl font-extrabold lg:text-7xl">
           {timerName}
-        </Heading1>
+        </div>
       ) : (
         <Input
           type="text"
@@ -64,7 +59,7 @@ export default function CountdownDisplay() {
           maxLength={TIMER_NAME_MAX_LENGTH}
           readOnly={isActive}
           placeholder="타이머 이름"
-          className="max-md:hidden max-w-sm md:max-w-xl lg:max-w-7xl h-16 lg:h-28 text-4xl lg:text-7xl rounded-xl lg:rounded-2xl text-center font-extrabold"
+          className="max-md:hidden max-w-sm md:max-w-xl dark:bg-black lg:max-w-7xl h-16 lg:h-28 text-4xl lg:text-7xl rounded-xl lg:rounded-2xl text-center font-extrabold"
           onChange={handleChangeTimerName}
         />
       )}
@@ -160,22 +155,6 @@ export default function CountdownDisplay() {
             </Button>
           )}
         </div>
-
-        <CountdownPIP
-          hours={hours}
-          minutes={minutes}
-          seconds={seconds}
-          action={
-            <Button
-              variant="primary-ghost"
-              size="sm"
-              className="transition-all ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 absolute cursor-pointer bottom-4 data-[state=open]:right-[404px] data-[state=closed]:right-[20px]"
-              data-state={isOpen ? 'open' : 'closed'}
-            >
-              <SmallPlayerIcon width="32px" height="32px" />
-            </Button>
-          }
-        />
       </div>
     </div>
   );

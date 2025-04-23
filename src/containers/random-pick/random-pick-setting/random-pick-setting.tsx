@@ -10,7 +10,7 @@ export default function RandomPickSetting({ startPlay }: Props) {
     <div className="flex-grow flex flex-col items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>랜덤뽑기 만들기</CardTitle>
+          <CardTitle className="text-text-title">랜덤뽑기 만들기</CardTitle>
         </CardHeader>
 
         <CardContent className="pt-4 w-full">

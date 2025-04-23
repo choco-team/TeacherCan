@@ -19,8 +19,10 @@ export function MakeNewPlayConfirm({ makeNewPlay }: Props) {
   return (
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>진행 중인 뽑기는 저장되지 않아요</AlertDialogTitle>
-        <AlertDialogDescription>
+        <AlertDialogTitle className="text-text-title">
+          진행 중인 뽑기는 저장되지 않아요
+        </AlertDialogTitle>
+        <AlertDialogDescription className="text-text-subtitle">
           진행 중인 뽑기를 그만두고 새 뽑기를 만들까요?
         </AlertDialogDescription>
       </AlertDialogHeader>

@@ -47,7 +47,7 @@ function QrCodePreview(
           {qrCode.name && (
             <p
               className={cn(
-                'text-center text-xl text-black font-semibold',
+                'text-center text-xl text-text-title font-semibold',
                 'max-sm:text-lg',
               )}
             >
