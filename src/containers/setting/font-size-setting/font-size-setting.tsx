@@ -1,5 +1,7 @@
 'use client';
 
+import { Skeleton } from '@/components/skeleton';
+import { getCookieValue } from '@/utils/getCookieValue';
 import { cva } from 'class-variance-authority';
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
@@ -42,13 +44,9 @@ const fontSizeLabelVariants = cva(
   },
 );
 
-type Props = {
-  initialFontSize: 'small' | 'medium' | 'large';
-};
-
-export default function FontSizeSetting({ initialFontSize }: Props) {
+export default function FontSizeSetting() {
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>(
-    initialFontSize,
+    getCookieValue<'small' | 'medium' | 'large'>('fontSize'),
   );
 
   const handleClickFontSize = (size: 'small' | 'medium' | 'large') => {
@@ -62,37 +60,60 @@ export default function FontSizeSetting({ initialFontSize }: Props) {
     htmlElement.classList.add(fontSize);
   }, [fontSize]);
 
+  useEffect(() => {
+    if (fontSize) {
+      return;
+    }
+
+    setFontSize(
+      (Cookies.get('fontSize') as 'small' | 'medium' | 'large') || 'medium',
+    );
+  }, [fontSize]);
+
   return (
     <div className="flex flex-col gap-[12px] w-full">
       <div className="font-semibold text-sm h-[30px] text-text-title">
         글씨크기
       </div>
-      <div className="w-full flex-1 grid grid-cols-3 gap-x-[16px]">
-        {fontValues.map(({ size, label, value }) => {
-          const selected = fontSize === value;
 
-          return (
-            <div key={size} className="flex flex-col gap-4">
-              <div
-                onClick={() => handleClickFontSize(value)}
-                className={fontSizeBoxVariants({
-                  selected,
-                })}
-                style={{ fontSize: `${size}px`, position: 'relative' }}
-              >
-                <span>가나다</span>
-              </div>
-              <div
-                className={fontSizeLabelVariants({
-                  selected,
-                })}
-              >
-                {label}
-              </div>
+      {!fontSize ? (
+        <div className="w-full flex-1 grid grid-cols-3 gap-x-[16px]">
+          {Array.from({ length: 3 }).map((_, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={index} className="flex flex-col gap-4">
+              <Skeleton className="w-full aspect-square" />
+              <Skeleton className="w-16 h-[26px] self-center" />
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="w-full flex-1 grid grid-cols-3 gap-x-[16px]">
+          {fontValues.map(({ size, label, value }) => {
+            const selected = fontSize === value;
+
+            return (
+              <div key={size} className="flex flex-col gap-4">
+                <div
+                  onClick={() => handleClickFontSize(value)}
+                  className={fontSizeBoxVariants({
+                    selected,
+                  })}
+                  style={{ fontSize: `${size}px`, position: 'relative' }}
+                >
+                  <span>가나다</span>
+                </div>
+                <div
+                  className={fontSizeLabelVariants({
+                    selected,
+                  })}
+                >
+                  {label}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
