@@ -10,7 +10,7 @@ function AllergyList() {
 
   return (
     <div className="flex flex-col px-4 pt-8">
-      <h3 className="text-sm font-semibold">알러지 정보</h3>
+      <h3 className="text-sm font-semibold text-text-title">알러지 정보</h3>
       <p className="mt-1 text-sm text-text-description">
         알러지를 선택하면 식단에서 확인할 수 있어요.
       </p>
