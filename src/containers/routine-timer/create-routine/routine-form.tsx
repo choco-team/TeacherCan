@@ -3,11 +3,13 @@
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { ActivityForm } from './activity-form';
 import { useRoutine } from './use-routine';
 import { RouteParams } from './routine-types';
 
 export default function RoutineForm({ params }: RouteParams): JSX.Element {
+  const router = useRouter();
   const routineId = params.id;
   const {
     routine,
@@ -23,6 +25,11 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     saveRoutine,
   } = useRoutine(routineId);
 
+  const handleStart = () => {
+    saveRoutine();
+    router.push(`/routine-timer/play/${routineId}`);
+  };
+
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -33,12 +40,21 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
           className="text-xl font-bold p-2 w-full bg-gray-100 rounded"
           placeholder="루틴 이름 입력"
         />
-        <Button
-          onClick={saveRoutine}
-          className="ml-4 bg-primary-500 text-white px-4 py-2 rounded"
-        >
-          저장
-        </Button>
+        <div className="flex ml-4 gap-2">
+          <Button
+            onClick={saveRoutine}
+            className="bg-primary-500 text-white px-4 py-2 rounded"
+          >
+            저장
+          </Button>
+          <Button
+            onClick={handleStart}
+            className="bg-green-500 text-white px-4 py-2 rounded"
+            disabled={routine.routine.length === 0}
+          >
+            시작
+          </Button>
+        </div>
       </div>
 
       <div className="bg-primary-100 rounded-xl p-6 mb-8">
