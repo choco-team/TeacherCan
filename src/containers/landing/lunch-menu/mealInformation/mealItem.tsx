@@ -48,7 +48,7 @@ function MealItem({ date, dishes, isToday }: MealItemProps) {
   return (
     <div
       className={`flex-1 p-2 rounded-xl flex flex-col justify-between text-sm
-        ${isToday ? 'bg-primary-50 dark:bg-gray-900' : 'bg-bg'}`}
+        ${isToday ? 'bg-primary-50 dark:bg-gray-900' : 'bg-gray-50 dark:bg-gray-950'}`}
     >
       <h4 className="font-semibold text-center text-text-title leading-tight my-2">
         {date} <br />
