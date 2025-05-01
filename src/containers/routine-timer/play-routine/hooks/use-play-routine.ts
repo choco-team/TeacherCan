@@ -72,7 +72,7 @@ export const usePlayRoutine = (routineId: string) => {
         const nextTime = routine.routine[nextIndex].time;
         setTimeValue(nextTime);
 
-        // 중요: 타이머를 명시적으로 재시작
+        // 타이머 재시작
         setTimeout(() => {
           startTimer();
         }, 0);
@@ -86,11 +86,14 @@ export const usePlayRoutine = (routineId: string) => {
     stopTimer,
     setTimeValue,
     startTimer,
+    currentActivity,
   ]);
 
   // 활동 건너뛰기
   const skipActivity = useCallback(() => {
-    if (!routine) return;
+    if (!routine) {
+      return;
+    }
 
     // 현재 타이머 정지
     stopTimer();
@@ -103,9 +106,10 @@ export const usePlayRoutine = (routineId: string) => {
     } else {
       // 다음 활동으로 이동
       setCurrentIndex(nextIndex);
-      setTimeValue(routine.routine[nextIndex].time);
+      const nextTime = routine.routine[nextIndex].time;
+      setTimeValue(nextTime);
 
-      // 타이머 명시적 재시작 (setTimeout으로 상태 업데이트가 완료된 후 실행)
+      // 타이머 재시작
       setTimeout(() => {
         startTimer();
       }, 0);

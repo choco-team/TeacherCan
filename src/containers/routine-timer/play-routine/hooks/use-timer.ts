@@ -5,6 +5,9 @@ export const useTimer = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
+  // 타이머 종료 콜백
+  const onTimerCompleteRef = useRef<(() => void) | null>(null);
+
   // 타이머 ref
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   // 최신 상태값을 ref에 저장하여 클로저 문제 해결
@@ -34,8 +37,12 @@ export const useTimer = () => {
         // 타이머 종료
         clearInterval(timerRef.current!);
         timerRef.current = null;
-        setIsRunning(false);
         setTimeLeft(0);
+
+        // isRunning은 false로 설정하지 않고, 콜백 호출
+        if (onTimerCompleteRef.current) {
+          onTimerCompleteRef.current();
+        }
       } else {
         // 시간 감소
         setTimeLeft(currentTimeLeft - 1);
@@ -44,12 +51,19 @@ export const useTimer = () => {
   }, []);
 
   // 타이머 시작
-  const startTimer = useCallback(() => {
-    setIsRunning(true);
-    setIsPaused(false);
-    manageTimer();
-  }, [manageTimer]);
+  const startTimer = useCallback(
+    (onComplete?: () => void) => {
+      // 타이머 완료 콜백 설정
+      if (onComplete) {
+        onTimerCompleteRef.current = onComplete;
+      }
 
+      setIsRunning(true);
+      setIsPaused(false);
+      manageTimer();
+    },
+    [manageTimer],
+  );
   // 타이머 일시 정지
   const pauseTimer = useCallback(() => {
     if (timerRef.current) {
