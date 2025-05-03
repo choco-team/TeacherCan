@@ -21,7 +21,6 @@ export default function RoutineTimerList(): JSX.Element {
         setRoutines([]);
       }
     };
-
     loadRoutines();
   }, []);
 
@@ -36,14 +35,14 @@ export default function RoutineTimerList(): JSX.Element {
     }
 
     const key = uuidv4();
-    const newRoutine: Routine = {
+    const newRoutineTimer: Routine = {
       key,
       title: '새 루틴',
       totalTime: 0,
       routine: [],
     };
 
-    const updatedRoutines = [...routines, newRoutine];
+    const updatedRoutines = [...routines, newRoutineTimer];
     saveRoutines(updatedRoutines);
     return key;
   }

@@ -38,7 +38,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
           value={routine.title}
           onChange={(e) => updateRoutineTitle(e.target.value)}
           className="text-xl font-bold p-2 w-full bg-gray-100 rounded"
-          placeholder="루틴 이름 입력"
+          placeholder="루틴타이머 이름 입력"
         />
         <div className="flex ml-4 gap-2">
           <Button
