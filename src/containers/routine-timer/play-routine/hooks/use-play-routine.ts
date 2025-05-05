@@ -30,7 +30,7 @@ export const usePlayRoutine = (routineId: string) => {
           if (found && found.routine.length > 0) {
             setRoutine(found);
             setTimeValue(found.routine[0].time);
-            // 루틴이 로드되면 바로 타이머 시작
+
             startTimer();
           }
         }
@@ -42,10 +42,8 @@ export const usePlayRoutine = (routineId: string) => {
     loadRoutine();
   }, [routineId, setTimeValue, startTimer]);
 
-  // 현재 활동 계산
   const currentActivity = routine?.routine[currentIndex] || null;
 
-  // 진행률 계산
   useEffect(() => {
     if (!currentActivity || !routine) return;
 
@@ -54,25 +52,20 @@ export const usePlayRoutine = (routineId: string) => {
     setTotalProgress(progress);
   }, [timeLeft, currentActivity, routine]);
 
-  // 타이머 콜백 설정
   useEffect(() => {
     if (!routine || !isRunning) return;
 
-    // timeLeft가 0이 되면 다음 활동으로 이동
     if (timeLeft === 0) {
       const nextIndex = currentIndex + 1;
 
       if (nextIndex >= routine.routine.length) {
-        // 모든 활동 완료
         stopTimer();
         setIsCompleted(true);
       } else {
-        // 다음 활동으로 이동
         setCurrentIndex(nextIndex);
         const nextTime = routine.routine[nextIndex].time;
         setTimeValue(nextTime);
 
-        // 타이머 재시작
         setTimeout(() => {
           startTimer();
         }, 0);
@@ -89,34 +82,28 @@ export const usePlayRoutine = (routineId: string) => {
     currentActivity,
   ]);
 
-  // 활동 건너뛰기
   const skipActivity = useCallback(() => {
     if (!routine) {
       return;
     }
 
-    // 현재 타이머 정지
     stopTimer();
 
     const nextIndex = currentIndex + 1;
 
     if (nextIndex >= routine.routine.length) {
-      // 모든 활동 완료
       setIsCompleted(true);
     } else {
-      // 다음 활동으로 이동
       setCurrentIndex(nextIndex);
       const nextTime = routine.routine[nextIndex].time;
       setTimeValue(nextTime);
 
-      // 타이머 재시작
       setTimeout(() => {
         startTimer();
       }, 0);
     }
   }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
 
-  // 루틴 다시 시작
   const restartRoutine = useCallback(() => {
     if (!routine) return;
 
@@ -124,11 +111,9 @@ export const usePlayRoutine = (routineId: string) => {
     setTimeValue(routine.routine[0].time);
     setIsCompleted(false);
 
-    // 타이머 재시작
     startTimer();
   }, [routine, startTimer, setTimeValue]);
 
-  // 타이머 종료
   const exitTimer = useCallback(() => {
     stopTimer();
   }, [stopTimer]);

@@ -84,7 +84,6 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
           </div>
         ))}
 
-        {/* + 카드 */}
         <div
           onClick={handleAddActivity}
           className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200"

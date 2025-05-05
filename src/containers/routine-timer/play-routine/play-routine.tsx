@@ -42,7 +42,6 @@ function PlayRoutineContent() {
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
           <h1 className="text-2xl font-bold">{routine.title}</h1>
-          {/* currentIndex는 context에서 가져오도록 수정 */}
         </div>
         <Button
           onClick={handleExit}

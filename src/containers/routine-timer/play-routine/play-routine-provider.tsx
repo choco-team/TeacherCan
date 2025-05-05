@@ -13,7 +13,6 @@ export function PlayRoutineProvider({
 }: PlayRoutineProviderProps) {
   const routineData = usePlayRoutine(routineId);
 
-  // 루틴이 로드되면 타이머 자동 시작
   useEffect(() => {
     if (
       routineData.routine &&
