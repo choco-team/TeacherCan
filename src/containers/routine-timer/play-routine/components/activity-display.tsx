@@ -32,7 +32,7 @@ export default function ActivityDisplay() {
         {isPaused ? (
           <Button
             onClick={resumeTimer}
-            className="bg-green-500 text-white p-4 rounded-full"
+            className="bg-yellow-500 text-white p-4 rounded-full"
           >
             <Play size={24} />
           </Button>
