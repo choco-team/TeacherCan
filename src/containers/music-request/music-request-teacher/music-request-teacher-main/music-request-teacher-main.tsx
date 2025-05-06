@@ -6,7 +6,6 @@ import { LoaderCircle } from 'lucide-react';
 import { head } from 'lodash';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
-import StudentList from './student-list/student-list';
 import MusicList from './music-list/music-list';
 import { MusicRefresh } from './music-refresh/music-refresh';
 
@@ -40,7 +39,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
     }
 
     setCurrentMusicId(head(data.musicList).musicId);
-  }, [data]);
+  }, [currentMusicId, data]);
 
   if (isPending) {
     return (
@@ -52,7 +51,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
   }
 
   const defaultTabMenu =
-    data.studentList.length === 0 ? 'rome-info' : 'music-list';
+    data.musicList.length === 0 ? 'rome-info' : 'music-list';
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-0">
@@ -67,9 +66,8 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
         defaultValue={defaultTabMenu}
         className="flex flex-col w-full mb-[108px] lg:mb-0 lg:min-w-[400px] lg:max-w-[400px] lg:pl-2 h-full"
       >
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="music-list">신청목록</TabsTrigger>
-          <TabsTrigger value="student-list">학생목록</TabsTrigger>
           <TabsTrigger value="rome-info">방 정보</TabsTrigger>
         </TabsList>
         <TabsContent value="music-list">
@@ -79,9 +77,6 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
             currentMusicId={currentMusicId}
             updateCurrentVideoId={updateCurrentVideoId}
           />
-        </TabsContent>
-        <TabsContent value="student-list">
-          <StudentList students={data.studentList} />
         </TabsContent>
         <TabsContent value="rome-info">
           <RoomInfo
