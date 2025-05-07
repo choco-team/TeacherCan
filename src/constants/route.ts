@@ -36,6 +36,7 @@ type PathData<T extends string> = Partial<
         Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
       >;
       href: string;
+      isNew?: boolean;
     }
   >
 >;
@@ -66,6 +67,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '알림장 문구 추천',
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
+    isNew: true,
   },
 };
 
