@@ -15,13 +15,18 @@ import { Heading1, Heading2 } from '@/components/heading';
 import { getRandomBadgeColor } from '../notice-suggestion.utils';
 import type {
   NoticeSuggestion,
-  NoticeSuggestionCategory,
+  NoticeSuggestionCategoryValue,
 } from '../notice-suggestion.types';
 import SentenceCategories from './sentence-categories';
+import { NOTICE_SUGGESTION_CATEGORIES } from '../notice-suggestion.constants';
 
 export default function SentenceSuggestion() {
-  const [selectedCategory, setSelectedCategory] =
-    useState<NoticeSuggestionCategory>('');
+  const [selectedCategoryValue, setSelectedCategoryValue] =
+    useState<NoticeSuggestionCategoryValue>(
+      NOTICE_SUGGESTION_CATEGORIES[0].isRecommended
+        ? NOTICE_SUGGESTION_CATEGORIES[0].value
+        : '',
+    );
   const [customCategory, setCustomCategory] = useState('');
   const [suggestions, setSuggestions] = useState<NoticeSuggestion[]>([]);
 
@@ -46,7 +51,9 @@ export default function SentenceSuggestion() {
 
   const handleSuggest = async () => {
     const category =
-      selectedCategory === 'custom' ? customCategory : selectedCategory;
+      selectedCategoryValue === 'custom'
+        ? customCategory
+        : selectedCategoryValue;
     generateNoticeSuggestion(
       { category },
       {
@@ -80,14 +87,14 @@ export default function SentenceSuggestion() {
           )}
         >
           <SentenceCategories
-            selectedCategory={selectedCategory}
+            selectedCategoryValue={selectedCategoryValue}
             customCategory={customCategory}
-            setSelectedCategory={setSelectedCategory}
+            setSelectedCategoryValue={setSelectedCategoryValue}
             setCustomCategory={setCustomCategory}
           />
           <Button
             size="md"
-            disabled={selectedCategory === 'custom' && !customCategory}
+            disabled={selectedCategoryValue === 'custom' && !customCategory}
             isPending={isPending}
             onClick={handleSuggest}
           >
