@@ -11,6 +11,7 @@ import { ChevronsLeft, TimerIcon } from 'lucide-react';
 import useRecentlyVisited from '@/hooks/use-recently-visited';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { cn } from '@/styles/utils';
 import PopupLink from '../popup-link';
 import {
   Sidebar,
@@ -24,9 +25,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '../sidebar';
+import { Badge } from '../badge';
 
 const linkClass =
-  'w-full text-sm flex gap-4 items-center px-2 py-1 rounded text-text-subtitle hover:text-text-title hover:bg-bg-secondary hover:cursor-pointer';
+  'w-full text-sm flex gap-2 items-center px-2 py-1 rounded text-text-subtitle hover:text-text-title hover:bg-bg-secondary hover:cursor-pointer';
 
 export default function AppSidebar() {
   const pathname = usePathname();
@@ -57,7 +59,11 @@ export default function AppSidebar() {
             <Link
               onClick={handleClickMenu}
               href={MENU_ROUTE.LANDING}
-              className={`${pathname === MENU_ROUTE.LANDING ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+              className={cn(
+                pathname === MENU_ROUTE.LANDING &&
+                  'text-text-title bg-bg-secondary dark:bg-gray-950',
+                linkClass,
+              )}
             >
               <TeacherCanLogo width="1rem" height="1rem" />
               <span>티처캔</span>
@@ -88,27 +94,41 @@ export default function AppSidebar() {
                   <span>타이머</span>
                 </PopupLink>
               </SidebarMenuItem>
-              {Object.entries(MENU_PATH_DATA).map(([path, { title, Icon }]) => {
-                if (path === MENU_ROUTE.TIMER) {
-                  return null;
-                }
+              {Object.entries(MENU_PATH_DATA).map(
+                ([path, { title, Icon, isNew }]) => {
+                  if (path === MENU_ROUTE.TIMER) {
+                    return null;
+                  }
 
-                return (
-                  <SidebarMenuItem
-                    key={path}
-                    className="flex gap-1 items-center"
-                  >
-                    <Link
-                      onClick={handleClickMenu}
-                      href={path}
-                      className={`${pathname.includes(path) ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
-                    >
-                      <Icon size="1rem" />
-                      <span>{title}</span>
-                    </Link>
-                  </SidebarMenuItem>
-                );
-              })}
+                  return (
+                    <SidebarMenuItem key={path}>
+                      <Link
+                        onClick={handleClickMenu}
+                        href={path}
+                        className={cn(
+                          pathname.includes(path) &&
+                            'text-text-title bg-bg-secondary dark:bg-gray-950',
+                          linkClass,
+                        )}
+                      >
+                        <Icon size="1rem" />
+                        <div className="flex items-center gap-0.5">
+                          <span>{title}</span>
+                          {isNew && (
+                            <Badge
+                              size="xs"
+                              variant="primary-outline"
+                              className="border-0"
+                            >
+                              New
+                            </Badge>
+                          )}
+                        </div>
+                      </Link>
+                    </SidebarMenuItem>
+                  );
+                },
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
