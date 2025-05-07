@@ -22,6 +22,7 @@ export const NOTICE_SUGGESTION_EXAMPLES = [
 ];
 
 export const NOTICE_SUGGESTION_CATEGORIES = [
+  { label: '어버이날', value: '어버이날', isRecommended: true }, // FIXME: 5월 8일 이후 삭제
   { label: '인성', value: '인성', isRecommended: false },
   { label: '생활 습관', value: '생활 습관', isRecommended: false },
   { label: '학습 습관', value: '학습 습관', isRecommended: false },
