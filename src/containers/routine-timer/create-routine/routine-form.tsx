@@ -4,6 +4,7 @@ import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { Clock } from 'lucide-react';
 import { ActivityForm } from './activity-form';
 import { useRoutine } from './use-routine';
 import { RouteParams } from './routine-types';
@@ -33,13 +34,19 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <Input
-          type="text"
-          value={routine.title}
-          onChange={(e) => updateRoutineTitle(e.target.value)}
-          className="text-xl font-bold p-2 w-full bg-gray-100 rounded"
-          placeholder="루틴타이머 이름 입력"
-        />
+        <div className="flex items-center gap-4 mb-2">
+          <Input
+            type="text"
+            value={routine.title}
+            onChange={(e) => updateRoutineTitle(e.target.value)}
+            className="text-xl font-bold p-2 flex-grow bg-gray-100 rounded"
+            placeholder="루틴타이머 이름 입력"
+          />
+          <div className="bg-primary-100 px-4 py-2 rounded-lg text-primary-700 font-medium flex items-center whitespace-nowrap">
+            <Clock className="h-5 w-5 mr-1" />
+            {Math.floor(routine.totalTime / 60)}분 {routine.totalTime % 60}초
+          </div>
+        </div>
         <div className="flex ml-4 gap-2">
           <Button
             onClick={saveRoutine}
