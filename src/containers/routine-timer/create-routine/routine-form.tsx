@@ -57,9 +57,9 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
           <Button
             onClick={handleStart}
             className="bg-green-500 text-white px-4 py-2 rounded"
-            disabled={routine.routine.length === 0}
+            disabled={routine.activities.length === 0}
           >
-            시작
+            저징 후 시작
           </Button>
         </div>
       </div>
@@ -74,7 +74,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
       </div>
 
       <div className="flex gap-4 flex-wrap items-center justify-center">
-        {routine.routine.map((activity, i) => (
+        {routine.activities.map((activity, i) => (
           <div
             key={`${routine.key}-${activity.order}`}
             onClick={() => handleSelect(i)}

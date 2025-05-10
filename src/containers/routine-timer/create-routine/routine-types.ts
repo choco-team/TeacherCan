@@ -8,7 +8,7 @@ export type Routine = {
   key: string;
   title: string;
   totalTime: number;
-  routine: Activity[];
+  activities: Activity[];
 };
 
 export type RouteParams = {

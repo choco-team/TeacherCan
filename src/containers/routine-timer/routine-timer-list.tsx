@@ -39,7 +39,7 @@ export default function RoutineTimerList(): JSX.Element {
       key,
       title: '새 루틴',
       totalTime: 0,
-      routine: [],
+      activities: [],
     };
 
     const updatedRoutines = [...routines, newRoutineTimer];
@@ -75,7 +75,9 @@ export default function RoutineTimerList(): JSX.Element {
               총 시간: {Math.floor(routine.totalTime / 60)}분{' '}
               {routine.totalTime % 60}초
             </p>
-            <p className="text-gray-500">활동 수: {routine.routine.length}개</p>
+            <p className="text-gray-500">
+              활동 수: {routine.activities.length}개
+            </p>
           </div>
         ))}
 

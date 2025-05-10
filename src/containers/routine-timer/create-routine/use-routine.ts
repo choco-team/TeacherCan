@@ -6,12 +6,12 @@ export const useRoutine = (routineId: string) => {
     key: routineId,
     title: '새 루틴',
     totalTime: 0,
-    routine: [],
+    activities: [],
   });
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const currentActivity =
-    selectedIndex !== null ? routine.routine[selectedIndex] : null;
+    selectedIndex !== null ? routine.activities[selectedIndex] : null;
 
   useEffect(() => {
     const saved = localStorage.getItem('routines');
@@ -26,53 +26,53 @@ export const useRoutine = (routineId: string) => {
   }, [routineId]);
 
   useEffect(() => {
-    const total = routine.routine.reduce(
+    const total = routine.activities.reduce(
       (sum, activity) => sum + activity.time,
       0,
     );
     setRoutine((prev) => ({ ...prev, totalTime: total }));
-  }, [routine.routine]);
+  }, [routine.activities]);
 
   const handleActivityChange = (field: 'action', value: string) => {
     if (selectedIndex === null) return;
 
-    const updated = [...routine.routine];
+    const updated = [...routine.activities];
     const target = updated[selectedIndex];
 
     target.action = value;
 
-    setRoutine({ ...routine, routine: updated });
+    setRoutine({ ...routine, activities: updated });
   };
 
   const handleAddActivity = () => {
     const newActivity: Activity = {
-      order: routine.routine.length + 1,
+      order: routine.activities.length + 1,
       action: '',
       time: 0,
     };
-    const updated = [...routine.routine, newActivity];
-    setRoutine({ ...routine, routine: updated });
+    const updated = [...routine.activities, newActivity];
+    setRoutine({ ...routine, activities: updated });
     setSelectedIndex(updated.length - 1);
   };
 
   const handleRemoveActivity = () => {
     if (selectedIndex === null) return;
 
-    const updated = routine.routine
+    const updated = routine.activities
       .filter((_, i) => i !== selectedIndex)
       .map((a, i) => ({ ...a, order: i + 1 }));
 
-    setRoutine({ ...routine, routine: updated });
+    setRoutine({ ...routine, activities: updated });
     setSelectedIndex(updated.length > 0 ? 0 : null);
   };
 
   const handleUpdateTime = (timeInSeconds: number) => {
     if (selectedIndex === null) return;
 
-    const updated = [...routine.routine];
+    const updated = [...routine.activities];
     updated[selectedIndex].time = timeInSeconds;
 
-    setRoutine({ ...routine, routine: updated });
+    setRoutine({ ...routine, activities: updated });
   };
 
   const handleSelect = (index: number) => {
