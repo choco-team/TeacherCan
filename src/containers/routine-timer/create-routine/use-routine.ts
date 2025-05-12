@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
+import { nanoid } from 'nanoid';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { Activity, Routine } from './routine-types';
 
 export const useRoutine = (routineId: string) => {
+  const [routines, setRoutines] = useLocalStorage<Routine[]>('routines', []);
   const [routine, setRoutine] = useState<Routine>({
     key: routineId,
     title: '새 루틴',
@@ -9,21 +12,22 @@ export const useRoutine = (routineId: string) => {
     activities: [],
   });
 
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(
+    null,
+  );
   const currentActivity =
-    selectedIndex !== null ? routine.activities[selectedIndex] : null;
+    routine.activities.find((a) => a.activityKey === selectedActivityId) ||
+    null;
 
   useEffect(() => {
-    const saved = localStorage.getItem('routines');
-    if (saved) {
-      const routines: Routine[] = JSON.parse(saved);
+    if (Array.isArray(routines)) {
       const found = routines.find((r) => r.key === routineId);
       if (found) {
         setRoutine(found);
-        setSelectedIndex(0);
+        setSelectedActivityId(found.activities[0]?.activityKey ?? null);
       }
     }
-  }, [routineId]);
+  }, [routineId, routines]);
 
   useEffect(() => {
     const total = routine.activities.reduce(
@@ -34,49 +38,54 @@ export const useRoutine = (routineId: string) => {
   }, [routine.activities]);
 
   const handleActivityChange = (field: 'action', value: string) => {
-    if (selectedIndex === null) return;
+    if (!selectedActivityId) return;
 
-    const updated = [...routine.activities];
-    const target = updated[selectedIndex];
-
-    target.action = value;
+    const updated = routine.activities.map((activity) =>
+      activity.activityKey === selectedActivityId
+        ? { ...activity, [field]: value }
+        : activity,
+    );
 
     setRoutine({ ...routine, activities: updated });
   };
 
   const handleAddActivity = () => {
     const newActivity: Activity = {
+      activityKey: nanoid(),
       order: routine.activities.length + 1,
       action: '',
       time: 0,
     };
     const updated = [...routine.activities, newActivity];
     setRoutine({ ...routine, activities: updated });
-    setSelectedIndex(updated.length - 1);
+    setSelectedActivityId(newActivity.activityKey);
   };
 
   const handleRemoveActivity = () => {
-    if (selectedIndex === null) return;
+    if (!selectedActivityId) return;
 
     const updated = routine.activities
-      .filter((_, i) => i !== selectedIndex)
+      .filter((a) => a.activityKey !== selectedActivityId)
       .map((a, i) => ({ ...a, order: i + 1 }));
 
     setRoutine({ ...routine, activities: updated });
-    setSelectedIndex(updated.length > 0 ? 0 : null);
+    setSelectedActivityId(updated[0]?.activityKey ?? null);
   };
 
   const handleUpdateTime = (timeInSeconds: number) => {
-    if (selectedIndex === null) return;
+    if (!selectedActivityId) return;
 
-    const updated = [...routine.activities];
-    updated[selectedIndex].time = timeInSeconds;
+    const updated = routine.activities.map((activity) =>
+      activity.activityKey === selectedActivityId
+        ? { ...activity, time: timeInSeconds }
+        : activity,
+    );
 
     setRoutine({ ...routine, activities: updated });
   };
 
-  const handleSelect = (index: number) => {
-    setSelectedIndex(index);
+  const handleSelect = (key: string) => {
+    setSelectedActivityId(key);
   };
 
   const updateRoutineTitle = (title: string) => {
@@ -84,24 +93,15 @@ export const useRoutine = (routineId: string) => {
   };
 
   const saveRoutine = () => {
-    const saved = localStorage.getItem('routines');
-    let routines: Routine[] = [];
-
-    if (saved) {
-      routines = JSON.parse(saved);
-      const index = routines.findIndex((r) => r.key === routineId);
-      if (index !== -1) {
-        routines[index] = routine;
-      } else {
-        routines.push(routine);
-      }
+    const index = routines.findIndex((r) => r.key === routineId);
+    if (index !== -1) {
+      const updatedRoutines = [...routines];
+      updatedRoutines[index] = routine;
+      setRoutines(updatedRoutines);
     } else {
-      routines = [routine];
+      setRoutines([...routines, routine]);
     }
-
-    localStorage.setItem('routines', JSON.stringify(routines));
   };
-
   const formatTime = (timeInSeconds?: number): string => {
     if (timeInSeconds === undefined) return '00:00';
     const minutes = Math.floor(timeInSeconds / 60);
@@ -112,7 +112,7 @@ export const useRoutine = (routineId: string) => {
   return {
     routine,
     currentActivity,
-    selectedIndex,
+    selectedActivityId,
     formatTime,
     handleActivityChange,
     handleAddActivity,

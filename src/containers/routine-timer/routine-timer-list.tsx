@@ -1,40 +1,27 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { Routine } from './create-routine/routine-types';
 
 export default function RoutineTimerList(): JSX.Element {
   const router = useRouter();
-  const [routines, setRoutines] = useState<Routine[]>([]);
+  const [routines, setRoutines] = useLocalStorage<Routine[]>('routines', []);
 
-  useEffect(() => {
-    const loadRoutines = () => {
-      try {
-        const savedRoutines = localStorage.getItem('routines');
-        if (savedRoutines) {
-          setRoutines(JSON.parse(savedRoutines));
-        }
-      } catch (e) {
-        console.error('Failed to load routines', e);
-        setRoutines([]);
-      }
-    };
-    loadRoutines();
-  }, []);
-
-  const saveRoutines = (updatedRoutines: Routine[]) => {
-    localStorage.setItem('routines', JSON.stringify(updatedRoutines));
+  function saveRoutines(updatedRoutines: Routine[]) {
     setRoutines(updatedRoutines);
-  };
+  }
 
   function createNewRoutine(): string {
-    if (routines.length >= 5) {
+    const currentRoutines = Array.isArray(routines) ? routines : [];
+
+    if (currentRoutines.length >= 5) {
       return '';
     }
 
-    const key = uuidv4();
+    const key = nanoid();
     const newRoutineTimer: Routine = {
       key,
       title: '새 루틴',
@@ -42,7 +29,7 @@ export default function RoutineTimerList(): JSX.Element {
       activities: [],
     };
 
-    const updatedRoutines = [...routines, newRoutineTimer];
+    const updatedRoutines = [...currentRoutines, newRoutineTimer];
     saveRoutines(updatedRoutines);
     return key;
   }
@@ -58,11 +45,13 @@ export default function RoutineTimerList(): JSX.Element {
     router.push(`/routine-timer/${key}`);
   }
 
+  const displayRoutines = Array.isArray(routines) ? routines : [];
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">내 루틴 타이머</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {routines.map((routine) => (
+        {displayRoutines.map((routine) => (
           <div
             key={routine.key}
             onClick={() => handleRoutineClick(routine.key)}
@@ -81,7 +70,7 @@ export default function RoutineTimerList(): JSX.Element {
           </div>
         ))}
 
-        {routines.length < 5 && (
+        {displayRoutines.length < 5 && (
           <div
             onClick={handleAddRoutine}
             className="flex items-center justify-center h-40 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition"

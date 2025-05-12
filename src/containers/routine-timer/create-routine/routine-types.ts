@@ -1,4 +1,5 @@
 export type Activity = {
+  activityKey: string;
   order: number;
   action: string;
   time: number;

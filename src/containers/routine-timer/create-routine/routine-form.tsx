@@ -15,7 +15,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
   const {
     routine,
     currentActivity,
-    selectedIndex,
+    selectedActivityId,
     formatTime,
     handleActivityChange,
     handleAddActivity,
@@ -76,10 +76,10 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
       <div className="flex gap-4 flex-wrap items-center justify-center">
         {routine.activities.map((activity, i) => (
           <div
-            key={`${routine.key}-${activity.order}`}
-            onClick={() => handleSelect(i)}
+            key={activity.activityKey}
+            onClick={() => handleSelect(activity.activityKey)}
             className={`w-24 h-20 rounded-xl flex flex-col items-center justify-center text-xs cursor-pointer transition ${
-              selectedIndex === i
+              selectedActivityId === activity.activityKey
                 ? 'bg-primary-400 font-bold text-white'
                 : 'bg-primary-100 text-gray-500'
             }`}

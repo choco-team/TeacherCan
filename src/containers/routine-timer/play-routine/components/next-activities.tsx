@@ -11,11 +11,11 @@ export default function NextActivities() {
     <div className="mt-8">
       <h3 className="text-lg font-medium mb-4">다음 활동</h3>
       <div className="flex gap-4 overflow-x-auto pb-4">
-        {routine.routine
+        {routine.activities
           .slice(currentIndex + 1, currentIndex + 4)
           .map((activity, idx) => (
             <div
-              key={`activity-${currentIndex + idx + 1}-${activity.action || 'unnamed'}`}
+              key={activity.activityKey}
               className="flex-shrink-0 w-32 h-24 bg-primary-100 rounded-lg p-3 flex flex-col justify-between"
             >
               <div className="text-sm font-medium truncate">
@@ -28,7 +28,7 @@ export default function NextActivities() {
             </div>
           ))}
 
-        {currentIndex + 1 >= routine.routine.length && (
+        {currentIndex + 1 >= routine.activities.length && (
           <div className="flex-shrink-0 w-32 h-24 bg-green-100 rounded-lg p-3 flex flex-col justify-between">
             <div className="text-sm font-medium truncate">완료</div>
             <div className="text-xs text-gray-500">마지막 활동입니다</div>
