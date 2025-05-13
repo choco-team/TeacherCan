@@ -20,7 +20,10 @@ export default function SettingPickType({ startPlay }: Props) {
     <div className="flex flex-col gap-y-6">
       <RadioGroup className="self-start flex items-center gap-x-6">
         {PICK_TYPES.map(({ type, label }) => (
-          <Label key={type} className="flex-1 flex items-center gap-x-1.5">
+          <Label
+            key={type}
+            className="flex-1 flex items-center gap-x-1.5 text-text-title"
+          >
             <RadioGroupItem
               value={type}
               checked={pickType === type}

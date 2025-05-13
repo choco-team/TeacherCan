@@ -1,7 +1,8 @@
 'use client';
 
-import { Heading4 } from '@/components/heading';
+import { Heading1 } from '@/components/heading';
 import { useSearchParams } from 'next/navigation';
+import useDevice from '@/hooks/use-device';
 import FeedbackForm from './feedback-form/feedback-form';
 import FeedbackResult from './feedback-result/feedback-result';
 
@@ -9,11 +10,15 @@ export default function FeedbackContainer() {
   const searchParams = useSearchParams();
   const feedbackId = searchParams.get('id');
 
+  const { isMobile } = useDevice();
+
   return (
-    <div className="max-w-[600px] mx-auto items-start lg:flex-row">
-      <Heading4 className="font-semibold mb-4">
-        티처캔은 선생님의 소중한 피드백을 기다리고 있어요.
-      </Heading4>
+    <div className="flex-grow flex flex-col gap-y-10 text-text-title w-full max-w-screen-sm mx-auto">
+      <Heading1>
+        {isMobile
+          ? '티처캔은\n선생님의 소중한 피드백을\n기다리고 있어요.'
+          : '티처캔은 선생님의 소중한 피드백을 기다리고 있어요.'}
+      </Heading1>
       <FeedbackForm />
       {feedbackId ? <FeedbackResult /> : null}
     </div>

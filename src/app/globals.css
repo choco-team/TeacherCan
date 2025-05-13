@@ -5,6 +5,28 @@
 @layer base {
   :root {
     --radius: 0.5rem;
+
+    --font-size-small: 100%;
+    --font-size-medium: 114.29%;
+    --font-size-large: 128.57%;
+
+    --text-title: theme('colors.gray.900');
+    --text-subtitle: theme('colors.gray.700');
+    --text-description: theme('colors.gray.500');
+
+    --bg: #fefefe;
+    --bg-origin: theme('colors.white');
+    --bg-secondary: theme('colors.primary.200');
+  }
+
+  .dark {
+    --text-title: theme('colors.gray.100');
+    --text-subtitle: theme('colors.gray.400');
+    --text-description: theme('colors.gray.400');
+
+    --bg: theme('colors.gray.950');
+    --bg-origin: theme('colors.black');
+    --bg-secondary: theme('colors.gray.900');
   }
 
   * {
@@ -16,5 +38,45 @@
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
+  }
+
+  html {
+    font-size: var(--font-size-small);
+  }
+
+  html.small {
+    font-size: var(--font-size-small);
+  }
+
+  html.medium {
+    font-size: var(--font-size-medium);
+  }
+
+  html.large {
+    font-size: var(--font-size-large);
+  }
+}
+
+@layer base {
+  :root {
+    --sidebar-background: 0, 100%, 98%;
+    --sidebar-foreground: 240, 5.3%, 26.1%;
+    --sidebar-primary: 240, 5.9%, 10%;
+    --sidebar-primary-foreground: 0, 0%, 98%;
+    --sidebar-accent: 240, 4.8%, 95.9%;
+    --sidebar-accent-foreground: 240, 5.9%, 10%;
+    --sidebar-border: 220, 13%, 91%;
+    --sidebar-ring: 217.2, 91.2%, 59.8%;
+  }
+
+  .dark {
+    --sidebar-background: 240, 4%, 10%;
+    --sidebar-foreground: 240, 4.8%, 95.9%;
+    --sidebar-primary: 224.3, 76.3%, 48%;
+    --sidebar-primary-foreground: 0, 0%, 100%;
+    --sidebar-accent: 240, 3.7%, 15.9%;
+    --sidebar-accent-foreground: 240, 4.8%, 95.9%;
+    --sidebar-border: 240, 3.7%, 15.9%;
+    --sidebar-ring: 217.2, 91.2%, 59.8%;
   }
 }

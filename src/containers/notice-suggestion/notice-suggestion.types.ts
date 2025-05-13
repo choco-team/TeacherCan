@@ -1,6 +1,6 @@
 import { NOTICE_SUGGESTION_CATEGORIES } from './notice-suggestion.constants';
 
-export type NoticeSuggestionCategory =
+export type NoticeSuggestionCategoryValue =
   | ''
   | (typeof NOTICE_SUGGESTION_CATEGORIES)[number]['value'];
 

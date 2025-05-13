@@ -46,7 +46,7 @@ export default function WhilePlaySettings({
       />
 
       <div className="flex-grow flex gap-8 flex-wrap w-full lg:w-fit justify-end">
-        <div className="flex-grow flex items-end md:items-center justify-end gap-4 flex-wrap">
+        <div className="flex-grow flex items-end md:items-center justify-end gap-4 flex-wrap text-text-title">
           <Label className="flex items-center gap-x-2">
             뽑힌 학생 제외
             <Switch

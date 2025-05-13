@@ -47,6 +47,26 @@ module.exports = {
           DEFAULT: colors.white,
           foreground: colors.gray[900],
         },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))',
+        },
+        text: {
+          title: 'var(--text-title)',
+          subtitle: 'var(--text-subtitle)',
+          description: 'var(--text-description)',
+        },
+        bg: {
+          DEFAULT: 'var(--bg)',
+          origin: 'var(--bg-origin)',
+          secondary: 'var(--bg-secondary)',
+        },
       },
       borderRadius: {
         lg: `var(--radius)`,
@@ -58,7 +78,12 @@ module.exports = {
         point: ['var(--font-byeolbichhaneul)'],
         number: ['var(--font-pyeongtaek-anbo)'],
       },
-      fontSize: { '2xs': '0.625rem', '2.5xl': '1.75rem', '3.5xl': '2rem' },
+      fontSize: {
+        '2xs': '0.625rem',
+        '1.5xl': '1.375rem',
+        '2.5xl': '1.75rem',
+        '3.5xl': '2rem',
+      },
       keyframes: {
         ...keyframes,
         'accordion-down': {
@@ -91,6 +116,8 @@ module.exports = {
       boxShadow: {
         custom:
           'rgba(0, 0, 0, 0.02) 0px 12px 32px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px',
+        'custom-dark':
+          'rgba(255, 255, 255, 0.02) 0px 12px 32px, rgba(225, 225, 225, 0.05) 0px 0px 0px 1px',
       },
     },
   },

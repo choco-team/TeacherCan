@@ -13,10 +13,12 @@ export default function Card({ title, isWinner, isMixingCards }: TitleType) {
   return (
     <div
       className={cn(
-        'w-full h-24 text-gray-800 border border-gray-200 flex items-center justify-center font-semibold rounded-lg',
+        'w-full h-24 text-text-title border border-gray-200 dark:border-gray-700 flex items-center justify-center font-semibold rounded-lg',
         'md:h-24',
         'lg:h-32 lg:rounded-2xl',
-        isAlreadyPicked ? 'bg-gray-200 opacity-30' : 'bg-white',
+        isAlreadyPicked
+          ? 'bg-gray-200 dark:bg-gray-950 opacity-30'
+          : 'bg-white dark:bg-gray-950',
       )}
     >
       {isAlreadyPicked ? (

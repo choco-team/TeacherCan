@@ -39,14 +39,14 @@ function SchoolSearchDialog({
       return (
         <LoaderCircle
           size="24px"
-          className="animate-spin h-full text-gray-800 mx-auto"
+          className="animate-spin h-full  dark:text-gray-200 mx-auto"
         />
       );
     }
 
     if (schoolList === null || schoolList.length === 0) {
       return (
-        <div className="h-full text-gray-800 flex items-center justify-center">
+        <div className="h-full text-text-description flex items-center justify-center">
           <span>검색된 학교가 없어요.</span>
         </div>
       );
@@ -66,7 +66,7 @@ function SchoolSearchDialog({
       <DialogContent className="max-w-sm lg:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            <span className="text-sm text-gray-500 mb-2 block">
+            <span className="mb-4 block">
               {selectedSchool?.SCHUL_NM ? '학교 변경' : '학교 등록'}
             </span>
             <form

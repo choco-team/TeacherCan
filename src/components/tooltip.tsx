@@ -7,7 +7,12 @@ import { cn } from '@/styles/utils';
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
-const Tooltip = TooltipPrimitive.Root;
+function Tooltip({
+  delayDuration = 0,
+  ...props
+}: TooltipPrimitive.TooltipProps) {
+  return <TooltipPrimitive.Root delayDuration={delayDuration} {...props} />;
+}
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 

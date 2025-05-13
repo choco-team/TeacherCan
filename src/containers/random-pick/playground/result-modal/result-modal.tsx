@@ -50,7 +50,7 @@ export default function ResultModal({
     <Dialog open={isOpenResult} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[80%] h-[80%] flex flex-col items-center overflow-auto transition-none">
         <DialogTitle className="self-start">
-          {title || '랜덤 뽑기 결과'}
+          {title || '랜덤뽑기 결과'}
         </DialogTitle>
         <div className="flex-grow w-full flex items-center justify-center flex-wrap gap-6 py-8">
           {newWinners.map((newWinner) => (

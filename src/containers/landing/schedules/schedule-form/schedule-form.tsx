@@ -60,8 +60,8 @@ export default function ScheduleForm({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                이름 <span className="text-red">*</span>
+              <FormLabel className="text-text-subtitle" required>
+                이름
               </FormLabel>
               <Input
                 placeholder="일정 이름"
@@ -76,11 +76,12 @@ export default function ScheduleForm({
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>설명</FormLabel>
+              <FormLabel className="text-text-subtitle">설명</FormLabel>
               <Textarea
                 placeholder="일정 설명"
                 value={field.value}
                 onChange={field.onChange}
+                className="min-h-[60px] max-h-80 resize-y"
               />
             </FormItem>
           )}
@@ -90,9 +91,10 @@ export default function ScheduleForm({
           name="date"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>
-                날짜 <span className="text-red">*</span>
+              <FormLabel className="text-text-subtitle" required>
+                날짜
               </FormLabel>
+
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -104,13 +106,17 @@ export default function ScheduleForm({
                       )}
                     >
                       {field.value ? (
-                        format(field.value, 'yy년 MM월 dd일 EEEE', {
-                          locale: ko,
-                        })
+                        <span className="text-text-title">
+                          {format(field.value, 'yy년 MM월 dd일 EEEE', {
+                            locale: ko,
+                          })}
+                        </span>
                       ) : (
-                        <span>날짜를 선택하세요.</span>
+                        <span className="dark:text-gray-500">
+                          날짜를 선택하세요.
+                        </span>
                       )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-100" />
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-100 text-text-title" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>

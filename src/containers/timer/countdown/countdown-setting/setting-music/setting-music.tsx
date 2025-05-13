@@ -67,7 +67,6 @@ export default function SettingMusic() {
 
   useEffect(() => {
     if (isActive && isPlayingPreview) setIsPlayingPreview(false);
-    return controlIsPreviewYoutubeReady(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive]);
 

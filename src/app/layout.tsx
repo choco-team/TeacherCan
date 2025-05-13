@@ -4,10 +4,12 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Toaster } from '@/components/toaster';
 import { headers } from 'next/headers';
-import Navigation from '@/components/navigation/navigation';
 import Header from '@/components/header/header';
 import QueryProvider from '@/components/provider/query-provider';
 import { MENU_ROUTE } from '@/constants/route';
+import { cn } from '@/styles/utils';
+import { SidebarProvider } from '@/components/sidebar';
+import AppSidebar from '@/components/app-sidebar/app-sidebar';
 
 export const metadata: Metadata = {
   title: '티처캔',
@@ -46,6 +48,8 @@ export default async function RootLayout({
 }) {
   const headersList = headers();
   const currentPath = headersList.get('X-Current-Path') || '/';
+  const fontSize = headersList.get('X-Font-Size');
+  const screenMode = headersList.get('X-Screen-Mode');
 
   const isMinimalLayout =
     isMinimalLayoutPages.startsWith.some((path) =>
@@ -55,27 +59,32 @@ export default async function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable}`}
+      className={`${pretendard.variable} ${byeolbichhaneul.variable} ${pyeongtaek.variable} ${fontSize} ${screenMode}`}
     >
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_TAG_ID} />
-      <body>
+      <body className="bg-bg">
         <QueryProvider>
           {isMinimalLayout ? (
-            <main className="bg-beige-50">
+            <main className="bg-gray-50 dark:bg-gray-950">
               <div>{children}</div>
             </main>
           ) : (
-            <>
-              <Navigation />
-              <main
-                id="teacher-can-main"
-                className="bg-body transition-all ease-in-out duration-500 lg:data-[status=closed]:ml-0 lg:ml-[260px]"
-              >
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="w-full bg-bg">
                 <Header />
-                <div className="pt-[68px] px-4 mb-8">{children}</div>
+                <div
+                  className={cn(
+                    'flex flex-col min-h-dvh',
+                    'pt-16 px-6 pb-8',
+                    'lg:pt-20 lg:px-8 lg:pb-20',
+                  )}
+                >
+                  {children}
+                </div>
               </main>
-            </>
+            </SidebarProvider>
           )}
           <Toaster />
         </QueryProvider>

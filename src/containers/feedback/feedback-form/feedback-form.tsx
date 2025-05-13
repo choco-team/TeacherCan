@@ -18,16 +18,13 @@ import { Button } from '@/components/button';
 import { Textarea } from '@/components/textarea';
 import { LoaderCircle } from 'lucide-react';
 import { Input } from '@/components/input';
+import { MENU_PATH_DATA } from '@/constants/route';
 import { useFeedbackForm } from './feedback-form.hooks';
 
 const typeItems = ['버그', '개선', '제안', '응원', '기타'];
 const pageItems = [
   '홈',
-  '타이머',
-  'QR코드',
-  '랜덤뽑기',
-  '음악신청',
-  // '알림장 문구 추천',
+  ...Object.values(MENU_PATH_DATA).map(({ title }) => title),
   '기타',
 ];
 
@@ -38,15 +35,15 @@ export default function FeedbackForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-y-6"
       >
         <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                유형 <span className="text-red">*</span>
+              <FormLabel className="text-text-title" required>
+                유형
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -57,7 +54,7 @@ export default function FeedbackForm() {
                 <SelectContent>
                   {typeItems.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      <span className="text-text-title">{item}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -70,8 +67,8 @@ export default function FeedbackForm() {
           name="page"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                페이지 <span className="text-red">*</span>
+              <FormLabel className="text-text-title" required>
+                페이지
               </FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
@@ -82,7 +79,7 @@ export default function FeedbackForm() {
                 <SelectContent>
                   {pageItems.map((item) => (
                     <SelectItem key={item} value={item}>
-                      {item}
+                      <span className="text-text-title">{item}</span>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -95,8 +92,8 @@ export default function FeedbackForm() {
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>
-                내용 <span className="text-red">*</span>
+              <FormLabel className="text-text-title" required>
+                내용
               </FormLabel>
               <Textarea
                 placeholder="피드백 내용을 입력해주세요."
@@ -112,20 +109,20 @@ export default function FeedbackForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>이메일</FormLabel>
+              <FormLabel className="text-text-title">이메일</FormLabel>
               <Input
                 placeholder="이메일을 입력해주세요."
                 onChange={field.onChange}
               />
               <FormDescription>
-                이메일을 적어주시면, 피드백 반영 결과나 관련 소식을 나중에
-                보내드릴 수 있어요.
+                이메일을 입력하시면 추후 피드백 반영 결과나 관련 소식을 받아보실
+                수 있어요.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="mt-4" type="submit">
+        <Button isPending={isPending} className="mt-4" type="submit">
           {isPending ? (
             <LoaderCircle size="18px" className="animate-spin text-white" />
           ) : (

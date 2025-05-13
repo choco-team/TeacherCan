@@ -20,7 +20,7 @@ export default function ScheduleContent({
 }: Props) {
   if (schedules === null) {
     return (
-      <div className="bg-white shadow-custom py-4 px-8 rounded-2xl w-full h-64 overflow-auto">
+      <div className="bg-bg-origin shadow-custom dark:shadow-custom-dark py-4 px-8 rounded-2xl w-full h-64 overflow-auto">
         <div className="flex gap-4">
           <Skeleton className="w-36 h-6" />
           <div className="flex flex-col gap-2">
@@ -43,7 +43,7 @@ export default function ScheduleContent({
   const reshapedSchedule = reshapeSchedule(schedules);
 
   return (
-    <div className="bg-white shadow-custom py-4 px-8 rounded-2xl w-full h-64 overflow-auto">
+    <div className="bg-bg-origin shadow-custom dark:shadow-custom-dark py-4 px-8 rounded-2xl w-full h-64 overflow-auto">
       {hasSchedule ? (
         <div className="flex flex-col gap-8">
           {reshapedSchedule.map(([date, _schedules]) => (
@@ -52,7 +52,7 @@ export default function ScheduleContent({
               className="flex flex-col gap-4 lg:gap-0 lg:flex-row"
             >
               <div className="pt-1 w-full lg:w-[150px] flex flex-row lg:flex-col lg:justify-start justify-between">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-text-description">
                   {format(date, 'yy년 MM월 dd일 EEEE', { locale: ko })}
                 </span>
                 <Badge size="sm" className="w-fit lg:mt-2">
@@ -67,12 +67,14 @@ export default function ScheduleContent({
                       setIsDialogOpen(true);
                     }}
                     key={schedule.id}
-                    className="flex gap-2 w-full p-1 transition-all ease-in-out duration-300 hover:bg-gray-100 cursor-pointer rounded-md"
+                    className="flex gap-2 w-full p-1 transition-all ease-in-out duration-300 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer rounded-md"
                   >
                     <div className="hidden lg:block min-w-[3px] h-full bg-primary-400 rounded-xl" />
                     <div className="flex-1 lg:px-1 gap-1 flex flex-col w-hull ">
-                      <div className="text-sm font-medium">{schedule.name}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm font-medium text-text-title">
+                        {schedule.name}
+                      </div>
+                      <div className="text-sm text-gray-600 text-text-description">
                         {schedule.description}
                       </div>
                     </div>

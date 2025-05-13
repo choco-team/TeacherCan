@@ -24,17 +24,20 @@ export default function SettingAlarm() {
         종료 알림
       </DualPanel.SubTitle>
       <Label className="flex items-center justify-between gap-x-2">
-        <span>타이머 종료 시 알림음 울리기</span>
+        <span className="text-text-subtitle">타이머 종료 시 알림음 울리기</span>
         <Switch
           checked={alarmTimes.includes(DEFAULT_ALARM_VALUE)}
           onClick={toggleAlarmTime(DEFAULT_ALARM_VALUE)}
         />
       </Label>
       <div className="flex flex-col gap-y-2">
-        <h4 className="text-text font-semibold">미리 알림</h4>
+        <h4 className="text-text-title font-semibold">미리 알림</h4>
         <div className="max-sm:grid grid-cols-2 sm:flex items-center gap-2">
           {ALARM_TIMES.map((time) => (
-            <Label key={time} className="flex-1 flex items-center gap-x-1.5">
+            <Label
+              key={time}
+              className="flex-1 flex items-center gap-x-1.5 text-text-subtitle"
+            >
               <Checkbox
                 value={time}
                 checked={alarmTimes.includes(time)}
