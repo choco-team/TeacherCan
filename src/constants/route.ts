@@ -2,11 +2,12 @@ import {
   LucideProps,
   MusicIcon,
   MessageCircleHeartIcon,
-  // BellIcon,
-  PickaxeIcon,
+  WandSparklesIcon,
   QrCodeIcon,
   TimerIcon,
   Repeat2,
+  SettingsIcon,
+  DicesIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -23,6 +24,7 @@ export const MENU_ROUTE = {
 
 export const HELP_ROUTE = {
   FEEDBACK: '/feedback',
+  SETTING: '/setting',
 } as const;
 
 export type MenuRoutePath = (typeof MENU_ROUTE)[keyof typeof MENU_ROUTE];
@@ -36,6 +38,7 @@ type PathData<T extends string> = Partial<
         Omit<LucideProps, 'ref'> & RefAttributes<SVGSVGElement>
       >;
       href: string;
+      isNew?: boolean;
     }
   >
 >;
@@ -49,7 +52,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   },
   '/random-pick': {
     title: '랜덤뽑기',
-    Icon: PickaxeIcon,
+    Icon: DicesIcon,
     href: MENU_ROUTE.RANDOM_PICK,
   },
   '/timer': {
@@ -62,15 +65,16 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: MusicIcon,
     href: MENU_ROUTE.MUSIC_REQUEST,
   },
-  // '/notice-suggestion': {
-  //   title: '알림장 문구 추천',
-  //   Icon: BellIcon,
-  //   href: MENU_ROUTE.NOTICE_SUGGESTION,
-  // },
   '/routine-timer': {
     title: '루틴타이머',
     Icon: Repeat2,
     href: MENU_ROUTE.ROUTINE_TIMER,
+  },
+  '/notice-suggestion': {
+    title: '알림장 문구 추천',
+    Icon: WandSparklesIcon,
+    href: MENU_ROUTE.NOTICE_SUGGESTION,
+    isNew: true,
   },
 };
 
@@ -82,5 +86,10 @@ export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
     title: '피드백',
     Icon: MessageCircleHeartIcon,
     href: HELP_ROUTE.FEEDBACK,
+  },
+  '/setting': {
+    title: '설정',
+    Icon: SettingsIcon,
+    href: HELP_ROUTE.SETTING,
   },
 };
