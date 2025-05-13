@@ -25,7 +25,6 @@ export const usePlayRoutine = (routineId: string) => {
   useEffect(() => {
     const loadRoutine = () => {
       try {
-        // routines가 null이 아니고 배열인지 확인
         if (Array.isArray(routines)) {
           const found = routines.find((r) => r.key === routineId);
           if (found && found.activities.length > 0) {

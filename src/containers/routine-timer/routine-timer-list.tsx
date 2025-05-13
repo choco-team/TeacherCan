@@ -9,36 +9,31 @@ import { Routine } from './create-routine/routine-types';
 export default function RoutineTimerList(): JSX.Element {
   const router = useRouter();
   const [routines, setRoutines] = useLocalStorage<Routine[]>('routines', []);
+  const ROUTINES_MAX_COUNT = 5;
 
   function saveRoutines(updatedRoutines: Routine[]) {
     setRoutines(updatedRoutines);
   }
 
-  function createNewRoutine(): string {
-    const currentRoutines = Array.isArray(routines) ? routines : [];
-
-    if (currentRoutines.length >= 5) {
-      return '';
-    }
-
-    const key = nanoid();
+  function createNewRoutine(): Routine {
     const newRoutineTimer: Routine = {
-      key,
+      key: nanoid(),
       title: '새 루틴',
       totalTime: 0,
       activities: [],
     };
 
-    const updatedRoutines = [...currentRoutines, newRoutineTimer];
-    saveRoutines(updatedRoutines);
-    return key;
+    return newRoutineTimer;
   }
 
   function handleAddRoutine(): void {
-    const newKey = createNewRoutine();
-    if (newKey) {
-      router.push(`/routine-timer/${newKey}`);
+    if (routines.length >= ROUTINES_MAX_COUNT) {
+      return;
     }
+    const newRoutineTimer = createNewRoutine();
+    saveRoutines([...routines, newRoutineTimer]);
+
+    router.push(`/routine-timer/${newRoutineTimer.key}`);
   }
 
   function handleRoutineClick(key: string): void {
@@ -70,13 +65,14 @@ export default function RoutineTimerList(): JSX.Element {
           </div>
         ))}
 
-        {displayRoutines.length < 5 && (
-          <div
+        {displayRoutines.length < ROUTINES_MAX_COUNT && (
+          <button
+            type="button"
             onClick={handleAddRoutine}
             className="flex items-center justify-center h-40 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition"
           >
             <span className="text-5xl text-gray-400">+</span>
-          </div>
+          </button>
         )}
       </div>
     </div>

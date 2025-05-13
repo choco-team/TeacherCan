@@ -29,14 +29,6 @@ export const useRoutine = (routineId: string) => {
     }
   }, [routineId, routines]);
 
-  useEffect(() => {
-    const total = routine.activities.reduce(
-      (sum, activity) => sum + activity.time,
-      0,
-    );
-    setRoutine((prev) => ({ ...prev, totalTime: total }));
-  }, [routine.activities]);
-
   const handleActivityChange = (field: 'action', value: string) => {
     if (!selectedActivityId) return;
 
@@ -72,9 +64,16 @@ export const useRoutine = (routineId: string) => {
     setSelectedActivityId(updated[0]?.activityKey ?? null);
   };
 
+  useEffect(() => {
+    const total = routine.activities.reduce(
+      (sum, activity) => sum + activity.time,
+      0,
+    );
+    setRoutine((prev) => ({ ...prev, totalTime: total }));
+  }, [routine.activities]);
+
   const handleUpdateTime = (timeInSeconds: number) => {
     if (!selectedActivityId) return;
-
     const updated = routine.activities.map((activity) =>
       activity.activityKey === selectedActivityId
         ? { ...activity, time: timeInSeconds }

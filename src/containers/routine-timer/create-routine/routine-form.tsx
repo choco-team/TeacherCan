@@ -59,7 +59,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
             className="bg-green-500 text-white px-4 py-2 rounded"
             disabled={routine.activities.length === 0}
           >
-            저징 후 시작
+            저장 후 시작
           </Button>
         </div>
       </div>
