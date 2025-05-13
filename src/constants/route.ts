@@ -2,11 +2,10 @@ import {
   LucideProps,
   MusicIcon,
   MessageCircleHeartIcon,
-  WandSparklesIcon,
   DicesIcon,
+  SettingsIcon,
   QrCodeIcon,
   TimerIcon,
-  SettingsIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -18,6 +17,7 @@ export const MENU_ROUTE = {
   TIMER: '/timer',
   RANDOM_PICK: '/random-pick',
   MUSIC_REQUEST: '/music-request',
+  ROUTINE_TIMER: '/routine-timer',
 } as const;
 
 export const HELP_ROUTE = {
@@ -63,12 +63,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: MusicIcon,
     href: MENU_ROUTE.MUSIC_REQUEST,
   },
-  '/notice-suggestion': {
-    title: '알림장 문구 추천',
-    Icon: WandSparklesIcon,
-    href: MENU_ROUTE.NOTICE_SUGGESTION,
-    isNew: true,
-  },
+  // '/notice-suggestion': {
+  //   title: '알림장 문구 추천',
+  //   Icon: BellIcon,
+  //   href: MENU_ROUTE.NOTICE_SUGGESTION,
+  // },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
