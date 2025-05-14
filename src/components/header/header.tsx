@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
 import { compact, head } from 'lodash';
+import EventIcon from '@/components/event-icon';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -96,13 +96,13 @@ export default function Header() {
           <BreadcrumbItem>
             {pathname === '/' ? (
               <BreadcrumbPage className="flex items-center gap-2 text-text-title">
-                <TeacherCanIcon width="1rem" height="1rem" />
+                <EventIcon width={16} height={16} className="size-4" />
                 티처캔
               </BreadcrumbPage>
             ) : (
               <BreadcrumbLink asChild>
                 <div className="flex items-center gap-2 ">
-                  <TeacherCanIcon width="1rem" height="1rem" />
+                  <EventIcon width={16} height={16} className="size-4" />
                   <Link className="text-text-subtitle" href="/">
                     티처캔
                   </Link>
