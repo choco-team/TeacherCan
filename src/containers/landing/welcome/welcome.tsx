@@ -1,5 +1,7 @@
 import { getHours } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
+import { getDateEvent } from '@/utils/event';
+import EventIcon from '@/components/event-icon';
 
 const TEACHER_GREETINGS = {
   morning: '좋은 아침이에요. 오늘도 힘찬 하루 보내세요.',
@@ -31,10 +33,20 @@ export default function Welcome() {
     }
     return TEACHER_GREETINGS.night;
   }
+
+  const event = getDateEvent();
+
   return (
     <div className="text-center w-full">
-      <h2 className="text-2xl lg:text-2.5xl font-semibold text-text-title">
-        {getTeacherGreeting()}
+      <h2 className="inline-flex items-center gap-x-2 text-2xl lg:text-2.5xl font-semibold text-text-title">
+        {event ? (
+          <>
+            <EventIcon width={36} height={36} className="size-9" />
+            {event.greeting}
+          </>
+        ) : (
+          getTeacherGreeting()
+        )}
       </h2>
     </div>
   );

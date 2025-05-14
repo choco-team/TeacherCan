@@ -1,6 +1,5 @@
 'use client';
 
-import TeacherCanLogo from '@/assets/images/logo/teacher-can.svg';
 import {
   HELP_PATH_DATA,
   MENU_PATH_DATA,
@@ -11,6 +10,7 @@ import { ChevronsLeft, TimerIcon } from 'lucide-react';
 import useRecentlyVisited from '@/hooks/use-recently-visited';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import EventIcon from '@/components/event-icon';
 import { cn } from '@/styles/utils';
 import PopupLink from '../popup-link';
 import {
@@ -65,7 +65,7 @@ export default function AppSidebar() {
                 linkClass,
               )}
             >
-              <TeacherCanLogo width="1rem" height="1rem" />
+              <EventIcon width={16} height={16} className="size-4" />
               <span>티처캔</span>
             </Link>
             {showSidebarIcon ? (
