@@ -1,64 +1,37 @@
 import { Button } from '@/components/button';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/input';
 import { ClipboardPaste, LoaderCircle } from 'lucide-react';
 import { Label } from '@/components/label';
 import { useCreateMusicRequestMusic } from '@/hooks/apis/music-request/use-create-music-request-music';
 import Image from 'next/image';
-import { useQuery } from '@tanstack/react-query';
-import { Skeleton } from '@/components/skeleton';
-import { isValidUrl, isYoutubeUrl } from './register.utils';
-import { useMusicRequestStudentAction } from '../../../music-request-student-provider/music-request-student-provider.hooks';
-
-const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-type MusicTitleProps = {
-  musicId: string;
-  setTitle: Dispatch<SetStateAction<string>>;
-};
-
-function MusicTitle({ musicId, setTitle }: MusicTitleProps) {
-  const { data, isLoading, error } = useQuery({
-    queryKey: [musicId],
-    queryFn: () =>
-      fetch(`${originURL}/api/youtube/video/title/${musicId}`).then((res) =>
-        res.json(),
-      ),
-  });
-
-  useEffect(() => {
-    if (!data || isLoading) {
-      return;
-    }
-
-    setTitle(data.title);
-  }, [data]);
-
-  if (isLoading) {
-    return (
-      <Skeleton className="w-full h-[20px] bg-gray-100 dark:bg-gray-800" />
-    );
-  }
-
-  if (error) {
-    return (
-      <span className="text-text-subtitle">
-        음악 제목을 찾지 못했어요. 다시 시도해주세요.
-      </span>
-    );
-  }
-
-  return <span className="text-text-title">{data.title}</span>;
-}
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/alert-dialog';
+import { isValidUrl, isYoutubeUrl } from './music-register.utils';
+import MusicTitle from './music-title';
 
 type Props = {
   roomId: string;
   studentName: string;
 };
 
-export default function Register({ roomId, studentName }: Props) {
+export default function MusicRegister({ roomId, studentName }: Props) {
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string>();
+
   const { mutate: requestMusic, isPending } = useCreateMusicRequestMusic();
-  const { openAlertWithMessage } = useMusicRequestStudentAction();
+
+  const openAlertWithMessage = (message: string) => {
+    setAlertOpen(true);
+    setAlertMessage(message);
+  };
 
   const [result, setResult] = useState<{
     value: string | null;
@@ -185,6 +158,17 @@ export default function Register({ roomId, studentName }: Props) {
           </Button>
         </>
       ) : null}
+      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="hidden">title</AlertDialogTitle>
+            <AlertDialogDescription>{alertMessage}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

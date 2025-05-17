@@ -13,8 +13,6 @@ interface PropsWithChildrenParams extends PropsWithChildren {
 
 type MusicRequestStudentState = {
   studentName: string;
-  alertOpen: boolean;
-  alertMessage: string;
 };
 
 export const MusicRequestStudentStateContext =
@@ -22,8 +20,6 @@ export const MusicRequestStudentStateContext =
 
 type MusicRequestStudentAction = {
   settingStudentName: Dispatch<SetStateAction<string>>;
-  settingAlertOpen: Dispatch<SetStateAction<boolean>>;
-  openAlertWithMessage: (message: string) => void;
 };
 
 export const MusicRequestStudentActionContext =
@@ -36,22 +32,13 @@ export default function MusicRequestStudentProvider({
   const [studentName, setStudentName] = useState<string>(
     Cookies.get(roomId) || '',
   );
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string>();
 
   const defaultMusicRequestStudentStateValue = {
     studentName,
-    alertOpen,
-    alertMessage,
   };
 
   const defaultMusicRequestStudentActionValue = {
     settingStudentName: setStudentName,
-    settingAlertOpen: setAlertOpen,
-    openAlertWithMessage: (message: string) => {
-      setAlertOpen(true);
-      setAlertMessage(message);
-    },
   };
 
   return (

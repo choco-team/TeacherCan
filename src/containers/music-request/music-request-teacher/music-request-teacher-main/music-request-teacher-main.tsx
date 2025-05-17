@@ -4,6 +4,7 @@ import { useGetMusicRequestRoom } from '@/hooks/apis/music-request/use-get-music
 import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { head } from 'lodash';
+import MusicRegister from '@/containers/music-request/music-register/music-register';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import MusicList from './music-list/music-list';
@@ -66,8 +67,9 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
         defaultValue={defaultTabMenu}
         className="flex flex-col w-full mb-[108px] lg:mb-0 lg:min-w-[400px] lg:max-w-[400px] lg:pl-2 h-full"
       >
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="music-list">신청목록</TabsTrigger>
+          <TabsTrigger value="music-register">음악등록</TabsTrigger>
           <TabsTrigger value="rome-info">방 정보</TabsTrigger>
         </TabsList>
         <TabsContent value="music-list">
@@ -77,6 +79,11 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
             currentMusicId={currentMusicId}
             updateCurrentVideoId={updateCurrentVideoId}
           />
+        </TabsContent>
+        <TabsContent value="music-register">
+          <div className="p-2">
+            <MusicRegister roomId={roomId} studentName="선생님" />
+          </div>
         </TabsContent>
         <TabsContent value="rome-info">
           <RoomInfo
