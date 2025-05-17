@@ -26,9 +26,9 @@ export default function MusicRequestStudentMain({ roomId }: Props) {
       </div>
       <div className="flex flex-col gap-2 text-sm text-text-title">
         <span>방 이름: {data?.roomTitle}</span>
-        {studentName && <span>내 이름: {studentName}</span>}
+        {/* {studentName && <span>내 이름: {studentName}</span>} */}
       </div>
-      {!studentName && roomId ? <CreateNamePage roomId={roomId} /> : null}
+      <CreateNamePage roomId={roomId} />
       {/* NOTE:(김홍동) 유튜브 API 검색 시 사용되는 토큰값이 많아 search page는 미노출합니다. */}
       {/* {studentName && <SearchPage roomId={roomId} />} */}
       {studentName && <RegisterMusic roomId={roomId} />}
