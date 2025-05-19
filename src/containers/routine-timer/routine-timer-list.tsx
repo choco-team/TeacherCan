@@ -58,17 +58,15 @@ export default function RoutineTimerList(): JSX.Element {
           <div
             key={routine.key}
             onClick={() => handleRoutineClick(routine.key)}
-            className="border rounded-xl p-4 cursor-pointer hover:bg-gray-50 transition"
+            className="relative border rounded-xl p-4 cursor-pointer hover:bg-gray-50 transition"
           >
             <button
               type="button"
               onClick={(e) => handleDeleteRoutine(e, routine.key)}
-              className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-              aria-label="루틴 삭제"
+              className="absolute top-2 right-2 text-gray-400 hover:text-black"
             >
-              <X size={20} />
+              <X />
             </button>
-
             <h2 className="font-bold text-lg">
               {routine.title || '제목 없음'}
             </h2>
