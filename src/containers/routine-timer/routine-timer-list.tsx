@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { nanoid } from 'nanoid';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { X } from 'lucide-react';
 import { Routine } from './create-routine/routine-types';
 
 export default function RoutineTimerList(): JSX.Element {
@@ -36,6 +37,13 @@ export default function RoutineTimerList(): JSX.Element {
     router.push(`/routine-timer/${newRoutineTimer.key}`);
   }
 
+  function handleDeleteRoutine(e: React.MouseEvent, key: string): void {
+    e.stopPropagation();
+
+    const updatedRoutines = routines.filter((routine) => routine.key !== key);
+    saveRoutines(updatedRoutines);
+  }
+
   function handleRoutineClick(key: string): void {
     router.push(`/routine-timer/${key}`);
   }
@@ -52,6 +60,15 @@ export default function RoutineTimerList(): JSX.Element {
             onClick={() => handleRoutineClick(routine.key)}
             className="border rounded-xl p-4 cursor-pointer hover:bg-gray-50 transition"
           >
+            <button
+              type="button"
+              onClick={(e) => handleDeleteRoutine(e, routine.key)}
+              className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+              aria-label="루틴 삭제"
+            >
+              <X size={20} />
+            </button>
+
             <h2 className="font-bold text-lg">
               {routine.title || '제목 없음'}
             </h2>

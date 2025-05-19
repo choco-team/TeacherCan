@@ -31,6 +31,10 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     router.push(`/routine-timer/play/${routineId}`);
   };
 
+  const handleRoutineList = () => {
+    router.push(`/routine-timer`);
+  };
+
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
@@ -48,6 +52,12 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
           </div>
         </div>
         <div className="flex ml-4 gap-2">
+          <Button
+            onClick={handleRoutineList}
+            className="bg-primary-500 text-white px-4 py-2 rounded"
+          >
+            목록으로 돌아가기
+          </Button>
           <Button
             onClick={saveRoutine}
             className="bg-primary-500 text-white px-4 py-2 rounded"

@@ -5,6 +5,7 @@ import {
   DicesIcon,
   SettingsIcon,
   QrCodeIcon,
+  Hourglass,
   TimerIcon,
   WandSparklesIcon,
 } from 'lucide-react';
@@ -69,6 +70,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
     isNew: true,
+  },
+  '/routine-timer': {
+    title: '루틴타이머',
+    Icon: Hourglass,
+    href: MENU_ROUTE.ROUTINE_TIMER,
   },
 };
 
