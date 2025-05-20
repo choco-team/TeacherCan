@@ -26,7 +26,6 @@ function AudioPlayer({ musicUrl, isPlaying }: AudioPlayerProps) {
     };
   }, [musicUrl]);
 
-  // 재생 상태에 따라 play/pause
   useEffect(() => {
     if (!audioRef.current) return;
 
@@ -39,7 +38,7 @@ function AudioPlayer({ musicUrl, isPlaying }: AudioPlayerProps) {
     }
   }, [isPlaying]);
 
-  return null; // UI 없는 백그라운드 컴포넌트
+  return null;
 }
 
 export default AudioPlayer;

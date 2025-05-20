@@ -28,7 +28,7 @@ export function PlayRoutineProvider({
 
   return (
     <PlayRoutineContext.Provider value={value}>
-      {routineData.isRunning && <AudioPlayer musicUrl="../../" isPlaying />}
+      {routineData.isRunning && <AudioPlayer musicUrl="../" isPlaying />}
       {children}
     </PlayRoutineContext.Provider>
   );
