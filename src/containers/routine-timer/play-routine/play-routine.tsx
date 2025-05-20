@@ -25,7 +25,7 @@ function PlayRoutineContent() {
 
   if (!routine) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center">
         <p className="text-2xl text-gray-500 mb-4">루틴을 찾을 수 없습니다</p>
         <Button
           onClick={() => router.push('/routine-timer')}
@@ -38,11 +38,9 @@ function PlayRoutineContent() {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto h-screen flex flex-col">
+    <div className="flex flex-col">
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
-          <h1 className="text-2xl font-bold">{routine.title}</h1>
-        </div>
+        <h1 className="text-2xl font-bold">{routine.title}</h1>
         <Button
           onClick={handleExit}
           className="p-2 text-gray-500 hover:text-gray-700"

@@ -19,7 +19,7 @@ export default function ActivityDisplay() {
   if (!currentActivity) return null;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       <h2 className="text-5xl font-bold mb-6">
         {currentActivity.action || `활동 ${currentIndex + 1}`}
       </h2>

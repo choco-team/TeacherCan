@@ -8,7 +8,7 @@ export default function NextActivities() {
   if (!routine) return null;
 
   return (
-    <div className="mt-8">
+    <div>
       <h3 className="text-lg font-medium mb-4">다음 활동</h3>
       <div className="flex gap-4 overflow-x-auto pb-4">
         {routine.activities
