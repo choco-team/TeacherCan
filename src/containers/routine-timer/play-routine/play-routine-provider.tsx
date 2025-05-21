@@ -26,9 +26,14 @@ export function PlayRoutineProvider({
 
   const value = useMemo(() => routineData, [routineData]);
 
+  const musicUrl = '/audio/routine-timer/routine-timer-bgm.mp3';
+
   return (
     <PlayRoutineContext.Provider value={value}>
-      {routineData.isRunning && <AudioPlayer musicUrl="../" isPlaying />}
+      <AudioPlayer
+        musicUrl={musicUrl}
+        isPlaying={routineData.isRunning && !routineData.isPaused}
+      />
       {children}
     </PlayRoutineContext.Provider>
   );
