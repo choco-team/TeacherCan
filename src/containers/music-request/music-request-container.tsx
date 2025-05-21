@@ -74,6 +74,8 @@ export default function MusicRequestContainer() {
     );
   };
 
+  const enableCreateRoom = roomIds && roomIds.length < 3;
+
   return (
     <>
       <Heading1 className="mb-6">음악신청 방 목록</Heading1>
@@ -96,7 +98,12 @@ export default function MusicRequestContainer() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>음악신청 방 만들기</DialogTitle>
-            <DialogDescription asChild>
+            <DialogDescription>
+              {!enableCreateRoom ? (
+                <span className="text-sm text-gray-500 whitespace-pre-line">
+                  {`목록에 최대 3개의 방만 저장할 수 있어요.\n음악신청 방 > 방 정보 > 목록 노출에서 미노출을 처리할 수 있어요.`}
+                </span>
+              ) : null}
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(() =>
@@ -115,12 +122,14 @@ export default function MusicRequestContainer() {
                               type="text"
                               {...field}
                               placeholder="방 이름을 입력해주세요."
+                              disabled={!enableCreateRoom}
                             />
                           </FormControl>
                           <Button
                             type="submit"
                             variant="primary"
                             className="w-[120px]"
+                            disabled={!enableCreateRoom}
                           >
                             {isPending ? (
                               <LoaderCircle
