@@ -23,7 +23,5 @@ export const getMusicRoomDescription = (musicList: YoutubeVideo[]) => {
     return null;
   }
 
-  const postfix = musicList.length > 1 ? ` 외 ${musicList.length - 1}곡` : '';
-
-  return music.title + postfix;
+  return music.title;
 };

@@ -5,6 +5,7 @@ import { ChevronRight } from 'lucide-react';
 import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
 import { cn } from '@/styles/utils';
 import { Skeleton } from '@/components/skeleton';
+import { Badge } from '@/components/badge';
 import {
   getMusicRoomImage,
   getMusicRoomDescription,
@@ -80,6 +81,11 @@ export default function MusicRequestList({ roomIds }: Props) {
             </div>
           )}
         </div>
+        {room.musicList.length > 0 && (
+          <Badge className="absolute top-2 right-2">
+            {room.musicList.length}곡
+          </Badge>
+        )}
       </div>
     </div>
   ));

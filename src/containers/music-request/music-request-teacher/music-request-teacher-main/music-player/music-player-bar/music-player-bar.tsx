@@ -145,7 +145,9 @@ export function MusicPlayerBar({
                 height={45}
               />
               <div className="truncate flex flex-col">
-                <span className="font-bold">{currentMusic.title}</span>
+                <span className="font-bold text-ellipsis overflow-hidden">
+                  {currentMusic.title}
+                </span>
                 <span className="font-light text-gray-600 dark:text-gray-200 text-sm">
                   {currentMusic.student}의 신청곡
                 </span>
