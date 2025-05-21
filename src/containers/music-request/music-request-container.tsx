@@ -28,6 +28,7 @@ import useLocalStorage from '@/hooks/useLocalStorage';
 import { Heading1 } from '@/components/heading';
 import { Skeleton } from '@/components/skeleton';
 import MusicRequestList from './music-request-list/music-request-list';
+import { MAX_MUSIC_COUNT } from './music-request-constants';
 
 const ROOM_TITLE_ERROR_MESSAGE = {
   EMPTY_INPUT: '방이름을 입력해 주세요.',
@@ -74,7 +75,7 @@ export default function MusicRequestContainer() {
     );
   };
 
-  const enableCreateRoom = roomIds && roomIds.length < 3;
+  const enableCreateRoom = roomIds && roomIds.length < MAX_MUSIC_COUNT;
 
   return (
     <>
@@ -101,7 +102,7 @@ export default function MusicRequestContainer() {
             <DialogDescription>
               {!enableCreateRoom ? (
                 <span className="text-sm text-gray-500 whitespace-pre-line">
-                  {`목록에 최대 3개의 방만 저장할 수 있어요.\n음악신청 방 > 방 정보 > 목록 노출에서 미노출을 처리할 수 있어요.`}
+                  {`목록에 최대 ${MAX_MUSIC_COUNT}개의 방만 저장할 수 있어요.\n음악신청 방 > 방 정보 > 목록 노출에서 미노출을 처리할 수 있어요.`}
                 </span>
               ) : null}
               <Form {...form}>

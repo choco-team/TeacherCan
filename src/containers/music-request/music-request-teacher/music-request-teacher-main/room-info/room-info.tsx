@@ -10,9 +10,9 @@ import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
 import { useToast } from '@/hooks/use-toast';
 import useLocalStorage from '@/hooks/useLocalStorage';
-
 import { QRCodeCanvas } from 'qrcode.react';
 import { Dispatch, SetStateAction, useState } from 'react';
+import { MAX_MUSIC_COUNT } from '@/containers/music-request/music-request-constants';
 
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -43,9 +43,9 @@ export default function RoomInfo({
       return;
     }
 
-    if (roomIds.length > 2) {
+    if (roomIds.length >= MAX_MUSIC_COUNT) {
       toast({
-        title: '목록에 최대 3개의 방만 노출할 수 있어요.',
+        title: `목록에 최대 ${MAX_MUSIC_COUNT}개의 방만 노출할 수 있어요.`,
         variant: 'error',
       });
 
