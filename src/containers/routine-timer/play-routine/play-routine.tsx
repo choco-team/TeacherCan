@@ -7,19 +7,22 @@ import { PlayRoutineProvider } from './play-routine-provider';
 import ActivityDisplay from './components/activity-display';
 import NextActivities from './components/next-activities';
 import RoutineComplete from './components/routine-complete';
+import RoutineBackgroundMusic from './components/music';
 import { usePlayRoutineContext } from './hooks/use-play-routine-context';
 
 type PlayRoutineProps = {
   routineId: string;
 };
 
-function PlayRoutineContent() {
+function PlayRoutineContent({ routineId }: { routineId: string }) {
   const router = useRouter();
-  const { routine, isCompleted, exitTimer, restartRoutine } =
+  const { routine, isCompleted, exitTimer, restartRoutine, isRunning } =
     usePlayRoutineContext();
 
   const handleExit = () => {
     exitTimer();
+    // 음악 데이터 정리 (선택사항)
+    localStorage.removeItem(`routine-music-${routineId}`);
     router.push(`/routine-timer/${routine?.key}`);
   };
 
@@ -57,6 +60,12 @@ function PlayRoutineContent() {
           <NextActivities />
         </>
       )}
+
+      {/* 배경음악 컴포넌트 추가 */}
+      <RoutineBackgroundMusic
+        routineId={routineId}
+        isPlaying={isRunning && !isCompleted}
+      />
     </div>
   );
 }
@@ -64,7 +73,7 @@ function PlayRoutineContent() {
 export default function PlayRoutine({ routineId }: PlayRoutineProps) {
   return (
     <PlayRoutineProvider routineId={routineId}>
-      <PlayRoutineContent />
+      <PlayRoutineContent routineId={routineId} />
     </PlayRoutineProvider>
   );
 }

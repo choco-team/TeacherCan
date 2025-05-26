@@ -1,7 +1,6 @@
 import { ReactNode, useMemo, useEffect } from 'react';
 import { PlayRoutineContext } from './hooks/use-play-routine-context';
 import { usePlayRoutine } from './hooks/use-play-routine';
-import AudioPlayer from './components/audio';
 
 type PlayRoutineProviderProps = {
   routineId: string;
@@ -26,14 +25,14 @@ export function PlayRoutineProvider({
 
   const value = useMemo(() => routineData, [routineData]);
 
-  const musicUrl = '/audio/routine-timer/routine-timer-bgm.mp3';
+  // const musicUrl = '/audio/routine-timer/routine-timer-bgm.mp3';
 
   return (
     <PlayRoutineContext.Provider value={value}>
-      <AudioPlayer
+      {/* <AudioPlayer
         musicUrl={musicUrl}
         isPlaying={routineData.isRunning && !routineData.isPaused}
-      />
+      /> */}
       {children}
     </PlayRoutineContext.Provider>
   );
