@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import YouTube from 'react-youtube';
 import { Music, VolumeX, Volume2 } from 'lucide-react';
-import { Routine } from '../../create-routine/routine-types';
+import { Routine } from '../create-routine/routine-types';
 
 type RoutineBackgroundMusicProps = {
   routineId: string;
@@ -83,7 +83,6 @@ export default function RoutineBackgroundMusic({
     }
   };
 
-  // videoId가 없으면 컴포넌트를 렌더링하지 않음
   if (!musicData?.videoId) {
     return null;
   }

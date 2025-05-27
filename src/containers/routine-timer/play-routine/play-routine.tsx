@@ -7,7 +7,7 @@ import { PlayRoutineProvider } from './play-routine-provider';
 import ActivityDisplay from './components/activity-display';
 import NextActivities from './components/next-activities';
 import RoutineComplete from './components/routine-complete';
-import RoutineBackgroundMusic from './components/music';
+import RoutineBackgroundMusic from '../background-music/music';
 import { usePlayRoutineContext } from './hooks/use-play-routine-context';
 
 type PlayRoutineProps = {
