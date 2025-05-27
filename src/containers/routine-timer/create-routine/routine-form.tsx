@@ -13,7 +13,6 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
   const router = useRouter();
   const routineId = params.id;
   const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [musicTitle, setMusicTitle] = useState('');
   const [musicVideoId, setMusicVideoId] = useState('');
   const [isLoadingMusic, setIsLoadingMusic] = useState(false);
   const [musicError, setMusicError] = useState('');
@@ -30,10 +29,10 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     handleSelect,
     updateRoutineTitle,
     saveRoutine,
+    updateRoutineMusic,
   } = useRoutine(routineId);
 
   const extractVideoId = (url: string): string => {
-    // 다양한 유튜브 URL 형식 지원
     const patterns = [
       /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
       /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
@@ -57,8 +56,9 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     setMusicError('');
 
     if (!url.trim()) {
-      setMusicTitle('');
       setMusicVideoId('');
+      // 음악 데이터 제거
+      updateRoutineMusic('', undefined);
       return;
     }
 
@@ -73,39 +73,41 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
 
     setIsLoadingMusic(true);
     try {
-      const title = `YouTube Music (${videoId})`;
-      setMusicTitle(title);
       setMusicVideoId(videoId);
+      // routine에 음악 데이터 저장
+      updateRoutineMusic(videoId, url);
     } catch (error) {
       console.error('Error getting music title:', error);
       setMusicError('동영상을 찾지 못했어요. 다시 시도해주세요.');
-      setMusicTitle('');
       setMusicVideoId('');
+      updateRoutineMusic('', undefined);
     } finally {
       setIsLoadingMusic(false);
     }
   };
 
   const handleSaveWithMusic = () => {
-    // 배경음악 정보는 localStorage에서만 관리하고, routine 객체에는 추가하지 않음
     saveRoutine();
   };
 
   const handleStart = () => {
     handleSaveWithMusic();
-    if (musicVideoId) {
-      const musicData = JSON.stringify({
-        videoId: musicVideoId,
-        title: musicTitle,
-      });
-      localStorage.setItem(`routine-music-${routineId}`, musicData);
-    }
     router.push(`/routine-timer/play/${routineId}`);
   };
 
   const handleRoutineList = () => {
     router.push(`/routine-timer`);
   };
+
+  // 컴포넌트 마운트시 기존 음악 데이터 로드
+  React.useEffect(() => {
+    if (routine.videoId) {
+      setMusicVideoId(routine.videoId);
+      if (routine.url) {
+        setYoutubeUrl(routine.url);
+      }
+    }
+  }, [routine.videoId, routine.url]);
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
@@ -172,15 +174,10 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
             <div className="text-red-500 text-sm">{musicError}</div>
           )}
 
-          {musicTitle && !isLoadingMusic && (
-            <div className="bg-white p-3 rounded-lg border border-blue-200">
-              <div className="flex items-center gap-2">
-                <Music className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-800">
-                  선택된 배경음악:
-                </span>
-              </div>
-              <div className="text-gray-700 mt-1">{musicTitle}</div>
+          {/* 현재 설정된 음악 표시 */}
+          {routine.videoId && (
+            <div className="text-green-600 text-sm">
+              ✓ 배경음악이 설정되었습니다 (Video ID: {routine.videoId})
             </div>
           )}
         </div>

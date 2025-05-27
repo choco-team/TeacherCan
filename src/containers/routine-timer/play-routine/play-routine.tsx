@@ -21,8 +21,6 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
 
   const handleExit = () => {
     exitTimer();
-    // 음악 데이터 정리 (선택사항)
-    localStorage.removeItem(`routine-music-${routineId}`);
     router.push(`/routine-timer/${routine?.key}`);
   };
 
@@ -61,7 +59,6 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
         </>
       )}
 
-      {/* 배경음악 컴포넌트 추가 */}
       <RoutineBackgroundMusic
         routineId={routineId}
         isPlaying={isRunning && !isCompleted}
