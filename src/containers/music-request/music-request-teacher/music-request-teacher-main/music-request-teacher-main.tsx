@@ -4,22 +4,29 @@ import { useGetMusicRequestRoom } from '@/hooks/apis/music-request/use-get-music
 import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { head } from 'lodash';
+import { useMusicSSE } from '@/hooks/apis/music-request/use-music-sse';
+import { YoutubeVideo } from '@/apis/music-request/musicRequest';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import MusicList from './music-list/music-list';
-import { MusicRefresh } from './music-refresh/music-refresh';
 
 type Props = {
   roomId: string;
 };
 
 export default function MusicRequestTeacherMain({ roomId }: Props) {
-  const { data, isPending, refetch, isRefetching } = useGetMusicRequestRoom({
+  const { data, isPending } = useGetMusicRequestRoom({
     roomId,
   });
   const [currentMusicId, setCurrentMusicId] = useState<string | null>(null);
 
-  const [isAutoRefetch, setIsAutoRefetch] = useState(false);
+  // const [isAutoRefetch, setIsAutoRefetch] = useState(false);
+
+  const [musicList, setMusicList] = useState<YoutubeVideo[]>([]);
+
+  useMusicSSE(roomId, (updatedList: YoutubeVideo[]) => {
+    setMusicList(updatedList);
+  });
 
   const updateCurrentVideoId = (musicId: string) => {
     setCurrentMusicId(musicId);
@@ -30,16 +37,16 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
       return;
     }
 
-    if (!data) {
+    if (!musicList) {
       return;
     }
 
-    if (data.musicList.length === 0) {
+    if (musicList.length === 0) {
       return;
     }
 
-    setCurrentMusicId(head(data.musicList).musicId);
-  }, [currentMusicId, data]);
+    setCurrentMusicId(head(musicList).musicId);
+  }, [currentMusicId, musicList]);
 
   if (isPending) {
     return (
@@ -50,8 +57,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
     );
   }
 
-  const defaultTabMenu =
-    data.musicList.length === 0 ? 'rome-info' : 'music-list';
+  const defaultTabMenu = musicList.length === 0 ? 'rome-info' : 'music-list';
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-0">
@@ -59,7 +65,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
         <MusicPlayer
           currentMusicId={currentMusicId}
           updateCurrentVideoId={updateCurrentVideoId}
-          musicList={data.musicList}
+          musicList={musicList}
         />
       </div>
       <Tabs
@@ -72,7 +78,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
         </TabsList>
         <TabsContent value="music-list">
           <MusicList
-            videos={data.musicList}
+            videos={musicList}
             roomId={roomId}
             currentMusicId={currentMusicId}
             updateCurrentVideoId={updateCurrentVideoId}
@@ -82,16 +88,16 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           <RoomInfo
             roomId={roomId}
             roomTitle={data.roomTitle}
-            isAutoRefetch={isAutoRefetch}
-            setIsAutoRefetch={setIsAutoRefetch}
+            // isAutoRefetch={isAutoRefetch}
+            // setIsAutoRefetch={setIsAutoRefetch}
           />
         </TabsContent>
       </Tabs>
-      <MusicRefresh
+      {/* <MusicRefresh
         musicRefetch={refetch}
         isAutoRefetch={isAutoRefetch}
         isRefetching={isRefetching}
-      />
+      /> */}
     </div>
   );
 }

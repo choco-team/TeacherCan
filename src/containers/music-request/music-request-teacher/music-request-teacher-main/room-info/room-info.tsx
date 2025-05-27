@@ -1,22 +1,19 @@
-import { Label } from '@/components/label';
-import { Switch } from '@/components/switch';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Dispatch, SetStateAction } from 'react';
 
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 type Props = {
   roomTitle: string;
   roomId: string;
-  isAutoRefetch: boolean;
-  setIsAutoRefetch: Dispatch<SetStateAction<boolean>>;
+  // isAutoRefetch: boolean;
+  // setIsAutoRefetch: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function RoomInfo({
   roomTitle,
   roomId,
-  isAutoRefetch,
-  setIsAutoRefetch,
+  // isAutoRefetch,
+  // setIsAutoRefetch,
 }: Props) {
   // NOTE:(김홍동) 예시 페이지에서는 학생 초대 막기
   if (roomId === 'c15fa864-8719-41e9-99f4-4bcf64086d42') {
@@ -46,13 +43,13 @@ export default function RoomInfo({
         />
       </div>
       <div className="w-hull h-[1px] bg-gray-100 dark:bg-gray-800" />
-      <Label className="flex items-center justify-between gap-x-2">
+      {/* <Label className="flex items-center justify-between gap-x-2">
         <span className="pl-2 text-text-title">자동 업데이트</span>
         <Switch
           checked={isAutoRefetch}
           onClick={() => setIsAutoRefetch((prev) => !prev)}
         />
-      </Label>
+      </Label> */}
     </div>
   );
 }
