@@ -78,7 +78,7 @@ export default async function RootLayout({
                   className={cn(
                     'flex flex-col min-h-dvh',
                     'pt-16 px-6 pb-8',
-                    'lg:pt-20 lg:px-8 lg:pb-20',
+                    'lg:pt-20 lg:px-8',
                   )}
                 >
                   {children}

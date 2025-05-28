@@ -1,7 +1,18 @@
+import { Button } from '@/components/button';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+} from '@/components/alert-dialog';
 import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
+import { useToast } from '@/hooks/use-toast';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { MAX_MUSIC_COUNT } from '@/containers/music-request/music-request-constants';
 
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -18,6 +29,37 @@ export default function RoomInfo({
   isAutoRefetch,
   setIsAutoRefetch,
 }: Props) {
+  const { toast } = useToast();
+
+  const [roomIds, setRoomIds] = useLocalStorage<string[] | null>('roomIds', []);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const isInList = roomIds?.includes(roomId) ?? true;
+
+  const toggleSave = () => {
+    if (isInList) {
+      setIsModalOpen(true);
+      setRoomIds(roomIds?.filter((id) => id !== roomId));
+
+      return;
+    }
+
+    if (roomIds.length >= MAX_MUSIC_COUNT) {
+      toast({
+        title: `목록에 최대 ${MAX_MUSIC_COUNT}개의 방만 노출할 수 있어요.`,
+        variant: 'error',
+      });
+
+      return;
+    }
+
+    toast({
+      title: '목록에 추가되었어요.',
+      variant: 'success',
+    });
+
+    setRoomIds([...roomIds, roomId]);
+  };
+
   // NOTE:(김홍동) 예시 페이지에서는 학생 초대 막기
   if (roomId === 'c15fa864-8719-41e9-99f4-4bcf64086d42') {
     return (
@@ -53,6 +95,40 @@ export default function RoomInfo({
           onClick={() => setIsAutoRefetch((prev) => !prev)}
         />
       </Label>
+      <Label className="flex items-center justify-between gap-x-2">
+        <span className="pl-2 text-text-title">목록 노출</span>
+        <Switch checked={isInList} onClick={toggleSave} />
+      </Label>
+
+      <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogTitle>{roomTitle} 미노출</AlertDialogTitle>
+          <AlertDialogDescription>
+            해당 음악신청 방을 목록에서 미노출하시겠습니까?
+          </AlertDialogDescription>
+          <AlertDialogFooter>
+            <Button
+              variant="gray-ghost"
+              size="sm"
+              onClick={() => {
+                setIsModalOpen(false);
+                setRoomIds([...roomIds, roomId]);
+              }}
+            >
+              취소
+            </Button>
+            <Button
+              variant="red"
+              size="sm"
+              onClick={() => {
+                setIsModalOpen(false);
+              }}
+            >
+              미노출
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

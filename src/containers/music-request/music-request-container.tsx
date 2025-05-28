@@ -13,8 +13,22 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, Plus } from 'lucide-react';
 import { useCreateMusicRequestRoom } from '@/hooks/apis/music-request/use-create-music-request-room';
+import theme from '@/styles/theme';
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/dialog';
+import useLocalStorage from '@/hooks/useLocalStorage';
+import { Heading1 } from '@/components/heading';
+import { Skeleton } from '@/components/skeleton';
+import MusicRequestList from './music-request-list/music-request-list';
+import { MAX_MUSIC_COUNT } from './music-request-constants';
 
 const ROOM_TITLE_ERROR_MESSAGE = {
   EMPTY_INPUT: '방이름을 입력해 주세요.',
@@ -28,6 +42,9 @@ const formSchema = z.object({
 });
 
 export default function MusicRequestContainer() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [roomIds, setRoomIds] = useLocalStorage<string[] | null>('roomIds', []);
+
   const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
 
@@ -46,6 +63,7 @@ export default function MusicRequestContainer() {
       { roomTitle },
       {
         onSuccess: ({ roomId }) => {
+          setRoomIds((prev) => [...prev, roomId]);
           router.push(`${originURL}/music-request/teacher/${roomId}`);
         },
         onError: () => {
@@ -57,47 +75,85 @@ export default function MusicRequestContainer() {
     );
   };
 
+  const enableCreateRoom = roomIds && roomIds.length < MAX_MUSIC_COUNT;
+
   return (
-    <div className="flex flex-col justify-center items-center min-h-[calc(100dvh-120px)]">
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(() =>
-            handleRoomTitleSubmit(form.getValues('roomTitle')),
-          )}
-          className="space-y-4 mb-12"
+    <>
+      <Heading1 className="mb-6">음악신청 방 목록</Heading1>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        {roomIds ? (
+          <MusicRequestList roomIds={roomIds} />
+        ) : (
+          Array.from({ length: 3 }, () => (
+            <Skeleton className="w-full aspect-video rounded-md" />
+          ))
+        )}
+        <div
+          className="flex flex-col justify-center items-center aspect-video bg-gray-100 dark:bg-gray-900 rounded-sm cursor-pointer"
+          onClick={() => setIsOpen(true)}
         >
-          <FormField
-            control={form.control}
-            name="roomTitle"
-            render={({ field }) => (
-              <FormItem className="relative">
-                <div className="flex items-center gap-x-2">
-                  <FormControl>
-                    <Input
-                      type="text"
-                      {...field}
-                      placeholder="방 이름을 입력해주세요."
-                    />
-                  </FormControl>
-                  <Button type="submit" variant="primary" className="w-[120px]">
-                    {isPending ? (
-                      <LoaderCircle
-                        size="18px"
-                        className="animate-spin text-white"
-                      />
-                    ) : (
-                      '방 만들기'
+          <Plus color={theme.colors.primary[500]} />
+        </div>
+      </div>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>음악신청 방 만들기</DialogTitle>
+            <DialogDescription>
+              {!enableCreateRoom ? (
+                <span className="text-sm text-gray-500 whitespace-pre-line">
+                  {`목록에 최대 ${MAX_MUSIC_COUNT}개의 방만 저장할 수 있어요.\n음악신청 방 > 방 정보 > 목록 노출에서 미노출을 처리할 수 있어요.`}
+                </span>
+              ) : null}
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(() =>
+                    handleRoomTitleSubmit(form.getValues('roomTitle')),
+                  )}
+                  className="pt-4"
+                >
+                  <FormField
+                    control={form.control}
+                    name="roomTitle"
+                    render={({ field }) => (
+                      <FormItem className="relative">
+                        <div className="flex flex-col gap-4 items-end">
+                          <FormControl>
+                            <Input
+                              type="text"
+                              {...field}
+                              placeholder="방 이름을 입력해주세요."
+                              disabled={!enableCreateRoom}
+                            />
+                          </FormControl>
+                          <Button
+                            type="submit"
+                            variant="primary"
+                            className="w-[120px]"
+                            disabled={!enableCreateRoom}
+                          >
+                            {isPending ? (
+                              <LoaderCircle
+                                size="18px"
+                                className="animate-spin text-white"
+                              />
+                            ) : (
+                              '방 만들기'
+                            )}
+                          </Button>
+                        </div>
+                        <div className="absolute bottom-[-28px] left-1">
+                          <FormMessage />
+                        </div>
+                      </FormItem>
                     )}
-                  </Button>
-                </div>
-                <div className="absolute bottom-[-28px] left-1">
-                  <FormMessage />
-                </div>
-              </FormItem>
-            )}
-          />
-        </form>
-      </Form>
-    </div>
+                  />
+                </form>
+              </Form>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

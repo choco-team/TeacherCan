@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { Input } from '@/components/input';
 import {
   Form,
@@ -10,9 +11,10 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderCircle } from 'lucide-react';
-import { useCreateMusicRequestStudent } from '@/hooks/apis/music-request/use-create-music-request-student';
-import { useMusicRequestStudentAction } from '../../music-request-student-provider/music-request-student-provider.hooks';
+import {
+  useMusicRequestStudentAction,
+  useMusicRequestStudentState,
+} from '../../music-request-student-provider/music-request-student-provider.hooks';
 
 const STUDENT_NAME_ERROR_MESSAGE = {
   EMPTY_INPUT: '이름을 입력해 주세요.',
@@ -30,8 +32,7 @@ type Props = {
 };
 
 export default function CreateNamePage({ roomId }: Props) {
-  const { mutate, isPending } = useCreateMusicRequestStudent();
-
+  const { studentName } = useMusicRequestStudentState();
   const { settingStudentName } = useMusicRequestStudentAction();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -43,28 +44,28 @@ export default function CreateNamePage({ roomId }: Props) {
   });
 
   const handleStudentName = async (name: string) => {
-    mutate(
-      { roomId, name },
-      {
-        onSuccess: () => {
-          settingStudentName(name);
-        },
-        onError: (error) => {
-          form.setError('studentNameInput', {
-            message: error.message ?? STUDENT_NAME_ERROR_MESSAGE.API_ERROR,
-          });
-        },
-      },
-    );
+    Cookies.set(roomId, name, {
+      expires: 1,
+    });
+    settingStudentName(name);
   };
 
   return (
     <div>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(() =>
-            handleStudentName(form.getValues('studentNameInput')),
-          )}
+          onSubmit={
+            studentName
+              ? (event) => {
+                  form.reset();
+                  event.preventDefault();
+                  Cookies.remove(roomId);
+                  settingStudentName('');
+                }
+              : form.handleSubmit(() =>
+                  handleStudentName(form.getValues('studentNameInput')),
+                )
+          }
           className="space-b-4"
         >
           <FormField
@@ -77,18 +78,13 @@ export default function CreateNamePage({ roomId }: Props) {
                     <Input
                       type="text"
                       {...field}
-                      placeholder="이름을 입력해주세요."
+                      placeholder={studentName || '이름을 입력해주세요.'}
+                      className={`${studentName ? 'placeholder:text-text-title' : ''}`}
+                      disabled={!!studentName}
                     />
                   </FormControl>
                   <Button type="submit" variant="primary" className="w-[120px]">
-                    {isPending ? (
-                      <LoaderCircle
-                        size="18px"
-                        className="animate-spin text-white"
-                      />
-                    ) : (
-                      '입장하기'
-                    )}
+                    {studentName === '' ? '입장하기' : '다시 입력하기'}
                   </Button>
                 </div>
                 <FormMessage />

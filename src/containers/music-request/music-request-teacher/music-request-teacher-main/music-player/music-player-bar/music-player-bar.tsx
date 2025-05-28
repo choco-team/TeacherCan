@@ -73,7 +73,7 @@ export function MusicPlayerBar({
 
   return (
     <div
-      className="h-[100px] fixed bottom-0 left-0 right-0 text-gray-700 dark:text-gray-200 bg-gradient-to-r from-primary-100 dark:from-gray-600 to-primary-300 dark:to-gray-800 z-[100] shadow-xl"
+      className="h-[100px] fixed bottom-0 left-0 right-0 text-gray-700 dark:text-gray-200 bg-gradient-to-r from-primary-100 dark:from-gray-600 to-primary-300 dark:to-gray-800 z-30 shadow-xl"
       onMouseLeave={() => setHoverVolume(false)}
     >
       <div
@@ -145,7 +145,9 @@ export function MusicPlayerBar({
                 height={45}
               />
               <div className="truncate flex flex-col">
-                <span className="font-bold">{currentMusic.title}</span>
+                <span className="font-bold text-ellipsis overflow-hidden">
+                  {currentMusic.title}
+                </span>
                 <span className="font-light text-gray-600 dark:text-gray-200 text-sm">
                   {currentMusic.student}의 신청곡
                 </span>

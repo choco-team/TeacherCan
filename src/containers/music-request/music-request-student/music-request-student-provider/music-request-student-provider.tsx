@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import {
   createContext,
   Dispatch,
@@ -6,12 +7,12 @@ import {
   useState,
 } from 'react';
 
-interface PropsWithChildrenParams extends PropsWithChildren {}
+interface PropsWithChildrenParams extends PropsWithChildren {
+  roomId: string;
+}
 
 type MusicRequestStudentState = {
   studentName: string;
-  alertOpen: boolean;
-  alertMessage: string;
 };
 
 export const MusicRequestStudentStateContext =
@@ -19,8 +20,6 @@ export const MusicRequestStudentStateContext =
 
 type MusicRequestStudentAction = {
   settingStudentName: Dispatch<SetStateAction<string>>;
-  settingAlertOpen: Dispatch<SetStateAction<boolean>>;
-  openAlertWithMessage: (message: string) => void;
 };
 
 export const MusicRequestStudentActionContext =
@@ -28,24 +27,18 @@ export const MusicRequestStudentActionContext =
 
 export default function MusicRequestStudentProvider({
   children,
+  roomId,
 }: PropsWithChildrenParams) {
-  const [studentName, setStudentName] = useState<string>();
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string>();
+  const [studentName, setStudentName] = useState<string>(
+    Cookies.get(roomId) || '',
+  );
 
   const defaultMusicRequestStudentStateValue = {
     studentName,
-    alertOpen,
-    alertMessage,
   };
 
   const defaultMusicRequestStudentActionValue = {
     settingStudentName: setStudentName,
-    settingAlertOpen: setAlertOpen,
-    openAlertWithMessage: (message: string) => {
-      setAlertOpen(true);
-      setAlertMessage(message);
-    },
   };
 
   return (
