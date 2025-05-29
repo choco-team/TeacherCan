@@ -2,11 +2,11 @@ import { Input } from '@/components/input';
 import React, { useState, useEffect } from 'react';
 import { Music } from 'lucide-react';
 
-interface MusicSelectorProps {
+type MusicSelectorProps = {
   videoId: string;
   url?: string;
   onMusicChange: (videoId: string, url?: string) => void;
-}
+};
 
 export function MusicSelector({
   videoId: initialVideoId,

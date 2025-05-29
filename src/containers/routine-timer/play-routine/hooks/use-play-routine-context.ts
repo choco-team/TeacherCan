@@ -15,6 +15,7 @@ type PlayRoutineContextType = {
   pauseTimer: () => void;
   resumeTimer: () => void;
   skipActivity: () => void;
+  previousActivity: () => void;
   restartRoutine: () => void;
   exitTimer: () => void;
 };

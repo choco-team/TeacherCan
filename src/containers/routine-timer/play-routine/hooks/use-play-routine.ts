@@ -104,6 +104,28 @@ export const usePlayRoutine = (routineId: string) => {
     }
   }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
 
+  const previousActivity = useCallback(() => {
+    if (!routine) {
+      return;
+    }
+
+    stopTimer();
+
+    const nextIndex = currentIndex - 1;
+
+    if (nextIndex < 0) {
+      setIsCompleted(true);
+    } else {
+      setCurrentIndex(nextIndex);
+      const nextTime = routine.activities[nextIndex].time;
+      setTimeValue(nextTime);
+
+      setTimeout(() => {
+        startTimer();
+      }, 0);
+    }
+  }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
+
   const restartRoutine = useCallback(() => {
     if (!routine) return;
 
@@ -132,6 +154,7 @@ export const usePlayRoutine = (routineId: string) => {
     pauseTimer,
     resumeTimer,
     skipActivity,
+    previousActivity,
     restartRoutine,
     exitTimer,
   };

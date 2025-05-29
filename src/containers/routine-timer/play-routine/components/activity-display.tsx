@@ -1,5 +1,5 @@
 import { Button } from '@/components/button';
-import { Play, Pause, SkipForward } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack } from 'lucide-react';
 import { formatTime } from '../utils/time-formatter';
 import ProgressBar from './progress-bar';
 import { usePlayRoutineContext } from '../hooks/use-play-routine-context';
@@ -14,6 +14,7 @@ export default function ActivityDisplay() {
     resumeTimer,
     pauseTimer,
     skipActivity,
+    previousActivity,
   } = usePlayRoutineContext();
 
   if (!currentActivity) return null;
@@ -29,6 +30,12 @@ export default function ActivityDisplay() {
       <ProgressBar progress={totalProgress} />
 
       <div className="flex gap-4">
+        <Button
+          onClick={previousActivity}
+          className="bg-blue-500 text-white p-4 rounded-full"
+        >
+          <SkipBack />
+        </Button>
         {isPaused ? (
           <Button
             onClick={resumeTimer}
