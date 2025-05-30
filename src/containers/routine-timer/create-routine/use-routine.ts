@@ -130,7 +130,7 @@ export const useRoutine = (routineId: string) => {
     handleUpdateTime,
     handleSelect,
     updateRoutineTitle,
-    updateRoutineMusic, // 새로 추가된 함수
+    updateRoutineMusic,
     saveRoutine,
   };
 };

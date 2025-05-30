@@ -3,17 +3,22 @@ import { formatTime } from '../utils/time-formatter';
 import { usePlayRoutineContext } from '../hooks/use-play-routine-context';
 
 export default function NextActivities() {
-  const { routine, currentIndex } = usePlayRoutineContext();
+  const { routine, currentIndex, jumpToActivity } = usePlayRoutineContext();
 
   if (!routine) return null;
 
   return (
     <div>
-      <div className="flex gap-4 overflow-x-auto pb-4 mt-4">
+      <div className="flex gap-4 overflow-x-auto justify-center pb-4 mt-12">
         {routine.activities.map((activity, idx) => (
           <div
             key={activity.activityKey}
-            className="flex-shrink-0 w-32 h-24 bg-primary-100 rounded-lg p-3 flex flex-col justify-between"
+            onClick={() => jumpToActivity(idx)}
+            className={`flex-shrink-0 w-32 h-24 rounded-lg p-3 flex flex-col justify-between cursor-pointer transition ${
+              idx === currentIndex
+                ? 'bg-primary-400 text-white font-bold'
+                : 'bg-primary-100 hover:bg-primary-200'
+            }`}
           >
             <div className="text-sm font-medium truncate">
               {activity.action || `활동 ${currentIndex + idx + 2}`}
