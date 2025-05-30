@@ -2,7 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/button';
-import { X } from 'lucide-react';
+import { X, Music } from 'lucide-react';
+import { useState } from 'react';
 import { PlayRoutineProvider } from './play-routine-provider';
 import ActivityDisplay from './components/activity-display';
 import NextActivities from './components/next-activities';
@@ -16,12 +17,17 @@ type PlayRoutineProps = {
 
 function PlayRoutineContent({ routineId }: { routineId: string }) {
   const router = useRouter();
+  const [isMusicEnabled, setIsMusicEnabled] = useState(true);
   const { routine, isCompleted, exitTimer, restartRoutine, isRunning } =
     usePlayRoutineContext();
 
   const handleExit = () => {
     exitTimer();
     router.push(`/routine-timer/${routine?.key}`);
+  };
+
+  const toggleMusic = () => {
+    setIsMusicEnabled(!isMusicEnabled);
   };
 
   if (!routine) {
@@ -42,12 +48,20 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
     <div className="flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{routine.title}</h1>
-        <Button
-          onClick={handleExit}
-          className="p-2 text-gray-500 hover:text-gray-700"
-        >
-          <X size={24} />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={toggleMusic}
+            className={`p-2 ${isMusicEnabled ? 'text-blue-600' : 'text-gray-400'}`}
+          >
+            <Music size={20} />
+          </Button>
+          <Button
+            onClick={handleExit}
+            className="p-2 text-gray-500 hover:text-gray-700"
+          >
+            <X size={24} />
+          </Button>
+        </div>
       </div>
 
       {isCompleted ? (
@@ -59,10 +73,12 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
         </>
       )}
 
-      <RoutineBackgroundMusic
-        routineId={routineId}
-        isPlaying={isRunning && !isCompleted}
-      />
+      {isMusicEnabled && (
+        <RoutineBackgroundMusic
+          routineId={routineId}
+          isPlaying={isRunning && !isCompleted}
+        />
+      )}
     </div>
   );
 }

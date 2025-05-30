@@ -18,7 +18,6 @@ export function MusicSelector({
   const [isLoadingMusic, setIsLoadingMusic] = useState(false);
   const [musicError, setMusicError] = useState('');
 
-  // 컴포넌트 마운트시 기존 음악 데이터 로드
   useEffect(() => {
     if (initialVideoId) {
       setMusicVideoId(initialVideoId);
