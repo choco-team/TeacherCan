@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import YouTube from 'react-youtube';
 import { Music, VolumeX, Volume2 } from 'lucide-react';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { Routine } from '../create-routine/routine-types';
 
 type RoutineBackgroundMusicProps = {
@@ -19,31 +20,27 @@ export default function RoutineBackgroundMusic({
   } | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(30);
+  const [routines] = useLocalStorage<Routine[]>('routines', []);
 
   useEffect(() => {
-    // routines localStorage에서 해당 routine 찾기
-    const savedRoutines = localStorage.getItem('routines');
-    if (savedRoutines) {
-      try {
-        const routines: Routine[] = JSON.parse(savedRoutines);
-        const currentRoutine = routines.find(
-          (routine) => routine.key === routineId,
-        );
-
-        if (currentRoutine && currentRoutine.videoId) {
-          setMusicData({
-            videoId: currentRoutine.videoId,
-            url: currentRoutine.url,
-          });
-        } else {
-          setMusicData(null);
-        }
-      } catch (error) {
-        console.error('Failed to parse routines data:', error);
-        setMusicData(null);
-      }
+    if (!routines || !Array.isArray(routines)) {
+      setMusicData(null);
+      return;
     }
-  }, [routineId]);
+
+    const currentRoutine = routines.find(
+      (routine) => routine.key === routineId,
+    );
+
+    if (currentRoutine && currentRoutine.videoId) {
+      setMusicData({
+        videoId: currentRoutine.videoId,
+        url: currentRoutine.url,
+      });
+    } else {
+      setMusicData(null);
+    }
+  }, [routineId, routines]);
 
   useEffect(() => {
     if (!youtubePlayerRef.current) return;
