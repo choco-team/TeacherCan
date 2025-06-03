@@ -1,12 +1,12 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
-import { useGetMusicRequestRoom } from '@/hooks/apis/music-request/use-get-music-request-room';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { head } from 'lodash';
 import MusicRegister from '@/containers/music-request/music-register/music-register';
 import { useMusicSSE } from '@/hooks/apis/music-request/use-music-sse';
 import { YoutubeVideo } from '@/apis/music-request/musicRequest';
+import { useGetMusicRequestRoomTitle } from '@/hooks/apis/music-request/use-get-music-request-room-title';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import MusicList from './music-list/music-list';
@@ -16,18 +16,17 @@ type Props = {
 };
 
 export default function MusicRequestTeacherMain({ roomId }: Props) {
-  const { data, isPending } = useGetMusicRequestRoom({
-    roomId,
-  });
   const [currentMusicId, setCurrentMusicId] = useState<string | null>(null);
 
-  // const [isAutoRefetch, setIsAutoRefetch] = useState(false);
+  const { data, isPending } = useGetMusicRequestRoomTitle({ roomId });
 
   const [musicList, setMusicList] = useState<YoutubeVideo[]>([]);
 
-  useMusicSSE(roomId, (updatedList: YoutubeVideo[]) => {
-    setMusicList(updatedList);
-  });
+  const handleMusicUpdate = useCallback((updatedList: YoutubeVideo[]) => {
+    setMusicList([...updatedList]);
+  }, []);
+
+  useMusicSSE(roomId, handleMusicUpdate);
 
   const updateCurrentVideoId = (musicId: string) => {
     setCurrentMusicId(musicId);
@@ -92,19 +91,9 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           </div>
         </TabsContent>
         <TabsContent value="rome-info">
-          <RoomInfo
-            roomId={roomId}
-            roomTitle={data.roomTitle}
-            // isAutoRefetch={isAutoRefetch}
-            // setIsAutoRefetch={setIsAutoRefetch}
-          />
+          <RoomInfo roomId={roomId} roomTitle={data.roomTitle} />
         </TabsContent>
       </Tabs>
-      {/* <MusicRefresh
-        musicRefetch={refetch}
-        isAutoRefetch={isAutoRefetch}
-        isRefetching={isRefetching}
-      /> */}
     </div>
   );
 }

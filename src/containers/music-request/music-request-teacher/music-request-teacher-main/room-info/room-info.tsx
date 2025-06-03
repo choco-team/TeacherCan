@@ -19,8 +19,6 @@ const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 type Props = {
   roomTitle: string;
   roomId: string;
-  // isAutoRefetch: boolean;
-  // setIsAutoRefetch: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function RoomInfo({
