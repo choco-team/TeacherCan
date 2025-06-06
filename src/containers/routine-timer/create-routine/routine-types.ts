@@ -10,6 +10,8 @@ export type Routine = {
   title: string;
   totalTime: number;
   activities: Activity[];
+  videoId: string;
+  url?: string;
 };
 
 export type RouteParams = {

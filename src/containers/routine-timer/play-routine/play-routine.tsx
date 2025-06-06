@@ -2,20 +2,23 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/button';
-import { X } from 'lucide-react';
+import { X, Music } from 'lucide-react';
+import { useState } from 'react';
 import { PlayRoutineProvider } from './play-routine-provider';
 import ActivityDisplay from './components/activity-display';
 import NextActivities from './components/next-activities';
 import RoutineComplete from './components/routine-complete';
+import RoutineBackgroundMusic from '../background-music/music';
 import { usePlayRoutineContext } from './hooks/use-play-routine-context';
 
 type PlayRoutineProps = {
   routineId: string;
 };
 
-function PlayRoutineContent() {
+function PlayRoutineContent({ routineId }: { routineId: string }) {
   const router = useRouter();
-  const { routine, isCompleted, exitTimer, restartRoutine } =
+  const [isMusicEnabled, setIsMusicEnabled] = useState(true);
+  const { routine, isCompleted, exitTimer, restartRoutine, isRunning } =
     usePlayRoutineContext();
 
   const handleExit = () => {
@@ -23,9 +26,13 @@ function PlayRoutineContent() {
     router.push(`/routine-timer/${routine?.key}`);
   };
 
+  const toggleMusic = () => {
+    setIsMusicEnabled(!isMusicEnabled);
+  };
+
   if (!routine) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center">
         <p className="text-2xl text-gray-500 mb-4">루틴을 찾을 수 없습니다</p>
         <Button
           onClick={() => router.push('/routine-timer')}
@@ -38,17 +45,23 @@ function PlayRoutineContent() {
   }
 
   return (
-    <div className="p-4 max-w-4xl mx-auto h-screen flex flex-col">
+    <div className="flex flex-col">
       <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center">
-          <h1 className="text-2xl font-bold">{routine.title}</h1>
+        <h1 className="text-2xl font-bold">{routine.title}</h1>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={toggleMusic}
+            className={`p-2 ${isMusicEnabled ? 'text-blue-600' : 'text-gray-400'}`}
+          >
+            <Music size={20} />
+          </Button>
+          <Button
+            onClick={handleExit}
+            className="p-2 text-gray-500 hover:text-gray-700"
+          >
+            <X size={24} />
+          </Button>
         </div>
-        <Button
-          onClick={handleExit}
-          className="p-2 text-gray-500 hover:text-gray-700"
-        >
-          <X size={24} />
-        </Button>
       </div>
 
       {isCompleted ? (
@@ -59,6 +72,13 @@ function PlayRoutineContent() {
           <NextActivities />
         </>
       )}
+
+      {isMusicEnabled && (
+        <RoutineBackgroundMusic
+          routineId={routineId}
+          isPlaying={isRunning && !isCompleted}
+        />
+      )}
     </div>
   );
 }
@@ -66,7 +86,7 @@ function PlayRoutineContent() {
 export default function PlayRoutine({ routineId }: PlayRoutineProps) {
   return (
     <PlayRoutineProvider routineId={routineId}>
-      <PlayRoutineContent />
+      <PlayRoutineContent routineId={routineId} />
     </PlayRoutineProvider>
   );
 }
