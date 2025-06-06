@@ -62,13 +62,20 @@ export const usePlayRoutine = (routineId: string) => {
         stopTimer();
         setIsCompleted(true);
       } else {
-        setCurrentIndex(nextIndex);
-        const nextTime = routine.activities[nextIndex].time;
-        setTimeValue(nextTime);
+        stopTimer();
 
-        setTimeout(() => {
-          startTimer();
-        }, 0);
+        const audio = new Audio('/audio/timer/alarm-beeps.mp3');
+        audio.play();
+
+        audio.onended = () => {
+          setCurrentIndex(nextIndex);
+          const nextTime = routine.activities[nextIndex].time;
+          setTimeValue(nextTime);
+
+          setTimeout(() => {
+            startTimer();
+          }, 300);
+        };
       }
     }
   }, [
@@ -79,7 +86,6 @@ export const usePlayRoutine = (routineId: string) => {
     stopTimer,
     setTimeValue,
     startTimer,
-    currentActivity,
   ]);
 
   const skipActivity = useCallback(() => {
