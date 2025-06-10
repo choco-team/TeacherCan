@@ -27,6 +27,7 @@ import {
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { Heading1 } from '@/components/heading';
 import { Skeleton } from '@/components/skeleton';
+import Link from 'next/link';
 import MusicRequestList from './music-request-list/music-request-list';
 import { MAX_MUSIC_COUNT } from './music-request-constants';
 
@@ -43,6 +44,7 @@ const formSchema = z.object({
 
 export default function MusicRequestContainer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isRemoveAllOpen, setIsRemoveAllOpen] = useState(false);
   const [roomIds, setRoomIds] = useLocalStorage<string[] | null>('roomIds', []);
 
   const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -79,7 +81,16 @@ export default function MusicRequestContainer() {
 
   return (
     <>
-      <Heading1 className="mb-6">음악신청 방 목록</Heading1>
+      <div className="flex justify-between items-center mb-6">
+        <Heading1 className="mb-6">음악신청 방 목록</Heading1>
+        <Button
+          variant="primary-ghost"
+          size="sm"
+          onClick={() => setIsRemoveAllOpen(true)}
+        >
+          음악신청 방 목록 초기화
+        </Button>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {roomIds ? (
           <MusicRequestList roomIds={roomIds} />
@@ -151,6 +162,43 @@ export default function MusicRequestContainer() {
                 </form>
               </Form>
             </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isRemoveAllOpen} onOpenChange={setIsRemoveAllOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>음악신청 방 목록 초기화</DialogTitle>
+            <DialogDescription>
+              <span className="text-sm text-gray-500 whitespace-pre-line">
+                음악신청 방 목록을 불러올 수 없는 버그가 있습니다. 이 경우
+                목록을 초기화하고 다시 생성해야 합니다. 이용에 불편을 드려
+                죄송합니다. 버그 수정은 진행 중이며, 추가 문제 발견 시{' '}
+                <Link href="/feedback" className="underline">
+                  피드백
+                </Link>{' '}
+                부탁드립니다.
+              </span>
+            </DialogDescription>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button
+                variant="gray-ghost"
+                size="sm"
+                onClick={() => setIsRemoveAllOpen(false)}
+              >
+                취소
+              </Button>
+              <Button
+                variant="red"
+                size="sm"
+                onClick={() => {
+                  setRoomIds([]);
+                  setIsRemoveAllOpen(false);
+                }}
+              >
+                초기화하기
+              </Button>
+            </div>
           </DialogHeader>
         </DialogContent>
       </Dialog>
