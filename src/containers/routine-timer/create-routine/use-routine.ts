@@ -10,6 +10,7 @@ export const useRoutine = (routineId: string) => {
     title: '새 루틴',
     totalTime: 0,
     activities: [],
+    videoId: '',
   });
 
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(
@@ -91,6 +92,15 @@ export const useRoutine = (routineId: string) => {
     setRoutine({ ...routine, title });
   };
 
+  // 새로 추가된 음악 업데이트 함수
+  const updateRoutineMusic = (videoId: string, url?: string) => {
+    setRoutine((prev) => ({
+      ...prev,
+      videoId,
+      url,
+    }));
+  };
+
   const saveRoutine = () => {
     const index = routines.findIndex((r) => r.key === routineId);
     if (index !== -1) {
@@ -101,6 +111,7 @@ export const useRoutine = (routineId: string) => {
       setRoutines([...routines, routine]);
     }
   };
+
   const formatTime = (timeInSeconds?: number): string => {
     if (timeInSeconds === undefined) return '00:00';
     const minutes = Math.floor(timeInSeconds / 60);
@@ -119,6 +130,7 @@ export const useRoutine = (routineId: string) => {
     handleUpdateTime,
     handleSelect,
     updateRoutineTitle,
+    updateRoutineMusic,
     saveRoutine,
   };
 };

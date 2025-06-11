@@ -6,12 +6,14 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock } from 'lucide-react';
 import { ActivityForm } from './activity-form';
+import { MusicSelector } from '../background-music/music-selector';
 import { useRoutine } from './use-routine';
 import { RouteParams } from './routine-types';
 
 export default function RoutineForm({ params }: RouteParams): JSX.Element {
   const router = useRouter();
   const routineId = params.id;
+
   const {
     routine,
     currentActivity,
@@ -24,11 +26,24 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     handleSelect,
     updateRoutineTitle,
     saveRoutine,
+    updateRoutineMusic,
   } = useRoutine(routineId);
 
-  const handleStart = () => {
+  const handleMusicChange = (videoId: string, url?: string) => {
+    updateRoutineMusic(videoId, url);
+  };
+
+  const handleSaveWithMusic = () => {
     saveRoutine();
+  };
+
+  const handleStart = () => {
+    handleSaveWithMusic();
     router.push(`/routine-timer/play/${routineId}`);
+  };
+
+  const handleRoutineList = () => {
+    router.push(`/routine-timer`);
   };
 
   return (
@@ -49,7 +64,13 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
         </div>
         <div className="flex ml-4 gap-2">
           <Button
-            onClick={saveRoutine}
+            onClick={handleRoutineList}
+            className="bg-primary-500 text-white px-4 py-2 rounded"
+          >
+            목록으로 돌아가기
+          </Button>
+          <Button
+            onClick={handleSaveWithMusic}
             className="bg-primary-500 text-white px-4 py-2 rounded"
           >
             저장
@@ -63,6 +84,12 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
           </Button>
         </div>
       </div>
+
+      <MusicSelector
+        videoId={routine.videoId || ''}
+        url={routine.url}
+        onMusicChange={handleMusicChange}
+      />
 
       <div className="bg-primary-100 rounded-xl p-6 mb-8">
         <ActivityForm

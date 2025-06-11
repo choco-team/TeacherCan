@@ -62,13 +62,20 @@ export const usePlayRoutine = (routineId: string) => {
         stopTimer();
         setIsCompleted(true);
       } else {
-        setCurrentIndex(nextIndex);
-        const nextTime = routine.activities[nextIndex].time;
-        setTimeValue(nextTime);
+        stopTimer();
 
-        setTimeout(() => {
-          startTimer();
-        }, 0);
+        const audio = new Audio('/audio/timer/alarm-beeps.mp3');
+        audio.play();
+
+        audio.onended = () => {
+          setCurrentIndex(nextIndex);
+          const nextTime = routine.activities[nextIndex].time;
+          setTimeValue(nextTime);
+
+          setTimeout(() => {
+            startTimer();
+          }, 300);
+        };
       }
     }
   }, [
@@ -79,7 +86,6 @@ export const usePlayRoutine = (routineId: string) => {
     stopTimer,
     setTimeValue,
     startTimer,
-    currentActivity,
   ]);
 
   const skipActivity = useCallback(() => {
@@ -103,6 +109,50 @@ export const usePlayRoutine = (routineId: string) => {
       }, 0);
     }
   }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
+
+  const previousActivity = useCallback(() => {
+    if (!routine) {
+      return;
+    }
+
+    stopTimer();
+
+    const nextIndex = currentIndex - 1;
+
+    if (nextIndex < 0) {
+      setIsCompleted(true);
+    } else {
+      setCurrentIndex(nextIndex);
+      const nextTime = routine.activities[nextIndex].time;
+      setTimeValue(nextTime);
+
+      setTimeout(() => {
+        startTimer();
+      }, 0);
+    }
+  }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
+
+  const jumpToActivity = useCallback(
+    (targetIndex: number) => {
+      if (
+        !routine ||
+        targetIndex < 0 ||
+        targetIndex >= routine.activities.length
+      ) {
+        return;
+      }
+
+      stopTimer();
+      setCurrentIndex(targetIndex);
+      const targetTime = routine.activities[targetIndex].time;
+      setTimeValue(targetTime);
+
+      setTimeout(() => {
+        startTimer();
+      }, 0);
+    },
+    [routine, stopTimer, setTimeValue, startTimer],
+  );
 
   const restartRoutine = useCallback(() => {
     if (!routine) return;
@@ -132,6 +182,8 @@ export const usePlayRoutine = (routineId: string) => {
     pauseTimer,
     resumeTimer,
     skipActivity,
+    jumpToActivity,
+    previousActivity,
     restartRoutine,
     exitTimer,
   };
