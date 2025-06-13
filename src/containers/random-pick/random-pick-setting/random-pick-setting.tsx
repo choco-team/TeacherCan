@@ -1,11 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import SettingPickType from './setting-pick-type/setting-pick-type';
+import {
+  InnerPickListType,
+  PickType,
+} from '../random-pick-provider/random-pick-provider';
 
 type Props = {
-  startPlay: () => void;
+  updateRandomPickList: (
+    pickType: PickType,
+    pickList: InnerPickListType[],
+  ) => void;
 };
 
-export default function RandomPickSetting({ startPlay }: Props) {
+export default function RandomPickSetting({ updateRandomPickList }: Props) {
   return (
     <div className="flex-grow flex flex-col items-center justify-center">
       <Card className="w-full max-w-sm">
@@ -14,7 +21,7 @@ export default function RandomPickSetting({ startPlay }: Props) {
         </CardHeader>
 
         <CardContent className="pt-4 w-full">
-          <SettingPickType startPlay={startPlay} />
+          <SettingPickType updateRandomPickList={updateRandomPickList} />
         </CardContent>
       </Card>
     </div>

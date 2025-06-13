@@ -1,31 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import RandomPickSetting from './random-pick-setting/random-pick-setting';
-import RandomPickProvider from './random-pick-provider/random-pick-provider';
+import { useParams } from 'next/navigation';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import PlayGround from './playground/playground';
+import RandomPickList from './random-pick-list/random-pick-list';
+import { RandomPickType } from './random-pick-provider/random-pick-provider';
 import RandomPickPlaygroundProvider from './random-pick-playground-provider.tsx/random-pick-playground-provider';
 
 export default function RandomPickContainer() {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { id } = useParams<{ id?: string }>();
+  const isPlaying = !!id;
+  const [randomPickList] = useLocalStorage<RandomPickType[]>(
+    'random-pick-list',
+    [],
+  );
 
-  const startPlay = () => {
-    setIsPlaying(true);
-  };
-
-  const makeNewPlay = () => {
-    setIsPlaying(false);
-  };
-
-  return (
-    <RandomPickProvider>
-      <RandomPickPlaygroundProvider>
-        {isPlaying ? (
-          <PlayGround makeNewPlay={makeNewPlay} />
-        ) : (
-          <RandomPickSetting startPlay={startPlay} />
-        )}
-      </RandomPickPlaygroundProvider>
-    </RandomPickProvider>
+  return isPlaying ? (
+    <RandomPickPlaygroundProvider id={id} randomPickList={randomPickList ?? []}>
+      <PlayGround />
+    </RandomPickPlaygroundProvider>
+  ) : (
+    <RandomPickList />
   );
 }

@@ -12,13 +12,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { creatId } from '@/utils/createNanoid';
 import {
-  useRandomPickAction,
-  useRandomPickState,
-} from '../../random-pick-provider/random-pick-provider.hooks';
-
-type Props = {
-  startPlay: () => void;
-};
+  InnerPickListType,
+  PickType,
+} from '../../random-pick-provider/random-pick-provider';
 
 const formSchema = z.object({
   number: z.coerce
@@ -31,14 +27,18 @@ const formSchema = z.object({
     }),
 });
 
-export default function SettingStudentNumber({ startPlay }: Props) {
-  const { pickList } = useRandomPickState();
-  const { modifyPickList } = useRandomPickAction();
+type Props = {
+  updateRandomPickList: (
+    pickType: PickType,
+    pickList: InnerPickListType[],
+  ) => void;
+};
 
+export default function SettingStudentNumber({ updateRandomPickList }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      number: (pickList.numbers && pickList.numbers.length) ?? 30,
+      number: 30,
     },
   });
 
@@ -52,8 +52,7 @@ export default function SettingStudentNumber({ startPlay }: Props) {
       }),
     );
 
-    modifyPickList('numbers', newStudentNumbers);
-    startPlay();
+    updateRandomPickList('numbers', newStudentNumbers);
   };
 
   return (
@@ -77,12 +76,8 @@ export default function SettingStudentNumber({ startPlay }: Props) {
             </div>
           )}
         />
-        <Button
-          type="submit"
-          size="lg"
-          className="self-center p-8 rounded-2xl text-2xl hover:scale-105 active:scale-95"
-        >
-          시작
+        <Button type="submit" size="lg">
+          만들기
         </Button>
       </form>
     </Form>
