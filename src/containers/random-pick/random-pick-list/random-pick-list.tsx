@@ -14,8 +14,8 @@ import {
   PickType,
   RandomPickType,
   InnerPickListType,
-} from '../random-pick-provider/random-pick-provider';
-import SettingPickType from '../random-pick-setting/setting-pick-type/setting-pick-type';
+} from '../random-pick-type';
+import SettingPickType from './random-pick-setting/setting-pick-type/setting-pick-type';
 
 export default function RandomPickList() {
   const [randomPickList, setRandomPickList] = useLocalStorage<RandomPickType[]>(

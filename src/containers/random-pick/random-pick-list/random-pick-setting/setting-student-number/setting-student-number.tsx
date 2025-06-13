@@ -14,7 +14,7 @@ import { creatId } from '@/utils/createNanoid';
 import {
   InnerPickListType,
   PickType,
-} from '../../random-pick-provider/random-pick-provider';
+} from '@/containers/random-pick/random-pick-type';
 
 const formSchema = z.object({
   number: z.coerce

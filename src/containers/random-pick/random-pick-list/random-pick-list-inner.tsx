@@ -10,7 +10,7 @@ import {
 } from '@/components/table';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { RandomPickType } from '../random-pick-provider/random-pick-provider';
+import { RandomPickType } from '../random-pick-type';
 import OptionBadge from './optionBadge/optionBadge';
 
 interface RandomPickListInnerProps {

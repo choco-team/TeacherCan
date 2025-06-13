@@ -1,13 +1,13 @@
 import { Label } from '@/components/label';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { useState } from 'react';
+import {
+  InnerPickListType,
+  PickType,
+} from '@/containers/random-pick/random-pick-type';
+import { PICK_TYPES } from '@/containers/random-pick/random-pick-constants';
 import SettingStudentName from '../setting-student-name/setting-student-name';
 import SettingStudentNumber from '../setting-student-number/setting-student-number';
-import { PICK_TYPES } from '../../random-pick-provider/random-pick-provider.constants';
-import {
-  PickType,
-  InnerPickListType,
-} from '../../random-pick-provider/random-pick-provider';
 
 type Props = {
   updateRandomPickList: (

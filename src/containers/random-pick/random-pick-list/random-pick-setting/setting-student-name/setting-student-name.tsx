@@ -14,7 +14,7 @@ import { creatId } from '@/utils/createNanoid';
 import {
   InnerPickListType,
   PickType,
-} from '../../random-pick-provider/random-pick-provider';
+} from '@/containers/random-pick/random-pick-type';
 
 type Props = {
   updateRandomPickList: (

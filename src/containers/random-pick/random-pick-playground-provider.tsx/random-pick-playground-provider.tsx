@@ -1,6 +1,6 @@
 /* eslint-disable no-continue */
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
-import { RandomPickType } from '../random-pick-provider/random-pick-provider';
+import { RandomPickType } from '../random-pick-type';
 
 export type WinnersType = {
   id: string;
