@@ -1,16 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import ResultModal from './result-modal/result-modal';
-import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
-import type { WinnersType } from '../random-pick-playground-provider.tsx/random-pick-playground-provider';
+import { type WinnersType } from '../random-pick-playground-provider.tsx/random-pick-playground-provider';
 import CardList from './card-list/card-list';
 import WhilePlaySettings from './while-play-settings/while-play-settings';
 import PickButton from './pick-button/pick-button';
+import { useRandomPickPlaygroundState } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
-type Props = {
-  makeNewPlay: () => void;
-};
-
-export default function PlayGround({ makeNewPlay }: Props) {
+export default function PlayGround() {
+  const { randomPick } = useRandomPickPlaygroundState();
   const [title, setTitle] = useState('');
   const [newWinners, setNewWinners] = useState<WinnersType[]>([]);
   const [isOpenResult, setIsOpenResult] = useState(false);
@@ -18,12 +15,8 @@ export default function PlayGround({ makeNewPlay }: Props) {
 
   const cardListRef = useRef<HTMLDivElement>(null);
 
-  const {
-    options: { isMixingAnimation },
-  } = useRandomPickState();
-
   const openResult = () => {
-    if (isMixingAnimation) {
+    if (randomPick.options.isMixingAnimation) {
       setsMixingCards(true);
       return;
     }
@@ -57,7 +50,7 @@ export default function PlayGround({ makeNewPlay }: Props) {
       <WhilePlaySettings
         title={title}
         setTitle={setTitle}
-        makeNewPlay={makeNewPlay}
+        makeNewPlay={() => {}}
       />
       <CardList isMixingCards={isMixingCards} />
       <PickButton

@@ -7,8 +7,8 @@ import {
   DialogTitle,
 } from '@/components/dialog';
 import type { WinnersType } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider';
-import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
 import ResultCard from '../result-card/result-card';
+import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
 type Props = {
   isOpenResult: boolean;
@@ -25,9 +25,7 @@ export default function ResultModal({
 }: Props) {
   const [openCards, setOpenCards] = useState([]);
 
-  const {
-    options: { isHideResult },
-  } = useRandomPickState();
+  const { randomPick } = useRandomPickPlaygroundState();
 
   const isAllOpen = openCards.length === newWinners.length;
 
@@ -57,14 +55,17 @@ export default function ResultModal({
             <ResultCard
               key={newWinner.id}
               winner={newWinner}
-              isOpen={!isHideResult || openCards.includes(newWinner.id)}
+              isOpen={
+                !randomPick.options.isHideResult ||
+                openCards.includes(newWinner.id)
+              }
               handleOpenOne={handleOpenOne}
             />
           ))}
         </div>
 
         <DialogFooter>
-          {isHideResult && !isAllOpen ? (
+          {randomPick.options.isHideResult && !isAllOpen ? (
             <Button
               size="lg"
               className="p-10 rounded-2xl text-3xl hover:scale-105 active:scale-95"

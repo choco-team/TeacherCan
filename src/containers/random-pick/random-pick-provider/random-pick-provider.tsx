@@ -1,16 +1,16 @@
-import {
-  createContext,
-  Dispatch,
-  PropsWithChildren,
-  SetStateAction,
-  useState,
-} from 'react';
+import { createContext, PropsWithChildren } from 'react';
 import useLocalStorage from '@/hooks/useLocalStorage';
-import {
-  INIT_STUDENT_NAMES,
-  INIT_STUDENT_NUMBERS,
-  PICK_TYPES,
-} from './random-pick-provider.constants';
+import { creatId } from '@/utils/createNanoid';
+import { PICK_TYPES } from './random-pick-provider.constants';
+
+export type RandomPickType = {
+  id: string;
+  createdAt: string;
+  title: string;
+  pickType: PickType;
+  pickList: InnerPickListType[];
+  options: OptionsType;
+};
 
 export type InnerPickListType = {
   id: string;
@@ -19,8 +19,7 @@ export type InnerPickListType = {
   isUsed: boolean;
 };
 
-type PickType = (typeof PICK_TYPES)[number]['type'];
-type PickListType = Record<PickType, InnerPickListType[]>;
+export type PickType = (typeof PICK_TYPES)[number]['type'];
 type OptionsType = {
   isExcludingSelected: boolean;
   isHideResult: boolean;
@@ -28,9 +27,7 @@ type OptionsType = {
 };
 
 type RandomPickState = {
-  pickType: PickType;
-  pickList: PickListType;
-  options: OptionsType;
+  randomPickList: RandomPickType[];
 };
 
 export const RandomPickStateContext = createContext<RandomPickState | null>(
@@ -38,13 +35,9 @@ export const RandomPickStateContext = createContext<RandomPickState | null>(
 );
 
 type RandomPickAction = {
-  selectPickType: Dispatch<SetStateAction<PickType>>;
   modifyPickList: (
     pickType: PickType,
     modifiedPickList: InnerPickListType[],
-  ) => void;
-  changeOption: (
-    changedOption: (prev: OptionsType) => Partial<OptionsType>,
   ) => void;
 };
 
@@ -55,51 +48,36 @@ export const RandomPickActionContext = createContext<RandomPickAction | null>(
 export default function RandomPickProvider({
   children,
 }: PropsWithChildren<{}>) {
-  const [names, setNames] = useLocalStorage(
-    'random-pick-names',
-    INIT_STUDENT_NAMES,
+  const [randomPickList, setRandomPickList] = useLocalStorage<RandomPickType[]>(
+    'random-pick-list',
+    [],
   );
-  const [numbers, setNumbers] = useLocalStorage(
-    'random-pick-numbers',
-    INIT_STUDENT_NUMBERS,
-  );
-
-  const [options, setOptions] = useState<OptionsType>({
-    isExcludingSelected: true,
-    isHideResult: true,
-    isMixingAnimation: true,
-  });
-  const [pickType, setPickType] = useState<PickType>('numbers');
 
   const defaultRandomPickStateValue = {
-    pickType,
-    pickList: {
-      names,
-      numbers,
-    },
-    options,
+    randomPickList,
   };
 
   const defaultRandomPickActionValue = {
-    selectPickType: setPickType,
     modifyPickList: (
       incomingPickType: PickType,
       modifiedPickList: InnerPickListType[],
     ) => {
-      if (incomingPickType === 'names') {
-        setNames(modifiedPickList);
-      }
-      if (incomingPickType === 'numbers') {
-        setNumbers(modifiedPickList);
-      }
-    },
-    changeOption: (
-      changedOption: (prev: OptionsType) => Partial<OptionsType>,
-    ) =>
-      setOptions((prev) => ({
+      setRandomPickList((prev) => [
+        {
+          id: creatId(),
+          createdAt: new Date().toISOString(),
+          title: '새로운 랜덤뽑기',
+          pickType: incomingPickType,
+          pickList: modifiedPickList,
+          options: {
+            isExcludingSelected: true,
+            isHideResult: true,
+            isMixingAnimation: true,
+          },
+        },
         ...prev,
-        ...changedOption(prev),
-      })),
+      ]);
+    },
   };
 
   return (

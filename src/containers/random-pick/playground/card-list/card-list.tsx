@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/styles/utils';
-import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
 import Card from '../card/card';
 import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
@@ -16,11 +15,11 @@ const INTERVAL_TIME = {
 export default function CardList({ isMixingCards }: Props) {
   const cardMixRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { pickList, pickType } = useRandomPickState();
+  const { randomPick } = useRandomPickPlaygroundState();
   const { winners } = useRandomPickPlaygroundState();
   const winnerIds = winners.map((winner) => winner.id);
 
-  const [students, setStudents] = useState(pickList[pickType]);
+  const [students, setStudents] = useState(randomPick.pickList);
   const [intervalTime, setIntervalTime] = useState(INTERVAL_TIME.INITIAL);
 
   useEffect(() => {
@@ -40,8 +39,8 @@ export default function CardList({ isMixingCards }: Props) {
   }, [isMixingCards, intervalTime]);
 
   useEffect(() => {
-    setStudents(pickList[pickType]);
-  }, [pickList[pickType]]);
+    setStudents(randomPick.pickList);
+  }, [randomPick.pickList]);
 
   return (
     <div
@@ -50,7 +49,7 @@ export default function CardList({ isMixingCards }: Props) {
         'mb-36 lg:mb-24',
       )}
     >
-      {(isMixingCards ? students : pickList[pickType]).map(({ id, value }) => (
+      {(isMixingCards ? students : randomPick.pickList).map(({ id, value }) => (
         <Card
           key={id}
           title={value}

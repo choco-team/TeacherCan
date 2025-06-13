@@ -13,7 +13,6 @@ import {
 } from '@/components/select';
 import { cn } from '@/styles/utils';
 import { useNavState } from '@/store/use-nav-store';
-import { useRandomPickState } from '../../random-pick-provider/random-pick-provider.hooks';
 import {
   useRandomPickPlaygroundAction,
   useRandomPickPlaygroundState,
@@ -26,16 +25,16 @@ type Props = {
 };
 
 export default function PickButton({ setNewWinners, openResult }: Props) {
+  const { randomPick, winners } = useRandomPickPlaygroundState();
   const {
     options: { isExcludingSelected },
-  } = useRandomPickState();
-  const { winners, students, isAllStudentsPicked } =
-    useRandomPickPlaygroundState();
+  } = randomPick;
+
   const { runPick } = useRandomPickPlaygroundAction();
 
   const isNavOpen = useNavState();
 
-  const formSchema = getFormSchema(students.length - winners.length);
+  const formSchema = getFormSchema(randomPick.pickList.length - winners.length);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,8 +52,8 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
   const restStudentNumbers = Array.from(
     {
       length: isExcludingSelected
-        ? students.length - deduplicatedWinners.length
-        : students.length,
+        ? randomPick.pickList.length - deduplicatedWinners.length
+        : randomPick.pickList.length,
     },
     (_, index) => index + 1,
   );
@@ -63,8 +62,6 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
     setNewWinners(runPick(number));
     openResult();
   };
-
-  console.log(isNavOpen);
 
   return (
     <Form {...form}>
@@ -83,7 +80,7 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
             <div
               className={cn(
                 'flex items-center gap-x-2',
-                isAllStudentsPicked && 'hidden',
+                randomPick.pickList.length === winners.length && 'hidden',
               )}
             >
               <FormControl>
@@ -112,7 +109,7 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
         />
         <Button
           type="submit"
-          disabled={isAllStudentsPicked}
+          disabled={randomPick.pickList.length === winners.length}
           size="lg"
           className="self-center p-10 rounded-2xl text-3xl hover:scale-105 active:scale-95"
         >

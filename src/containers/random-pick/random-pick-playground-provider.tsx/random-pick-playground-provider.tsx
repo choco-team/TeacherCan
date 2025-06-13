@@ -1,7 +1,6 @@
 /* eslint-disable no-continue */
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
-import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
-import { InnerPickListType } from '../random-pick-provider/random-pick-provider';
+import { RandomPickType } from '../random-pick-provider/random-pick-provider';
 
 export type WinnersType = {
   id: string;
@@ -9,9 +8,8 @@ export type WinnersType = {
 };
 
 type RandomPickPlaygroundState = {
-  students: InnerPickListType[];
+  randomPick: RandomPickType;
   winners: WinnersType[];
-  isAllStudentsPicked: boolean;
 };
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
@@ -25,22 +23,36 @@ export const RandomPickPlaygroundActionContext =
   createContext<RandomPickPlaygroundAction | null>(null);
 
 export default function RandomPickPlaygroundProvider({
+  id,
+  randomPickList,
   children,
-}: PropsWithChildren<{}>) {
+}: PropsWithChildren<{
+  id: string;
+  randomPickList: RandomPickType[];
+}>) {
+  const randomPick = randomPickList.find((item) => item.id === id) ?? {
+    id: ' ',
+    createdAt: '',
+    title: '새로운 랜덤뽑기',
+    pickType: 'numbers',
+    pickList: [],
+    options: {
+      isExcludingSelected: false,
+      isHideResult: false,
+      isMixingAnimation: false,
+    },
+  };
   const {
-    pickType,
     pickList,
     options: { isExcludingSelected },
-  } = useRandomPickState();
+  } = randomPick;
 
   const [winners, setWinners] = useState<WinnersType[]>([]);
   const [tempWinners, setTempWinners] = useState<WinnersType[]>([]);
 
   const defaultRandomPickPlaygroundStateValue = {
-    students: pickList[pickType],
+    randomPick,
     winners,
-    isAllStudentsPicked:
-      pickList[pickType] && pickList[pickType].length === winners.length,
   };
 
   const updateWinner = (countNum: number) => {
@@ -48,8 +60,8 @@ export default function RandomPickPlaygroundProvider({
     const newWinners: WinnersType[] = [];
 
     while (count !== 0) {
-      const n = Math.floor(Math.random() * pickList[pickType].length);
-      const pickedStudent = pickList[pickType][n];
+      const n = Math.floor(Math.random() * pickList.length);
+      const pickedStudent = pickList[n];
 
       const isIncluded = [
         ...newWinners.map((v) => v.id),
