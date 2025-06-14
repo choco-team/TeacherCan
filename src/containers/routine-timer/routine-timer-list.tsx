@@ -22,6 +22,7 @@ export default function RoutineTimerList(): JSX.Element {
       title: '새 루틴',
       totalTime: 0,
       activities: [],
+      videoId: '',
     };
 
     return newRoutineTimer;
