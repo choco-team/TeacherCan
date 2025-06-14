@@ -80,6 +80,17 @@ export default function MusicRequestContainer() {
   const enableCreateRoom = roomIds && roomIds.length < MAX_MUSIC_COUNT;
 
   return (
+    <div className="flex flex-col items-center justify-center mt-20">
+      <div className="text-lg font-bold text-text-title">
+        서버 점검 중 입니다.
+      </div>
+      <div className="text-sm text-text-description">
+        6. 14. 12:00 ~ 6. 15. 22:00
+      </div>
+    </div>
+  );
+
+  return (
     <>
       <div className="flex justify-between items-center mb-6">
         <Heading1 className="mb-6">음악신청 방 목록</Heading1>
