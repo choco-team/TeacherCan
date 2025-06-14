@@ -11,7 +11,7 @@ import { Switch } from '@/components/switch';
 import { useToast } from '@/hooks/use-toast';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import { MAX_MUSIC_COUNT } from '@/containers/music-request/music-request-constants';
 
 const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -19,15 +19,13 @@ const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
 type Props = {
   roomTitle: string;
   roomId: string;
-  isAutoRefetch: boolean;
-  setIsAutoRefetch: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function RoomInfo({
   roomTitle,
   roomId,
-  isAutoRefetch,
-  setIsAutoRefetch,
+  // isAutoRefetch,
+  // setIsAutoRefetch,
 }: Props) {
   const { toast } = useToast();
 
@@ -88,13 +86,13 @@ export default function RoomInfo({
         />
       </div>
       <div className="w-hull h-[1px] bg-gray-100 dark:bg-gray-800" />
-      <Label className="flex items-center justify-between gap-x-2">
+      {/* <Label className="flex items-center justify-between gap-x-2">
         <span className="pl-2 text-text-title">자동 업데이트</span>
         <Switch
           checked={isAutoRefetch}
           onClick={() => setIsAutoRefetch((prev) => !prev)}
         />
-      </Label>
+      </Label> */}
       <Label className="flex items-center justify-between gap-x-2">
         <span className="pl-2 text-text-title">목록 노출</span>
         <Switch checked={isInList} onClick={toggleSave} />
