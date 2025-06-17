@@ -10,13 +10,13 @@ import SettingStudentName from '../setting-student-name/setting-student-name';
 import SettingStudentNumber from '../setting-student-number/setting-student-number';
 
 type Props = {
-  updateRandomPickList: (
+  onCreateRandomPick: (
     pickType: PickType,
     pickList: InnerPickListType[],
   ) => void;
 };
 
-export default function SettingPickType({ updateRandomPickList }: Props) {
+export default function SettingPickType({ onCreateRandomPick }: Props) {
   const [pickType, setPickType] = useState<PickType>('numbers');
 
   return (
@@ -37,9 +37,9 @@ export default function SettingPickType({ updateRandomPickList }: Props) {
         ))}
       </RadioGroup>
       {pickType === 'names' ? (
-        <SettingStudentName updateRandomPickList={updateRandomPickList} />
+        <SettingStudentName onCreateRandomPick={onCreateRandomPick} />
       ) : (
-        <SettingStudentNumber updateRandomPickList={updateRandomPickList} />
+        <SettingStudentNumber onCreateRandomPick={onCreateRandomPick} />
       )}
     </div>
   );

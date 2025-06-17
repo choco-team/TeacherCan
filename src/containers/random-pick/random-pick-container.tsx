@@ -15,18 +15,13 @@ export default function RandomPickContainer() {
     [],
   );
 
-  return isPlaying ? (
+  return (
     <RandomPickPlaygroundProvider
       id={id}
       randomPickList={randomPickList ?? []}
       setRandomPickList={setRandomPickList}
     >
-      <PlayGround />
+      {isPlaying ? <PlayGround /> : <RandomPickList />}
     </RandomPickPlaygroundProvider>
-  ) : (
-    <RandomPickList
-      randomPickList={randomPickList ?? []}
-      setRandomPickList={setRandomPickList}
-    />
   );
 }

@@ -1,6 +1,12 @@
 /* eslint-disable no-continue */
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
-import { OptionsType, RandomPickType } from '../random-pick-type';
+import { creatId } from '@/utils/createNanoid';
+import {
+  InnerPickListType,
+  OptionsType,
+  PickType,
+  RandomPickType,
+} from '../random-pick-type';
 
 export type WinnersType = {
   id: string;
@@ -8,6 +14,7 @@ export type WinnersType = {
 };
 
 type RandomPickPlaygroundState = {
+  randomPickList: RandomPickType[];
   randomPick: RandomPickType;
   winners: WinnersType[];
 };
@@ -18,6 +25,10 @@ type RandomPickPlaygroundAction = {
   runPick: (newNumberOfPick: number) => WinnersType[];
   resetPick: () => void;
   updateOption: (option: Partial<OptionsType>) => void;
+  createRandomPick: (
+    pickType: PickType,
+    newPickList: InnerPickListType[],
+  ) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -55,9 +66,25 @@ export default function RandomPickPlaygroundProvider({
   const [winners, setWinners] = useState<WinnersType[]>([]);
   const [tempWinners, setTempWinners] = useState<WinnersType[]>([]);
 
-  const defaultRandomPickPlaygroundStateValue = {
-    randomPick,
-    winners,
+  const createRandomPick = (
+    pickType: PickType,
+    newPickList: InnerPickListType[],
+  ) => {
+    setRandomPickList((prev) => [
+      ...prev,
+      {
+        id: creatId(),
+        createdAt: new Date().toISOString(),
+        title: '새로운 랜덤뽑기',
+        pickType,
+        pickList: newPickList,
+        options: {
+          isExcludingSelected: true,
+          isHideResult: true,
+          isMixingAnimation: true,
+        },
+      },
+    ]);
   };
 
   const updateOption = (option: Partial<OptionsType>) => {
@@ -107,6 +134,12 @@ export default function RandomPickPlaygroundProvider({
     return newWinners;
   };
 
+  const defaultRandomPickPlaygroundStateValue = {
+    randomPickList,
+    randomPick,
+    winners,
+  };
+
   const defaultRandomPickPlaygroundActionValue = {
     runPick: (newNumberOfPick: number) => {
       const newWinners = updateWinner(newNumberOfPick);
@@ -123,6 +156,7 @@ export default function RandomPickPlaygroundProvider({
       setTempWinners([]);
     },
     updateOption,
+    createRandomPick,
   };
 
   useEffect(() => {

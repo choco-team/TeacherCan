@@ -1,4 +1,3 @@
-import { creatId } from '@/utils/createNanoid';
 import { Heading1 } from '@/components/heading';
 import { Button } from '@/components/button';
 import {
@@ -9,44 +8,23 @@ import {
 } from '@/components/dialog';
 import { useState } from 'react';
 import { RandomPickListInner } from './random-pick-list-inner';
-import {
-  PickType,
-  RandomPickType,
-  InnerPickListType,
-} from '../random-pick-type';
+import { PickType, InnerPickListType } from '../random-pick-type';
 import SettingPickType from './random-pick-setting/setting-pick-type/setting-pick-type';
+import {
+  useRandomPickPlaygroundAction,
+  useRandomPickPlaygroundState,
+} from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
-export default function RandomPickList({
-  randomPickList,
-  setRandomPickList,
-}: {
-  randomPickList: RandomPickType[];
-  setRandomPickList: (
-    value: RandomPickType[] | ((val: RandomPickType[]) => RandomPickType[]),
-  ) => void;
-}) {
+export default function RandomPickList() {
   const [isOpen, setIsOpen] = useState(false);
+  const { randomPickList } = useRandomPickPlaygroundState();
+  const { createRandomPick } = useRandomPickPlaygroundAction();
 
-  const updateRandomPickList = (
+  const handleCreateRandomPick = (
     pickType: PickType,
     pickList: InnerPickListType[],
   ) => {
-    setRandomPickList((prev) => [
-      ...prev,
-      {
-        id: creatId(),
-        createdAt: new Date().toISOString(),
-        title: '새로운 랜덤뽑기',
-        pickType,
-        pickList,
-        options: {
-          isExcludingSelected: true,
-          isHideResult: true,
-          isMixingAnimation: true,
-        },
-      },
-    ]);
-
+    createRandomPick(pickType, pickList);
     setIsOpen(false);
   };
 
@@ -64,7 +42,7 @@ export default function RandomPickList({
           <DialogHeader>
             <DialogTitle>랜덤뽑기 만들기</DialogTitle>
           </DialogHeader>
-          <SettingPickType updateRandomPickList={updateRandomPickList} />
+          <SettingPickType onCreateRandomPick={handleCreateRandomPick} />
         </DialogContent>
       </Dialog>
     </div>

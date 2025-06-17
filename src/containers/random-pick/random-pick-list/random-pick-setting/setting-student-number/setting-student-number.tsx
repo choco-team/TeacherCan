@@ -28,13 +28,13 @@ const formSchema = z.object({
 });
 
 type Props = {
-  updateRandomPickList: (
+  onCreateRandomPick: (
     pickType: PickType,
     pickList: InnerPickListType[],
   ) => void;
 };
 
-export default function SettingStudentNumber({ updateRandomPickList }: Props) {
+export default function SettingStudentNumber({ onCreateRandomPick }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,7 +52,7 @@ export default function SettingStudentNumber({ updateRandomPickList }: Props) {
       }),
     );
 
-    updateRandomPickList('numbers', newStudentNumbers);
+    onCreateRandomPick('numbers', newStudentNumbers);
   };
 
   return (
