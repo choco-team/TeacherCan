@@ -27,7 +27,6 @@ export function useMusicSSE(
     };
 
     eventSource.onerror = () => {
-      eventSource.close();
       throw new Error('music-sse 연결 오류');
     };
 
