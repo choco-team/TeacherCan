@@ -1,6 +1,6 @@
 /* eslint-disable no-continue */
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
-import { RandomPickType } from '../random-pick-type';
+import { OptionsType, RandomPickType } from '../random-pick-type';
 
 export type WinnersType = {
   id: string;
@@ -17,6 +17,7 @@ export const RandomPickPlaygroundStateContext =
 type RandomPickPlaygroundAction = {
   runPick: (newNumberOfPick: number) => WinnersType[];
   resetPick: () => void;
+  updateOption: (option: Partial<OptionsType>) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -25,10 +26,14 @@ export const RandomPickPlaygroundActionContext =
 export default function RandomPickPlaygroundProvider({
   id,
   randomPickList,
+  setRandomPickList,
   children,
 }: PropsWithChildren<{
   id: string;
   randomPickList: RandomPickType[];
+  setRandomPickList: (
+    value: RandomPickType[] | ((val: RandomPickType[]) => RandomPickType[]),
+  ) => void;
 }>) {
   const randomPick = randomPickList.find((item) => item.id === id) ?? {
     id: ' ',
@@ -53,6 +58,21 @@ export default function RandomPickPlaygroundProvider({
   const defaultRandomPickPlaygroundStateValue = {
     randomPick,
     winners,
+  };
+
+  const updateOption = (option: Partial<OptionsType>) => {
+    setRandomPickList((prev) => {
+      const newRandomPickList = [...prev];
+      newRandomPickList[randomPickList.findIndex((item) => item.id === id)] = {
+        ...randomPick,
+        options: {
+          ...randomPick.options,
+          ...option,
+        },
+      };
+
+      return newRandomPickList;
+    });
   };
 
   const updateWinner = (countNum: number) => {
@@ -102,6 +122,7 @@ export default function RandomPickPlaygroundProvider({
       setWinners([]);
       setTempWinners([]);
     },
+    updateOption,
   };
 
   useEffect(() => {

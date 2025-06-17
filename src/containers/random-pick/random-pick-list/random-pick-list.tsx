@@ -1,4 +1,3 @@
-import useLocalStorage from '@/hooks/useLocalStorage';
 import { creatId } from '@/utils/createNanoid';
 import { Heading1 } from '@/components/heading';
 import { Button } from '@/components/button';
@@ -17,11 +16,15 @@ import {
 } from '../random-pick-type';
 import SettingPickType from './random-pick-setting/setting-pick-type/setting-pick-type';
 
-export default function RandomPickList() {
-  const [randomPickList, setRandomPickList] = useLocalStorage<RandomPickType[]>(
-    'random-pick-list',
-    [],
-  );
+export default function RandomPickList({
+  randomPickList,
+  setRandomPickList,
+}: {
+  randomPickList: RandomPickType[];
+  setRandomPickList: (
+    value: RandomPickType[] | ((val: RandomPickType[]) => RandomPickType[]),
+  ) => void;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   const updateRandomPickList = (

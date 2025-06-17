@@ -47,11 +47,7 @@ export default function PlayGround() {
 
   return (
     <div ref={cardListRef} className="flex-grow relative flex flex-col gap-y-6">
-      <WhilePlaySettings
-        title={title}
-        setTitle={setTitle}
-        makeNewPlay={() => {}}
-      />
+      <WhilePlaySettings title={title} setTitle={setTitle} />
       <CardList isMixingCards={isMixingCards} />
       <PickButton
         setNewWinners={setNewWinners}

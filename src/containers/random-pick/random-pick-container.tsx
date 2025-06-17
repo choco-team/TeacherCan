@@ -10,16 +10,23 @@ import { RandomPickType } from './random-pick-type';
 export default function RandomPickContainer() {
   const { id } = useParams<{ id?: string }>();
   const isPlaying = !!id;
-  const [randomPickList] = useLocalStorage<RandomPickType[]>(
+  const [randomPickList, setRandomPickList] = useLocalStorage<RandomPickType[]>(
     'random-pick-list',
     [],
   );
 
   return isPlaying ? (
-    <RandomPickPlaygroundProvider id={id} randomPickList={randomPickList ?? []}>
+    <RandomPickPlaygroundProvider
+      id={id}
+      randomPickList={randomPickList ?? []}
+      setRandomPickList={setRandomPickList}
+    >
       <PlayGround />
     </RandomPickPlaygroundProvider>
   ) : (
-    <RandomPickList />
+    <RandomPickList
+      randomPickList={randomPickList ?? []}
+      setRandomPickList={setRandomPickList}
+    />
   );
 }

@@ -2,28 +2,21 @@ import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import { AlertDialog, AlertDialogTrigger } from '@/components/alert-dialog';
 import {
   useRandomPickPlaygroundAction,
   useRandomPickPlaygroundState,
 } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
-import { MakeNewPlayConfirm } from './make-new-play-confirm';
 
 type Props = {
   title: string;
   setTitle: (title: string) => void;
-  makeNewPlay: () => void;
 };
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
-export default function WhilePlaySettings({
-  title,
-  setTitle,
-  makeNewPlay,
-}: Props) {
+export default function WhilePlaySettings({ title, setTitle }: Props) {
   const { winners, randomPick } = useRandomPickPlaygroundState();
-  const { resetPick } = useRandomPickPlaygroundAction();
+  const { resetPick, updateOption } = useRandomPickPlaygroundAction();
 
   return (
     <div className="flex items-center flex-col gap-6 lg:flex-row flex-wrap">
@@ -42,46 +35,38 @@ export default function WhilePlaySettings({
             뽑힌 학생 제외
             <Switch
               checked={randomPick.options.isExcludingSelected}
-              // onClick={() =>
-              // changeOption((prev) => ({
-              //   isExcludingSelected: !prev.isExcludingSelected,
-              // }))
-              // }
+              onClick={() =>
+                updateOption({
+                  isExcludingSelected: !randomPick.options.isExcludingSelected,
+                })
+              }
             />
           </Label>
           <Label className="flex items-center gap-x-2">
             결과 숨기기
             <Switch
               checked={randomPick.options.isHideResult}
-              // onClick={() =>
-              // changeOption((prev) => ({
-              //   isHideResult: !prev.isHideResult,
-              // }))
-              // }
+              onClick={() =>
+                updateOption({
+                  isHideResult: !randomPick.options.isHideResult,
+                })
+              }
             />
           </Label>
           <Label className="flex items-center gap-x-2">
             카드 섞기 효과
             <Switch
               checked={randomPick.options.isMixingAnimation}
-              // onClick={() =>
-              // changeOption((prev) => ({
-              //   isMixingAnimation: !prev.isMixingAnimation,
-              // }))
-              // }
+              onClick={() =>
+                updateOption({
+                  isMixingAnimation: !randomPick.options.isMixingAnimation,
+                })
+              }
             />
           </Label>
         </div>
 
         <div className="flex items-center gap-x-2 md:gap-x-4 w-full md:w-fit">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="gray-outline" size="md" className="flex-1">
-                새 뽑기 만들기
-              </Button>
-            </AlertDialogTrigger>
-            <MakeNewPlayConfirm makeNewPlay={makeNewPlay} />
-          </AlertDialog>
           <Button
             variant={
               randomPick.pickList.length === winners.length

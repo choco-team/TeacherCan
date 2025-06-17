@@ -18,7 +18,7 @@ export type InnerPickListType = {
 
 export type PickType = (typeof PICK_TYPES)[number]['type'];
 
-type OptionsType = {
+export type OptionsType = {
   isExcludingSelected: boolean;
   isHideResult: boolean;
   isMixingAnimation: boolean;
