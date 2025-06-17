@@ -1,15 +1,20 @@
 import {
   createContext,
-  ReactNode,
+  type PropsWithChildren,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { useCountdownState } from '../countdown-provider/countdown-provider.hooks';
+import { ALARM_SOUNDS } from './countdown-alarm-provider.constants';
+
+type AlarmSoundValue = (typeof ALARM_SOUNDS)[number]['value'];
 
 type CountdownAlarmState = {
   alarmTimes: number[];
+  selectedAlarmSound: (typeof ALARM_SOUNDS)[number];
 };
 
 export const CountdownAlarmStateContext =
@@ -17,18 +22,28 @@ export const CountdownAlarmStateContext =
 
 type CountdownAlarmAction = {
   toggleAlarmTime: (num: number) => () => void;
+  selectAlarmSound: (soundId: AlarmSoundValue) => void;
+  previewAlarmSound: (soundId: AlarmSoundValue) => void;
 };
 
 export const CountdownAlarmActionContext =
   createContext<CountdownAlarmAction | null>(null);
 
-type Props = {
-  children: ReactNode;
-};
+const DEFAULT_ALARM_SOUND = ALARM_SOUNDS[0];
 
-export default function CountdownAlarmProvider({ children }: Props) {
+export default function CountdownAlarmProvider({
+  children,
+}: PropsWithChildren) {
   const [alarmAudio, setAlarmAudio] = useState<HTMLAudioElement>(null);
+  const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(
+    null,
+  );
   const [alarmTimes, setAlarmTimes] = useState<number[]>([0]);
+  const [selectedAlarmSoundValue, setSelectedAlarmSoundValue] =
+    useLocalStorage<AlarmSoundValue>(
+      'timer-alarm-sound',
+      DEFAULT_ALARM_SOUND.value,
+    );
   const { leftTime, isActive } = useCountdownState();
 
   const toggleAlarmTime = useCallback(
@@ -43,11 +58,44 @@ export default function CountdownAlarmProvider({ children }: Props) {
     [alarmTimes],
   );
 
-  useEffect(() => {
-    // const alarmBasic = new Audio('/timer/audio/alarm-beeps.mp3');
-    const alarmBasic = new Audio('/audio/timer/alarm-beeps.mp3');
-    setAlarmAudio(alarmBasic);
+  const selectAlarmSound = useCallback(
+    (soundId: AlarmSoundValue) => {
+      setSelectedAlarmSoundValue(soundId);
+    },
+    [setSelectedAlarmSoundValue],
+  );
 
+  const previewAlarmSound = useCallback(
+    (soundValue: AlarmSoundValue) => {
+      const sound = ALARM_SOUNDS.find(({ value }) => value === soundValue);
+      if (!sound) return;
+
+      if (previewAudio) {
+        previewAudio.pause();
+        previewAudio.src = '';
+      }
+
+      const audio = new Audio(sound.path);
+      audio.play();
+      setPreviewAudio(audio);
+
+      audio.onended = () => {
+        setPreviewAudio(null);
+      };
+    },
+    [previewAudio],
+  );
+
+  useEffect(() => {
+    const sound = ALARM_SOUNDS.find(
+      ({ value }) => value === selectedAlarmSoundValue,
+    );
+    if (!sound) return;
+
+    const audio = new Audio(sound.path);
+    setAlarmAudio(audio);
+
+    // eslint-disable-next-line consistent-return
     return () => {
       if (alarmAudio) {
         alarmAudio.pause();
@@ -55,7 +103,7 @@ export default function CountdownAlarmProvider({ children }: Props) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedAlarmSoundValue]);
 
   useEffect(() => {
     if (!alarmAudio || !isActive) {
@@ -71,18 +119,32 @@ export default function CountdownAlarmProvider({ children }: Props) {
     if (leftTime === 0) setAlarmTimes([0]);
   }, [alarmTimes, leftTime, isActive, alarmAudio]);
 
+  useEffect(() => {
+    return () => {
+      if (previewAudio) {
+        previewAudio.pause();
+        previewAudio.src = '';
+      }
+    };
+  }, [previewAudio]);
+
   const defaultCountdownAlarmStateValue = useMemo(
     () => ({
       alarmTimes,
+      selectedAlarmSound:
+        ALARM_SOUNDS.find(({ value }) => value === selectedAlarmSoundValue) ??
+        DEFAULT_ALARM_SOUND,
     }),
-    [alarmTimes],
+    [alarmTimes, selectedAlarmSoundValue],
   );
 
   const defaultCountdownAlarmActionValue = useMemo(
     () => ({
       toggleAlarmTime,
+      selectAlarmSound,
+      previewAlarmSound,
     }),
-    [toggleAlarmTime],
+    [toggleAlarmTime, selectAlarmSound, previewAlarmSound],
   );
 
   return (

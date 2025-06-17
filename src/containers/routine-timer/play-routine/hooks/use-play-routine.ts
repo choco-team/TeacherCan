@@ -64,7 +64,7 @@ export const usePlayRoutine = (routineId: string) => {
       } else {
         stopTimer();
 
-        const audio = new Audio('/audio/timer/alarm-beeps.mp3');
+        const audio = new Audio('/audio/timer/alarm/melody-1.mp3');
         audio.play();
 
         audio.onended = () => {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 type LocalStorageKey =
+  | 'timer-alarm-sound'
   | 'random-pick-numbers'
   | 'random-pick-names'
   | 'qrcodes'
