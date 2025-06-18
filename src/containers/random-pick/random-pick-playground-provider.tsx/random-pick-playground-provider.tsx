@@ -1,5 +1,6 @@
 /* eslint-disable no-continue */
 import { createContext, PropsWithChildren, useState } from 'react';
+import { orderBy } from 'lodash';
 import { creatId } from '@/utils/createNanoid';
 import {
   InnerPickListType,
@@ -162,7 +163,7 @@ export default function RandomPickPlaygroundProvider({
   return (
     <RandomPickPlaygroundStateContext.Provider
       value={{
-        randomPickList,
+        randomPickList: orderBy(randomPickList, ['createdAt'], ['desc']),
         randomPick,
         newWinners,
       }}
