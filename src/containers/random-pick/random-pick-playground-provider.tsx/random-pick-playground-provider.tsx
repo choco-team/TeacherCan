@@ -26,6 +26,7 @@ type RandomPickPlaygroundAction = {
     newPickList: InnerPickListType[],
   ) => void;
   updateTitle: (title: string) => void;
+  removeRandomPick: (selectedRows: string[]) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -173,6 +174,16 @@ export default function RandomPickPlaygroundProvider({
     });
   };
 
+  const removeRandomPick = (selectedRows: string[]) => {
+    setRandomPickList((prev) => {
+      const newRandomPickList = [...prev].filter(
+        (item) => !selectedRows.includes(item.id),
+      );
+
+      return newRandomPickList;
+    });
+  };
+
   return (
     <RandomPickPlaygroundStateContext.Provider
       value={{
@@ -192,6 +203,7 @@ export default function RandomPickPlaygroundProvider({
           updateOption,
           createRandomPick,
           updateTitle,
+          removeRandomPick,
         }}
       >
         {children}

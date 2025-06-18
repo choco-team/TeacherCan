@@ -8,18 +8,23 @@ import {
   TableRow,
   TableCell,
 } from '@/components/table';
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Dispatch, SetStateAction } from 'react';
 import { RandomPickType } from '../random-pick-type';
 import OptionBadge from './optionBadge/optionBadge';
 
 interface RandomPickListInnerProps {
   data: RandomPickType[];
+  selectedRows: string[];
+  setSelectedRows: Dispatch<SetStateAction<string[]>>;
 }
 
-export function RandomPickListInner({ data }: RandomPickListInnerProps) {
+export function RandomPickListInner({
+  data,
+  selectedRows,
+  setSelectedRows,
+}: RandomPickListInnerProps) {
   const router = useRouter();
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   return (
     <Table>

@@ -3,6 +3,8 @@ import { Button } from '@/components/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/dialog';
@@ -22,8 +24,13 @@ export default function RandomPickList() {
   const { toast } = useToast();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isRemoveOpen, setIsRemoveOpen] = useState(false);
+
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
   const { randomPickList } = useRandomPickPlaygroundState();
-  const { createRandomPick } = useRandomPickPlaygroundAction();
+  const { createRandomPick, removeRandomPick } =
+    useRandomPickPlaygroundAction();
 
   const handleOpenDialog = () => {
     if (randomPickList.length >= MAX_RANDOM_PICK_COUNT) {
@@ -45,6 +52,11 @@ export default function RandomPickList() {
     setIsOpen(false);
   };
 
+  const handleRemoveRandomPick = () => {
+    removeRandomPick(selectedRows);
+    setIsRemoveOpen(false);
+  };
+
   return (
     <div>
       <div className="flex justify-between">
@@ -53,13 +65,58 @@ export default function RandomPickList() {
           랜덤뽑기 만들기
         </Button>
       </div>
-      <RandomPickListInner data={randomPickList ?? []} />
+      <div className="flex flex-col gap-y-8">
+        <RandomPickListInner
+          data={randomPickList ?? []}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+        />
+        {selectedRows.length > 0 ? (
+          <Button
+            variant="gray-outline"
+            size="sm"
+            className="w-fit self-center animate-fade-in"
+            onClick={() => setIsRemoveOpen(true)}
+          >
+            선택한 랜덤뽑기 삭제하기
+          </Button>
+        ) : null}
+      </div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>랜덤뽑기 만들기</DialogTitle>
           </DialogHeader>
           <SettingPickType onCreateRandomPick={handleCreateRandomPick} />
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isRemoveOpen} onOpenChange={setIsRemoveOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>랜덤뽑기 삭제하기</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            선택한 랜덤뽑기를 삭제하시겠습니까? 삭제된 랜덤뽑기는 복구할 수
+            없습니다.
+          </DialogDescription>
+          <DialogFooter>
+            <Button
+              variant="gray-ghost"
+              size="sm"
+              onClick={() => setIsRemoveOpen(false)}
+              className="w-[120px]"
+            >
+              취소
+            </Button>
+            <Button
+              variant="red"
+              size="sm"
+              className="w-[120px]"
+              onClick={handleRemoveRandomPick}
+            >
+              삭제
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
