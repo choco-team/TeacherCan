@@ -3,11 +3,16 @@ import ResultModal from './result-modal/result-modal';
 import CardList from './card-list/card-list';
 import WhilePlaySettings from './while-play-settings/while-play-settings';
 import PickButton from './pick-button/pick-button';
-import { useRandomPickPlaygroundState } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
+import {
+  useRandomPickPlaygroundAction,
+  useRandomPickPlaygroundState,
+} from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
 export default function PlayGround() {
   const { randomPick } = useRandomPickPlaygroundState();
-  const [title, setTitle] = useState('');
+  const { updateTitle } = useRandomPickPlaygroundAction();
+  const { title } = randomPick;
+
   const [isOpenResult, setIsOpenResult] = useState(false);
   const [isMixingCards, setsMixingCards] = useState(false);
 
@@ -44,7 +49,7 @@ export default function PlayGround() {
 
   return (
     <div ref={cardListRef} className="flex-grow relative flex flex-col gap-y-6">
-      <WhilePlaySettings title={title} setTitle={setTitle} />
+      <WhilePlaySettings title={title} updateTitle={updateTitle} />
       <CardList isMixingCards={isMixingCards} />
       <PickButton openResult={() => toggleResultOpen(true)} />
       <ResultModal

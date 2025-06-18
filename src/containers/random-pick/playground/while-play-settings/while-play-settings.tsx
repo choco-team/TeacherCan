@@ -9,12 +9,12 @@ import {
 
 type Props = {
   title: string;
-  setTitle: (title: string) => void;
+  updateTitle: (title: string) => void;
 };
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
-export default function WhilePlaySettings({ title, setTitle }: Props) {
+export default function WhilePlaySettings({ title, updateTitle }: Props) {
   const { randomPick } = useRandomPickPlaygroundState();
   const winners = randomPick.pickList.filter((item) => item.isPicked);
 
@@ -28,7 +28,7 @@ export default function WhilePlaySettings({ title, setTitle }: Props) {
         placeholder="랜덤뽑기 제목"
         className="lg:max-w-[300px]"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => updateTitle(e.target.value)}
       />
 
       <div className="flex-grow flex gap-8 flex-wrap w-full lg:w-fit justify-end">

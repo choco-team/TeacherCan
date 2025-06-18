@@ -25,6 +25,7 @@ type RandomPickPlaygroundAction = {
     pickType: PickType,
     newPickList: InnerPickListType[],
   ) => void;
+  updateTitle: (title: string) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -160,6 +161,18 @@ export default function RandomPickPlaygroundProvider({
     });
   };
 
+  const updateTitle = (title: string) => {
+    setRandomPickList((prev) => {
+      const newRandomPickList = [...prev];
+      newRandomPickList[randomPickList.findIndex((item) => item.id === id)] = {
+        ...randomPick,
+        title,
+      };
+
+      return newRandomPickList;
+    });
+  };
+
   return (
     <RandomPickPlaygroundStateContext.Provider
       value={{
@@ -178,6 +191,7 @@ export default function RandomPickPlaygroundProvider({
           },
           updateOption,
           createRandomPick,
+          updateTitle,
         }}
       >
         {children}
