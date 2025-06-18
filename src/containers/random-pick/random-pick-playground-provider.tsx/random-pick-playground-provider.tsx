@@ -1,5 +1,5 @@
 /* eslint-disable no-continue */
-import { createContext, PropsWithChildren, useEffect, useState } from 'react';
+import { createContext, PropsWithChildren, useState } from 'react';
 import { creatId } from '@/utils/createNanoid';
 import {
   InnerPickListType,
@@ -8,21 +8,16 @@ import {
   RandomPickType,
 } from '../random-pick-type';
 
-export type WinnersType = {
-  id: string;
-  value: string;
-};
-
 type RandomPickPlaygroundState = {
   randomPickList: RandomPickType[];
   randomPick: RandomPickType;
-  winners: WinnersType[];
+  newWinners: { id: string; value: string }[];
 };
 export const RandomPickPlaygroundStateContext =
   createContext<RandomPickPlaygroundState | null>(null);
 
 type RandomPickPlaygroundAction = {
-  runPick: (newNumberOfPick: number) => WinnersType[];
+  runPick: (newNumberOfPick: number) => void;
   resetPick: () => void;
   updateOption: (option: Partial<OptionsType>) => void;
   createRandomPick: (
@@ -46,6 +41,10 @@ export default function RandomPickPlaygroundProvider({
     value: RandomPickType[] | ((val: RandomPickType[]) => RandomPickType[]),
   ) => void;
 }>) {
+  const [newWinners, setNewWinners] = useState<{ id: string; value: string }[]>(
+    [],
+  );
+
   const randomPick = randomPickList.find((item) => item.id === id) ?? {
     id: ' ',
     createdAt: '',
@@ -62,9 +61,6 @@ export default function RandomPickPlaygroundProvider({
     pickList,
     options: { isExcludingSelected },
   } = randomPick;
-
-  const [winners, setWinners] = useState<WinnersType[]>([]);
-  const [tempWinners, setTempWinners] = useState<WinnersType[]>([]);
 
   const createRandomPick = (
     pickType: PickType,
@@ -104,20 +100,19 @@ export default function RandomPickPlaygroundProvider({
 
   const updateWinner = (countNum: number) => {
     let count = countNum;
-    const newWinners: WinnersType[] = [];
+    const newPickedList: { id: string; value: string }[] = [];
+    const existingPickedId = pickList
+      .filter((item) => item.isPicked)
+      .map((v) => v.id);
 
     while (count !== 0) {
       const n = Math.floor(Math.random() * pickList.length);
       const pickedStudent = pickList[n];
 
       const isIncluded = [
-        ...newWinners.map((v) => v.id),
-        ...(isExcludingSelected ? winners.map((v) => v.id) : []),
+        ...newPickedList.map((v) => v.id),
+        ...(isExcludingSelected ? existingPickedId : []),
       ].includes(pickedStudent.id);
-
-      if (!pickedStudent.isUsed) {
-        continue;
-      }
 
       if (isIncluded) {
         continue;
@@ -125,55 +120,64 @@ export default function RandomPickPlaygroundProvider({
 
       count -= 1;
 
-      newWinners.push({
+      newPickedList.push({
         id: pickedStudent.id,
         value: pickedStudent.value,
       });
     }
 
-    return newWinners;
+    setNewWinners(newPickedList);
+    setRandomPickList((prev) => {
+      const newRandomPickList = [...prev];
+      newRandomPickList[randomPickList.findIndex((item) => item.id === id)] = {
+        ...randomPick,
+        pickList: randomPick.pickList.map((item) => ({
+          ...item,
+          isPicked: [
+            ...existingPickedId,
+            ...newPickedList.map((v) => v.id),
+          ].includes(item.id),
+        })),
+      };
+
+      return newRandomPickList;
+    });
   };
 
-  const defaultRandomPickPlaygroundStateValue = {
-    randomPickList,
-    randomPick,
-    winners,
+  const resetWinner = () => {
+    setRandomPickList((prev) => {
+      const newRandomPickList = [...prev];
+      newRandomPickList[randomPickList.findIndex((item) => item.id === id)] = {
+        ...randomPick,
+        pickList: randomPick.pickList.map((item) => ({
+          ...item,
+          isPicked: false,
+        })),
+      };
+
+      return newRandomPickList;
+    });
   };
-
-  const defaultRandomPickPlaygroundActionValue = {
-    runPick: (newNumberOfPick: number) => {
-      const newWinners = updateWinner(newNumberOfPick);
-
-      if (isExcludingSelected) {
-        setWinners((prev) => [...prev, ...newWinners]);
-      }
-
-      setTempWinners((prev) => [...prev, ...newWinners]);
-      return newWinners;
-    },
-    resetPick: () => {
-      setWinners([]);
-      setTempWinners([]);
-    },
-    updateOption,
-    createRandomPick,
-  };
-
-  useEffect(() => {
-    if (isExcludingSelected) {
-      setWinners(tempWinners);
-      return;
-    }
-
-    setWinners([]);
-  }, [isExcludingSelected]);
 
   return (
     <RandomPickPlaygroundStateContext.Provider
-      value={defaultRandomPickPlaygroundStateValue}
+      value={{
+        randomPickList,
+        randomPick,
+        newWinners,
+      }}
     >
       <RandomPickPlaygroundActionContext.Provider
-        value={defaultRandomPickPlaygroundActionValue}
+        value={{
+          runPick: (newNumberOfPick: number) => {
+            updateWinner(newNumberOfPick);
+          },
+          resetPick: () => {
+            resetWinner();
+          },
+          updateOption,
+          createRandomPick,
+        }}
       >
         {children}
       </RandomPickPlaygroundActionContext.Provider>

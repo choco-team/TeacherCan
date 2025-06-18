@@ -1,14 +1,20 @@
 import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
 import { cn } from '@/styles/utils';
 
-type TitleType = {
+type Props = {
   title: string;
   isWinner: boolean;
   isMixingCards: boolean;
+  isExcludingSelected: boolean;
 };
 
-export default function Card({ title, isWinner, isMixingCards }: TitleType) {
-  const isAlreadyPicked = isWinner && !isMixingCards;
+export default function Card({
+  title,
+  isWinner,
+  isMixingCards,
+  isExcludingSelected,
+}: Props) {
+  const isAlreadyPicked = isExcludingSelected && isWinner && !isMixingCards;
 
   return (
     <div

@@ -16,8 +16,8 @@ export default function CardList({ isMixingCards }: Props) {
   const cardMixRef = useRef<NodeJS.Timeout | null>(null);
 
   const { randomPick } = useRandomPickPlaygroundState();
-  const { winners } = useRandomPickPlaygroundState();
-  const winnerIds = winners.map((winner) => winner.id);
+  const winners = randomPick.pickList.filter((item) => item.isPicked);
+  const winnerIds = winners.map(({ id }) => id);
 
   const [students, setStudents] = useState(randomPick.pickList);
   const [intervalTime, setIntervalTime] = useState(INTERVAL_TIME.INITIAL);
@@ -55,6 +55,7 @@ export default function CardList({ isMixingCards }: Props) {
           title={value}
           isWinner={winnerIds.includes(id)}
           isMixingCards={isMixingCards}
+          isExcludingSelected={randomPick.options.isExcludingSelected}
         />
       ))}
     </div>

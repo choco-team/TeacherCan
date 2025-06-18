@@ -6,26 +6,23 @@ import {
   DialogFooter,
   DialogTitle,
 } from '@/components/dialog';
-import type { WinnersType } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider';
 import ResultCard from '../result-card/result-card';
 import { useRandomPickPlaygroundState } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
 type Props = {
   isOpenResult: boolean;
   title: string;
-  newWinners: WinnersType[];
   toggleResultOpen: (open: boolean) => void;
 };
 
 export default function ResultModal({
   isOpenResult,
   title,
-  newWinners,
   toggleResultOpen,
 }: Props) {
   const [openCards, setOpenCards] = useState([]);
 
-  const { randomPick } = useRandomPickPlaygroundState();
+  const { randomPick, newWinners } = useRandomPickPlaygroundState();
 
   const isAllOpen = openCards.length === newWinners.length;
 
@@ -34,7 +31,7 @@ export default function ResultModal({
   };
 
   const handleOpenAll = () => {
-    setOpenCards(newWinners.map(({ id }) => id));
+    setOpenCards(newWinners);
   };
 
   const onOpenChange = (open: boolean) => {
@@ -54,10 +51,10 @@ export default function ResultModal({
           {newWinners.map((newWinner) => (
             <ResultCard
               key={newWinner.id}
-              winner={newWinner}
+              winner={newWinner.value}
               isOpen={
                 !randomPick.options.isHideResult ||
-                openCards.includes(newWinner.id)
+                openCards.includes(newWinner)
               }
               handleOpenOne={handleOpenOne}
             />

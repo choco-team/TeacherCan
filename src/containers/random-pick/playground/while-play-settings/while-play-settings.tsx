@@ -15,7 +15,9 @@ type Props = {
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
 export default function WhilePlaySettings({ title, setTitle }: Props) {
-  const { winners, randomPick } = useRandomPickPlaygroundState();
+  const { randomPick } = useRandomPickPlaygroundState();
+  const winners = randomPick.pickList.filter((item) => item.isPicked);
+
   const { resetPick, updateOption } = useRandomPickPlaygroundAction();
 
   return (

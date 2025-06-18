@@ -17,15 +17,15 @@ import {
   useRandomPickPlaygroundAction,
   useRandomPickPlaygroundState,
 } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
-import type { WinnersType } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider';
 
 type Props = {
-  setNewWinners: (winners: WinnersType[]) => void;
   openResult: () => void;
 };
 
-export default function PickButton({ setNewWinners, openResult }: Props) {
-  const { randomPick, winners } = useRandomPickPlaygroundState();
+export default function PickButton({ openResult }: Props) {
+  const { randomPick } = useRandomPickPlaygroundState();
+  const winners = randomPick.pickList.filter((item) => item.isPicked);
+
   const {
     options: { isExcludingSelected },
   } = randomPick;
@@ -34,7 +34,20 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
 
   const isNavOpen = useNavState();
 
-  const formSchema = getFormSchema(randomPick.pickList.length - winners.length);
+  const restStudentNumbers = Array.from(
+    {
+      length: isExcludingSelected
+        ? randomPick.pickList.length - winners.length
+        : randomPick.pickList.length,
+    },
+    (_, index) => index + 1,
+  );
+
+  const formSchema = getFormSchema(
+    isExcludingSelected
+      ? randomPick.pickList.length - winners.length
+      : randomPick.pickList.length,
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,23 +56,8 @@ export default function PickButton({ setNewWinners, openResult }: Props) {
     },
   });
 
-  const deduplicatedWinners = winners.reduce((acc: WinnersType[], cur) => {
-    const isDuplicate = acc.some(({ id }) => id === cur.id);
-
-    return isDuplicate ? acc : [...acc, cur];
-  }, []);
-
-  const restStudentNumbers = Array.from(
-    {
-      length: isExcludingSelected
-        ? randomPick.pickList.length - deduplicatedWinners.length
-        : randomPick.pickList.length,
-    },
-    (_, index) => index + 1,
-  );
-
   const onSubmit = ({ number }: z.infer<typeof formSchema>) => {
-    setNewWinners(runPick(number));
+    runPick(number);
     openResult();
   };
 
