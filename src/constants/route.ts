@@ -69,7 +69,6 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '알림장 문구 추천',
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
-    isNew: true,
   },
   // '/routine-timer': {
   //   title: '루틴타이머',
