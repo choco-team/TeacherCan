@@ -1,7 +1,7 @@
 /* eslint-disable no-continue */
 import { createContext, PropsWithChildren, useState } from 'react';
-import { orderBy } from 'lodash';
 import { creatId } from '@/utils/createNanoid';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import {
   InnerPickListType,
   OptionsType,
@@ -10,7 +10,7 @@ import {
 } from '../random-pick-type';
 
 type RandomPickPlaygroundState = {
-  randomPickList: RandomPickType[];
+  randomPickList: RandomPickType[] | null;
   randomPick: RandomPickType;
   newWinners: { id: string; value: string }[];
 };
@@ -34,36 +34,19 @@ export const RandomPickPlaygroundActionContext =
 
 export default function RandomPickPlaygroundProvider({
   id,
-  randomPickList,
-  setRandomPickList,
   children,
 }: PropsWithChildren<{
   id: string;
-  randomPickList: RandomPickType[];
-  setRandomPickList: (
-    value: RandomPickType[] | ((val: RandomPickType[]) => RandomPickType[]),
-  ) => void;
 }>) {
+  const [randomPickList, setRandomPickList] = useLocalStorage<
+    RandomPickType[] | null
+  >('random-pick-list', []);
+
   const [newWinners, setNewWinners] = useState<{ id: string; value: string }[]>(
     [],
   );
 
-  const randomPick = randomPickList.find((item) => item.id === id) ?? {
-    id: ' ',
-    createdAt: '',
-    title: '새로운 랜덤뽑기',
-    pickType: 'numbers',
-    pickList: [],
-    options: {
-      isExcludingSelected: false,
-      isHideResult: false,
-      isMixingAnimation: false,
-    },
-  };
-  const {
-    pickList,
-    options: { isExcludingSelected },
-  } = randomPick;
+  const randomPick = randomPickList?.find((item) => item.id === id) || null;
 
   const createRandomPick = (
     pickType: PickType,
@@ -102,19 +85,23 @@ export default function RandomPickPlaygroundProvider({
   };
 
   const updateWinner = (countNum: number) => {
+    if (!randomPick) {
+      return;
+    }
+
     let count = countNum;
     const newPickedList: { id: string; value: string }[] = [];
-    const existingPickedId = pickList
+    const existingPickedId = randomPick?.pickList
       .filter((item) => item.isPicked)
       .map((v) => v.id);
 
     while (count !== 0) {
-      const n = Math.floor(Math.random() * pickList.length);
-      const pickedStudent = pickList[n];
+      const n = Math.floor(Math.random() * randomPick.pickList.length);
+      const pickedStudent = randomPick?.pickList[n];
 
       const isIncluded = [
         ...newPickedList.map((v) => v.id),
-        ...(isExcludingSelected ? existingPickedId : []),
+        ...(randomPick.options.isExcludingSelected ? existingPickedId : []),
       ].includes(pickedStudent.id);
 
       if (isIncluded) {
@@ -187,7 +174,7 @@ export default function RandomPickPlaygroundProvider({
   return (
     <RandomPickPlaygroundStateContext.Provider
       value={{
-        randomPickList: orderBy(randomPickList, ['createdAt'], ['desc']),
+        randomPickList,
         randomPick,
         newWinners,
       }}

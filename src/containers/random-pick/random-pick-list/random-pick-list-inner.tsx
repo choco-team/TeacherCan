@@ -10,21 +10,26 @@ import {
 } from '@/components/table';
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction } from 'react';
-import { RandomPickType } from '../random-pick-type';
+import { Skeleton } from '@/components/skeleton';
 import OptionBadge from './optionBadge/optionBadge';
+import { useRandomPickPlaygroundState } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
 interface RandomPickListInnerProps {
-  data: RandomPickType[];
   selectedRows: string[];
   setSelectedRows: Dispatch<SetStateAction<string[]>>;
 }
 
 export function RandomPickListInner({
-  data,
   selectedRows,
   setSelectedRows,
 }: RandomPickListInnerProps) {
   const router = useRouter();
+
+  const { randomPickList } = useRandomPickPlaygroundState();
+
+  const orderedRandomPickList = randomPickList?.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   return (
     <Table>
@@ -34,9 +39,14 @@ export function RandomPickListInner({
             <div className="flex items-center justify-center">
               <Checkbox
                 aria-label="Select all rows"
-                checked={selectedRows.length === data.length}
+                checked={
+                  orderedRandomPickList?.length > 0 &&
+                  selectedRows.length === orderedRandomPickList?.length
+                }
                 onCheckedChange={(checked) => {
-                  setSelectedRows(checked ? data.map((row) => row.id) : []);
+                  setSelectedRows(
+                    checked ? orderedRandomPickList.map((row) => row.id) : [],
+                  );
                 }}
               />
             </div>
@@ -55,57 +65,14 @@ export function RandomPickListInner({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.length ? (
-          data.map((row) => (
-            <TableRow
-              key={row.id}
-              className="h-12 cursor-pointer"
-              onClick={() => {
-                router.push(`/random-pick/${row.id}`);
-              }}
-            >
-              <TableCell>
-                <div
-                  className="flex items-center justify-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <Checkbox
-                    aria-label="Select row"
-                    checked={selectedRows.includes(row.id)}
-                    onCheckedChange={(checked) => {
-                      setSelectedRows(
-                        checked
-                          ? [...selectedRows, row.id]
-                          : selectedRows.filter((id) => id !== row.id),
-                      );
-                    }}
-                  />
-                </div>
-              </TableCell>
-              <TableCell>{row.title}</TableCell>
-              <TableCell>
-                {row.pickType === 'names' ? '이름' : '번호'}
-              </TableCell>
-              <TableCell className="text-center">
-                {row.pickList.length}
-              </TableCell>
-              <TableCell className="text-center">
-                <OptionBadge option={row.options.isExcludingSelected} />
-              </TableCell>
-              <TableCell className="text-center">
-                <OptionBadge option={row.options.isHideResult} />
-              </TableCell>
-              <TableCell className="text-center">
-                <OptionBadge option={row.options.isMixingAnimation} />
-              </TableCell>
-              <TableCell>
-                {format(new Date(row.createdAt), 'yyyy-MM-dd')}
-              </TableCell>
-            </TableRow>
-          ))
-        ) : (
+        {!orderedRandomPickList ? (
+          <TableRow>
+            <TableCell colSpan={8} className="h-32 text-center p-0">
+              <Skeleton className="h-32 w-full rounded-none" />
+            </TableCell>
+          </TableRow>
+        ) : null}
+        {orderedRandomPickList?.length === 0 ? (
           <TableRow>
             <TableCell colSpan={8} className="h-32 text-center">
               <span className="text-text-description">
@@ -113,7 +80,58 @@ export function RandomPickListInner({
               </span>
             </TableCell>
           </TableRow>
-        )}
+        ) : null}
+        {orderedRandomPickList?.length > 0
+          ? orderedRandomPickList?.map((row) => (
+              <TableRow
+                key={row.id}
+                className="h-12 cursor-pointer"
+                onClick={() => {
+                  router.push(`/random-pick/${row.id}`);
+                }}
+              >
+                <TableCell>
+                  <div
+                    className="flex items-center justify-center"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <Checkbox
+                      aria-label="Select row"
+                      checked={selectedRows.includes(row.id)}
+                      onCheckedChange={(checked) => {
+                        setSelectedRows(
+                          checked
+                            ? [...selectedRows, row.id]
+                            : selectedRows.filter((id) => id !== row.id),
+                        );
+                      }}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell>{row.title}</TableCell>
+                <TableCell>
+                  {row.pickType === 'names' ? '이름' : '번호'}
+                </TableCell>
+                <TableCell className="text-center">
+                  {row.pickList.length}
+                </TableCell>
+                <TableCell className="text-center">
+                  <OptionBadge option={row.options.isExcludingSelected} />
+                </TableCell>
+                <TableCell className="text-center">
+                  <OptionBadge option={row.options.isHideResult} />
+                </TableCell>
+                <TableCell className="text-center">
+                  <OptionBadge option={row.options.isMixingAnimation} />
+                </TableCell>
+                <TableCell>
+                  {format(new Date(row.createdAt), 'yyyy-MM-dd')}
+                </TableCell>
+              </TableRow>
+            ))
+          : null}
       </TableBody>
     </Table>
   );

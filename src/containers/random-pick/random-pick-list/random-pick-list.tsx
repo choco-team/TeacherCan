@@ -29,6 +29,7 @@ export default function RandomPickList() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   const { randomPickList } = useRandomPickPlaygroundState();
+
   const { createRandomPick, removeRandomPick } =
     useRandomPickPlaygroundAction();
 
@@ -53,6 +54,7 @@ export default function RandomPickList() {
   };
 
   const handleRemoveRandomPick = () => {
+    setSelectedRows([]);
     removeRandomPick(selectedRows);
     setIsRemoveOpen(false);
   };
@@ -67,7 +69,6 @@ export default function RandomPickList() {
       </div>
       <div className="flex flex-col gap-y-8">
         <RandomPickListInner
-          data={randomPickList ?? []}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
         />
