@@ -61,28 +61,26 @@ export default function RandomPickList() {
 
   return (
     <div>
-      <div className="flex justify-between">
-        <Heading1 className="mb-6">랜덤뽑기 목록</Heading1>
-        <Button variant="primary" size="sm" onClick={handleOpenDialog}>
-          랜덤뽑기 만들기
-        </Button>
-      </div>
-      <div className="flex flex-col gap-y-8">
-        <RandomPickListInner
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-        />
-        {selectedRows.length > 0 ? (
+      <div className="flex justify-between mb-6">
+        <Heading1>랜덤뽑기 목록</Heading1>
+        <div className="flex gap-x-4 items-center">
           <Button
-            variant="gray-outline"
+            variant="primary-ghost"
             size="sm"
-            className="w-fit self-center animate-fade-in"
             onClick={() => setIsRemoveOpen(true)}
+            disabled={selectedRows.length === 0}
           >
-            선택한 랜덤뽑기 삭제하기
+            삭제하기
           </Button>
-        ) : null}
+          <Button variant="primary" size="sm" onClick={handleOpenDialog}>
+            랜덤뽑기 만들기
+          </Button>
+        </div>
       </div>
+      <RandomPickListInner
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+      />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
