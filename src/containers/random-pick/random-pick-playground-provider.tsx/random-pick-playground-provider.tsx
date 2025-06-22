@@ -11,7 +11,7 @@ import {
 
 type RandomPickPlaygroundState = {
   randomPickList: RandomPickType[] | null;
-  randomPick: RandomPickType;
+  randomPick: RandomPickType | null;
   newWinners: { id: string; value: string }[];
 };
 export const RandomPickPlaygroundStateContext =

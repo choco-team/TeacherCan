@@ -10,13 +10,27 @@ import {
 
 export default function PlayGround() {
   const { randomPick } = useRandomPickPlaygroundState();
-  const { updateTitle } = useRandomPickPlaygroundAction();
-  const { title } = randomPick;
 
+  const { updateTitle } = useRandomPickPlaygroundAction();
   const [isOpenResult, setIsOpenResult] = useState(false);
   const [isMixingCards, setsMixingCards] = useState(false);
 
   const cardListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isMixingCards) {
+      setTimeout(() => {
+        setsMixingCards(false);
+        setIsOpenResult(true);
+      }, 1000);
+    }
+  }, [isMixingCards]);
+
+  if (!randomPick) {
+    return null;
+  }
+
+  const { title } = randomPick;
 
   const openResult = () => {
     if (randomPick.options.isMixingAnimation) {
@@ -37,15 +51,6 @@ export default function PlayGround() {
       closeResult();
     }
   };
-
-  useEffect(() => {
-    if (isMixingCards) {
-      setTimeout(() => {
-        setsMixingCards(false);
-        setIsOpenResult(true);
-      }, 1000);
-    }
-  }, [isMixingCards]);
 
   return (
     <div ref={cardListRef} className="flex-grow relative flex flex-col gap-y-6">
