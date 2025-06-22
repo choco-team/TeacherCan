@@ -39,6 +39,7 @@ type PathData<T extends string> = Partial<
       >;
       href: string;
       isNew?: boolean;
+      isUpdate?: boolean;
     }
   >
 >;
@@ -54,6 +55,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '랜덤뽑기',
     Icon: DicesIcon,
     href: MENU_ROUTE.RANDOM_PICK,
+    isUpdate: true,
   },
   '/timer': {
     title: '타이머',
@@ -64,6 +66,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '음악신청',
     Icon: MusicIcon,
     href: MENU_ROUTE.MUSIC_REQUEST,
+    isUpdate: true,
   },
   '/notice-suggestion': {
     title: '알림장 문구 추천',
