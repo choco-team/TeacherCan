@@ -34,7 +34,7 @@ export function RandomPickListInner({
   return (
     <Table>
       <TableHeader>
-        <TableRow className="bg-muted/50 font-semibold">
+        <TableRow className="bg-muted/50 dark:bg-muted-foreground/50 font-semibold text-text-title">
           <TableHead className="w-[40px] h-12">
             <div className="flex items-center justify-center">
               <Checkbox
@@ -51,17 +51,23 @@ export function RandomPickListInner({
               />
             </div>
           </TableHead>
-          <TableHead className="min-w-[240px] w-[240px]">제목</TableHead>
-          <TableHead className="w-[96px]">뽑기 타입</TableHead>
-          <TableHead className="w-[96px] text-center">학생 수</TableHead>
-          <TableHead className="w-[144px] text-center">
+          <TableHead className="min-w-[240px] w-[240px] text-text-title">
+            제목
+          </TableHead>
+          <TableHead className="w-[96px] text-text-title">뽑기 타입</TableHead>
+          <TableHead className="w-[96px] text-center text-text-title">
+            학생 수
+          </TableHead>
+          <TableHead className="w-[144px] text-center text-text-title">
             뽑힌 학생 제외
           </TableHead>
-          <TableHead className="w-[144px] text-center">결과 숨기기</TableHead>
-          <TableHead className="w-[144px] text-center">
+          <TableHead className="w-[144px] text-center text-text-title">
+            결과 숨기기
+          </TableHead>
+          <TableHead className="w-[144px] text-center text-text-title">
             카드 섞기 효과
           </TableHead>
-          <TableHead className="w-[192px]">생성일</TableHead>
+          <TableHead className="w-[192px] text-text-title">생성일</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -85,7 +91,7 @@ export function RandomPickListInner({
           ? orderedRandomPickList?.map((row) => (
               <TableRow
                 key={row.id}
-                className="h-12 cursor-pointer"
+                className="h-12  cursor-pointer text-text-title"
                 onClick={() => {
                   router.push(`/random-pick/${row.id}`);
                 }}
