@@ -66,7 +66,6 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '음악신청',
     Icon: MusicIcon,
     href: MENU_ROUTE.MUSIC_REQUEST,
-    isUpdate: true,
   },
   '/notice-suggestion': {
     title: '알림장 문구 추천',
