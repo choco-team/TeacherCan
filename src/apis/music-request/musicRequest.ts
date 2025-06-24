@@ -53,7 +53,7 @@ export const createMusicRequestMusic = (params: {
 export type YoutubeVideo = {
   musicId: string;
   title: string;
-  student: string;
+  studentName: string;
   timeStamp: string;
 };
 
