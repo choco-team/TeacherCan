@@ -8,6 +8,7 @@ import {
   // Hourglass,
   TimerIcon,
   WandSparklesIcon,
+  NotebookPenIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -25,6 +26,7 @@ export const MENU_ROUTE = {
 export const HELP_ROUTE = {
   FEEDBACK: '/feedback',
   SETTING: '/setting',
+  RELEASE_NOTE: '/release-note',
 } as const;
 
 export type MenuRoutePath = (typeof MENU_ROUTE)[keyof typeof MENU_ROUTE];
@@ -81,6 +83,12 @@ type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
 
 // NOTE:(김홍동) 네이게이션의 도움 영역에서 사용되는 객체입니다.
 export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
+  '/release-note': {
+    title: '릴리즈 노트',
+    Icon: NotebookPenIcon,
+    href: HELP_ROUTE.RELEASE_NOTE,
+    isNew: true,
+  },
   '/feedback': {
     title: '피드백',
     Icon: MessageCircleHeartIcon,

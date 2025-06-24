@@ -9,6 +9,7 @@ import {
   DicesIcon,
   QrCodeIcon,
   SettingsIcon,
+  NotebookPenIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -57,6 +58,11 @@ const breadcrumbs: Record<
     name: '설정',
     url: '/setting',
     icon: <SettingsIcon size="1rem" />,
+  },
+  'release-note': {
+    name: '릴리즈 노트',
+    url: '/release-note',
+    icon: <NotebookPenIcon size="1rem" />,
   },
 };
 
