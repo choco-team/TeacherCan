@@ -99,7 +99,7 @@ export default function MusicCard({
             {video.title}
           </span>
           <span className="font-light text-gray-600 dark:text-gray-200 text-xs truncate">
-            {video.student}의 신청곡
+            {video.studentName}의 신청곡
           </span>
         </div>
       </div>
