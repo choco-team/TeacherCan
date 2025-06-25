@@ -27,15 +27,6 @@ import {
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { Heading1 } from '@/components/heading';
 import { Skeleton } from '@/components/skeleton';
-import Link from 'next/link';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/alert-dialog';
-import { Checkbox } from '@/components/checkbox';
-import { Label } from '@/components/label';
 import MusicRequestList from './music-request-list/music-request-list';
 import { MAX_MUSIC_COUNT } from './music-request-constants';
 
@@ -54,20 +45,6 @@ export default function MusicRequestContainer() {
   const [isOpen, setIsOpen] = useState(false);
   const [isRemoveAllOpen, setIsRemoveAllOpen] = useState(false);
   const [roomIds, setRoomIds] = useLocalStorage<string[] | null>('roomIds', []);
-
-  const [isOpenErrorPopup, setIsOpenErrorPopup] = useState(true);
-  const [isMusicListErrorPopupChecked, setIsMusicListErrorPopupChecked] =
-    useState(false);
-  const [shouldShowMusicListErrorPopup, setShouldShowMusicListErrorPopup] =
-    useLocalStorage('shouldShowMusicListErrorPopup', true);
-
-  const onClickErrorPopup = () => {
-    if (isMusicListErrorPopupChecked) {
-      setShouldShowMusicListErrorPopup(false);
-    }
-
-    setIsOpenErrorPopup(false);
-  };
 
   const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
@@ -193,13 +170,8 @@ export default function MusicRequestContainer() {
             <DialogTitle>음악신청 방 목록 초기화</DialogTitle>
             <DialogDescription>
               <span className="text-sm text-gray-500 whitespace-pre-line">
-                음악신청 방 목록을 불러올 수 없는 버그가 있습니다. 이 경우
-                목록을 초기화하고 다시 생성해야 합니다. 이용에 불편을 드려
-                죄송합니다. 버그 수정은 진행 중이며, 추가 문제 발견 시{' '}
-                <Link href="/feedback" className="underline">
-                  피드백
-                </Link>{' '}
-                부탁드립니다.
+                목록에서만 방들이 제거됩니다. 방 ID를 알고 있다면 URL로 직접
+                접근할 수 있어요.
               </span>
             </DialogDescription>
             <div className="flex justify-end gap-2 pt-2">
@@ -224,53 +196,6 @@ export default function MusicRequestContainer() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={shouldShowMusicListErrorPopup && isOpenErrorPopup}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              현재 음악 신청 기능에 오류가 발생하고 있습니다.
-            </AlertDialogTitle>
-
-            <span className="text-text-description text-sm text-gray-700 whitespace-pre-line py-2">
-              음악신청 방 생성 후 목록에 보이지 않고, 음악 신청이 불가능한
-              문제가 발생하고 있습니다.{' '}
-              <span className="font-bold">
-                생성한 음악신청 방은 매시 정각과 30분마다 자동으로 복구되며
-                이후에는 정상적으로 음악 신청 서비스를 이용하실 수 있습니다.
-              </span>{' '}
-              현재 해당 문제를 인지하고 있으며, 빠른 해결을 위해 최선을 다하고
-              있습니다. 이용에 불편을 드려 죄송합니다.
-            </span>
-          </AlertDialogHeader>
-
-          <div className="flex flex-col gap-2">
-            <Label className="flex items-center gap-2">
-              <Checkbox
-                checked={isMusicListErrorPopupChecked}
-                onCheckedChange={() =>
-                  setIsMusicListErrorPopupChecked((prev) => !prev)
-                }
-              />
-              <span
-                id="isMusicListErrorPopupChecked"
-                className="text-sm text-gray-700"
-              >
-                다시 보지 않기
-              </span>
-            </Label>
-
-            <Button
-              onClick={onClickErrorPopup}
-              variant="primary"
-              size="sm"
-              className="w-full"
-            >
-              확인
-            </Button>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

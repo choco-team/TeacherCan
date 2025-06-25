@@ -9,7 +9,6 @@ type LocalStorageKey =
   | 'allergies'
   | 'routines'
   | 'roomIds'
-  | 'shouldShowMusicListErrorPopup'
   | 'random-pick-list';
 
 /**

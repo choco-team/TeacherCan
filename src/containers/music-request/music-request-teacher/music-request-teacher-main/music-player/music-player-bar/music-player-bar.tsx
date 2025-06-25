@@ -149,7 +149,7 @@ export function MusicPlayerBar({
                   {currentMusic.title}
                 </span>
                 <span className="font-light text-gray-600 dark:text-gray-200 text-sm">
-                  {currentMusic.student}의 신청곡
+                  {currentMusic.studentName}의 신청곡
                 </span>
               </div>
             </>
