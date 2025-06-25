@@ -1,29 +1,39 @@
 import { useEffect, useRef, useState } from 'react';
 import ResultModal from './result-modal/result-modal';
-import { useRandomPickState } from '../random-pick-provider/random-pick-provider.hooks';
-import type { WinnersType } from '../random-pick-playground-provider.tsx/random-pick-playground-provider';
 import CardList from './card-list/card-list';
 import WhilePlaySettings from './while-play-settings/while-play-settings';
 import PickButton from './pick-button/pick-button';
+import {
+  useRandomPickPlaygroundAction,
+  useRandomPickPlaygroundState,
+} from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
-type Props = {
-  makeNewPlay: () => void;
-};
+export default function PlayGround() {
+  const { randomPick } = useRandomPickPlaygroundState();
 
-export default function PlayGround({ makeNewPlay }: Props) {
-  const [title, setTitle] = useState('');
-  const [newWinners, setNewWinners] = useState<WinnersType[]>([]);
+  const { updateTitle } = useRandomPickPlaygroundAction();
   const [isOpenResult, setIsOpenResult] = useState(false);
   const [isMixingCards, setsMixingCards] = useState(false);
 
   const cardListRef = useRef<HTMLDivElement>(null);
 
-  const {
-    options: { isMixingAnimation },
-  } = useRandomPickState();
+  useEffect(() => {
+    if (isMixingCards) {
+      setTimeout(() => {
+        setsMixingCards(false);
+        setIsOpenResult(true);
+      }, 1000);
+    }
+  }, [isMixingCards]);
+
+  if (!randomPick) {
+    return null;
+  }
+
+  const { title } = randomPick;
 
   const openResult = () => {
-    if (isMixingAnimation) {
+    if (randomPick.options.isMixingAnimation) {
       setsMixingCards(true);
       return;
     }
@@ -31,7 +41,6 @@ export default function PlayGround({ makeNewPlay }: Props) {
   };
 
   const closeResult = () => {
-    setNewWinners([]);
     setIsOpenResult(false);
   };
 
@@ -43,32 +52,14 @@ export default function PlayGround({ makeNewPlay }: Props) {
     }
   };
 
-  useEffect(() => {
-    if (isMixingCards) {
-      setTimeout(() => {
-        setsMixingCards(false);
-        setIsOpenResult(true);
-      }, 1000);
-    }
-  }, [isMixingCards]);
-
   return (
     <div ref={cardListRef} className="flex-grow relative flex flex-col gap-y-6">
-      <WhilePlaySettings
-        title={title}
-        setTitle={setTitle}
-        makeNewPlay={makeNewPlay}
-      />
+      <WhilePlaySettings title={title} updateTitle={updateTitle} />
       <CardList isMixingCards={isMixingCards} />
-      <PickButton
-        setNewWinners={setNewWinners}
-        openResult={() => toggleResultOpen(true)}
-      />
-
+      <PickButton openResult={() => toggleResultOpen(true)} />
       <ResultModal
         isOpenResult={isOpenResult}
         title={title}
-        newWinners={newWinners}
         toggleResultOpen={toggleResultOpen}
       />
     </div>

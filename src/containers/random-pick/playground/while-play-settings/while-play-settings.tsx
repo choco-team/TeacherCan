@@ -2,37 +2,23 @@ import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
-import { AlertDialog, AlertDialogTrigger } from '@/components/alert-dialog';
-import {
-  useRandomPickState,
-  useRandomPickAction,
-} from '../../random-pick-provider/random-pick-provider.hooks';
 import {
   useRandomPickPlaygroundAction,
   useRandomPickPlaygroundState,
 } from '../../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
-import { MakeNewPlayConfirm } from './make-new-play-confirm';
 
 type Props = {
   title: string;
-  setTitle: (title: string) => void;
-  makeNewPlay: () => void;
+  updateTitle: (title: string) => void;
 };
 
 const RANDOM_PICK_NAME_MAX_LENGTH = 20;
 
-export default function WhilePlaySettings({
-  title,
-  setTitle,
-  makeNewPlay,
-}: Props) {
-  const {
-    options: { isExcludingSelected, isHideResult, isMixingAnimation },
-  } = useRandomPickState();
-  const { changeOption } = useRandomPickAction();
+export default function WhilePlaySettings({ title, updateTitle }: Props) {
+  const { randomPick } = useRandomPickPlaygroundState();
+  const winners = randomPick.pickList.filter((item) => item.isPicked);
 
-  const { isAllStudentsPicked } = useRandomPickPlaygroundState();
-  const { resetPick } = useRandomPickPlaygroundAction();
+  const { resetPick, updateOption } = useRandomPickPlaygroundAction();
 
   return (
     <div className="flex items-center flex-col gap-6 lg:flex-row flex-wrap">
@@ -42,7 +28,7 @@ export default function WhilePlaySettings({
         placeholder="랜덤뽑기 제목"
         className="lg:max-w-[300px]"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => updateTitle(e.target.value)}
       />
 
       <div className="flex-grow flex gap-8 flex-wrap w-full lg:w-fit justify-end">
@@ -50,49 +36,45 @@ export default function WhilePlaySettings({
           <Label className="flex items-center gap-x-2">
             뽑힌 학생 제외
             <Switch
-              checked={isExcludingSelected}
+              checked={randomPick.options.isExcludingSelected}
               onClick={() =>
-                changeOption((prev) => ({
-                  isExcludingSelected: !prev.isExcludingSelected,
-                }))
+                updateOption({
+                  isExcludingSelected: !randomPick.options.isExcludingSelected,
+                })
               }
             />
           </Label>
           <Label className="flex items-center gap-x-2">
             결과 숨기기
             <Switch
-              checked={isHideResult}
+              checked={randomPick.options.isHideResult}
               onClick={() =>
-                changeOption((prev) => ({
-                  isHideResult: !prev.isHideResult,
-                }))
+                updateOption({
+                  isHideResult: !randomPick.options.isHideResult,
+                })
               }
             />
           </Label>
           <Label className="flex items-center gap-x-2">
             카드 섞기 효과
             <Switch
-              checked={isMixingAnimation}
+              checked={randomPick.options.isMixingAnimation}
               onClick={() =>
-                changeOption((prev) => ({
-                  isMixingAnimation: !prev.isMixingAnimation,
-                }))
+                updateOption({
+                  isMixingAnimation: !randomPick.options.isMixingAnimation,
+                })
               }
             />
           </Label>
         </div>
 
         <div className="flex items-center gap-x-2 md:gap-x-4 w-full md:w-fit">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="gray-outline" size="md" className="flex-1">
-                새 뽑기 만들기
-              </Button>
-            </AlertDialogTrigger>
-            <MakeNewPlayConfirm makeNewPlay={makeNewPlay} />
-          </AlertDialog>
           <Button
-            variant={isAllStudentsPicked ? 'primary' : 'primary-outline'}
+            variant={
+              randomPick.pickList.length === winners.length
+                ? 'primary'
+                : 'primary-outline'
+            }
             size="md"
             onClick={resetPick}
             className="flex-1"

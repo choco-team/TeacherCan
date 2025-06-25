@@ -12,12 +12,15 @@ import { z } from 'zod';
 import { Textarea } from '@/components/textarea';
 import { creatId } from '@/utils/createNanoid';
 import {
-  useRandomPickAction,
-  useRandomPickState,
-} from '../../random-pick-provider/random-pick-provider.hooks';
+  InnerPickListType,
+  PickType,
+} from '@/containers/random-pick/random-pick-type';
 
 type Props = {
-  startPlay: () => void;
+  onCreateRandomPick: (
+    pickType: PickType,
+    pickList: InnerPickListType[],
+  ) => void;
 };
 
 const formSchema = z.object({
@@ -45,19 +48,16 @@ const formSchema = z.object({
   ),
 });
 
-export default function SettingStudentName({ startPlay }: Props) {
-  const { pickList } = useRandomPickState();
-  const { modifyPickList } = useRandomPickAction();
-
+export default function SettingStudentName({ onCreateRandomPick }: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      names: pickList.names.map((name) => name.value),
+      names: ['학생1', '학생2', '학생3'],
     },
   });
 
   const onSubmit = ({ names }: z.infer<typeof formSchema>) => {
-    modifyPickList(
+    onCreateRandomPick(
       'names',
       names.map((name) => ({
         id: creatId(),
@@ -66,8 +66,6 @@ export default function SettingStudentName({ startPlay }: Props) {
         isUsed: true,
       })),
     );
-
-    startPlay();
   };
 
   return (
@@ -92,12 +90,8 @@ export default function SettingStudentName({ startPlay }: Props) {
               </div>
             )}
           />
-          <Button
-            type="submit"
-            size="lg"
-            className="self-center p-8 rounded-2xl text-2xl hover:scale-105 active:scale-95"
-          >
-            시작
+          <Button type="submit" size="lg">
+            만들기
           </Button>
         </form>
       </Form>

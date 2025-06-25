@@ -1,20 +1,23 @@
 import { Label } from '@/components/label';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
+import { useState } from 'react';
+import {
+  InnerPickListType,
+  PickType,
+} from '@/containers/random-pick/random-pick-type';
+import { PICK_TYPES } from '@/containers/random-pick/random-pick-constants';
 import SettingStudentName from '../setting-student-name/setting-student-name';
 import SettingStudentNumber from '../setting-student-number/setting-student-number';
-import {
-  useRandomPickAction,
-  useRandomPickState,
-} from '../../random-pick-provider/random-pick-provider.hooks';
-import { PICK_TYPES } from '../../random-pick-provider/random-pick-provider.constants';
 
 type Props = {
-  startPlay: () => void;
+  onCreateRandomPick: (
+    pickType: PickType,
+    pickList: InnerPickListType[],
+  ) => void;
 };
 
-export default function SettingPickType({ startPlay }: Props) {
-  const { pickType } = useRandomPickState();
-  const { selectPickType } = useRandomPickAction();
+export default function SettingPickType({ onCreateRandomPick }: Props) {
+  const [pickType, setPickType] = useState<PickType>('numbers');
 
   return (
     <div className="flex flex-col gap-y-6">
@@ -27,16 +30,16 @@ export default function SettingPickType({ startPlay }: Props) {
             <RadioGroupItem
               value={type}
               checked={pickType === type}
-              onClick={() => selectPickType(type)}
+              onClick={() => setPickType(type)}
             />
             {label}
           </Label>
         ))}
       </RadioGroup>
       {pickType === 'names' ? (
-        <SettingStudentName startPlay={startPlay} />
+        <SettingStudentName onCreateRandomPick={onCreateRandomPick} />
       ) : (
-        <SettingStudentNumber startPlay={startPlay} />
+        <SettingStudentNumber onCreateRandomPick={onCreateRandomPick} />
       )}
     </div>
   );

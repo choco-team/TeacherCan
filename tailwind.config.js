@@ -102,6 +102,10 @@ module.exports = {
           from: { height: 'var(--radix-collapsible-content-height)' },
           to: { height: '0' },
         },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -109,6 +113,7 @@ module.exports = {
         'collapsible-content-down': 'collapsible-content-down 0.3s ease-out',
         'collapsible-content-up': 'collapsible-content-up 0.3s ease-out',
         'bounce-in-top': 'bounce-in-top 1.2s both',
+        'fade-in': 'fade-in 0.3s ease-out forwards',
       },
       transform: {
         'rotate-y-180': 'rotateY(180deg)',

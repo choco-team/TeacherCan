@@ -23,8 +23,8 @@ export default function MusicRequestList({ roomIds }: Props) {
   const rooms = results.map((result) => result.data);
 
   if (rooms.includes(undefined)) {
-    return Array.from({ length: 3 }, () => (
-      <Skeleton className="w-full aspect-video rounded-md" />
+    return Array.from({ length: 3 }, (_, index) => (
+      <Skeleton key={index} className="w-full aspect-video rounded-md" />
     ));
   }
 

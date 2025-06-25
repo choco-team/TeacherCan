@@ -94,8 +94,8 @@ export default function MusicRequestContainer() {
         {roomIds ? (
           <MusicRequestList roomIds={roomIds} />
         ) : (
-          Array.from({ length: 3 }, () => (
-            <Skeleton className="w-full aspect-video rounded-md" />
+          Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="w-full aspect-video rounded-md" />
           ))
         )}
         <div
