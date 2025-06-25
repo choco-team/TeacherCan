@@ -95,7 +95,7 @@ export default function AppSidebar() {
                 </PopupLink>
               </SidebarMenuItem>
               {Object.entries(MENU_PATH_DATA).map(
-                ([path, { title, Icon, isNew, isUpdate }]) => {
+                ([path, { title, Icon, isNew }]) => {
                   if (path === MENU_ROUTE.TIMER) {
                     return null;
                   }
@@ -121,15 +121,6 @@ export default function AppSidebar() {
                               className="border-0"
                             >
                               New
-                            </Badge>
-                          )}
-                          {isUpdate && (
-                            <Badge
-                              size="xs"
-                              variant="secondary-outline"
-                              className="border-0"
-                            >
-                              Update
                             </Badge>
                           )}
                         </div>
