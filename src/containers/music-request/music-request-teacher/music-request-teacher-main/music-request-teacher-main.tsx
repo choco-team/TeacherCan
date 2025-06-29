@@ -26,7 +26,10 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
     setMusicList([...updatedList]);
   }, []);
 
-  const sseConnectionStatus = useMusicSSE(roomId, handleMusicUpdate);
+  const [sseConnectionStatus, reconnectSse] = useMusicSSE(
+    roomId,
+    handleMusicUpdate,
+  );
 
   const updateCurrentVideoId = (musicId: string) => {
     setCurrentMusicId(musicId);
@@ -67,6 +70,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           updateCurrentVideoId={updateCurrentVideoId}
           musicList={musicList}
           sseConnectionStatus={sseConnectionStatus}
+          reconnectSse={reconnectSse}
         />
       </div>
       <Tabs

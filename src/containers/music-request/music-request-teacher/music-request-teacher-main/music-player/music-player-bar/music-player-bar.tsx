@@ -16,6 +16,7 @@ import { cn } from '@/styles/utils';
 import { Slider } from '@/components/slider';
 import { MutableRefObject, useState } from 'react';
 import { YoutubeVideo } from '@/apis/music-request/musicRequest';
+import { Button } from '@/components/button';
 import { formatTime } from '../music-player.utils';
 import { MusicOptionKeys, MusicOptions } from '../music-player.hooks';
 
@@ -28,7 +29,8 @@ type Props = {
     value: MusicOptions[K],
   ) => void;
   handleMusicChange: (order: 'next' | 'prev') => void;
-  sseConnectionStatus: string;
+  sseConnectionStatus: 'connected' | 'disconnected' | 'reconnecting';
+  reconnectSse: () => void;
 };
 
 export function MusicPlayerBar({
@@ -38,6 +40,7 @@ export function MusicPlayerBar({
   updateMusicOption,
   handleMusicChange,
   sseConnectionStatus,
+  reconnectSse,
 }: Props) {
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverVolume, setHoverVolume] = useState(false);
@@ -223,13 +226,15 @@ export function MusicPlayerBar({
             )}
 
             {sseConnectionStatus === 'disconnected' && (
-              <span
-                title="끊김"
-                className="flex items-center gap-1 text-red-500"
-              >
-                <ServerOff className="w-4 h-4" />
-                <span className="hidden sm:inline">끊김</span>
-              </span>
+              <Button size="sm" variant="gray-ghost" onClick={reconnectSse}>
+                <span
+                  title="끊김"
+                  className="flex items-center gap-1 text-red-500"
+                >
+                  <ServerOff className="w-4 h-4" />
+                  <span className="hidden sm:inline">재시도</span>
+                </span>
+              </Button>
             )}
           </div>
         </div>
