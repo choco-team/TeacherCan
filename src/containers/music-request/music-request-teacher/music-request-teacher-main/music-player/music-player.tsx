@@ -7,12 +7,14 @@ type Props = {
   musicList: YoutubeVideo[];
   currentMusicId: string;
   updateCurrentVideoId: (musicId: string) => void;
+  sseConnectionStatus: string;
 };
 
 export default function MusicPlayer({
   musicList,
   currentMusicId,
   updateCurrentVideoId,
+  sseConnectionStatus,
 }: Props) {
   const currentVideoIndex = musicList.findIndex(
     ({ musicId }) => musicId === currentMusicId,
@@ -43,6 +45,7 @@ export default function MusicPlayer({
         musicOptions={musicOptions}
         updateMusicOption={updateMusicOption}
         handleMusicChange={musicHandler.handleMusicChange}
+        sseConnectionStatus={sseConnectionStatus}
       />
     </>
   );

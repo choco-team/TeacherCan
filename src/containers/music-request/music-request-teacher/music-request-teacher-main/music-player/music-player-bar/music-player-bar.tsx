@@ -2,8 +2,11 @@ import Image from 'next/image';
 import {
   ChevronFirst,
   ChevronLast,
+  Loader2,
   Pause,
   Play,
+  Server,
+  ServerOff,
   Shuffle,
   Volume1Icon,
   Volume2Icon,
@@ -20,21 +23,21 @@ type Props = {
   currentMusic: YoutubeVideo;
   youtubePlayerRef: MutableRefObject<YT.Player>;
   musicOptions: MusicOptions;
-
   updateMusicOption: <K extends MusicOptionKeys>(
     option: K,
     value: MusicOptions[K],
   ) => void;
   handleMusicChange: (order: 'next' | 'prev') => void;
+  sseConnectionStatus: string;
 };
 
 export function MusicPlayerBar({
   currentMusic,
   youtubePlayerRef,
   musicOptions,
-
   updateMusicOption,
   handleMusicChange,
+  sseConnectionStatus,
 }: Props) {
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverVolume, setHoverVolume] = useState(false);
@@ -198,6 +201,37 @@ export function MusicPlayerBar({
               updateMusicOption('playerType', toggledOrder);
             }}
           />
+          <div className="flex items-center gap-2 text-sm font-medium">
+            {sseConnectionStatus === 'connected' && (
+              <span
+                title="연결됨"
+                className="flex items-center gap-1 text-green-600"
+              >
+                <Server className="w-4 h-4" />
+                <span className="hidden sm:inline">접속됨</span>
+              </span>
+            )}
+
+            {sseConnectionStatus === 'reconnecting' && (
+              <span
+                title="재연결"
+                className="flex items-center gap-1 text-blue-600"
+              >
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="hidden sm:inline">접속중..</span>
+              </span>
+            )}
+
+            {sseConnectionStatus === 'disconnected' && (
+              <span
+                title="끊김"
+                className="flex items-center gap-1 text-red-500"
+              >
+                <ServerOff className="w-4 h-4" />
+                <span className="hidden sm:inline">끊김</span>
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
