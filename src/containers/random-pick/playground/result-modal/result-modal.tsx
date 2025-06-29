@@ -27,11 +27,15 @@ export default function ResultModal({
   const isAllOpen = openCards.length === newWinners.length;
 
   const handleOpenOne = (id: string) => {
+    if (openCards.includes(id)) {
+      return;
+    }
+
     setOpenCards((prev) => [...prev, id]);
   };
 
   const handleOpenAll = () => {
-    setOpenCards(newWinners);
+    setOpenCards(newWinners.map((newWinner) => newWinner.id));
   };
 
   const onOpenChange = (open: boolean) => {
@@ -51,10 +55,10 @@ export default function ResultModal({
           {newWinners.map((newWinner) => (
             <ResultCard
               key={newWinner.id}
-              winner={newWinner.value}
+              winner={newWinner}
               isOpen={
                 !randomPick.options.isHideResult ||
-                openCards.includes(newWinner)
+                openCards.includes(newWinner.id)
               }
               handleOpenOne={handleOpenOne}
             />

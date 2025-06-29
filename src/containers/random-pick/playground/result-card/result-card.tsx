@@ -2,7 +2,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import TeacherCanIcon from '@/assets/icons/TeacehrCanIcon';
 
 type Winner = {
-  winner: string;
+  winner: {
+    id: string;
+    value: string;
+  };
   isOpen: boolean;
   handleOpenOne: (id: string) => void;
 };
@@ -10,7 +13,7 @@ type Winner = {
 export default function ResultCard({ winner, isOpen, handleOpenOne }: Winner) {
   return (
     <div
-      onClick={() => handleOpenOne(winner)}
+      onClick={() => handleOpenOne(winner.id)}
       className="perspective-1000 w-60 aspect-[4/3]"
     >
       <AnimatePresence initial={false}>
@@ -23,7 +26,7 @@ export default function ResultCard({ winner, isOpen, handleOpenOne }: Winner) {
             transition={{ duration: 0.6, ease: [0.42, 0, 0.58, 1] }}
             className="bg-gray-100 dark:bg-gray-900 text-text-title absolute w-full h-full backface-hidden flex items-center justify-center p-4 text-card-foreground rounded-2xl text-[3.5rem] text-center font-bold"
           >
-            {winner}
+            {winner.value}
           </motion.div>
         ) : (
           <motion.button
