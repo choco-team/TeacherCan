@@ -12,7 +12,7 @@ export function useMusicSSE(
   const pingTimeout = useRef<NodeJS.Timeout | null>(null);
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
   const retryCount = useRef(0);
-  const maxRetries = 10;
+  const maxRetries = 5;
 
   const connect = () => {
     if (retryCount.current >= maxRetries) {
@@ -39,6 +39,7 @@ export function useMusicSSE(
       }
     });
 
+    // NOTE:(정승민)  cloud run 에서 5분마다 연결 끊는것 방지
     es.addEventListener('ping', () => {
       if (pingTimeout.current) clearTimeout(pingTimeout.current); // ping 수신 → 연결 유지 확인됨 -> pingTimeout 제거
       pingTimeout.current = setTimeout(() => {
