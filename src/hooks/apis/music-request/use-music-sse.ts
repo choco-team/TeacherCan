@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 
 export function useMusicSSE(
   roomId: string,
-  onUpdate: (musicList: YoutubeVideo[]) => void,
+  handleMusicUpdate: (musicList: YoutubeVideo[]) => void,
+  handleRoomTitleUpdate: (newRoomTItle: string) => void,
 ) {
   const [connectionStatus, setConnectionStatus] = useState<
     'connected' | 'disconnected' | 'reconnecting'
@@ -30,10 +31,20 @@ export function useMusicSSE(
       retryCount.current = 0;
     };
 
+    es.addEventListener('init-music-list', (event: MessageEvent) => {
+      try {
+        const parsed = JSON.parse(event.data);
+        handleMusicUpdate(parsed.musicList);
+        handleRoomTitleUpdate(parsed.roomTitle);
+      } catch (err) {
+        throw new Error('SSE-musicList 파싱 오류');
+      }
+    });
+
     es.addEventListener('music-list', (event: MessageEvent) => {
       try {
         const parsed = JSON.parse(event.data);
-        onUpdate(parsed.musicList);
+        handleMusicUpdate(parsed.musicList);
       } catch (err) {
         throw new Error('SSE-musicList 파싱 오류');
       }
@@ -69,7 +80,7 @@ export function useMusicSSE(
       clearTimeout(reconnectTimeout.current!);
       setConnectionStatus('disconnected');
     };
-  }, [roomId, onUpdate]);
+  }, [roomId, handleMusicUpdate]);
 
   const reconnectSse = () => {
     retryCount.current = 0;

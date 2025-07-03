@@ -1,12 +1,10 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { useCallback, useEffect, useState } from 'react';
-import { LoaderCircle } from 'lucide-react';
 import { head } from 'lodash';
 import MusicRegister from '@/containers/music-request/music-register/music-register';
 import { useMusicSSE } from '@/hooks/apis/music-request/use-music-sse';
 import { YoutubeVideo } from '@/apis/music-request/musicRequest';
-import { useGetMusicRequestRoomTitle } from '@/hooks/apis/music-request/use-get-music-request-room-title';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
 import MusicList from './music-list/music-list';
@@ -18,17 +16,22 @@ type Props = {
 export default function MusicRequestTeacherMain({ roomId }: Props) {
   const [currentMusicId, setCurrentMusicId] = useState<string | null>(null);
 
-  const { data, isPending } = useGetMusicRequestRoomTitle({ roomId });
-
   const [musicList, setMusicList] = useState<YoutubeVideo[]>([]);
+
+  const [roomTitle, setRoomTitle] = useState<string>();
 
   const handleMusicUpdate = useCallback((updatedList: YoutubeVideo[]) => {
     setMusicList([...updatedList]);
   }, []);
 
+  const handleRoomTitleUpdate = useCallback((newRoomTitle: string) => {
+    setRoomTitle(newRoomTitle);
+  }, []);
+
   const [sseConnectionStatus, reconnectSse] = useMusicSSE(
     roomId,
     handleMusicUpdate,
+    handleRoomTitleUpdate,
   );
 
   const updateCurrentVideoId = (musicId: string) => {
@@ -50,15 +53,6 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
 
     setCurrentMusicId(head(musicList).musicId);
   }, [currentMusicId, musicList]);
-
-  if (isPending) {
-    return (
-      <LoaderCircle
-        size="36px"
-        className="animate-spin h-[600px] text-primary-500 mx-auto my-0"
-      />
-    );
-  }
 
   const defaultTabMenu = musicList.length === 0 ? 'rome-info' : 'music-list';
 
@@ -96,7 +90,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           </div>
         </TabsContent>
         <TabsContent value="rome-info">
-          <RoomInfo roomId={roomId} roomTitle={data.roomTitle} />
+          <RoomInfo roomId={roomId} roomTitle={roomTitle} />
         </TabsContent>
       </Tabs>
     </div>
