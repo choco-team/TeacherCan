@@ -3,7 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 
 export function useMusicSSE(
   roomId: string,
-  handleMusicUpdate: (musicList: YoutubeVideo[]) => void,
+  handleMusicInit: (musicList: YoutubeVideo[]) => void,
+  handleMusicUpdate: (newMusic: YoutubeVideo) => void,
+  handleMusicDelete: (deletedId: number) => void,
   handleRoomTitleUpdate: (newRoomTItle: string) => void,
 ) {
   const [connectionStatus, setConnectionStatus] = useState<
@@ -34,17 +36,26 @@ export function useMusicSSE(
     es.addEventListener('init-music-list', (event: MessageEvent) => {
       try {
         const parsed = JSON.parse(event.data);
-        handleMusicUpdate(parsed.musicList);
+        handleMusicInit(parsed.musicList);
         handleRoomTitleUpdate(parsed.roomTitle);
       } catch (err) {
         throw new Error('SSE-musicList 파싱 오류');
       }
     });
 
-    es.addEventListener('music-list', (event: MessageEvent) => {
+    es.addEventListener('new-music', (event: MessageEvent) => {
       try {
-        const parsed = JSON.parse(event.data);
-        handleMusicUpdate(parsed.musicList);
+        const { musicList } = JSON.parse(event.data);
+        handleMusicUpdate(musicList);
+      } catch (err) {
+        throw new Error('SSE-musicList 파싱 오류');
+      }
+    });
+
+    es.addEventListener('deleted-music', (event: MessageEvent) => {
+      try {
+        const { id } = JSON.parse(event.data);
+        handleMusicDelete(id);
       } catch (err) {
         throw new Error('SSE-musicList 파싱 오류');
       }
@@ -57,7 +68,7 @@ export function useMusicSSE(
         setConnectionStatus('reconnecting');
         es.close();
         connect(); // 재연결
-      }, 20000); // 20초 내 ping 없으면 재연결
+      }, 90000); // 90초 내 ping 없으면 재연결
     });
 
     es.onerror = () => {

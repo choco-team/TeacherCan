@@ -20,8 +20,16 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
 
   const [roomTitle, setRoomTitle] = useState<string>();
 
-  const handleMusicUpdate = useCallback((updatedList: YoutubeVideo[]) => {
+  const handleMusicInit = useCallback((updatedList: YoutubeVideo[]) => {
     setMusicList([...updatedList]);
+  }, []);
+
+  const handleMusicUpdate = useCallback((newMusic: YoutubeVideo) => {
+    setMusicList((prev) => [...prev, newMusic]);
+  }, []);
+
+  const handleMusicDelete = useCallback((deletedId: number) => {
+    setMusicList((prev) => prev.filter((item) => item.id !== deletedId));
   }, []);
 
   const handleRoomTitleUpdate = useCallback((newRoomTitle: string) => {
@@ -30,7 +38,9 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
 
   const [sseConnectionStatus, reconnectSse] = useMusicSSE(
     roomId,
+    handleMusicInit,
     handleMusicUpdate,
+    handleMusicDelete,
     handleRoomTitleUpdate,
   );
 
