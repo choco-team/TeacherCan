@@ -21,12 +21,7 @@ type Props = {
   roomId: string;
 };
 
-export default function RoomInfo({
-  roomTitle,
-  roomId,
-  // isAutoRefetch,
-  // setIsAutoRefetch,
-}: Props) {
+export default function RoomInfo({ roomTitle, roomId }: Props) {
   const { toast } = useToast();
 
   const [roomIds, setRoomIds] = useLocalStorage<string[] | null>('roomIds', []);
@@ -86,13 +81,6 @@ export default function RoomInfo({
         />
       </div>
       <div className="w-hull h-[1px] bg-gray-100 dark:bg-gray-800" />
-      {/* <Label className="flex items-center justify-between gap-x-2">
-        <span className="pl-2 text-text-title">자동 업데이트</span>
-        <Switch
-          checked={isAutoRefetch}
-          onClick={() => setIsAutoRefetch((prev) => !prev)}
-        />
-      </Label> */}
       <Label className="flex items-center justify-between gap-x-2">
         <span className="pl-2 text-text-title">목록 노출</span>
         <Switch checked={isInList} onClick={toggleSave} />
