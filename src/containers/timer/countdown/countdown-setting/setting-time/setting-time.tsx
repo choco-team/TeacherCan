@@ -7,7 +7,7 @@ import { Button } from '@/components/button';
 import DualPanel from '@/components/dual-panel';
 import { useCountdownAction } from '../../countdown-provider/countdown-provider.hooks';
 
-const SETTING_TIMES = [5, 10, 60, -5, -10, -60] as const;
+const SETTING_TIMES = [0.5, 5, 10, -0.5, -5, -10] as const;
 
 export default function SettingTime() {
   const { updateMinutes } = useCountdownAction();
@@ -30,7 +30,9 @@ export default function SettingTime() {
             id={`timer-${time > 0 ? 'increase' : 'decrease'}-${Math.abs(time)}`}
           >
             {time > 0 ? <PlusIcon /> : <MinusIcon />}
-            {Math.abs(time)}분
+            {Math.abs(time) === 0.5
+              ? `${Math.abs(time * 60)}초`
+              : `${Math.abs(time)}분`}
           </Button>
         ))}
       </div>
