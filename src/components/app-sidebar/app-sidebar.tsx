@@ -146,7 +146,7 @@ export default function AppSidebar() {
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                      className={`${pathname.includes(path) ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
                     >
                       <Icon size="1rem" />
                       <span>{title}</span>

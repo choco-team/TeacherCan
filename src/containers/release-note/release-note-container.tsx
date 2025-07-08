@@ -2,8 +2,17 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { getReleaseNote } from './release-note-utils';
+import ReleaseNoteDetail from './release-note-detail/release-note-detail';
 
-export default async function ReleaseNoteContainer() {
+type Props = {
+  id?: string;
+};
+
+export default async function ReleaseNoteContainer({ id }: Props) {
+  if (id) {
+    return <ReleaseNoteDetail id={id} />;
+  }
+
   const { success, data } = await getReleaseNote();
 
   if (!success) {
