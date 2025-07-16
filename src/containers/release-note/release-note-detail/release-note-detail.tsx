@@ -4,13 +4,10 @@ type Props = {
   id: string;
 };
 
-// 블록 렌더링 컴포넌트
 function NotionBlockRenderer({ block }: { block: any }) {
   const { type } = block;
 
-  // 텍스트 추출 함수 - 실제 Notion API 구조에 맞게 수정
   const getText = (blockData: any) => {
-    // 각 블록 타입별로 다른 속성에서 텍스트를 가져옴
     switch (blockData.type) {
       case 'paragraph':
         return blockData.paragraph?.rich_text?.[0]?.plain_text || '';
@@ -33,7 +30,29 @@ function NotionBlockRenderer({ block }: { block: any }) {
     }
   };
 
+  const getImageUrl = (blockData: any) => {
+    if (blockData.type === 'image') {
+      const imageData = blockData.image;
+      if (imageData?.type === 'external') {
+        return imageData.external?.url;
+      }
+      if (imageData?.type === 'file') {
+        return imageData.file?.url;
+      }
+    }
+    return null;
+  };
+
+  const getImageCaption = (blockData: any) => {
+    if (blockData.type === 'image') {
+      return blockData.image?.caption?.[0]?.plain_text || '';
+    }
+    return '';
+  };
+
   const text = getText(block);
+  const imageUrl = getImageUrl(block);
+  const imageCaption = getImageCaption(block);
 
   switch (type) {
     case 'paragraph':
@@ -59,11 +78,6 @@ function NotionBlockRenderer({ block }: { block: any }) {
         <li className="mb-2 text-gray-800 list-disc ml-4">{text}</li>
       ) : null;
 
-    case 'numbered_list_item':
-      return text ? (
-        <li className="mb-2 text-gray-800 list-decimal ml-4">{text}</li>
-      ) : null;
-
     case 'quote':
       return text ? (
         <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-700 mb-4">
@@ -71,11 +85,22 @@ function NotionBlockRenderer({ block }: { block: any }) {
         </blockquote>
       ) : null;
 
-    case 'code':
-      return text ? (
-        <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto mb-4">
-          <code className="text-sm text-gray-800">{text}</code>
-        </pre>
+    case 'image':
+      return imageUrl ? (
+        <figure className="mb-6">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt={imageCaption || 'Notion 이미지'}
+            className="w-full h-auto rounded-lg shadow-md"
+            loading="lazy"
+          />
+          {imageCaption && (
+            <figcaption className="text-sm text-gray-600 text-center mt-2 italic">
+              {imageCaption}
+            </figcaption>
+          )}
+        </figure>
       ) : null;
 
     case 'divider':
@@ -89,18 +114,14 @@ function NotionBlockRenderer({ block }: { block: any }) {
 export default async function ReleaseNoteDetail({ id }: Props) {
   const { data } = await getReleaseNoteDetail(id);
 
-  // 페이지 제목 추출
   const getPageTitle = (page: any) => {
-    if (page?.properties?.Title?.title?.[0]?.plain_text) {
-      return page.properties.Title.title[0].plain_text;
+    if (page?.properties?.title?.title?.[0]?.plain_text) {
+      return page.properties.title.title[0].plain_text;
     }
-    if (page?.properties?.Name?.title?.[0]?.plain_text) {
-      return page.properties.Name.title[0].plain_text;
-    }
+
     return '';
   };
 
-  // 페이지 생성일 추출
   const getPageCreatedTime = (page: any) => {
     if ('created_time' in page && page.created_time) {
       return page.created_time;
@@ -117,14 +138,12 @@ export default async function ReleaseNoteDetail({ id }: Props) {
         <h1 className="text-4xl font-bold mb-8 text-gray-900">{pageTitle}</h1>
       )}
 
-      {/* 페이지 생성일 */}
       {pageCreatedTime && (
-        <p className="text-sm text-gray-500 mb-8">
+        <p className="text-gray-700 mb-8">
           {new Date(pageCreatedTime).toLocaleDateString('ko-KR')}
         </p>
       )}
 
-      {/* 블록들 렌더링 */}
       <div className="space-y-4">
         {data.blocks.map((block: any) => (
           <div key={block.id}>
