@@ -1,6 +1,7 @@
 import { Heading1 } from '@/components/heading';
 import AnnouncementNoteItem from './announcement-item/announcement-item';
 import { getAnnouncementNote } from './announcement-list.utils';
+import AnnouncementMoreButton from './announcemnet-more-button/announcemnet-more-button';
 
 export default async function AnnouncementNoteList() {
   const { success, data } = await getAnnouncementNote();
@@ -15,6 +16,7 @@ export default async function AnnouncementNoteList() {
       <div className="flex flex-col gap-16">
         {data?.map((item) => <AnnouncementNoteItem key={item.id} {...item} />)}
       </div>
+      <AnnouncementMoreButton />
     </div>
   );
 }

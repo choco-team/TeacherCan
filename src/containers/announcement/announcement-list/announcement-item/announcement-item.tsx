@@ -27,15 +27,17 @@ export default function AnnouncementItem({
         {imageLoading && (
           <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 animate-pulse rounded-sm" />
         )}
-        <Image
-          src={coverImageUrl}
-          alt={title}
-          fill
-          className={`object-cover rounded-sm transition-opacity duration-300 ${
-            imageLoading ? 'opacity-0' : 'opacity-100'
-          }`}
-          onLoad={() => setImageLoading(false)}
-        />
+        {coverImageUrl && (
+          <Image
+            src={coverImageUrl}
+            alt={title}
+            fill
+            className={`object-cover rounded-sm transition-opacity duration-300 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            onLoad={() => setImageLoading(false)}
+          />
+        )}
       </div>
       <div className="mt-4 flex flex-col gap-y-2 justify-between">
         <Heading2>{title}</Heading2>
