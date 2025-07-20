@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Badge } from '@/components/badge';
 import { SparkleIcon } from 'lucide-react';
+import { Heading1, Heading2, Heading3 } from '@/components/heading';
 import { getAnnouncementNoteDetail } from './announcement-detail.utils';
 
 type Props = {
@@ -60,31 +61,29 @@ function NotionBlockRenderer({ block }: { block: any }) {
 
   switch (type) {
     case 'paragraph':
-      return text ? <p className="mb-4 text-gray-800">{text}</p> : null;
+      return text ? <p className="mb-4 text-text-title">{text}</p> : null;
 
     case 'heading_1':
-      return text ? (
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">{text}</h1>
-      ) : null;
+      return text ? <Heading1 className="mb-6 ">{text}</Heading1> : null;
 
     case 'heading_2':
       return text ? (
-        <h2 className="text-2xl font-semibold mb-4 text-gray-900">{text}</h2>
+        <Heading2 className="mb-4  font-bold">{text}</Heading2>
       ) : null;
 
     case 'heading_3':
       return text ? (
-        <h3 className="text-xl font-semibold mb-3 text-gray-900">{text}</h3>
+        <Heading3 className="mb-3 font-bold">{text}</Heading3>
       ) : null;
 
     case 'bulleted_list_item':
       return text ? (
-        <li className="mb-2 text-gray-800 list-disc ml-4">{text}</li>
+        <li className="mb-2 text-text-title list-disc ml-4">{text}</li>
       ) : null;
 
     case 'quote':
       return text ? (
-        <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-700 mb-4">
+        <blockquote className="border-l-4 border-gray-300 pl-4 italic text-text-title mb-4">
           {text}
         </blockquote>
       ) : null;
@@ -155,7 +154,7 @@ export default async function AnnouncementDetail({ id }: Props) {
   return (
     <div className="p-6 mx-auto max-w-screen-sm w-full">
       {pageTitle && (
-        <h1 className="text-4xl font-bold mb-2 text-gray-900">{pageTitle}</h1>
+        <h1 className="text-4xl font-bold mb-2 text-text-title">{pageTitle}</h1>
       )}
 
       {pageTags.length > 0 && (
