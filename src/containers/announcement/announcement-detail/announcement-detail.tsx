@@ -1,3 +1,7 @@
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { Badge } from '@/components/badge';
+import { SparkleIcon } from 'lucide-react';
 import { getAnnouncementNoteDetail } from './announcement-detail.utils';
 
 type Props = {
@@ -129,20 +133,59 @@ export default async function AnnouncementDetail({ id }: Props) {
     return null;
   };
 
+  const getPageTags = (page: any) => {
+    if (page?.properties?.tags?.multi_select) {
+      return page.properties.tags.multi_select.map((tag: any) => tag.name);
+    }
+    return [];
+  };
+
+  const getPageSummary = (page: any) => {
+    if (page?.properties?.summary?.rich_text?.[0]?.plain_text) {
+      return page.properties.summary.rich_text[0].plain_text;
+    }
+    return '';
+  };
+
   const pageTitle = getPageTitle(data.page);
   const pageCreatedTime = getPageCreatedTime(data.page);
+  const pageTags = getPageTags(data.page);
+  const pageSummary = getPageSummary(data.page);
 
   return (
     <div className="p-6 mx-auto max-w-screen-sm w-full">
       {pageTitle && (
-        <h1 className="text-4xl font-bold mb-8 text-gray-900">{pageTitle}</h1>
+        <h1 className="text-4xl font-bold mb-2 text-gray-900">{pageTitle}</h1>
+      )}
+
+      {pageTags.length > 0 && (
+        <div className="flex gap-x-2 mb-6">
+          {pageTags.map((tag) => (
+            <Badge key={tag} variant="gray" size="sm">
+              {tag}
+            </Badge>
+          ))}
+        </div>
       )}
 
       {pageCreatedTime && (
-        <p className="text-gray-700 mb-8">
-          {new Date(pageCreatedTime).toLocaleDateString('ko-KR')}
+        <p className="text-gray-500 mb-8">
+          {format(new Date(pageCreatedTime), 'yy년 MMM dd일 iiii', {
+            locale: ko,
+          })}
         </p>
       )}
+
+      {pageSummary && (
+        <div className="text-text-title mb-8 flex flex-col gap-y-2">
+          <Badge variant="secondary-outline" size="sm" className="w-fit">
+            AI 요약 <SparkleIcon className="size-3" />
+          </Badge>
+          <span>{pageSummary}</span>
+        </div>
+      )}
+
+      <hr className="my-6 border-gray-300" />
 
       <div className="space-y-4">
         {data.blocks.map((block: any) => (
