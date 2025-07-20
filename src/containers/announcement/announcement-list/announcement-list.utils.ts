@@ -32,6 +32,12 @@ export const getAnnouncementNote = async () => {
     const response = await notion.databases.query({
       database_id: NOTION_RELEASE_NOTE_DATABASE_ID,
       page_size: 10,
+      filter: {
+        property: 'status',
+        status: {
+          equals: 'done',
+        },
+      },
       sorts: [
         {
           property: 'date',
