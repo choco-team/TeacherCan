@@ -3,7 +3,7 @@ import { Client } from '@notionhq/client';
 const { NOTION_API_KEY } = process.env;
 const { NOTION_RELEASE_NOTE_DATABASE_ID } = process.env;
 
-const reshapeReleaseNote = (
+const reshapeAnnouncementNote = (
   data: any,
 ): {
   id: string;
@@ -24,7 +24,7 @@ const reshapeReleaseNote = (
   });
 };
 
-export const getReleaseNote = async () => {
+export const getAnnouncementNote = async () => {
   const notion = new Client({ auth: NOTION_API_KEY });
 
   try {
@@ -41,7 +41,7 @@ export const getReleaseNote = async () => {
 
     return {
       success: true,
-      data: reshapeReleaseNote(response.results),
+      data: reshapeAnnouncementNote(response.results),
     };
   } catch (error) {
     return {

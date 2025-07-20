@@ -1,4 +1,4 @@
-import { getReleaseNoteDetail } from './release-note-detail.utils';
+import { getAnnouncementNoteDetail } from './announcement-detail.utils';
 
 type Props = {
   id: string;
@@ -111,8 +111,8 @@ function NotionBlockRenderer({ block }: { block: any }) {
   }
 }
 
-export default async function ReleaseNoteDetail({ id }: Props) {
-  const { data } = await getReleaseNoteDetail(id);
+export default async function AnnouncementDetail({ id }: Props) {
+  const { data } = await getAnnouncementNoteDetail(id);
 
   const getPageTitle = (page: any) => {
     if (page?.properties?.title?.title?.[0]?.plain_text) {

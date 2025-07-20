@@ -6,7 +6,7 @@ export const notion = new NotionAPI();
 
 const { NOTION_API_KEY } = process.env;
 
-export const getReleaseNoteDetail = async (id: string) => {
+export const getAnnouncementNoteDetail = async (id: string) => {
   const notionClient = new Client({ auth: NOTION_API_KEY });
 
   try {
