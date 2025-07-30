@@ -1,7 +1,7 @@
 import AnnouncementContainer from '@/containers/announcement/announcement-container';
 
 export const metadata = {
-  title: '릴리즈 노트',
+  title: '공지사항',
 };
 
 function Announcement() {
