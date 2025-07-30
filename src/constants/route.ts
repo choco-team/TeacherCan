@@ -8,7 +8,7 @@ import {
   // Hourglass,
   TimerIcon,
   WandSparklesIcon,
-  MegaphoneIcon,
+  // MegaphoneIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -83,11 +83,11 @@ type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
 
 // NOTE:(김홍동) 네이게이션의 도움 영역에서 사용되는 객체입니다.
 export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
-  '/announcement': {
-    title: '공지사항',
-    Icon: MegaphoneIcon,
-    href: HELP_ROUTE.ANNOUNCEMENT,
-  },
+  // '/announcement': {
+  //   title: '공지사항',
+  //   Icon: MegaphoneIcon,
+  //   href: HELP_ROUTE.ANNOUNCEMENT,
+  // },
   '/feedback': {
     title: '피드백',
     Icon: MessageCircleHeartIcon,
