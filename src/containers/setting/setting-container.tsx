@@ -6,7 +6,7 @@ import ScreenModeSetting from './screen-mode-setting/screen-mode-setting';
 
 export default function SettingContainer() {
   return (
-    <div className="max-w-[600px] w-full mx-auto items-start">
+    <div className="max-w-screen-sm w-full mx-auto items-start">
       <Heading1 className="font-semibold mb-10">
         더 편한 화면으로 꾸며보세요.
       </Heading1>
