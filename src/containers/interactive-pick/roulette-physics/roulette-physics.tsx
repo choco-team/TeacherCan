@@ -88,11 +88,27 @@ export const RoulettePhysics = forwardRef<
 
       // 회전 로직 처리 (회전 중이거나 시뮬레이션이 활성화된 경우)
       if (state.isSpinning || isSimulatingRef.current) {
-        const maxSpeed = 20; // 최대 속도 (rad/s)
-        const accelerationTime = 2000; // 가속 시간 (2초)
-        const constantSpeedTime = 1000; // 일정 속도 유지 시간 (1초)
-        const decelerationTime = 2000; // 감속 시간 (2초)
-        const totalSpinTime = 5000; // 총 회전 시간 (5초)
+        // 랜덤한 속도와 시간 설정
+        const baseMaxSpeed = 20; // 기본 최대 속도 (rad/s)
+        const speedVariation = 0.3; // 속도 변화 범위 (±30%)
+        const maxSpeed =
+          baseMaxSpeed * (1 + (Math.random() - 0.5) * speedVariation);
+
+        const baseAccelerationTime = 2000; // 기본 가속 시간 (2초)
+        const timeVariation = 0.4; // 시간 변화 범위 (±40%)
+        const accelerationTime =
+          baseAccelerationTime * (1 + (Math.random() - 0.5) * timeVariation);
+
+        const baseConstantSpeedTime = 1000; // 기본 일정 속도 유지 시간 (1초)
+        const constantSpeedTime =
+          baseConstantSpeedTime * (1 + (Math.random() - 0.5) * timeVariation);
+
+        const baseDecelerationTime = 2000; // 기본 감속 시간 (2초)
+        const decelerationTime =
+          baseDecelerationTime * (1 + (Math.random() - 0.5) * timeVariation);
+
+        const totalSpinTime =
+          accelerationTime + constantSpeedTime + decelerationTime; // 총 회전 시간
 
         // 가속 단계 (0초 ~ 2초): 0에서 20까지 선형 증가
         if (elapsedTime < accelerationTime) {

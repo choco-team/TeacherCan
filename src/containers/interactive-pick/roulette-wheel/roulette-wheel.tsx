@@ -129,7 +129,7 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
   }, [config.radius, state.items]); // currentAngle 제거하여 불필요한 리렌더링 방지
 
   return (
-    <div className="relative w-fit mx-auto">
+    <div className="relative w-fit mx-auto min-w-[440px] min-h-[440px]">
       <motion.div
         className="relative origin-center"
         animate={{

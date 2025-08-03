@@ -54,27 +54,26 @@ export function RouletteContainer() {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto px-4">
-      <Heading1>룰렛 돌리기</Heading1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="flex-grow flex flex-col gap-16 mx-auto w-full max-w-screen-md lg:flex-row">
+      <div className="flex-1 flex flex-col gap-4">
+        <Heading1>룰렛 돌리기</Heading1>
         <RouletteInput
           onItemsChange={handleItemsChange}
           disabled={state.isSpinning}
         />
+      </div>
 
+      <div className="sticky z-10 bg-white self-start lg:top-[20px] lg:pt-6 justify-center">
+        <RouletteWheel config={DEFAULT_ROULETTE_CONFIG} state={state} />
         <RouletteControls state={state} onStartSpin={handleStartSpin} />
 
-        <div className="relative">
-          <RouletteWheel config={DEFAULT_ROULETTE_CONFIG} state={state} />
-
-          <RoulettePhysics
-            ref={physicsRef}
-            config={DEFAULT_ROULETTE_CONFIG}
-            state={state}
-            onStateChange={handleStateChange}
-            onResult={handleResult}
-          />
-        </div>
+        <RoulettePhysics
+          ref={physicsRef}
+          config={DEFAULT_ROULETTE_CONFIG}
+          state={state}
+          onStateChange={handleStateChange}
+          onResult={handleResult}
+        />
       </div>
       <RouletteResult
         selectedItem={state.selectedItem}
