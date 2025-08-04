@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { RouletteConfig, RouletteState, RouletteItem } from '../roulette-types';
-import { ROULETTE_COLORS } from '../roulette-constants';
 
 interface RouletteWheelProps {
   config: RouletteConfig;
@@ -74,10 +73,10 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
     ctx.stroke();
 
     // 각 섹션 그리기
-    state.items.forEach((item, index) => {
+    state.items.forEach((item) => {
       const { startAngle } = item;
       const { endAngle } = item;
-      const color = ROULETTE_COLORS[index % ROULETTE_COLORS.length];
+      const { color } = item;
 
       // 섹션 그리기
       ctx.beginPath();
@@ -108,12 +107,6 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
       const displayText =
         item.name.length > 8 ? `${item.name.substring(0, 8)}...` : item.name;
       ctx.fillText(displayText, 0, 0);
-
-      // 가중치 표시
-      if (item.weight > 1) {
-        ctx.font = '12px Arial';
-        ctx.fillText(`×${item.weight}`, 0, 20);
-      }
 
       ctx.restore();
     });

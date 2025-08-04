@@ -25,7 +25,6 @@ export const ROULETTE_COLORS = [
   '#F48FB1',
   '#9FA8DA',
   '#80CBC4',
-  '#FFCC02',
   '#FF7043',
   '#42A5F5',
   '#66BB6A',

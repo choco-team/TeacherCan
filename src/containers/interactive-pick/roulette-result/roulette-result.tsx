@@ -8,12 +8,14 @@ interface RouletteResultProps {
   selectedItem: RouletteItem | null;
   isVisible: boolean;
   onClose: () => void;
+  excludePickedItem?: boolean;
 }
 
 export function RouletteResult({
   selectedItem,
   isVisible,
   onClose,
+  excludePickedItem = false,
 }: RouletteResultProps) {
   if (!selectedItem) {
     return null;
@@ -62,6 +64,17 @@ export function RouletteResult({
             >
               {selectedItem.name}
             </motion.div>
+
+            {excludePickedItem && (
+              <motion.div
+                className="text-sm text-gray-600 mb-4"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.45 }}
+              >
+                확인을 누르면 이 학생이 룰렛에서 제거됩니다
+              </motion.div>
+            )}
 
             <motion.button
               type="button"
