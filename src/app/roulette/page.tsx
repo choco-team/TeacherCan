@@ -1,9 +1,9 @@
-import { RouletteContainer } from '@/containers/interactive-pick/roulette-container';
+import { RouletteContainer } from '@/containers/roulette/roulette-container';
 
 export const metadata = {
-  title: '인터랙티브 랜덤 뽑기',
+  title: '룰렛 뽑기',
 };
 
-export default function InteractivePickPage() {
+export default function RoulettePage() {
   return <RouletteContainer />;
 }
