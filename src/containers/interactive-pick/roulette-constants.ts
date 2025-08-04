@@ -1,7 +1,7 @@
 import { RouletteConfig } from './roulette-types';
 
 export const DEFAULT_ROULETTE_CONFIG: RouletteConfig = {
-  radius: 200,
+  radius: 320,
 };
 
 export const ROULETTE_COLORS = [

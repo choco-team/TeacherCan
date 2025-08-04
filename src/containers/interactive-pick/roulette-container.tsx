@@ -54,7 +54,7 @@ export function RouletteContainer() {
   }, []);
 
   return (
-    <div className="flex-grow flex flex-col gap-16 mx-auto w-full max-w-screen-md lg:flex-row">
+    <div className="flex-grow flex flex-col gap-16 mx-auto w-full max-w-screen-xl lg:flex-row">
       <div className="flex-1 flex flex-col gap-4">
         <Heading1>룰렛 돌리기</Heading1>
         <RouletteInput

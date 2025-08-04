@@ -35,6 +35,15 @@ export const RoulettePhysics = forwardRef<
   const isSimulatingRef = useRef<boolean>(false); // 시뮬레이션 활성화 여부
   const isDoneRef = useRef<boolean>(false); // 회전 완료 여부
 
+  // 회전 설정을 한 번만 계산하기 위한 refs
+  const spinConfigRef = useRef<{
+    maxSpeed: number;
+    accelerationTime: number;
+    constantSpeedTime: number;
+    decelerationTime: number;
+    totalSpinTime: number;
+  } | null>(null);
+
   // Planck.js 물리 월드 및 룰렛 휠 초기화
   const initializeWorld = useCallback(() => {
     if (worldRef.current) {
@@ -87,28 +96,14 @@ export const RoulettePhysics = forwardRef<
       const angularVelocity = wheelBodyRef.current.getAngularVelocity(); // 현재 각속도 (라디안/초)
 
       // 회전 로직 처리 (회전 중이거나 시뮬레이션이 활성화된 경우)
-      if (state.isSpinning || isSimulatingRef.current) {
-        // 랜덤한 속도와 시간 설정
-        const baseMaxSpeed = 20; // 기본 최대 속도 (rad/s)
-        const speedVariation = 0.3; // 속도 변화 범위 (±30%)
-        const maxSpeed =
-          baseMaxSpeed * (1 + (Math.random() - 0.5) * speedVariation);
-
-        const baseAccelerationTime = 2000; // 기본 가속 시간 (2초)
-        const timeVariation = 0.4; // 시간 변화 범위 (±40%)
-        const accelerationTime =
-          baseAccelerationTime * (1 + (Math.random() - 0.5) * timeVariation);
-
-        const baseConstantSpeedTime = 1000; // 기본 일정 속도 유지 시간 (1초)
-        const constantSpeedTime =
-          baseConstantSpeedTime * (1 + (Math.random() - 0.5) * timeVariation);
-
-        const baseDecelerationTime = 2000; // 기본 감속 시간 (2초)
-        const decelerationTime =
-          baseDecelerationTime * (1 + (Math.random() - 0.5) * timeVariation);
-
-        const totalSpinTime =
-          accelerationTime + constantSpeedTime + decelerationTime; // 총 회전 시간
+      if (state.isSpinning && spinConfigRef.current) {
+        const {
+          maxSpeed,
+          accelerationTime,
+          constantSpeedTime,
+          decelerationTime,
+          totalSpinTime,
+        } = spinConfigRef.current;
 
         // 가속 단계 (0초 ~ 2초): 0에서 20까지 선형 증가
         if (elapsedTime < accelerationTime) {
@@ -205,6 +200,39 @@ export const RoulettePhysics = forwardRef<
     [state.isSpinning, state.items, onStateChange, onResult],
   );
 
+  // 회전 설정 계산 함수
+  const calculateSpinConfig = useCallback(() => {
+    // 랜덤한 속도와 시간 설정
+    const baseMaxSpeed = 20; // 기본 최대 속도 (rad/s)
+    const speedVariation = 0.3; // 속도 변화 범위 (±30%)
+    const maxSpeed =
+      baseMaxSpeed * (1 + (Math.random() - 0.5) * speedVariation);
+
+    const baseAccelerationTime = 2000; // 기본 가속 시간 (2초)
+    const timeVariation = 0.4; // 시간 변화 범위 (±40%)
+    const accelerationTime =
+      baseAccelerationTime * (1 + (Math.random() - 0.5) * timeVariation);
+
+    const baseConstantSpeedTime = 1000; // 기본 일정 속도 유지 시간 (1초)
+    const constantSpeedTime =
+      baseConstantSpeedTime * (1 + (Math.random() - 0.5) * timeVariation);
+
+    const baseDecelerationTime = 2000; // 기본 감속 시간 (2초)
+    const decelerationTime =
+      baseDecelerationTime * (1 + (Math.random() - 0.5) * timeVariation);
+
+    const totalSpinTime =
+      accelerationTime + constantSpeedTime + decelerationTime; // 총 회전 시간
+
+    spinConfigRef.current = {
+      maxSpeed,
+      accelerationTime,
+      constantSpeedTime,
+      decelerationTime,
+      totalSpinTime,
+    };
+  }, []);
+
   // 룰렛 회전 시작 함수 (외부에서 호출)
   const startSpin = useCallback(() => {
     // 이미 회전 중이거나 휠 바디가 없는 경우 종료
@@ -225,6 +253,9 @@ export const RoulettePhysics = forwardRef<
 
     // 시뮬레이션 활성화 (회전 로직 시작)
     isSimulatingRef.current = true;
+
+    // 회전 설정 계산
+    calculateSpinConfig();
 
     // UI 상태 업데이트
     onStateChange({
