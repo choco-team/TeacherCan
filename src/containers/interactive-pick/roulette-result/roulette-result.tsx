@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/button';
 import { RouletteItem } from '../roulette-types';
 
 interface RouletteResultProps {
@@ -14,7 +15,9 @@ export function RouletteResult({
   isVisible,
   onClose,
 }: RouletteResultProps) {
-  if (!selectedItem) return null;
+  if (!selectedItem) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
@@ -43,7 +46,7 @@ export function RouletteResult({
             </motion.div>
 
             <motion.h2
-              className="text-2xl font-bold text-gray-800 mb-2"
+              className="text-xl font-bold text-gray-800 mb-2"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -52,17 +55,12 @@ export function RouletteResult({
             </motion.h2>
 
             <motion.div
-              className="text-xl font-semibold text-blue-600 mb-4"
+              className="text-6xl font-semibold text-primary-500 mb-4"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
               {selectedItem.name}
-              {selectedItem.weight > 1 && (
-                <span className="text-sm text-gray-500 ml-2">
-                  (×{selectedItem.weight})
-                </span>
-              )}
             </motion.div>
 
             <motion.button
@@ -70,14 +68,14 @@ export function RouletteResult({
               onClick={() => {
                 onClose();
               }}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="mt-2"
             >
-              확인
+              <Button size="lg">확인</Button>
             </motion.button>
           </motion.div>
         </motion.div>

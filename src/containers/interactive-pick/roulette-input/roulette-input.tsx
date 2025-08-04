@@ -105,15 +105,22 @@ export function RouletteInput({
   );
 
   // 입력 필드 삭제
-  const handleRemoveField = useCallback((id: string) => {
-    setInputFields((prev) => {
-      const filtered = prev.filter((field) => field.id !== id);
-      // 최소 하나의 필드는 유지
-      return filtered.length > 0
-        ? filtered
-        : [{ id: '1', name: '', weight: '1' }];
-    });
-  }, []);
+  const handleRemoveField = useCallback(
+    (id: string) => {
+      if (disabled) {
+        return;
+      }
+
+      setInputFields((prev) => {
+        const filtered = prev.filter((field) => field.id !== id);
+        // 최소 하나의 필드는 유지
+        return filtered.length > 0
+          ? filtered
+          : [{ id: '1', name: '', weight: '1' }];
+      });
+    },
+    [disabled],
+  );
 
   // 입력 필드가 변경될 때마다 룰렛 아이템 업데이트
   useEffect(() => {

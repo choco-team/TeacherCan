@@ -63,7 +63,7 @@ export function RouletteContainer() {
         />
       </div>
 
-      <div className="sticky z-10 bg-white self-start lg:top-[20px] lg:pt-6 justify-center">
+      <div className="sticky bg-white self-start lg:top-[20px] lg:pt-6 justify-center">
         <RouletteWheel config={DEFAULT_ROULETTE_CONFIG} state={state} />
         <RouletteControls state={state} onStartSpin={handleStartSpin} />
 
