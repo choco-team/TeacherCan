@@ -9,6 +9,7 @@ import {
   TimerIcon,
   WandSparklesIcon,
   // MegaphoneIcon,
+  CircleDotIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -21,6 +22,7 @@ export const MENU_ROUTE = {
   RANDOM_PICK: '/random-pick',
   MUSIC_REQUEST: '/music-request',
   ROUTINE_TIMER: '/routine-timer',
+  ROULETTE: '/roulette',
 } as const;
 
 export const HELP_ROUTE = {
@@ -61,6 +63,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '타이머',
     Icon: TimerIcon,
     href: MENU_ROUTE.TIMER,
+  },
+  '/roulette': {
+    title: '룰렛 돌리기',
+    Icon: CircleDotIcon,
+    href: MENU_ROUTE.ROULETTE,
   },
   '/music-request': {
     title: '음악신청',

@@ -10,6 +10,7 @@ import {
   QrCodeIcon,
   SettingsIcon,
   MegaphoneIcon,
+  CircleDotIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -63,6 +64,11 @@ const breadcrumbs: Record<
     name: '공지사항',
     url: '/announcement',
     icon: <MegaphoneIcon size="1rem" />,
+  },
+  roulette: {
+    name: '룰렛 돌리기',
+    url: '/roulette',
+    icon: <CircleDotIcon size="1rem" />,
   },
 };
 

@@ -124,7 +124,6 @@ export function RouletteContainer() {
         selectedItem={state.selectedItem}
         isVisible={showResult}
         onClose={handleCloseResult}
-        excludePickedItem={excludePickedItem}
       />
     </div>
   );
