@@ -9,7 +9,7 @@ import {
   TimerIcon,
   WandSparklesIcon,
   // MegaphoneIcon,
-  CircleDotIcon,
+  // CircleDotIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -64,11 +64,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: TimerIcon,
     href: MENU_ROUTE.TIMER,
   },
-  '/roulette': {
-    title: '룰렛 돌리기',
-    Icon: CircleDotIcon,
-    href: MENU_ROUTE.ROULETTE,
-  },
+  // '/roulette': {
+  //   title: '룰렛 돌리기',
+  //   Icon: CircleDotIcon,
+  //   href: MENU_ROUTE.ROULETTE,
+  // },
   '/music-request': {
     title: '음악신청',
     Icon: MusicIcon,
