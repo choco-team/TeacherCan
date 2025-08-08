@@ -1,0 +1,68 @@
+import { Client } from '@notionhq/client';
+import { Announcements, Cover } from './announcement-list.types';
+
+const { NOTION_API_KEY } = process.env;
+const { NOTION_RELEASE_NOTE_DATABASE_ID } = process.env;
+
+const getCoverImageUrl = (cover: Cover) => {
+  if (!cover) {
+    return null;
+  }
+
+  if (cover.type === 'external') {
+    return cover.external.url;
+  }
+
+  return cover.file.url;
+};
+
+const reshapeAnnouncementNote = (data: any): Announcements => {
+  return data.map((item: any) => {
+    const {
+      properties: { tags, title, date, summary },
+      cover,
+    } = item;
+
+    return {
+      id: item.id,
+      title: title.title[0].plain_text,
+      summary: summary.rich_text[0].plain_text,
+      date: date.date.start,
+      coverImageUrl: getCoverImageUrl(cover),
+      tags: tags.multi_select.map((tag: { name: string }) => tag.name),
+    };
+  });
+};
+
+export const getAnnouncementNote = async () => {
+  const notion = new Client({ auth: NOTION_API_KEY });
+
+  try {
+    const response = await notion.databases.query({
+      database_id: NOTION_RELEASE_NOTE_DATABASE_ID,
+      page_size: 10,
+      filter: {
+        property: 'status',
+        status: {
+          equals: 'done',
+        },
+      },
+      sorts: [
+        {
+          property: 'date',
+          direction: 'descending',
+        },
+      ],
+    });
+
+    return {
+      success: true,
+      data: reshapeAnnouncementNote(response.results),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+    };
+  }
+};

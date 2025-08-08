@@ -35,6 +35,7 @@ export default function AppSidebar() {
   const { updateRecentlyVisited } = useRecentlyVisited(
     pathname as MenuRoutePath,
   );
+
   const { setOpenMobile, openMobile, isMobile, open, setOpen } = useSidebar();
 
   const showSidebarIcon = isMobile ? openMobile : open;
@@ -106,7 +107,7 @@ export default function AppSidebar() {
                         onClick={handleClickMenu}
                         href={path}
                         className={cn(
-                          pathname.includes(path) &&
+                          pathname.startsWith(path) &&
                             'text-text-title bg-bg-secondary dark:bg-gray-950',
                           linkClass,
                         )}
@@ -146,7 +147,7 @@ export default function AppSidebar() {
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                      className={`${pathname.startsWith(path) ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
                     >
                       <Icon size="1rem" />
                       <span>{title}</span>
