@@ -6,9 +6,9 @@ export const notion = new NotionAPI();
 
 const { NOTION_API_KEY } = process.env;
 
-export const getAnnouncementNoteDetail = async (id: string) => {
-  const notionClient = new Client({ auth: NOTION_API_KEY });
+const notionClient = new Client({ auth: NOTION_API_KEY });
 
+export const getAnnouncementNoteDetail = async (id: string) => {
   try {
     const [pageResponse, blocksResponse] = await Promise.all([
       notionClient.pages.retrieve({
