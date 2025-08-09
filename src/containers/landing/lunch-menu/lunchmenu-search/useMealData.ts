@@ -21,7 +21,12 @@ function useMealData(selectedSchool: School | null) {
         ATPT_OFCDC_SC_CODE: school.ATPT_OFCDC_SC_CODE,
         SD_SCHUL_CODE: school.SD_SCHUL_CODE,
       },
-    }).then((response) => response.data);
+    })
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error('Error fetching meal data:', error);
+        return [];
+      });
 
     setMealData(data);
   };
