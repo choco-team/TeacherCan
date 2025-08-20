@@ -5,7 +5,7 @@ import {
   DicesIcon,
   SettingsIcon,
   QrCodeIcon,
-  // Hourglass,
+  Hourglass,
   TimerIcon,
   WandSparklesIcon,
   // MegaphoneIcon,
@@ -72,11 +72,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
   },
-  // '/routine-timer': {
-  //   title: '루틴타이머',
-  //   Icon: Hourglass,
-  //   href: MENU_ROUTE.ROUTINE_TIMER,
-  // },
+  '/routine-timer': {
+    title: '루틴타이머',
+    Icon: Hourglass,
+    href: MENU_ROUTE.ROUTINE_TIMER,
+  },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];

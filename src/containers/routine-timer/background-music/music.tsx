@@ -28,14 +28,11 @@ export default function RoutineBackgroundMusic({
       return;
     }
 
-    const currentRoutine = routines.find(
-      (routine) => routine.key === routineId,
-    );
+    const currentRoutine = routines.find((routine) => routine.id === routineId);
 
     if (currentRoutine && currentRoutine.videoId) {
       setMusicData({
         videoId: currentRoutine.videoId,
-        url: currentRoutine.url,
       });
     } else {
       setMusicData(null);

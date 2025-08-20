@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { Routine } from '../../create-routine/routine-types';
-import { formatTime } from '../utils/time-formatter';
 import { useTimer } from './use-timer';
 
 export const usePlayRoutine = (routineId: string) => {
@@ -26,7 +25,7 @@ export const usePlayRoutine = (routineId: string) => {
     const loadRoutine = () => {
       try {
         if (Array.isArray(routines)) {
-          const found = routines.find((r) => r.key === routineId);
+          const found = routines.find((r) => r.id === routineId);
           if (found && found.activities.length > 0) {
             setRoutine(found);
             setTimeValue(found.activities[0].time);
@@ -177,7 +176,6 @@ export const usePlayRoutine = (routineId: string) => {
     isRunning,
     isPaused,
     isCompleted,
-    formatTime,
     startTimer,
     pauseTimer,
     resumeTimer,

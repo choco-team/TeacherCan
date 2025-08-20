@@ -1,16 +1,15 @@
 import { createContext, useContext } from 'react';
-import { Routine } from '../../create-routine/routine-types';
+import type { Activity, Routine } from '../../create-routine/routine-types';
 
 type PlayRoutineContextType = {
   routine: Routine | null;
-  currentActivity: any | null;
+  currentActivity: Activity | null;
   currentIndex: number;
   timeLeft: number;
   totalProgress: number;
   isRunning: boolean;
   isPaused: boolean;
   isCompleted: boolean;
-  formatTime: (timeInSeconds?: number) => string;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;

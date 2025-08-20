@@ -1,6 +1,6 @@
 import { Button } from '@/components/button';
 import { Play, Pause, SkipForward, SkipBack } from 'lucide-react';
-import { formatTime } from '../utils/time-formatter';
+import { formatTime } from '../utils/formatter';
 import ProgressBar from './progress-bar';
 import { usePlayRoutineContext } from '../hooks/use-play-routine-context';
 

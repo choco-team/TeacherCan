@@ -3,11 +3,7 @@
 import RoutineTimerList from './routine-timer-list';
 
 function RoutineTimerContainer() {
-  return (
-    <div>
-      <RoutineTimerList />
-    </div>
-  );
+  return <RoutineTimerList />;
 }
 
 export default RoutineTimerContainer;

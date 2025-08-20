@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/button';
 import { X, Music } from 'lucide-react';
 import { useState } from 'react';
+import { MENU_ROUTE } from '@/constants/route';
 import { PlayRoutineProvider } from './play-routine-provider';
 import ActivityDisplay from './components/activity-display';
 import NextActivities from './components/next-activities';
@@ -23,7 +24,7 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
 
   const handleExit = () => {
     exitTimer();
-    router.push(`/routine-timer/${routine?.key}`);
+    router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${routineId}`);
   };
 
   const toggleMusic = () => {

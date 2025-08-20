@@ -2,52 +2,35 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { nanoid } from 'nanoid';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { X } from 'lucide-react';
+import { MENU_ROUTE } from '@/constants/route';
 import { Routine } from './create-routine/routine-types';
+import { getTotalTime } from './routine-timer.utils';
+import { ROUTINES_MAX_COUNT } from './routine-timer.constants';
 
 export default function RoutineTimerList(): JSX.Element {
   const router = useRouter();
   const [routines, setRoutines] = useLocalStorage<Routine[]>('routines', []);
-  const ROUTINES_MAX_COUNT = 5;
 
-  function saveRoutines(updatedRoutines: Routine[]) {
+  const saveRoutines = (updatedRoutines: Routine[]): void => {
     setRoutines(updatedRoutines);
-  }
+  };
 
-  function createNewRoutine(): Routine {
-    const newRoutineTimer: Routine = {
-      key: nanoid(),
-      title: '새 루틴',
-      totalTime: 0,
-      activities: [],
-      videoId: '',
-    };
+  const handleAddRoutine = (): void => {
+    router.push(`${MENU_ROUTE.ROUTINE_TIMER}/new`);
+  };
 
-    return newRoutineTimer;
-  }
+  const handleDeleteRoutine = (event: React.MouseEvent, id: string): void => {
+    event.stopPropagation();
 
-  function handleAddRoutine(): void {
-    if (routines.length >= ROUTINES_MAX_COUNT) {
-      return;
-    }
-    const newRoutineTimer = createNewRoutine();
-    saveRoutines([...routines, newRoutineTimer]);
-
-    router.push(`/routine-timer/${newRoutineTimer.key}`);
-  }
-
-  function handleDeleteRoutine(e: React.MouseEvent, key: string): void {
-    e.stopPropagation();
-
-    const updatedRoutines = routines.filter((routine) => routine.key !== key);
+    const updatedRoutines = routines.filter((routine) => routine.id !== id);
     saveRoutines(updatedRoutines);
-  }
+  };
 
-  function handleRoutineClick(key: string): void {
-    router.push(`/routine-timer/${key}`);
-  }
+  const handleClickRoutine = (id: string): void => {
+    router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${id}`);
+  };
 
   const displayRoutines = Array.isArray(routines) ? routines : [];
 
@@ -55,35 +38,34 @@ export default function RoutineTimerList(): JSX.Element {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">내 루틴 타이머</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {displayRoutines.map((routine) => (
-          <div
-            key={routine.key}
-            onClick={() => handleRoutineClick(routine.key)}
-            className="relative border rounded-xl p-4 cursor-pointer hover:bg-gray-50 transition"
-          >
-            <button
-              type="button"
-              onClick={(e) => handleDeleteRoutine(e, routine.key)}
-              className="absolute top-2 right-2 text-gray-400 hover:text-black"
+        {displayRoutines.map(({ id, title, activities }) => {
+          const totalTime = getTotalTime(activities);
+          return (
+            <div
+              key={id}
+              onClick={() => handleClickRoutine(id)}
+              className="relative border rounded-xl p-4 cursor-pointer hover:bg-gray-50 transition"
             >
-              <X />
-            </button>
-            <h2 className="font-bold text-lg">
-              {routine.title || '제목 없음'}
-            </h2>
-            <p className="text-gray-500">
-              총 시간: {Math.floor(routine.totalTime / 60)}분{' '}
-              {routine.totalTime % 60}초
-            </p>
-            <p className="text-gray-500">
-              활동 수: {routine.activities.length}개
-            </p>
-          </div>
-        ))}
+              <button
+                type="button"
+                onClick={(event) => handleDeleteRoutine(event, id)}
+                className="absolute top-2 right-2 text-gray-400 hover:text-black"
+              >
+                <X />
+              </button>
+              <h2 className="font-bold text-lg">{title || '제목 없음'}</h2>
+              <p className="text-gray-500">
+                총 시간: {Math.floor(totalTime / 60)}분 {totalTime % 60}초
+              </p>
+              <p className="text-gray-500">활동 수: {activities.length}개</p>
+            </div>
+          );
+        })}
 
         {displayRoutines.length < ROUTINES_MAX_COUNT && (
           <button
             type="button"
+            disabled={displayRoutines.length >= ROUTINES_MAX_COUNT}
             onClick={handleAddRoutine}
             className="flex items-center justify-center h-40 border-2 border-dashed rounded-xl cursor-pointer hover:bg-gray-50 transition"
           >
