@@ -144,7 +144,7 @@ export default async function AnnouncementDetail({ id }: Props) {
   const pageSummary = getPageSummary(data.page);
 
   return (
-    <div className="p-6 mx-auto max-w-screen-sm w-full">
+    <div className="mx-auto max-w-screen-sm w-full lg:p-6">
       {pageTitle && (
         <h1 className="text-4xl font-bold mb-2 text-text-title">{pageTitle}</h1>
       )}
