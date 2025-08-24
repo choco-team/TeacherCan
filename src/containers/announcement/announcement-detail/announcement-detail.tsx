@@ -4,6 +4,7 @@ import { Badge } from '@/components/badge';
 import { SparkleIcon } from 'lucide-react';
 import { Heading1, Heading2, Heading3 } from '@/components/heading';
 import { getAnnouncementNoteDetail } from './announcement-detail.utils';
+import { ImageWithSkeleton } from './image-with-skeleton';
 
 type Props = {
   id: string;
@@ -90,20 +91,11 @@ function NotionBlockRenderer({ block }: { block: any }) {
 
     case 'image':
       return imageUrl ? (
-        <figure className="mb-6">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={imageUrl}
-            alt={imageCaption || 'Notion 이미지'}
-            className="w-full h-auto rounded-lg shadow-md"
-            loading="lazy"
-          />
-          {imageCaption && (
-            <figcaption className="text-sm text-gray-600 text-center mt-2 italic">
-              {imageCaption}
-            </figcaption>
-          )}
-        </figure>
+        <ImageWithSkeleton
+          src={imageUrl}
+          alt={imageCaption || 'Notion 이미지'}
+          caption={imageCaption}
+        />
       ) : null;
 
     case 'divider':
