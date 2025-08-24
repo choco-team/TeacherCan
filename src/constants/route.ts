@@ -68,6 +68,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '룰렛 돌리기',
     Icon: CircleDotIcon,
     href: MENU_ROUTE.ROULETTE,
+    isNew: true,
   },
   '/music-request': {
     title: '음악신청',
