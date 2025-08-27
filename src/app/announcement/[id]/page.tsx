@@ -5,8 +5,7 @@ export const metadata = {
   description: '티처캔의 새로운 소식을 전해드려요.',
 };
 
-export const dynamic = 'force-static';
-export const revalidate = false;
+export const revalidate = 3600;
 
 function Announcement({ params }: { params: { id?: string } }) {
   return <AnnouncementContainer id={params.id} />;
