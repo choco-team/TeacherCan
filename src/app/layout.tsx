@@ -10,6 +10,7 @@ import { MENU_ROUTE } from '@/constants/route';
 import { cn } from '@/styles/utils';
 import { SidebarProvider } from '@/components/sidebar';
 import AppSidebar from '@/components/app-sidebar/app-sidebar';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: '티처캔',
@@ -64,6 +65,39 @@ export default async function RootLayout({
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
       <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_TAG_ID} />
       <body className="bg-bg">
+        <Script
+          id="theme-sync"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+            (function() {
+              try {
+                // 쿠키에서 현재 설정값 가져오기
+                function getCookie(name) {
+                  const value = \` \${document.cookie}\`;
+                  const parts = value.split(\` \${name}=\`);
+                  if (parts.length === 2) return parts.pop().split(';').shift();
+                  return null;
+                }
+                
+                const currentScreenMode = getCookie('screenMode') || 'light';
+                const currentFontSize = getCookie('fontSize') || 'medium';
+                
+                // HTML 요소에 클래스 적용
+                const html = document.documentElement;
+                
+                // 기존 클래스 제거 후 새로운 클래스 추가
+                html.classList.remove('light', 'dark', 'system');
+                html.classList.remove('small', 'medium', 'large');
+                html.classList.add(currentScreenMode);
+                html.classList.add(currentFontSize);
+              } catch (e) {
+                console.error('Theme sync error:', e);
+              }
+            })();
+          `,
+          }}
+        />
         <QueryProvider>
           {isMinimalLayout ? (
             <main className="bg-gray-50 dark:bg-gray-950">
