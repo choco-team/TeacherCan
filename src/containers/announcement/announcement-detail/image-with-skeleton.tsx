@@ -6,7 +6,6 @@ function ImageSkeleton() {
   return (
     <div className="mb-6">
       <div className="w-full h-64 bg-gray-200 rounded-sm shadow-md animate-pulse" />
-      <div className="h-4 bg-gray-200 rounded mt-2 animate-pulse" />
     </div>
   );
 }
