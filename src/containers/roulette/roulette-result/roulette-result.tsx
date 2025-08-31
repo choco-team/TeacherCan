@@ -30,7 +30,7 @@ export function RouletteResult({
           onClick={onClose}
         >
           <motion.div
-            className="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center"
+            className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 text-center shadow-xl"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -46,7 +46,7 @@ export function RouletteResult({
             </motion.div>
 
             <motion.h2
-              className="text-xl font-bold text-gray-800 mb-2"
+              className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3 }}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { RouletteConfig, RouletteState, RouletteItem } from '../roulette-types';
 
@@ -13,6 +13,27 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const prevItemsRef = useRef<RouletteItem[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // 다크모드 감지
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setIsDarkMode(isDark);
+    };
+
+    // 초기 체크
+    checkDarkMode();
+
+    // 다크모드 변경 감지
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   // 캔버스 초기화
   useEffect(() => {
@@ -66,9 +87,9 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
     // 룰렛 배경 원
     ctx.beginPath();
     ctx.arc(centerX, centerY, config.radius, 0, 2 * Math.PI);
-    ctx.fillStyle = '#f8f9fa';
+    ctx.fillStyle = isDarkMode ? '#1f2937' : '#f8f9fa'; // 다크모드: gray-800, 라이트모드: gray-50
     ctx.fill();
-    ctx.strokeStyle = '#dee2e6';
+    ctx.strokeStyle = isDarkMode ? '#374151' : '#dee2e6'; // 다크모드: gray-700, 라이트모드: gray-300
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -85,7 +106,7 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
       ctx.closePath();
       ctx.fillStyle = color;
       ctx.fill();
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokeStyle = isDarkMode ? '#374151' : '#ffffff'; // 다크모드: gray-700, 라이트모드: white
       ctx.lineWidth = 2;
       ctx.stroke();
 
@@ -100,7 +121,7 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
       ctx.rotate(textAngle + Math.PI / 2);
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = isDarkMode ? '#1f2937' : '#ffffff'; // 다크모드: gray-800, 라이트모드: white
       ctx.font = 'bold 14px Arial';
 
       // 텍스트가 너무 길면 줄임
@@ -114,12 +135,12 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
     // 중앙 원
     ctx.beginPath();
     ctx.arc(centerX, centerY, 10, 0, 2 * Math.PI);
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = isDarkMode ? '#374151' : '#ffffff'; // 다크모드: gray-700, 라이트모드: white
     ctx.fill();
-    ctx.strokeStyle = '#dee2e6';
+    ctx.strokeStyle = isDarkMode ? '#6b7280' : '#dee2e6'; // 다크모드: gray-500, 라이트모드: gray-300
     ctx.lineWidth = 2;
     ctx.stroke();
-  }, [config.radius, state.items]); // currentAngle 제거하여 불필요한 리렌더링 방지
+  }, [config.radius, state.items, isDarkMode]); // currentAngle 제거하여 불필요한 리렌더링 방지
 
   return (
     <div className="relative w-fit mx-auto min-w-[680px] min-h-[680px]">
@@ -136,7 +157,7 @@ export function RouletteWheel({ config, state }: RouletteWheelProps) {
       >
         <canvas
           ref={canvasRef}
-          className="block h-auto transform-gpu will-change-transform"
+          className="block h-auto transform-gpu will-change-transform "
         />
       </motion.div>
 
