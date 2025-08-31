@@ -8,7 +8,16 @@ import {
   useImperativeHandle,
 } from 'react';
 import { Input } from '@/components/input';
-import { XIcon } from 'lucide-react';
+import { Button } from '@/components/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
+import { XIcon, Database, Users } from 'lucide-react';
 import { creatId } from '@/utils/createNanoid';
 import { RouletteItem } from '../roulette-types';
 import { ROULETTE_COLORS } from '../roulette-constants';
@@ -34,6 +43,34 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
     const [inputFields, setInputFields] = useState<InputField[]>([
       { id: creatId(), name: '', weight: '1', color: ROULETTE_COLORS[0] },
     ]);
+    const [autoGenerateNumber, setAutoGenerateNumber] = useState<string>('');
+    const [selectedOption, setSelectedOption] = useState<'auto' | 'student'>(
+      'auto',
+    );
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+
+    // 자동 생성 함수
+    const handleAutoGenerate = useCallback(() => {
+      const number = parseInt(autoGenerateNumber, 10);
+      if (number > 0 && number <= 50) {
+        // 최대 50개로 제한
+        const newFields: InputField[] = [];
+
+        for (let i = 1; i <= number; i += 1) {
+          const colorIndex = (i - 1) % ROULETTE_COLORS.length;
+          newFields.push({
+            id: creatId(),
+            name: i.toString(),
+            weight: '1',
+            color: ROULETTE_COLORS[colorIndex],
+          });
+        }
+
+        setInputFields(newFields);
+        setAutoGenerateNumber(''); // 입력 필드 초기화
+        setIsModalOpen(false); // 모달 닫기
+      }
+    }, [autoGenerateNumber]);
 
     // 입력 필드들을 파싱하여 룰렛 아이템 생성
     const parseInputFields = useCallback(
@@ -187,6 +224,172 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
 
     return (
       <div className="w-full pr-4 lg:pr-0">
+        {/* 룰렛 항목 생성 섹션 */}
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              룰렛 항목 생성
+            </h3>
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="primary-outline"
+                  size="sm"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  빠른 생성
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    빠른 생성
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6">
+                  {/* 라디오 버튼 선택 */}
+                  <RadioGroup
+                    value={selectedOption}
+                    onValueChange={(value) =>
+                      setSelectedOption(value as 'auto' | 'student')
+                    }
+                    className="space-y-2"
+                  >
+                    <div className="flex items-center gap-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                      <RadioGroupItem
+                        value="auto"
+                        id="auto-option"
+                        className="w-4 h-4 text-primary-500 border-gray-300 dark:border-gray-600 focus:ring-primary-500"
+                      />
+                      <label
+                        htmlFor="auto-option"
+                        className="flex items-center gap-3 flex-1 cursor-pointer"
+                      >
+                        <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                          <Database className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-800 dark:text-gray-200">
+                            자동 생성
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            숫자 범위로 자동 생성
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                      <RadioGroupItem
+                        value="student"
+                        id="student-option"
+                        className="w-4 h-4 text-primary-500 border-gray-300 dark:border-gray-600 focus:ring-primary-500"
+                      />
+                      <label
+                        htmlFor="student-option"
+                        className="flex items-center gap-3 flex-1 cursor-pointer"
+                      >
+                        <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                          <Users className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-800 dark:text-gray-200">
+                            학생 목록 가져오기
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            데이터베이스에서 가져오기
+                          </p>
+                        </div>
+                      </label>
+                    </div>
+                  </RadioGroup>
+
+                  {/* 자동 생성 UI */}
+                  {selectedOption === 'auto' && (
+                    <div className="">
+                      <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                        <Database className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        자동 생성 설정
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex gap-2 items-end">
+                          <div className="flex-1">
+                            <label
+                              htmlFor="modal-auto-generate-number"
+                              className="block text-xs text-gray-700 dark:text-gray-300 mb-1 font-medium"
+                            >
+                              숫자 범위 (1 ~ 50)
+                            </label>
+                            <Input
+                              id="modal-auto-generate-number"
+                              type="number"
+                              value={autoGenerateNumber}
+                              onChange={(e) =>
+                                setAutoGenerateNumber(e.target.value)
+                              }
+                              disabled={disabled}
+                              min="1"
+                              max="50"
+                              placeholder="예: 30"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed text-sm"
+                            />
+                          </div>
+                          <Button
+                            onClick={handleAutoGenerate}
+                            disabled={
+                              disabled ||
+                              !autoGenerateNumber ||
+                              parseInt(autoGenerateNumber, 10) <= 0 ||
+                              parseInt(autoGenerateNumber, 10) > 100
+                            }
+                            variant="primary"
+                          >
+                            생성
+                          </Button>
+                        </div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          입력한 숫자만큼 1부터 N까지의 항목을 자동으로
+                          생성합니다.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 학생 목록 가져오기 UI */}
+                  {selectedOption === 'student' && (
+                    <div className="">
+                      <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
+                        <Users className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        학생 목록 가져오기
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
+                            🚧 추후 업데이트에서 제공될 예정입니다 🚧
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                            주요 특징
+                          </h5>
+                          <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                            <li>• 공통 학생 명단 데이터 사용</li>
+                            <li>• 별도 편집/입력 없이 손쉽게 추가</li>
+                            <li>• 여러 명의 학생을 한 번에 가져오기</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            빠른 생성 버튼을 클릭하여 룰렛 항목 생성 방법을 선택하세요.
+          </p>
+        </div>
+
         <div className="space-y-2 pr-4 lg:pr-0">
           <div className="flex gap-2">
             <div className="flex-1">
