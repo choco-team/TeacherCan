@@ -437,7 +437,10 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
                   className="absolute top-1/2 right-[-28px] transform -translate-y-1/2 cursor-pointer bg-gray-300 rounded-full p-1"
                   onClick={() => handleRemoveField(field.id)}
                 >
-                  <XIcon size={12} className="text-gray-100" />
+                  <XIcon
+                    size={12}
+                    className="text-gray-100 dark:text-gray-900"
+                  />
                 </div>
               )}
             </div>
