@@ -1,4 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  HOUR_TO_SECONDS,
+  MAX_TIME,
+  MAX_TIME_INPUT,
+  MINUTE_TO_SECONDS,
+  NO_TIME,
+} from '../../routine-timer.constants';
 
 export const useTimer = () => {
   const [timeLeft, setTimeLeft] = useState(0);
@@ -98,6 +105,96 @@ export const useTimer = () => {
     setTimeLeft(value);
   }, []);
 
+  const updateHours = useCallback(
+    (hou: number, keepPreviousState: boolean = false) => {
+      setTimeLeft((prev) => {
+        let newHour = hou;
+        if (hou > MAX_TIME_INPUT.HOUR) newHour = MAX_TIME_INPUT.HOUR;
+
+        const newHours = Math.floor(prev / HOUR_TO_SECONDS);
+        const newMinutes = Math.floor(
+          (prev - newHours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
+        );
+        const newSeconds = Math.floor(prev % MINUTE_TO_SECONDS);
+
+        const newLeftTime =
+          (keepPreviousState
+            ? (newHour + newHours) * HOUR_TO_SECONDS
+            : newHour * HOUR_TO_SECONDS) +
+          newMinutes * MINUTE_TO_SECONDS +
+          newSeconds;
+
+        if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
+          return prev;
+        }
+
+        return newLeftTime;
+      });
+    },
+    [],
+  );
+
+  const updateMinutes = useCallback(
+    (
+      min: number,
+      keepPreviousState: boolean = false,
+      allowMaxMinuteTime: boolean = false,
+    ) => {
+      setTimeLeft((prev) => {
+        let newMinute = min;
+        if (min > MAX_TIME_INPUT.MINUTE && !allowMaxMinuteTime)
+          newMinute = MAX_TIME_INPUT.MINUTE;
+
+        const newHours = Math.floor(prev / HOUR_TO_SECONDS);
+        const newMinutes = Math.floor(
+          (prev - newHours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
+        );
+        const newSeconds = Math.floor(prev % MINUTE_TO_SECONDS);
+
+        const newLeftTime =
+          newHours * HOUR_TO_SECONDS +
+          (keepPreviousState
+            ? (newMinutes + newMinute) * MINUTE_TO_SECONDS
+            : newMinute * MINUTE_TO_SECONDS) +
+          newSeconds;
+
+        if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
+          return prev;
+        }
+
+        return newLeftTime;
+      });
+    },
+    [],
+  );
+
+  const updateSeconds = useCallback(
+    (sec: number, keepPreviousState: boolean = false) => {
+      setTimeLeft((prev) => {
+        let newSecond = sec;
+        if (sec > MAX_TIME_INPUT.SECOND) newSecond = MAX_TIME_INPUT.SECOND;
+
+        const newHours = Math.floor(prev / HOUR_TO_SECONDS);
+        const newMinutes = Math.floor(
+          (prev - newHours * HOUR_TO_SECONDS) / MINUTE_TO_SECONDS,
+        );
+        const newSeconds = Math.floor(prev % MINUTE_TO_SECONDS);
+
+        const newLeftTime =
+          newHours * HOUR_TO_SECONDS +
+          newMinutes * MINUTE_TO_SECONDS +
+          (keepPreviousState ? newSeconds + newSecond : newSecond);
+
+        if (newLeftTime < NO_TIME || newLeftTime > MAX_TIME) {
+          return prev;
+        }
+
+        return newLeftTime;
+      });
+    },
+    [],
+  );
+
   // 컴포넌트 언마운트 시 타이머 정리
   useEffect(() => {
     return () => {
@@ -116,5 +213,8 @@ export const useTimer = () => {
     resumeTimer,
     stopTimer,
     setTimeValue,
+    updateHours,
+    updateMinutes,
+    updateSeconds,
   };
 };

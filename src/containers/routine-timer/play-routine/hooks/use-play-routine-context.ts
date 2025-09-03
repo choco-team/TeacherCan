@@ -13,11 +13,16 @@ type PlayRoutineContextType = {
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
+  stopTimer: () => void;
   skipActivity: () => void;
   jumpToActivity: (targetIndex: number) => void;
   previousActivity: () => void;
   restartRoutine: () => void;
   exitTimer: () => void;
+  setTimeValue: (value: number) => void;
+  updateHours: (value: number, isIncrement: boolean) => void;
+  updateMinutes: (value: number, isIncrement: boolean) => void;
+  updateSeconds: (value: number, isIncrement: boolean) => void;
 };
 
 export const PlayRoutineContext = createContext<

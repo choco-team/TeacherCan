@@ -19,6 +19,9 @@ export const usePlayRoutine = (routineId: string) => {
     resumeTimer,
     stopTimer,
     setTimeValue,
+    updateHours,
+    updateMinutes,
+    updateSeconds,
   } = useTimer();
 
   useEffect(() => {
@@ -184,5 +187,10 @@ export const usePlayRoutine = (routineId: string) => {
     previousActivity,
     restartRoutine,
     exitTimer,
+    setTimeValue,
+    stopTimer,
+    updateHours,
+    updateMinutes,
+    updateSeconds,
   };
 };

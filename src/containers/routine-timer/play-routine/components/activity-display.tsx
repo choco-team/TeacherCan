@@ -1,14 +1,15 @@
 import { Button } from '@/components/button';
 import { Play, Pause, SkipForward, SkipBack } from 'lucide-react';
-import { formatTime } from '../utils/formatter';
+// import { formatTime } from '../utils/formatter';
 import ProgressBar from './progress-bar';
 import { usePlayRoutineContext } from '../hooks/use-play-routine-context';
+import CountdownDisplay from './countdown-display/countdown-display';
 
 export default function ActivityDisplay() {
   const {
     currentActivity,
-    currentIndex,
-    timeLeft,
+    // currentIndex,
+    // timeLeft,
     totalProgress,
     isPaused,
     resumeTimer,
@@ -21,11 +22,11 @@ export default function ActivityDisplay() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <h2 className="text-5xl font-bold mb-6">
+      {/* <h2 className="text-5xl font-bold mb-6">
         {currentActivity.action || `활동 ${currentIndex + 1}`}
-      </h2>
+      </h2> */}
 
-      <div className="text-7xl font-bold mb-10">{formatTime(timeLeft)}</div>
+      <CountdownDisplay />
 
       <ProgressBar progress={totalProgress} />
 
