@@ -10,6 +10,7 @@ import {
   WandSparklesIcon,
   MegaphoneIcon,
   CircleDotIcon,
+  SplitIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -23,6 +24,7 @@ export const MENU_ROUTE = {
   MUSIC_REQUEST: '/music-request',
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
+  RANDOM_TEAM: '/random-team',
 } as const;
 
 export const HELP_ROUTE = {
@@ -85,6 +87,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   //   Icon: Hourglass,
   //   href: MENU_ROUTE.ROUTINE_TIMER,
   // },
+  '/random-team': {
+    title: '랜덤 모둠 뽑기',
+    Icon: SplitIcon,
+    href: MENU_ROUTE.RANDOM_TEAM,
+  },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
