@@ -1,24 +1,21 @@
 import { Button } from '@/components/button';
 import { Label } from '@radix-ui/react-label';
 import React, { useState } from 'react';
+import TeamResult from '../team-result/team-result';
 
 type Mode = 'names' | 'numbers';
 
-type Props = {
-  onProceed?: (payload: {
-    mode: Mode;
-    students: string[];
-    groupCount: number;
-  }) => void;
-};
-
-export default function TeamSetup({ onProceed }: Props) {
+export default function TeamSetup() {
   const [mode, setMode] = useState<Mode>('numbers');
   const [studentCountInput, setStudentCountInput] = useState<number | ''>('');
   const [nameTextarea, setNameTextarea] = useState('');
   const [students, setStudents] = useState<string[]>([]);
   const [groupCountInput, setGroupCountInput] = useState<number | ''>('');
   const [error, setError] = useState<string | null>(null);
+  const [proceedPayload, setProceedPayload] = useState<{
+    students: string[];
+    groupCount: number;
+  } | null>(null);
 
   const parseNames = (text: string) =>
     text
@@ -60,8 +57,10 @@ export default function TeamSetup({ onProceed }: Props) {
       return;
     }
     setError(null);
-    if (onProceed)
-      onProceed({ mode, students, groupCount: Number(groupCountInput) });
+    setProceedPayload({
+      students,
+      groupCount: Number(groupCountInput),
+    });
   };
 
   return (
@@ -75,13 +74,17 @@ export default function TeamSetup({ onProceed }: Props) {
 
       <div className="flex gap-2 mb-4">
         <Button
-          className={`px-4 py-2 rounded ${mode === 'numbers' ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
+          className={`px-4 py-2 rounded ${
+            mode === 'numbers' ? 'bg-blue-600 text-white' : 'bg-gray-100'
+          }`}
           onClick={() => setMode('numbers')}
         >
           숫자(출석번호) 모드
         </Button>
         <Button
-          className={`px-4 py-2 rounded ${mode === 'names' ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
+          className={`px-4 py-2 rounded ${
+            mode === 'names' ? 'bg-blue-600 text-white' : 'bg-gray-100'
+          }`}
           onClick={() => setMode('names')}
         >
           이름 모드
@@ -160,16 +163,23 @@ export default function TeamSetup({ onProceed }: Props) {
       <div className="mb-4">
         <Button
           onClick={proceed}
-          className="px-4 py-2 rounded bg-blue-700 text-white"
+          className={`px-4 py-2 rounded bg-blue-700 text-white ${
+            !validForProceed() ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
           disabled={!validForProceed()}
         >
-          다음 단계: 랜덤 배정
+          모둠 랜덤 배정하기
         </Button>
       </div>
 
       {error && <div className="text-red-600 mb-3">{error}</div>}
 
-      <div className="text-sm text-gray-600" />
+      {proceedPayload && (
+        <TeamResult
+          students={proceedPayload.students}
+          groupCount={proceedPayload.groupCount}
+        />
+      )}
     </div>
   );
 }
