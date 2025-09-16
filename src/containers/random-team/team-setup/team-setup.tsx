@@ -1,11 +1,21 @@
+'use client';
+
 import { Button } from '@/components/button';
 import { Label } from '@radix-ui/react-label';
 import React, { useState } from 'react';
 import TeamResult from '../team-result/team-result';
 
-type Mode = 'names' | 'numbers';
+export type Mode = 'names' | 'numbers';
 
-export default function TeamSetup() {
+export type TeamSetupProps = {
+  onProceed?: (payload: {
+    mode: Mode;
+    students: string[];
+    groupCount: number;
+  }) => void;
+};
+
+export default function TeamSetup({ onProceed }: TeamSetupProps) {
   const [mode, setMode] = useState<Mode>('numbers');
   const [studentCountInput, setStudentCountInput] = useState<number | ''>('');
   const [nameTextarea, setNameTextarea] = useState('');
@@ -57,10 +67,16 @@ export default function TeamSetup() {
       return;
     }
     setError(null);
-    setProceedPayload({
+
+    const payload = {
       students,
       groupCount: Number(groupCountInput),
-    });
+    };
+
+    setProceedPayload(payload);
+    if (onProceed) {
+      onProceed({ mode, ...payload });
+    }
   };
 
   return (
@@ -74,17 +90,16 @@ export default function TeamSetup() {
 
       <div className="flex gap-2 mb-4">
         <Button
-          className={`px-4 py-2 rounded ${
-            mode === 'numbers' ? 'bg-blue-600 text-white' : 'bg-gray-100'
-          }`}
+          variant={mode === 'numbers' ? 'primary' : 'primary-outline'}
+          className="px-4 py-2 rounded"
           onClick={() => setMode('numbers')}
         >
           숫자(출석번호) 모드
         </Button>
+
         <Button
-          className={`px-4 py-2 rounded ${
-            mode === 'names' ? 'bg-blue-600 text-white' : 'bg-gray-100'
-          }`}
+          variant={mode === 'names' ? 'primary' : 'primary-outline'}
+          className="px-4 py-2 rounded"
           onClick={() => setMode('names')}
         >
           이름 모드
@@ -94,19 +109,20 @@ export default function TeamSetup() {
       {mode === 'numbers' ? (
         <div className="mb-4">
           <Label className="block text-sm font-medium mb-1">학생 수</Label>
-          <input
-            type="number"
-            min={1}
-            value={studentCountInput === '' ? '' : studentCountInput}
-            onChange={(e) =>
-              setStudentCountInput(
-                e.target.value === '' ? '' : Number(e.target.value),
-              )
-            }
-            className="border rounded px-3 py-2 w-40"
-            placeholder="예: 20"
-          />
           <div className="mt-2">
+            <input
+              type="number"
+              min={1}
+              value={studentCountInput === '' ? '' : studentCountInput}
+              onChange={(e) =>
+                setStudentCountInput(
+                  e.target.value === '' ? '' : Number(e.target.value),
+                )
+              }
+              className="border rounded px-3 py-2 w-40"
+              placeholder="예: 20"
+            />
+
             <Button
               onClick={generateFromCount}
               className="px-3 py-1 rounded bg-green-600 text-white"
@@ -163,9 +179,7 @@ export default function TeamSetup() {
       <div className="mb-4">
         <Button
           onClick={proceed}
-          className={`px-4 py-2 rounded bg-blue-700 text-white ${
-            !validForProceed() ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
+          className={`px-4 py-2 rounded bg-blue-700 text-white `}
           disabled={!validForProceed()}
         >
           모둠 랜덤 배정하기
