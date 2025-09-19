@@ -71,10 +71,7 @@ export default function TeamResult({ students, groupCount }: Props) {
           </div>
 
           <div className="flex justify-center mt-4">
-            <Button
-              onClick={handleGroupAssign}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-2xl shadow"
-            >
+            <Button onClick={handleGroupAssign} variant="primary">
               재배정하기
             </Button>
           </div>
