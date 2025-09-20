@@ -11,10 +11,11 @@ import {
   SettingsIcon,
   MegaphoneIcon,
   CircleDotIcon,
+  UserIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { compact, head } from 'lodash';
+import { compact } from 'lodash';
 import EventIcon from '@/components/event-icon';
 import {
   Breadcrumb,
@@ -70,12 +71,16 @@ const breadcrumbs: Record<
     url: '/roulette',
     icon: <CircleDotIcon size="1rem" />,
   },
+  'student-data': {
+    name: '학생 관리',
+    url: '/data-service/student-data',
+    icon: <UserIcon size="1rem" />,
+  },
 };
 
 export default function Header() {
   const pathname = usePathname();
   const pathnames = compact(pathname.split('/'));
-  const headPathname = head(pathnames);
 
   const { open, openMobile, setOpen, setOpenMobile, isMobile } = useSidebar();
 
@@ -90,8 +95,9 @@ export default function Header() {
     setOpen(true);
   };
 
-  // TODO:(김홍동) header breadcrumb가 복수를 가질 수 있도록 확장하기
-  const breadcrumb = breadcrumbs[headPathname];
+  const breadcrumbList = pathnames
+    .map((path) => breadcrumbs[path])
+    .filter((item) => item);
 
   return (
     <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-bg z-10">
@@ -115,21 +121,32 @@ export default function Header() {
               <BreadcrumbLink asChild>
                 <div className="flex items-center gap-2 ">
                   <EventIcon width={16} height={16} className="size-4" />
-                  <Link className="text-text-subtitle" href="/">
+                  <Link className="text-text-title" href="/">
                     티처캔
                   </Link>
                 </div>
               </BreadcrumbLink>
             )}
           </BreadcrumbItem>
-          {pathname !== '/' && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
 
-          {breadcrumb !== undefined ? (
-            <BreadcrumbPage className="flex items-center gap-2 text-text-title">
-              {breadcrumb.icon}
-              {breadcrumb.name}
-            </BreadcrumbPage>
-          ) : null}
+          {breadcrumbList.map((item, index) => (
+            <>
+              {item.url !== '/' && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
+              {index === breadcrumbList.length - 1 ? (
+                <BreadcrumbPage className="flex items-center gap-2 text-text-title">
+                  {item.icon}
+                  {item.name}
+                </BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink asChild>
+                  <div className="flex items-center gap-2 text-text-title">
+                    {item.icon}
+                    <Link href={item.url}>{item.name}</Link>
+                  </div>
+                </BreadcrumbLink>
+              )}
+            </>
+          ))}
         </BreadcrumbList>
       </Breadcrumb>
     </header>

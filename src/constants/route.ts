@@ -5,6 +5,7 @@ import {
   DicesIcon,
   SettingsIcon,
   QrCodeIcon,
+  UserIcon,
   // Hourglass,
   TimerIcon,
   WandSparklesIcon,
@@ -30,6 +31,12 @@ export const HELP_ROUTE = {
   SETTING: '/setting',
   ANNOUNCEMENT: '/announcement',
 } as const;
+
+export const DATA_ROUTE = {
+  STUDENT: '/data-service/student-data',
+} as const;
+
+type DataRoutePath = (typeof DATA_ROUTE)[keyof typeof DATA_ROUTE];
 
 export type MenuRoutePath = (typeof MENU_ROUTE)[keyof typeof MENU_ROUTE];
 
@@ -105,5 +112,13 @@ export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
     title: '설정',
     Icon: SettingsIcon,
     href: HELP_ROUTE.SETTING,
+  },
+};
+
+export const DATA_PATH_DATA: PathData<DataRoutePath> = {
+  '/data-service/student-data': {
+    title: '학생 관리',
+    Icon: UserIcon,
+    href: DATA_ROUTE.STUDENT,
   },
 };
