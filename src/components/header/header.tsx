@@ -72,7 +72,7 @@ const breadcrumbs: Record<
     icon: <CircleDotIcon size="1rem" />,
   },
   'student-data': {
-    name: '학생 관리',
+    name: '학생 데이터 관리',
     url: '/data-service/student-data',
     icon: <UserIcon size="1rem" />,
   },

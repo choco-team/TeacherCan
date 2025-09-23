@@ -117,7 +117,7 @@ export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
 
 export const DATA_PATH_DATA: PathData<DataRoutePath> = {
   '/data-service/student-data': {
-    title: '학생 관리',
+    title: '학생 데이터 관리',
     Icon: UserIcon,
     href: DATA_ROUTE.STUDENT,
   },
