@@ -2,18 +2,20 @@
 
 import { Button } from '@/components/button';
 import { Users } from 'lucide-react';
-import { memo } from 'react';
 import { Student } from '@/containers/random-pick/random-pick-type';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 interface StudentDataSectionProps {
-  studentData: Student[];
-  onGenerate: () => void;
+  buttonText?: string;
+  onClickButton: (studentData: Student[]) => void;
 }
 
-const SettingStudentData = memo(function SettingStudentData({
-  studentData,
-  onGenerate,
+export default function StudentDataPicker({
+  buttonText = '확인',
+  onClickButton,
 }: StudentDataSectionProps) {
+  const [studentData] = useLocalStorage<Student[]>('student-data', []);
+
   if (!studentData || studentData.length === 0) {
     return (
       <div className="space-y-3">
@@ -67,8 +69,18 @@ const SettingStudentData = memo(function SettingStudentData({
         </div>
       </div>
       <div className="space-y-2">
-        <Button onClick={onGenerate} variant="primary" className="w-full">
-          만들기
+        <Button
+          onClick={() => {
+            if (!studentData || studentData.length === 0) {
+              return;
+            }
+
+            onClickButton(studentData);
+          }}
+          variant="primary"
+          className="w-full"
+        >
+          {buttonText}
         </Button>
         <div className="text-center">
           <a
@@ -84,6 +96,4 @@ const SettingStudentData = memo(function SettingStudentData({
       </div>
     </div>
   );
-});
-
-export default SettingStudentData;
+}
