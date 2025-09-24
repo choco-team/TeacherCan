@@ -19,6 +19,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { XIcon, Database, Users } from 'lucide-react';
 import { creatId } from '@/utils/createNanoid';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { RouletteItem } from '../roulette-types';
 import { ROULETTE_COLORS } from '../roulette-constants';
 
@@ -32,6 +33,11 @@ interface InputField {
   name: string;
   weight: string;
   color: string; // 색상을 필드에 저장
+}
+
+interface Student {
+  id: string;
+  name: string;
 }
 
 export interface RouletteInputRef {
@@ -48,6 +54,7 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
       'auto',
     );
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+    const [studentData] = useLocalStorage<Student[]>('student-data', []); // 학생 데이터 가져오기
 
     // 자동 생성 함수
     const handleAutoGenerate = useCallback(() => {
@@ -71,6 +78,26 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
         setIsModalOpen(false); // 모달 닫기
       }
     }, [autoGenerateNumber]);
+
+    // 학생 데이터에서 룰렛 항목 생성 함수
+    const handleStudentDataGenerate = useCallback(() => {
+      if (!studentData || studentData.length === 0) {
+        return;
+      }
+
+      const newFields: InputField[] = studentData.map((student, index) => {
+        const colorIndex = index % ROULETTE_COLORS.length;
+        return {
+          id: creatId(),
+          name: student.name,
+          weight: '1',
+          color: ROULETTE_COLORS[colorIndex],
+        };
+      });
+
+      setInputFields(newFields);
+      setIsModalOpen(false); // 모달 닫기
+    }, [studentData]);
 
     // 입력 필드들을 파싱하여 룰렛 아이템 생성
     const parseInputFields = useCallback(
@@ -294,7 +321,7 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-800 dark:text-gray-200">
-                            학생 목록 가져오기
+                            학생 데이터 가져오기
                           </h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             데이터베이스에서 가져오기
@@ -360,24 +387,82 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
                     <div className="">
                       <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
                         <Users className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        학생 목록 가져오기
+                        학생 데이터 가져오기
                       </h4>
                       <div className="space-y-3">
-                        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                          <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
-                            🚧 추후 업데이트에서 제공될 예정입니다 🚧
-                          </p>
-                        </div>
-                        <div className="space-y-2">
-                          <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                            주요 특징
-                          </h5>
-                          <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                            <li>• 공통 학생 명단 데이터 사용</li>
-                            <li>• 별도 편집/입력 없이 손쉽게 추가</li>
-                            <li>• 여러 명의 학생을 한 번에 가져오기</li>
-                          </ul>
-                        </div>
+                        {!studentData || studentData.length === 0 ? (
+                          <div className="space-y-3">
+                            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                              <p className="text-sm text-yellow-700 dark:text-yellow-300 text-center">
+                                학생 데이터가 없습니다. 먼저 학생 데이터를
+                                추가해주세요.
+                              </p>
+                            </div>
+                            <div className="text-center">
+                              <a
+                                href="/data-service/student-data"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                              >
+                                <Users className="w-3 h-3" />
+                                학생 데이터 생성하러 가기
+                              </a>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                              <p className="text-sm text-blue-700 dark:text-blue-300 text-center">
+                                총 {studentData.length}명의 학생 데이터를 가져올
+                                수 있습니다
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                                학생 데이터 미리보기
+                              </h5>
+                              <div className="max-h-32 overflow-y-auto bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+                                <div className="flex flex-wrap gap-1">
+                                  {studentData.slice(0, 10).map((student) => (
+                                    <span
+                                      key={student.id}
+                                      className="inline-block px-2 py-1 text-xs bg-white dark:bg-gray-700 rounded border"
+                                    >
+                                      {student.name}
+                                    </span>
+                                  ))}
+                                  {studentData.length > 10 && (
+                                    <span className="inline-block px-2 py-1 text-xs bg-gray-200 dark:bg-gray-600 rounded">
+                                      +{studentData.length - 10}명 더
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Button
+                                onClick={handleStudentDataGenerate}
+                                disabled={disabled}
+                                variant="primary"
+                                className="w-full"
+                              >
+                                학생 데이터로 룰렛 생성
+                              </Button>
+                              <div className="text-center">
+                                <a
+                                  href="/data-service/student-data"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                                >
+                                  <Users className="w-3 h-3" />
+                                  수정이 필요한 경우
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
