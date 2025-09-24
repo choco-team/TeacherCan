@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  DATA_PATH_DATA,
   HELP_PATH_DATA,
   MENU_PATH_DATA,
   MENU_ROUTE,
@@ -133,6 +134,38 @@ export default function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>데이터 관리</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {Object.entries(DATA_PATH_DATA).map(
+                ([path, { title, Icon, isNew }]) => (
+                  <SidebarMenuItem key={path}>
+                    <Link
+                      onClick={handleClickMenu}
+                      href={path}
+                      className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                    >
+                      <Icon size="1rem" />
+                      <span>{title}</span>
+                      {isNew && (
+                        <Badge
+                          size="xs"
+                          variant="primary-outline"
+                          className="border-0"
+                        >
+                          New
+                        </Badge>
+                      )}
+                    </Link>
+                  </SidebarMenuItem>
+                ),
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>도움</SidebarGroupLabel>
           <SidebarGroupContent>

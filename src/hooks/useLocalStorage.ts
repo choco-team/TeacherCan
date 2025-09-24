@@ -9,7 +9,8 @@ type LocalStorageKey =
   | 'allergies'
   | 'routines'
   | 'roomIds'
-  | 'random-pick-list';
+  | 'random-pick-list'
+  | 'student-data';
 
 /**
  * @description 페이지 새로 고침을 통해 상태가 유지되도록 로컬 저장소에 동기화합니다.
