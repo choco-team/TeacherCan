@@ -139,18 +139,29 @@ export default function AppSidebar() {
           <SidebarGroupLabel>데이터 관리</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {Object.entries(DATA_PATH_DATA).map(([path, { title, Icon }]) => (
-                <SidebarMenuItem key={path}>
-                  <Link
-                    onClick={handleClickMenu}
-                    href={path}
-                    className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
-                  >
-                    <Icon size="1rem" />
-                    <span>{title}</span>
-                  </Link>
-                </SidebarMenuItem>
-              ))}
+              {Object.entries(DATA_PATH_DATA).map(
+                ([path, { title, Icon, isNew }]) => (
+                  <SidebarMenuItem key={path}>
+                    <Link
+                      onClick={handleClickMenu}
+                      href={path}
+                      className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                    >
+                      <Icon size="1rem" />
+                      <span>{title}</span>
+                      {isNew && (
+                        <Badge
+                          size="xs"
+                          variant="primary-outline"
+                          className="border-0"
+                        >
+                          New
+                        </Badge>
+                      )}
+                    </Link>
+                  </SidebarMenuItem>
+                ),
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

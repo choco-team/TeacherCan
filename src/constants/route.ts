@@ -5,7 +5,7 @@ import {
   DicesIcon,
   SettingsIcon,
   QrCodeIcon,
-  UserIcon,
+  Users,
   // Hourglass,
   TimerIcon,
   WandSparklesIcon,
@@ -75,7 +75,6 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '룰렛 돌리기',
     Icon: CircleDotIcon,
     href: MENU_ROUTE.ROULETTE,
-    isNew: true,
   },
   '/music-request': {
     title: '음악신청',
@@ -118,7 +117,8 @@ export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
 export const DATA_PATH_DATA: PathData<DataRoutePath> = {
   '/data-service/student-data': {
     title: '학생 데이터 관리',
-    Icon: UserIcon,
+    Icon: Users,
     href: DATA_ROUTE.STUDENT,
+    isNew: true,
   },
 };

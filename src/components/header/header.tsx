@@ -11,7 +11,7 @@ import {
   SettingsIcon,
   MegaphoneIcon,
   CircleDotIcon,
-  UserIcon,
+  Users,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -74,7 +74,7 @@ const breadcrumbs: Record<
   'student-data': {
     name: '학생 데이터 관리',
     url: '/data-service/student-data',
-    icon: <UserIcon size="1rem" />,
+    icon: <Users size="1rem" />,
   },
 };
 
