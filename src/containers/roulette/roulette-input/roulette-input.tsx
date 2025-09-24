@@ -55,6 +55,20 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
     );
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
 
+    // 빈 필드 추가 헬퍼 함수
+    const addEmptyField = useCallback((fields: InputField[]): InputField[] => {
+      const nextColorIndex = fields.length % ROULETTE_COLORS.length;
+      return [
+        ...fields,
+        {
+          id: creatId(),
+          name: '',
+          weight: '1',
+          color: ROULETTE_COLORS[nextColorIndex],
+        },
+      ];
+    }, []);
+
     // 자동 생성 함수
     const handleAutoGenerate = useCallback(() => {
       const number = parseInt(autoGenerateNumber, 10);
@@ -72,26 +86,29 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
           });
         }
 
-        setInputFields(newFields);
+        setInputFields(addEmptyField(newFields));
         setAutoGenerateNumber(''); // 입력 필드 초기화
         setIsModalOpen(false); // 모달 닫기
       }
-    }, [autoGenerateNumber]);
+    }, [autoGenerateNumber, addEmptyField]);
 
-    const handleStudentDataGenerate = useCallback((studentData: Student[]) => {
-      const newFields: InputField[] = studentData.map((student, index) => {
-        const colorIndex = index % ROULETTE_COLORS.length;
-        return {
-          id: creatId(),
-          name: student.name,
-          weight: '1',
-          color: ROULETTE_COLORS[colorIndex],
-        };
-      });
+    const handleStudentDataGenerate = useCallback(
+      (studentData: Student[]) => {
+        const newFields: InputField[] = studentData.map((student, index) => {
+          const colorIndex = index % ROULETTE_COLORS.length;
+          return {
+            id: creatId(),
+            name: student.name,
+            weight: '1',
+            color: ROULETTE_COLORS[colorIndex],
+          };
+        });
 
-      setInputFields(newFields);
-      setIsModalOpen(false); // 모달 닫기
-    }, []);
+        setInputFields(addEmptyField(newFields));
+        setIsModalOpen(false); // 모달 닫기
+      },
+      [addEmptyField],
+    );
 
     // 입력 필드들을 파싱하여 룰렛 아이템 생성
     const parseInputFields = useCallback(

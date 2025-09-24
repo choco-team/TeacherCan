@@ -115,7 +115,7 @@ export default function StudentDataContainer() {
           </CardHeader>
           <CardContent>
             {studentData.length === 0 ? (
-              <div className="text-center py-8 text-text-subtitle">
+              <div className="text-center py-8 text-text-subtitle text-sm">
                 등록된 학생이 없습니다. 위에서 새 학생을 추가해보세요.
               </div>
             ) : (
