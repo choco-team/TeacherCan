@@ -23,3 +23,16 @@ export type OptionsType = {
   isHideResult: boolean;
   isMixingAnimation: boolean;
 };
+
+// 공통 Student 인터페이스
+export interface Student {
+  id: string;
+  name: string;
+}
+
+// PickType에 따른 라벨 매핑
+export const PICK_TYPE_LABELS: Record<PickType, string> = {
+  numbers: '번호',
+  names: '이름',
+  'student-data': '학생 데이터',
+} as const;

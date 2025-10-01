@@ -19,6 +19,7 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { XIcon, Database, Users } from 'lucide-react';
 import { creatId } from '@/utils/createNanoid';
+import StudentDataPicker from '@/components/student-data-picker';
 import { RouletteItem } from '../roulette-types';
 import { ROULETTE_COLORS } from '../roulette-constants';
 
@@ -32,6 +33,11 @@ interface InputField {
   name: string;
   weight: string;
   color: string; // 색상을 필드에 저장
+}
+
+interface Student {
+  id: string;
+  name: string;
 }
 
 export interface RouletteInputRef {
@@ -48,6 +54,20 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
       'auto',
     );
     const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 추가
+
+    // 빈 필드 추가 헬퍼 함수
+    const addEmptyField = useCallback((fields: InputField[]): InputField[] => {
+      const nextColorIndex = fields.length % ROULETTE_COLORS.length;
+      return [
+        ...fields,
+        {
+          id: creatId(),
+          name: '',
+          weight: '1',
+          color: ROULETTE_COLORS[nextColorIndex],
+        },
+      ];
+    }, []);
 
     // 자동 생성 함수
     const handleAutoGenerate = useCallback(() => {
@@ -66,11 +86,29 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
           });
         }
 
-        setInputFields(newFields);
+        setInputFields(addEmptyField(newFields));
         setAutoGenerateNumber(''); // 입력 필드 초기화
         setIsModalOpen(false); // 모달 닫기
       }
-    }, [autoGenerateNumber]);
+    }, [autoGenerateNumber, addEmptyField]);
+
+    const handleStudentDataGenerate = useCallback(
+      (studentData: Student[]) => {
+        const newFields: InputField[] = studentData.map((student, index) => {
+          const colorIndex = index % ROULETTE_COLORS.length;
+          return {
+            id: creatId(),
+            name: student.name,
+            weight: '1',
+            color: ROULETTE_COLORS[colorIndex],
+          };
+        });
+
+        setInputFields(addEmptyField(newFields));
+        setIsModalOpen(false); // 모달 닫기
+      },
+      [addEmptyField],
+    );
 
     // 입력 필드들을 파싱하여 룰렛 아이템 생성
     const parseInputFields = useCallback(
@@ -294,7 +332,7 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-800 dark:text-gray-200">
-                            학생 목록 가져오기
+                            학생 데이터 가져오기
                           </h4>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             데이터베이스에서 가져오기
@@ -355,30 +393,16 @@ export const RouletteInput = forwardRef<RouletteInputRef, RouletteInputProps>(
                     </div>
                   )}
 
-                  {/* 학생 목록 가져오기 UI */}
                   {selectedOption === 'student' && (
                     <div className="">
                       <h4 className="font-medium text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-2">
                         <Users className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                        학생 목록 가져오기
+                        학생 데이터 가져오기
                       </h4>
-                      <div className="space-y-3">
-                        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
-                          <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
-                            🚧 추후 업데이트에서 제공될 예정입니다 🚧
-                          </p>
-                        </div>
-                        <div className="space-y-2">
-                          <h5 className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                            주요 특징
-                          </h5>
-                          <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                            <li>• 공통 학생 명단 데이터 사용</li>
-                            <li>• 별도 편집/입력 없이 손쉽게 추가</li>
-                            <li>• 여러 명의 학생을 한 번에 가져오기</li>
-                          </ul>
-                        </div>
-                      </div>
+                      <StudentDataPicker
+                        buttonText="학생 데이터로 룰렛 생성"
+                        onClickButton={handleStudentDataGenerate}
+                      />
                     </div>
                   )}
                 </div>

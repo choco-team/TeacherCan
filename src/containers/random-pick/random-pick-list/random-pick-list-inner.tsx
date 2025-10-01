@@ -11,6 +11,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { Dispatch, SetStateAction } from 'react';
 import { Skeleton } from '@/components/skeleton';
+import { PICK_TYPE_LABELS } from '@/containers/random-pick/random-pick-type';
 import OptionBadge from './optionBadge/optionBadge';
 import { useRandomPickPlaygroundState } from '../random-pick-playground-provider.tsx/random-pick-playground-provider.hooks';
 
@@ -117,9 +118,7 @@ export function RandomPickListInner({
                   </div>
                 </TableCell>
                 <TableCell>{row.title}</TableCell>
-                <TableCell>
-                  {row.pickType === 'names' ? '이름' : '번호'}
-                </TableCell>
+                <TableCell>{PICK_TYPE_LABELS[row.pickType]}</TableCell>
                 <TableCell className="text-center">
                   {row.pickList.length}
                 </TableCell>
