@@ -68,6 +68,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: DicesIcon,
     href: MENU_ROUTE.RANDOM_PICK,
   },
+  '/random-team': {
+    title: '랜덤 모둠 뽑기',
+    Icon: SplitIcon,
+    href: MENU_ROUTE.RANDOM_TEAM,
+  },
   '/timer': {
     title: '타이머',
     Icon: TimerIcon,
@@ -93,11 +98,6 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   //   Icon: Hourglass,
   //   href: MENU_ROUTE.ROUTINE_TIMER,
   // },
-  '/random-team': {
-    title: '랜덤 모둠 뽑기',
-    Icon: SplitIcon,
-    href: MENU_ROUTE.RANDOM_TEAM,
-  },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];

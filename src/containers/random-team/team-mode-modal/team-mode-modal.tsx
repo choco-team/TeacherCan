@@ -12,7 +12,6 @@ import { Label } from '@/components/label';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Button } from '@/components/button';
 import StudentDataPicker from '@/components/student-data-picker';
-// import { creatId } from '@/utils/createNanoid';
 import { Student } from '@/containers/random-pick/random-pick-type';
 import SettingStudentNumber from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-number/setting-student-number';
 import SettingStudentName from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-name/setting-student-name';

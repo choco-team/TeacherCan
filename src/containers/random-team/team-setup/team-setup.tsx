@@ -56,7 +56,7 @@ export default function TeamSetup() {
     <ToastProvider>
       <div className="max-w-3xl mx-auto p-4">
         <Heading1 className="text-2xl font-semibold mb-2">
-          랜덤 모둠 생성기
+          랜덤 모둠 생성
         </Heading1>
 
         <div className="flex gap-2 mb-4">
