@@ -6,11 +6,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/dialog';
 import { Label } from '@/components/label';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
-import { Button } from '@/components/button';
 import StudentDataPicker from '@/components/student-data-picker';
 import { Student } from '@/containers/random-pick/random-pick-type';
 import SettingStudentNumber from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-number/setting-student-number';
@@ -92,12 +90,6 @@ export default function TeamModeModal({ onClose, onStudentsGenerated }: Props) {
             />
           )}
         </div>
-
-        <DialogFooter>
-          <Button variant="secondary" onClick={onClose}>
-            닫기
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -11,6 +11,7 @@ import {
   ToastTitle,
   ToastViewport,
 } from '@/components/toast';
+import { Label } from '@/components/label';
 import TeamResult from '../team-result/team-result';
 import TeamModeModal from '../team-mode-modal/team-mode-modal';
 
@@ -73,16 +74,19 @@ export default function TeamSetup() {
           </div>
         )}
 
-        <div className="mb-4 flex gap-2">
+        <div className="mb-4 flex items-center gap-2">
+          <Label htmlFor="groupCount" className="text-base text-gray-700">
+            모둠 수
+          </Label>
           <input
+            id="groupCount"
             type="number"
             min={1}
             value={groupCount === '' ? '' : groupCount}
             onChange={(e) =>
               setGroupCount(e.target.value === '' ? '' : Number(e.target.value))
             }
-            placeholder="모둠 수 입력"
-            className="border rounded px-3 py-2 w-40 bg-gray-100"
+            className="border rounded px-3 py-2 w-32 bg-gray-100 text-base"
           />
           <Button
             onClick={handleProceed}
