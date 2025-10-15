@@ -11,6 +11,7 @@ import {
   WandSparklesIcon,
   MegaphoneIcon,
   CircleDotIcon,
+  SplitIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -24,6 +25,7 @@ export const MENU_ROUTE = {
   MUSIC_REQUEST: '/music-request',
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
+  RANDOM_TEAM: '/random-team',
 } as const;
 
 export const HELP_ROUTE = {
@@ -65,6 +67,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '랜덤뽑기',
     Icon: DicesIcon,
     href: MENU_ROUTE.RANDOM_PICK,
+  },
+  '/random-team': {
+    title: '랜덤 모둠 뽑기',
+    Icon: SplitIcon,
+    href: MENU_ROUTE.RANDOM_TEAM,
+    isNew: true,
   },
   '/timer': {
     title: '타이머',
@@ -119,6 +127,5 @@ export const DATA_PATH_DATA: PathData<DataRoutePath> = {
     title: '학생 데이터 관리',
     Icon: Users,
     href: DATA_ROUTE.STUDENT,
-    isNew: true,
   },
 };
