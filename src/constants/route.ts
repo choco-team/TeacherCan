@@ -72,6 +72,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '랜덤 모둠 뽑기',
     Icon: SplitIcon,
     href: MENU_ROUTE.RANDOM_TEAM,
+    isNew: true,
   },
   '/timer': {
     title: '타이머',
@@ -126,6 +127,5 @@ export const DATA_PATH_DATA: PathData<DataRoutePath> = {
     title: '학생 데이터 관리',
     Icon: Users,
     href: DATA_ROUTE.STUDENT,
-    isNew: true,
   },
 };
