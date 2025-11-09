@@ -12,6 +12,8 @@ import {
   MegaphoneIcon,
   CircleDotIcon,
   Users,
+  Timer,
+  SplitIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -76,6 +78,21 @@ const breadcrumbs: Record<
     url: '/data-service/student-data',
     icon: <Users size="1rem" />,
   },
+  'random-team': {
+    name: '랜덤 모둠 뽑기',
+    url: '/random-team',
+    icon: <SplitIcon size="1rem" />,
+  },
+  stopwatch: {
+    name: '스톱워치',
+    url: '/stopwatch',
+    icon: <Timer size="1rem" />,
+  },
+  'group-stopwatch': {
+    name: '그룹 스톱워치',
+    url: '/group-stopwatch',
+    icon: <Users size="1rem" />,
+  },
 };
 
 export default function Header() {
@@ -100,7 +117,7 @@ export default function Header() {
     .filter((item) => item);
 
   return (
-    <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-bg z-10">
+    <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-bg z-50">
       {showSidebarIcon ? (
         <ChevronsRight
           size="1.2rem"
