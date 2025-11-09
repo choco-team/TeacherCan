@@ -45,9 +45,10 @@ type Props = {
 
 export default function GroupStopwatchProvider({ children }: Props) {
   const [timers, setTimers] = useState<GroupTimer[]>([]);
-  const [savedGroups, setSavedGroups] = useLocalStorage<
-    SavedStopwatchGroup[] | null
-  >('stopwatch-data', null);
+  const [savedGroups, setSavedGroups] = useLocalStorage<SavedStopwatchGroup[]>(
+    'stopwatch-data',
+    [],
+  );
   // 로딩 상태는 구조 분해에서 제외 (provider 내부에서 처리)
 
   const animationFrameRefs = useRef<Map<string, number>>(new Map());
