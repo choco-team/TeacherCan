@@ -12,6 +12,8 @@ import {
   MegaphoneIcon,
   CircleDotIcon,
   SplitIcon,
+  WatchIcon,
+  GroupIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -21,6 +23,8 @@ export const MENU_ROUTE = {
   NOTICE_SUGGESTION: '/notice-suggestion',
   QR_CODE: '/qr-code',
   TIMER: '/timer',
+  STOPWATCH_SOLO: '/stopwatch',
+  STOPWATCH_GROUP: '/group-stopwatch',
   RANDOM_PICK: '/random-pick',
   MUSIC_REQUEST: '/music-request',
   ROUTINE_TIMER: '/routine-timer',
@@ -58,6 +62,18 @@ type PathData<T extends string> = Partial<
 
 // NOTE:(김홍동) 네이게이션의 메뉴 영역과 최근 방문 페이지에서 사용되는 객체입니다.
 export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
+  '/stopwatch': {
+    title: '스톱워치',
+    Icon: WatchIcon,
+    href: MENU_ROUTE.STOPWATCH_SOLO,
+    isNew: true,
+  },
+  '/group-stopwatch': {
+    title: '그룹 스톱워치',
+    Icon: GroupIcon,
+    href: MENU_ROUTE.STOPWATCH_GROUP,
+    isNew: true,
+  },
   '/qr-code': {
     title: 'QR코드',
     Icon: QrCodeIcon,
@@ -72,7 +88,6 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '랜덤 모둠 뽑기',
     Icon: SplitIcon,
     href: MENU_ROUTE.RANDOM_TEAM,
-    isNew: true,
   },
   '/timer': {
     title: '타이머',
