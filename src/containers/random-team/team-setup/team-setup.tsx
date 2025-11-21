@@ -12,8 +12,10 @@ import {
   ToastViewport,
 } from '@/components/toast';
 import { Label } from '@/components/label';
+
 import TeamResult from '../team-result/team-result';
 import TeamModeModal from '../team-mode-modal/team-mode-modal';
+import TeamFixedModal from '../team-fixed-modal/team-fixed-modal';
 
 export type Mode = 'numbers' | 'names' | 'student-data';
 
@@ -25,6 +27,7 @@ export default function TeamSetup() {
     'success',
   );
   const [toastMessage, setToastMessage] = useState('');
+
   const [proceedPayload, setProceedPayload] = useState<{
     students: string[];
     groupCount: number;
@@ -32,16 +35,27 @@ export default function TeamSetup() {
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  // 고정 배정 데이터 상태
+  const [preAssignments, setPreAssignments] = useState<
+    { student: string; groupIndex: number }[]
+  >([]);
+
+  const [fixedModalOpen, setFixedModalOpen] = useState(false);
+
+  const validForProceed = () =>
+    students.length > 0 && groupCount !== '' && Number(groupCount) > 0;
+
+  // 학생 생성 완료 처리
   const handleStudentsGenerated = (newStudents: string[]) => {
     setStudents(newStudents);
     setToastVariant('success');
     setToastMessage('학생 목록이 생성되었습니다.');
     setToastOpen(true);
     setModalOpen(false);
-  };
 
-  const validForProceed = () =>
-    students.length > 0 && groupCount !== '' && Number(groupCount) > 0;
+    // 학생이 바뀌면 고정 배정 초기화
+    setPreAssignments([]);
+  };
 
   const handleProceed = () => {
     if (!validForProceed()) {
@@ -50,7 +64,17 @@ export default function TeamSetup() {
       setToastOpen(true);
       return;
     }
-    setProceedPayload({ students, groupCount: Number(groupCount) });
+    setProceedPayload({
+      students,
+      groupCount: Number(groupCount),
+    });
+  };
+
+  const handleSavePreAssignments = (
+    data: { student: string; groupIndex: number }[],
+  ) => {
+    setPreAssignments(data);
+    setFixedModalOpen(false);
   };
 
   return (
@@ -63,6 +87,14 @@ export default function TeamSetup() {
         <div className="flex gap-2 mb-4">
           <Button onClick={() => setModalOpen(true)} variant="primary">
             학생 목록 만들기
+          </Button>
+
+          <Button
+            onClick={() => setFixedModalOpen(true)}
+            disabled={!validForProceed()}
+            variant="secondary"
+          >
+            설정
           </Button>
         </div>
 
@@ -78,6 +110,7 @@ export default function TeamSetup() {
           <Label htmlFor="groupCount" className="text-base text-gray-700">
             모둠 수
           </Label>
+
           <input
             id="groupCount"
             type="number"
@@ -88,6 +121,7 @@ export default function TeamSetup() {
             }
             className="border rounded px-3 py-2 w-32 bg-gray-100 text-base"
           />
+
           <Button
             onClick={handleProceed}
             variant="primary"
@@ -101,11 +135,12 @@ export default function TeamSetup() {
           <TeamResult
             students={proceedPayload.students}
             groupCount={proceedPayload.groupCount}
+            preAssignments={preAssignments}
           />
         )}
       </div>
 
-      {/* 모달 */}
+      {/* 학생 입력 모달 */}
       {modalOpen && (
         <TeamModeModal
           onClose={() => setModalOpen(false)}
@@ -113,6 +148,17 @@ export default function TeamSetup() {
         />
       )}
 
+      {/* 고정 배정 모달 */}
+      {fixedModalOpen && (
+        <TeamFixedModal
+          students={students}
+          groupCount={Number(groupCount)}
+          onClose={() => setFixedModalOpen(false)}
+          onSave={handleSavePreAssignments}
+        />
+      )}
+
+      {/* Toast */}
       <Toast
         open={toastOpen}
         onOpenChange={setToastOpen}

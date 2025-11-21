@@ -9,6 +9,7 @@ type Group = { id: string; members: Member[] };
 type Props = {
   students: string[];
   groupCount: number;
+  preAssignments?: { student: string; groupIndex: number }[];
 };
 
 function makeId(): string {
@@ -18,7 +19,11 @@ function makeId(): string {
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
 
-export default function TeamResult({ students, groupCount }: Props) {
+export default function TeamResult({
+  students,
+  groupCount,
+  preAssignments = [],
+}: Props) {
   const [groups, setGroups] = useState<Group[]>([]);
 
   const handleGroupAssign = useCallback(() => {
@@ -27,24 +32,38 @@ export default function TeamResult({ students, groupCount }: Props) {
       return;
     }
 
-    const members: Member[] = students.map((name) => ({
+    const members = students.map((name) => ({ id: makeId(), name }));
+
+    // 🟦 1) 고정 배정 그룹 초기화
+    const fixedGroups = Array.from({ length: groupCount }, () => ({
       id: makeId(),
-      name,
+      members: [] as Member[],
     }));
 
-    const shuffled = [...members].sort(() => Math.random() - 0.5);
+    // 🟩 이미 고정된 학생들 집합
+    const assignedNames = new Set<string>();
 
-    const newGroups: Group[] = Array.from({ length: groupCount }, () => ({
-      id: makeId(),
-      members: [],
-    }));
-
-    shuffled.forEach((member, idx) => {
-      newGroups[idx % groupCount].members.push(member);
+    // 🟩 2) 고정 배정 적용
+    preAssignments.forEach((a) => {
+      const target = members.find((m) => m.name === a.student);
+      if (target) {
+        fixedGroups[a.groupIndex].members.push(target);
+        assignedNames.add(target.name);
+      }
     });
 
-    setGroups(newGroups);
-  }, [students, groupCount]);
+    // 🟧 3) 남는 학생들만 셔플
+    const remaining = members.filter((m) => !assignedNames.has(m.name));
+    const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+
+    // 🟨 4) 균등하게 남은 학생 배정
+    shuffled.forEach((member, idx) => {
+      const groupIndex = idx % groupCount;
+      fixedGroups[groupIndex].members.push(member);
+    });
+
+    setGroups(fixedGroups);
+  }, [students, groupCount, preAssignments]);
 
   useEffect(() => {
     handleGroupAssign();
@@ -61,10 +80,24 @@ export default function TeamResult({ students, groupCount }: Props) {
                 className="p-3 border rounded bg-gray-50 shadow-sm"
               >
                 <h3 className="font-semibold mb-2">모둠 {idx + 1}</h3>
+
                 <ul className="list-disc list-inside space-y-1">
-                  {group.members.map((member) => (
-                    <li key={member.id}>{member.name}</li>
-                  ))}
+                  {group.members.map((member) => {
+                    // 🔒 고정 배정된 학생 표시 (볼드)
+                    const isFixed = preAssignments.some(
+                      (a) => a.student === member.name && a.groupIndex === idx,
+                    );
+
+                    return (
+                      <li
+                        key={member.id}
+                        className={isFixed ? 'font-bold text-black' : ''}
+                      >
+                        {member.name}
+                        {isFixed && ' 🔒'}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
