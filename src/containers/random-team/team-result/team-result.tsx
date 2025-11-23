@@ -40,7 +40,7 @@ export default function TeamResult({
       members: [] as Member[],
     }));
 
-    // 🟩 이미 고정된 학생들 집합
+    // 🟩 고정된 학생을 중복 배정 안 하기 위한 세트
     const assignedNames = new Set<string>();
 
     // 🟩 2) 고정 배정 적용
@@ -56,13 +56,54 @@ export default function TeamResult({
     const remaining = members.filter((m) => !assignedNames.has(m.name));
     const shuffled = [...remaining].sort(() => Math.random() - 0.5);
 
-    // 🟨 4) 균등하게 남은 학생 배정
-    shuffled.forEach((member, idx) => {
-      const groupIndex = idx % groupCount;
-      fixedGroups[groupIndex].members.push(member);
-    });
+    // 🟥 4) 총 목표 인원(균등 분배 기준)
+    const total = members.length;
+    const base = Math.floor(total / groupCount);
+    const rest = total % groupCount;
 
-    setGroups(fixedGroups);
+    const targetSizes = Array.from({ length: groupCount }, (_, i) =>
+      i < rest ? base + 1 : base,
+    );
+
+    // 각 그룹에 추가로 넣을 수 있는 capacity
+    const capacities = fixedGroups.map(
+      (g, i) => targetSizes[i] - g.members.length,
+    );
+
+    // 🟦 5) 재귀로 균등 배정 (let 없이)
+    const assignRecursively = (
+      remain: Member[],
+      resultGroups: Group[],
+      caps: number[],
+    ): Group[] => {
+      if (remain.length === 0) return resultGroups;
+
+      const student = remain[0];
+
+      const nextGroupIndex = caps
+        .map((c, idx) => ({ cap: c, idx }))
+        .filter((c) => c.cap > 0)
+        .sort((a, b) => a.idx - b.idx)[0]?.idx;
+
+      if (nextGroupIndex === undefined) {
+        return resultGroups;
+      }
+
+      const newGroups = resultGroups.map((g, i) =>
+        i === nextGroupIndex ? { ...g, members: [...g.members, student] } : g,
+      );
+
+      const newCaps = caps.map((cap, i) =>
+        i === nextGroupIndex ? cap - 1 : cap,
+      );
+
+      return assignRecursively(remain.slice(1), newGroups, newCaps);
+    };
+
+    // 🟩 6) 최종 그룹 계산
+    const finalGroups = assignRecursively(shuffled, fixedGroups, capacities);
+
+    setGroups(finalGroups);
   }, [students, groupCount, preAssignments]);
 
   useEffect(() => {
@@ -83,7 +124,6 @@ export default function TeamResult({
 
                 <ul className="list-disc list-inside space-y-1">
                   {group.members.map((member) => {
-                    // 🔒 고정 배정된 학생 표시 (볼드)
                     const isFixed = preAssignments.some(
                       (a) => a.student === member.name && a.groupIndex === idx,
                     );

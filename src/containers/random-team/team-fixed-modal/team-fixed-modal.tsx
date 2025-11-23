@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,9 +8,9 @@ import {
   DialogTitle,
 } from '@/components/dialog';
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Label } from '@/components/label';
 import { X } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
 
 type Props = {
   students: string[];
@@ -24,7 +25,6 @@ export default function TeamFixedModal({
   onClose,
   onSave,
 }: Props) {
-  // 각 모둠별 고정 배정: groupIndex → 학생 배열
   const [groupAssignments, setGroupAssignments] = useState<
     Record<number, string[]>
   >(() => {
@@ -33,15 +33,34 @@ export default function TeamFixedModal({
     return base;
   });
 
-  // 이미 고정된 학생들 목록
-  const assignedStudents = useMemo(() => {
-    return Object.values(groupAssignments).flat();
-  }, [groupAssignments]);
+  const assignedStudents = useMemo(
+    () => Object.values(groupAssignments).flat(),
+    [groupAssignments],
+  );
 
-  // 특정 모둠에 학생 추가
-  const handleAddStudent = (groupIndex: number, student: string) => {
-    if (!student) return;
-    if (assignedStudents.includes(student)) return; // 중복 X
+  const unassignedStudents = useMemo(
+    () => students.filter((s) => !assignedStudents.includes(s)),
+    [students, assignedStudents],
+  );
+
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    student: string,
+  ) => {
+    e.dataTransfer.setData('text/plain', student);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (
+    e: React.DragEvent<HTMLDivElement>,
+    groupIndex: number,
+  ) => {
+    e.preventDefault();
+    const student = e.dataTransfer.getData('text/plain');
+    if (!student || assignedStudents.includes(student)) return;
 
     setGroupAssignments((prev) => ({
       ...prev,
@@ -49,7 +68,6 @@ export default function TeamFixedModal({
     }));
   };
 
-  // 특정 모둠에서 학생 제거
   const handleRemoveStudent = (groupIndex: number, student: string) => {
     setGroupAssignments((prev) => ({
       ...prev,
@@ -57,7 +75,6 @@ export default function TeamFixedModal({
     }));
   };
 
-  // 저장 시 기존 구조로 변환
   const handleSave = () => {
     const result: { student: string; groupIndex: number }[] = [];
     Object.entries(groupAssignments).forEach(([groupIndex, list]) => {
@@ -68,76 +85,78 @@ export default function TeamFixedModal({
     onSave(result);
   };
 
-  const groupsWithId = Array.from({ length: groupCount }, (_, i) => ({
-    id: `group-${i}-${Date.now()}`, // 고유 id 생성
-    members: [] as string[],
-  }));
-
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>고정 배정 설정</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-          {groupsWithId.map((group, groupIndex) => (
-            <div
-              key={group.id} // 여기서 고유 id 사용
-              className="border rounded p-3 bg-gray-50 shadow-sm"
-            >
-              <h3 className="font-semibold mb-2">{groupIndex + 1} 모둠</h3>
-
-              {/* 고정 학생 목록 */}
-              <div className="space-y-1 mb-3">
-                {groupAssignments[groupIndex].map((student) => (
-                  <div
-                    key={student}
-                    className="flex items-center justify-between bg-white px-2 py-1 rounded border"
-                  >
-                    <span className="font-bold">{student}</span>
-                    <Button
-                      onClick={() => handleRemoveStudent(groupIndex, student)}
-                    >
-                      <X className="w-4 h-4 text-gray-500 hover:text-black" />
-                    </Button>
-                  </div>
-                ))}
-
-                {groupAssignments[groupIndex].length === 0 && (
-                  <p className="text-xs text-gray-500">고정 학생 없음</p>
-                )}
-              </div>
-
-              {/* 학생 추가 드롭다운 */}
-              <div>
-                <Label className="text-sm">학생 추가</Label>
-                <select
-                  className="w-full border rounded px-2 py-1 bg-white mt-1"
-                  onChange={(e) => {
-                    handleAddStudent(groupIndex, e.target.value);
-                    e.target.value = '';
-                  }}
-                  defaultValue=""
+        <div className="flex flex-col gap-3 mt-4">
+          {/* 남은 학생 가로 배치 */}
+          <Card className="p-1">
+            <Label className="mb-1 text-sm">남은 학생</Label>
+            <div className="flex flex-wrap gap-1">
+              {unassignedStudents.map((student) => (
+                <div
+                  key={student}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, student)}
+                  className="px-2 py-0.5 bg-white border rounded text-xs cursor-grab hover:bg-gray-100"
                 >
-                  <option value="">학생 선택</option>
-
-                  {students.map((s) => (
-                    <option
-                      key={s}
-                      value={s}
-                      disabled={assignedStudents.includes(s)}
-                    >
-                      {assignedStudents.includes(s) ? `🔒 ${s}` : s}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  {student}
+                </div>
+              ))}
+              {unassignedStudents.length === 0 && (
+                <p className="text-xs text-gray-500">남은 학생 없음</p>
+              )}
             </div>
-          ))}
+          </Card>
+
+          {/* 모둠 박스 */}
+          <div className="grid grid-cols-2 gap-2">
+            {Array.from({ length: groupCount }, (_, groupIndex) => (
+              <Card
+                key={groupIndex}
+                className="p-1 border-dashed border-2 h-32 flex flex-col"
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, groupIndex)}
+              >
+                <h3 className="font-semibold mb-1 text-center text-sm">
+                  모둠 {groupIndex + 1}
+                </h3>
+
+                <div className="flex-1 flex flex-wrap justify-center overflow-y-auto gap-1">
+                  {groupAssignments[groupIndex].map((student) => (
+                    <div
+                      key={student}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, student)}
+                      className="px-1 py-0.5 bg-white border rounded text-xs flex items-center gap-1 cursor-grab hover:bg-gray-100"
+                    >
+                      {student}
+                      <Button
+                        variant="gray-ghost"
+                        size="sm"
+                        onClick={() => handleRemoveStudent(groupIndex, student)}
+                        className="ml-1 p-0"
+                      >
+                        <X className="w-3 h-3 text-gray-500 hover:text-black" />
+                      </Button>
+                    </div>
+                  ))}
+                  {groupAssignments[groupIndex].length === 0 && (
+                    <p className="text-xs text-gray-500 w-full text-center mt-1">
+                      학생 없음
+                    </p>
+                  )}
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-6 flex justify-end gap-2">
+        <div className="mt-4 flex justify-end gap-2">
           <Button variant="secondary" onClick={onClose}>
             닫기
           </Button>
