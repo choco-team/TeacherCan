@@ -11,6 +11,7 @@ import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Label } from '@/components/label';
 import { X } from 'lucide-react';
+import { Heading3 } from '@/components/heading';
 
 type Props = {
   students: string[];
@@ -93,16 +94,16 @@ export default function TeamFixedModal({
         </DialogHeader>
 
         <div className="flex flex-col gap-3 mt-4">
-          {/* 남은 학생 가로 배치 */}
+          {/* 남은 학생 */}
           <Card className="p-1">
             <Label className="mb-1 text-sm">남은 학생</Label>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto">
               {unassignedStudents.map((student) => (
                 <div
                   key={student}
                   draggable
                   onDragStart={(e) => handleDragStart(e, student)}
-                  className="px-2 py-0.5 bg-white border rounded text-xs cursor-grab hover:bg-gray-100"
+                  className="px-2 py-[2px] bg-white border rounded text-xs cursor-grab hover:bg-gray-100"
                 >
                   {student}
                 </div>
@@ -113,33 +114,33 @@ export default function TeamFixedModal({
             </div>
           </Card>
 
-          {/* 모둠 박스 */}
+          {/* 모둠 카드 */}
           <div className="grid grid-cols-2 gap-2">
             {Array.from({ length: groupCount }, (_, groupIndex) => (
               <Card
                 key={groupIndex}
-                className="p-1 border-dashed border-2 h-32 flex flex-col"
+                className="p-1 border-dashed border-2 h-auto min-h-[100px]"
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, groupIndex)}
               >
-                <h3 className="font-semibold mb-1 text-center text-sm">
+                <Heading3 className="font-semibold mb-1 text-center text-sm">
                   모둠 {groupIndex + 1}
-                </h3>
+                </Heading3>
 
-                <div className="flex-1 flex flex-wrap justify-center overflow-y-auto gap-1">
+                <div className="flex flex-wrap justify-center gap-1 max-h-28 overflow-y-auto">
                   {groupAssignments[groupIndex].map((student) => (
                     <div
                       key={student}
                       draggable
                       onDragStart={(e) => handleDragStart(e, student)}
-                      className="px-1 py-0.5 bg-white border rounded text-xs flex items-center gap-1 cursor-grab hover:bg-gray-100"
+                      className="flex items-center gap-1 px-1 py-[2px] bg-white border rounded text-xs cursor-grab hover:bg-gray-100"
                     >
-                      {student}
+                      <span className="truncate max-w-[70px]">{student}</span>
                       <Button
                         variant="gray-ghost"
                         size="sm"
                         onClick={() => handleRemoveStudent(groupIndex, student)}
-                        className="ml-1 p-0"
+                        className="p-0"
                       >
                         <X className="w-3 h-3 text-gray-500 hover:text-black" />
                       </Button>
