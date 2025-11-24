@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/button';
 import { Heading1 } from '@/components/heading';
 import {
@@ -42,6 +42,8 @@ export default function TeamSetup() {
 
   const [fixedModalOpen, setFixedModalOpen] = useState(false);
 
+  const assignRef = useRef<() => void>(); // TeamResult 내부 assignGroups 참조
+
   const validForProceed = () =>
     students.length > 0 && groupCount !== '' && Number(groupCount) > 0;
 
@@ -53,8 +55,9 @@ export default function TeamSetup() {
     setToastOpen(true);
     setModalOpen(false);
 
-    // 학생이 바뀌면 고정 배정 초기화
+    // 학생이 바뀌면 고정 배정 초기화 및 모둠 상태 초기화
     setPreAssignments([]);
+    setProceedPayload(null);
   };
 
   const handleProceed = () => {
@@ -75,6 +78,9 @@ export default function TeamSetup() {
   ) => {
     setPreAssignments(data);
     setFixedModalOpen(false);
+
+    // 설정 변경 시 모둠 초기화
+    setProceedPayload(null);
   };
 
   return (
@@ -123,11 +129,17 @@ export default function TeamSetup() {
           />
 
           <Button
-            onClick={handleProceed}
+            onClick={() => {
+              if (!proceedPayload) {
+                handleProceed(); // 처음 배정
+              } else if (assignRef.current) {
+                assignRef.current(); // TeamResult의 assignGroups 호출 -> 재배정
+              }
+            }}
             variant="primary"
             disabled={!validForProceed()}
           >
-            모둠 랜덤 배정하기
+            {proceedPayload ? '재배정하기' : '모둠 랜덤 배정하기'}
           </Button>
         </div>
 
@@ -136,6 +148,7 @@ export default function TeamSetup() {
             students={proceedPayload.students}
             groupCount={proceedPayload.groupCount}
             preAssignments={preAssignments}
+            onAssignRef={assignRef} // 재배정 참조 전달
           />
         )}
       </div>
