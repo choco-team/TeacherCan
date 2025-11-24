@@ -130,10 +130,24 @@ export default function TeamSetup() {
 
           <Button
             onClick={() => {
+              if (!validForProceed()) return;
+
               if (!proceedPayload) {
-                handleProceed(); // 처음 배정
-              } else if (assignRef.current) {
-                assignRef.current(); // TeamResult의 assignGroups 호출 -> 재배정
+                // 처음 배정
+                handleProceed();
+              } else {
+                // 재배정: 최신 모둠 수 반영
+                setProceedPayload((prev) => {
+                  if (!prev)
+                    return { students, groupCount: Number(groupCount) };
+                  return {
+                    students: prev.students,
+                    groupCount: Number(groupCount), // 최신 모둠 수 반영
+                  };
+                });
+
+                // TeamResult의 assignGroups 호출
+                if (assignRef.current) assignRef.current();
               }
             }}
             variant="primary"
