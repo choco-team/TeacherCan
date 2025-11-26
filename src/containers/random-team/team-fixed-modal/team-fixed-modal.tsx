@@ -44,6 +44,9 @@ export default function TeamFixedModal({
     [students, assignedStudents],
   );
 
+  // ⭐ 최대 인원 수 설정
+  const maxSize = Math.ceil(students.length / groupCount);
+
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     student: string,
@@ -61,7 +64,15 @@ export default function TeamFixedModal({
   ) => {
     e.preventDefault();
     const student = e.dataTransfer.getData('text/plain');
-    if (!student || assignedStudents.includes(student)) return;
+    if (!student) return;
+
+    // 이미 배정된 학생은 무시
+    if (assignedStudents.includes(student)) return;
+
+    // ⭐ 최대 인원 제한 —— 초과 시 추가 안 됨
+    if (groupAssignments[groupIndex].length >= maxSize) {
+      return;
+    }
 
     setGroupAssignments((prev) => ({
       ...prev,
@@ -119,7 +130,11 @@ export default function TeamFixedModal({
             {Array.from({ length: groupCount }, (_, groupIndex) => (
               <Card
                 key={groupIndex}
-                className="p-1 border-dashed border-2 h-auto min-h-[100px]"
+                className={`p-1 border-dashed border-2 min-h-[100px] ${
+                  groupAssignments[groupIndex].length >= maxSize
+                    ? 'opacity-50'
+                    : ''
+                }`}
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, groupIndex)}
               >
