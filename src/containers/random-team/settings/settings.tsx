@@ -1,13 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import SettingStudentName from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-name/setting-student-name';
-import SettingStudentNumber from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-number/setting-student-number';
-import StudentDataPicker from '@/components/student-data-picker';
-import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
-import { Label } from '@/components/label';
-import { Card } from '@/components/card';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Label } from '@/components/label';
 import { X } from 'lucide-react';
 import {
   ToastProvider,
@@ -17,13 +14,24 @@ import {
   ToastDescription,
   ToastClose,
 } from '@/components/toast';
-import { Heading2 } from '@/components/heading';
+import SettingStudentName from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-name/setting-student-name';
+import SettingStudentNumber from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-number/setting-student-number';
+import StudentDataPicker from '@/components/student-data-picker';
+import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
+import { Input } from '@/components/input';
+import { Heading3 } from '@/components/heading';
 
-interface Team {
+type Team = {
   id: string;
-}
+};
 
-export default function RandomTeamSettingsPage() {
+export default function SettingsContainer({
+  settingsId,
+}: {
+  settingsId: string;
+}) {
+  const router = useRouter();
+
   const [mode, setMode] = useState<'numbers' | 'names' | 'student-data'>(
     'numbers',
   );
@@ -37,7 +45,6 @@ export default function RandomTeamSettingsPage() {
   >({});
   const [showToast, setShowToast] = useState(false);
 
-  // 팀 수가 바뀌면 teams 배열 업데이트
   useEffect(() => {
     setTeams(
       Array.from({ length: teamCount }, (_, i) => ({
@@ -65,7 +72,7 @@ export default function RandomTeamSettingsPage() {
   }, []);
 
   const handleStudentDataImport = useCallback(
-    (studentData) => {
+    (studentData: { name: string }[]) => {
       const names = studentData.map((s) => s.name);
       handleGenerated(names);
     },
@@ -96,8 +103,7 @@ export default function RandomTeamSettingsPage() {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>, teamId: string) => {
     e.preventDefault();
     const student = e.dataTransfer.getData('text/plain');
-    if (!student) return;
-    if (assigned.includes(student)) return;
+    if (!student || assigned.includes(student)) return;
     if ((fixedAssignments[teamId]?.length ?? 0) >= maxSize) return;
 
     setFixedAssignments((prev) => ({
@@ -119,23 +125,27 @@ export default function RandomTeamSettingsPage() {
     setShowToast(true);
   };
 
+  const handleFinish = () => {
+    handleSaveSettings();
+    router.push('/random-team');
+  };
+
   return (
     <ToastProvider>
       <div className="p-4 max-w-xl mx-auto flex flex-col gap-6">
-        <h1 className="text-xl font-bold">모둠 설정 페이지</h1>
+        <h1 className="text-xl font-bold">모둠 설정 ({settingsId})</h1>
 
-        {/* 학생 생성 방식 선택 */}
         <Card className="p-4">
-          <Heading2 className="font-semibold mb-2">
+          <Label className="mb-2 font-semibold text-sm">
             학생 목록 생성 방식
-          </Heading2>
+          </Label>
           <RadioGroup className="flex gap-x-4 mb-4">
             <Label className="flex items-center gap-x-2">
               <RadioGroupItem
                 value="numbers"
                 checked={mode === 'numbers'}
                 onClick={() => setMode('numbers')}
-              />{' '}
+              />
               번호로 구성
             </Label>
             <Label className="flex items-center gap-x-2">
@@ -143,7 +153,7 @@ export default function RandomTeamSettingsPage() {
                 value="names"
                 checked={mode === 'names'}
                 onClick={() => setMode('names')}
-              />{' '}
+              />
               이름으로 구성
             </Label>
             <Label className="flex items-center gap-x-2">
@@ -151,7 +161,7 @@ export default function RandomTeamSettingsPage() {
                 value="student-data"
                 checked={mode === 'student-data'}
                 onClick={() => setMode('student-data')}
-              />{' '}
+              />
               학생 데이터 불러오기
             </Label>
           </RadioGroup>
@@ -178,10 +188,9 @@ export default function RandomTeamSettingsPage() {
           )}
         </Card>
 
-        {/* 모둠 수 설정 */}
         <Card className="p-4">
-          <h2 className="font-semibold mb-2">모둠 수</h2>
-          <input
+          <Label className="mb-2 font-semibold text-sm">모둠 수</Label>
+          <Input
             type="number"
             min={1}
             value={teamCount}
@@ -190,42 +199,35 @@ export default function RandomTeamSettingsPage() {
           />
         </Card>
 
-        {/* 고정 학생 설정 */}
         <Card className="p-4">
-          <h2 className="font-semibold mb-3">고정 학생 설정</h2>
+          <Label className="mb-2 font-semibold text-sm">고정 학생 설정</Label>
+          <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto mb-2">
+            {unassignedStudents.map((student) => (
+              <div
+                key={student}
+                draggable
+                onDragStart={(e) => handleDragStart(e, student)}
+                className="px-2 py-[2px] bg-white border rounded text-xs cursor-grab hover:bg-gray-100"
+              >
+                {student}
+              </div>
+            ))}
+            {unassignedStudents.length === 0 && (
+              <p className="text-xs text-gray-500">남은 학생 없음</p>
+            )}
+          </div>
 
-          {/* 남은 학생 */}
-          <Card className="p-1 mb-4">
-            <Label className="mb-1 text-sm">남은 학생</Label>
-            <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto">
-              {unassignedStudents.map((student) => (
-                <div
-                  key={student}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, student)}
-                  className="px-2 py-[2px] bg-white border rounded text-xs cursor-grab hover:bg-gray-100"
-                >
-                  {student}
-                </div>
-              ))}
-              {unassignedStudents.length === 0 && (
-                <p className="text-xs text-gray-500">남은 학생 없음</p>
-              )}
-            </div>
-          </Card>
-
-          {/* 팀 카드 */}
           <div className="grid grid-cols-2 gap-2">
-            {teams.map((team) => (
+            {teams.map((team, idx) => (
               <Card
                 key={team.id}
                 className={`p-1 border-dashed border-2 min-h-[100px] ${fixedAssignments[team.id]?.length >= maxSize ? 'opacity-50' : ''}`}
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, team.id)}
               >
-                <h3 className="font-semibold mb-1 text-center text-sm">
-                  모둠 {teams.indexOf(team) + 1}
-                </h3>
+                <Heading3 className="font-semibold mb-1 text-center text-sm">
+                  모둠 {idx + 1}
+                </Heading3>
                 <div className="flex flex-wrap justify-center gap-1 max-h-28 overflow-y-auto">
                   {(fixedAssignments[team.id] ?? []).map((student) => (
                     <div
@@ -254,9 +256,8 @@ export default function RandomTeamSettingsPage() {
           </div>
         </Card>
 
-        {/* 저장 버튼 */}
-        <Button variant="primary" onClick={handleSaveSettings}>
-          전체 설정 저장
+        <Button variant="primary" onClick={handleFinish}>
+          저장 후 랜덤팀으로 이동
         </Button>
 
         <ToastViewport />
