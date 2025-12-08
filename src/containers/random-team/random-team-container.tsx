@@ -1,48 +1,74 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
-import { Card } from '@/components/card';
+import React, { useEffect, useState, useRef } from 'react';
+import { Button } from '@/components/button';
+import { Settings } from 'lucide-react';
+import Link from 'next/link';
+import TeamResult from '@/containers/random-team/team-result/team-result';
+
+type PreAssignment = {
+  student: string;
+  groupIndex: number;
+};
 
 export default function RandomTeamContainer() {
   const [settings, setSettings] = useState<{
     students: string[];
     teamCount: number;
-    fixedAssignments: Record<string, string[]>;
+    preAssignments: PreAssignment[];
   } | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const assignRef = useRef<() => void>();
 
   useEffect(() => {
     const saved = localStorage.getItem('randomTeamSettings');
-    if (saved) setSettings(JSON.parse(saved));
+    if (saved) {
+      try {
+        setSettings(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse settings', e);
+      }
+    }
   }, []);
 
-  const teams = useMemo(() => {
-    if (!settings) return [];
-    const ids = Array.from({ length: settings.teamCount }, () =>
-      crypto.randomUUID(),
-    );
-    return ids.map((id) => ({
-      id,
-      members: settings.fixedAssignments[id] ?? [],
-    }));
-  }, [settings]);
+  const handleAssignTeams = () => {
+    setShowResult(true);
+    // TeamResult의 handleGroupAssign 함수 호출
+    if (assignRef.current) {
+      assignRef.current();
+    }
+  };
 
   if (!settings) return <p>설정 데이터를 불러오는 중...</p>;
 
   return (
-    <div className="p-4 max-w-xl mx-auto flex flex-col gap-4">
-      <h1 className="text-xl font-bold">랜덤 팀 구성</h1>
-      {teams.map((team, idx) => (
-        <Card key={team.id} className="p-2 border">
-          <h2 className="font-semibold mb-2">모둠 {idx + 1}</h2>
-          <ul>
-            {(team.members.length > 0 ? team.members : ['학생 없음']).map(
-              (member) => (
-                <li key={member}>{member}</li>
-              ),
-            )}
-          </ul>
-        </Card>
-      ))}
+    <div className="p-4 max-w-6xl mx-auto flex flex-col gap-4">
+      <div className="flex items-center gap-2">
+        <h1 className="text-xl font-bold">랜덤 팀 구성</h1>
+        <Link href="/random-team/settings/1">
+          <Button variant="gray-ghost" size="sm" className="p-2">
+            <Settings className="w-5 h-5" />
+          </Button>
+        </Link>
+      </div>
+
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={handleAssignTeams}
+        className="w-fit"
+      >
+        랜덤 팀 뽑기
+      </Button>
+
+      {showResult && (
+        <TeamResult
+          students={settings.students}
+          groupCount={settings.teamCount}
+          preAssignments={settings.preAssignments}
+          onAssignRef={assignRef}
+        />
+      )}
     </div>
   );
 }
