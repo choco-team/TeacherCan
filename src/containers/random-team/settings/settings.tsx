@@ -32,6 +32,12 @@ export default function SettingsContainer({
   const [teamCount, setTeamCount] = useState<number>(4);
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
 
+  // 모둠 수 변경 시 고정 배정 초기화
+  const handleTeamCountChange = (newCount: number) => {
+    setTeamCount(newCount);
+    setPreAssignments([]);
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem('randomTeamSettings');
     if (!saved) return;
@@ -111,7 +117,7 @@ export default function SettingsContainer({
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto flex flex-col gap-6">
+    <div className="p-4 w-full max-w-xl mx-auto flex flex-col gap-6">
       <h1 className="text-xl font-bold">모둠 설정 ({settingsId})</h1>
 
       <Card className="p-4 w-full">
@@ -173,7 +179,7 @@ export default function SettingsContainer({
           type="number"
           min={1}
           value={teamCount}
-          onChange={(e) => setTeamCount(Number(e.target.value))}
+          onChange={(e) => handleTeamCountChange(Number(e.target.value))}
           className="border p-2 rounded w-24"
         />
       </Card>
