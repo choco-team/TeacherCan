@@ -18,11 +18,7 @@ type PreAssignment = {
   groupIndex: number;
 };
 
-export default function SettingsContainer({
-  settingsId,
-}: {
-  settingsId: string;
-}) {
+export default function SettingsContainer() {
   const router = useRouter();
 
   const [mode, setMode] = useState<'numbers' | 'names' | 'student-data'>(
@@ -118,7 +114,7 @@ export default function SettingsContainer({
 
   return (
     <div className="p-4 w-full max-w-xl mx-auto flex flex-col gap-6">
-      <h1 className="text-xl font-bold">모둠 설정 ({settingsId})</h1>
+      <h1 className="text-xl font-bold">모둠 설정</h1>
 
       <Card className="p-4 w-full">
         <Label className="mb-2 font-semibold text-sm">

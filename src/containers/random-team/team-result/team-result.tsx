@@ -10,7 +10,7 @@ type Props = {
   students: string[];
   groupCount: number;
   preAssignments?: { student: string; groupIndex: number }[];
-  onAssignRef?: React.MutableRefObject<() => void | undefined>;
+  onAssignRef?: React.MutableRefObject<(() => void) | undefined>;
 };
 
 function makeId(): string {
@@ -36,13 +36,11 @@ export default function TeamResult({
 
     const members = students.map((name) => ({ id: makeId(), name }));
 
-    // 1) 고정 배정 그룹 초기화
     const fixedGroups = Array.from({ length: groupCount }, () => ({
       id: makeId(),
       members: [] as Member[],
     }));
 
-    // 2) 고정된 학생을 중복 배정 방지
     const assignedNames = new Set<string>();
     preAssignments.forEach((a) => {
       const target = members.find((m) => m.name === a.student);
@@ -52,11 +50,9 @@ export default function TeamResult({
       }
     });
 
-    // 3) 남는 학생 셔플
     const remaining = members.filter((m) => !assignedNames.has(m.name));
     const shuffled = [...remaining].sort(() => Math.random() - 0.5);
 
-    // 4) 그룹 균등 분배
     const total = members.length;
     const base = Math.floor(total / groupCount);
     const rest = total % groupCount;
@@ -68,7 +64,6 @@ export default function TeamResult({
       (g, i) => targetSizes[i] - g.members.length,
     );
 
-    // 5) 재귀 균등 배정
     const assignRecursively = (
       remain: Member[],
       resultGroups: Group[],
@@ -99,15 +94,13 @@ export default function TeamResult({
     setGroups(finalGroups);
   }, [students, groupCount, preAssignments]);
 
-  // 6) ref에 함수 안전하게 할당
   useEffect(() => {
-    if (onAssignRef && typeof onAssignRef === 'object') {
-      // eslint-disable-next-line no-param-reassign
-      onAssignRef.current = handleGroupAssign;
+    if (onAssignRef) {
+      const ref = onAssignRef;
+      ref.current = handleGroupAssign;
     }
   }, [handleGroupAssign, onAssignRef]);
 
-  // 초기/자동 배정
   useEffect(() => {
     handleGroupAssign();
   }, [handleGroupAssign]);

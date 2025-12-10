@@ -33,7 +33,7 @@ export default function RandomTeamContainer() {
 
   const handleAssignTeams = () => {
     setShowResult(true);
-    // TeamResult의 handleGroupAssign 함수 호출
+
     if (assignRef.current) {
       assignRef.current();
     }
