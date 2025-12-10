@@ -33,7 +33,7 @@ export default function RandomTeamContainer() {
 
   const handleAssignTeams = () => {
     setShowResult(true);
-
+    // TeamResult의 handleGroupAssign 함수 호출
     if (assignRef.current) {
       assignRef.current();
     }
@@ -58,7 +58,7 @@ export default function RandomTeamContainer() {
         onClick={handleAssignTeams}
         className="w-fit"
       >
-        랜덤 팀 뽑기
+        {showResult ? '다시 뽑기' : '모둠 뽑기'}
       </Button>
 
       {showResult && (
