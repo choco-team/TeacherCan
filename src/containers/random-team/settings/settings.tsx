@@ -27,6 +27,7 @@ export default function SettingsContainer() {
   const [students, setStudents] = useState<string[]>([]);
   const [teamCount, setTeamCount] = useState<number>(4);
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
+  const [showFixedIndicator, setShowFixedIndicator] = useState<boolean>(true);
 
   // 모둠 수 변경 시 고정 배정 초기화
   const handleTeamCountChange = (newCount: number) => {
@@ -42,6 +43,8 @@ export default function SettingsContainer() {
       if (parsed.students) setStudents(parsed.students);
       if (parsed.teamCount) setTeamCount(parsed.teamCount);
       if (parsed.preAssignments) setPreAssignments(parsed.preAssignments);
+      if (parsed.showFixedIndicator !== undefined)
+        setShowFixedIndicator(parsed.showFixedIndicator);
     } catch (e) {
       console.error('Failed to parse saved settings', e);
     }
@@ -103,7 +106,7 @@ export default function SettingsContainer() {
   };
 
   const handleSaveSettings = () => {
-    const data = { students, teamCount, preAssignments };
+    const data = { students, teamCount, preAssignments, showFixedIndicator };
     localStorage.setItem('randomTeamSettings', JSON.stringify(data));
   };
 
@@ -178,6 +181,28 @@ export default function SettingsContainer() {
           onChange={(e) => handleTeamCountChange(Number(e.target.value))}
           className="border p-2 rounded w-24"
         />
+      </Card>
+
+      <Card className="p-4 w-full">
+        <Label className="mb-2 font-semibold text-sm">고정 학생 표시</Label>
+        <RadioGroup className="flex gap-x-4">
+          <Label className="flex items-center gap-x-2">
+            <RadioGroupItem
+              value="show"
+              checked={showFixedIndicator}
+              onClick={() => setShowFixedIndicator(true)}
+            />
+            두껍게 표시 (학생들이 볼 수 있음)
+          </Label>
+          <Label className="flex items-center gap-x-2">
+            <RadioGroupItem
+              value="hide"
+              checked={!showFixedIndicator}
+              onClick={() => setShowFixedIndicator(false)}
+            />
+            일반 표시 (숨김)
+          </Label>
+        </RadioGroup>
       </Card>
 
       <Card className="p-4 w-full">

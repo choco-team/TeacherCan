@@ -16,6 +16,7 @@ export default function RandomTeamContainer() {
     students: string[];
     teamCount: number;
     preAssignments: PreAssignment[];
+    showFixedIndicator: boolean;
   } | null>(null);
   const [showResult, setShowResult] = useState(false);
   const assignRef = useRef<() => void>();
@@ -58,7 +59,7 @@ export default function RandomTeamContainer() {
         onClick={handleAssignTeams}
         className="w-fit"
       >
-        {showResult ? '다시 뽑기' : '모둠 뽑기'}
+        {showResult ? '재배정' : '랜덤 팀 뽑기'}
       </Button>
 
       {showResult && (
@@ -66,6 +67,7 @@ export default function RandomTeamContainer() {
           students={settings.students}
           groupCount={settings.teamCount}
           preAssignments={settings.preAssignments}
+          showFixedIndicator={settings.showFixedIndicator}
           onAssignRef={assignRef}
         />
       )}
