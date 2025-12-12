@@ -5,6 +5,7 @@ import { Button } from '@/components/button';
 import { Settings } from 'lucide-react';
 import Link from 'next/link';
 import TeamResult from '@/containers/random-team/team-result/team-result';
+import { Heading1 } from '@/components/heading';
 
 type PreAssignment = {
   student: string;
@@ -34,7 +35,7 @@ export default function RandomTeamContainer() {
 
   const handleAssignTeams = () => {
     setShowResult(true);
-    // TeamResult의 handleGroupAssign 함수 호출
+
     if (assignRef.current) {
       assignRef.current();
     }
@@ -45,7 +46,7 @@ export default function RandomTeamContainer() {
   return (
     <div className="p-4 max-w-6xl mx-auto flex flex-col gap-4">
       <div className="flex items-center gap-2">
-        <h1 className="text-xl font-bold">랜덤 팀 구성</h1>
+        <Heading1 className="text-xl font-bold">랜덤 팀 구성</Heading1>
         <Link href="/random-team/settings/1">
           <Button variant="gray-ghost" size="sm" className="p-2">
             <Settings className="w-5 h-5" />

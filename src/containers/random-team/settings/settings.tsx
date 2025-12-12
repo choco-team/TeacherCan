@@ -11,7 +11,7 @@ import SettingStudentNumber from '@/containers/random-pick/random-pick-list/rand
 import StudentDataPicker from '@/components/student-data-picker';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Input } from '@/components/input';
-import { Heading3 } from '@/components/heading';
+import { Heading1, Heading3 } from '@/components/heading';
 
 type PreAssignment = {
   student: string;
@@ -29,7 +29,6 @@ export default function SettingsContainer() {
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
   const [showFixedIndicator, setShowFixedIndicator] = useState<boolean>(true);
 
-  // 모둠 수 변경 시 고정 배정 초기화
   const handleTeamCountChange = (newCount: number) => {
     setTeamCount(newCount);
     setPreAssignments([]);
@@ -117,7 +116,7 @@ export default function SettingsContainer() {
 
   return (
     <div className="p-4 w-full max-w-xl mx-auto flex flex-col gap-6">
-      <h1 className="text-xl font-bold">모둠 설정</h1>
+      <Heading1 className="text-xl font-bold">모둠 설정</Heading1>
 
       <Card className="p-4 w-full">
         <Label className="mb-2 font-semibold text-sm">
