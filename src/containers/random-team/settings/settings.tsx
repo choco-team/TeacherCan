@@ -192,7 +192,7 @@ export default function SettingsContainer() {
               checked={showFixedIndicator}
               onClick={() => setShowFixedIndicator(true)}
             />
-            두껍게 표시 (학생들이 볼 수 있음)
+            굵게 표시
           </Label>
           <Label className="flex items-center gap-x-2">
             <RadioGroupItem
@@ -200,7 +200,7 @@ export default function SettingsContainer() {
               checked={!showFixedIndicator}
               onClick={() => setShowFixedIndicator(false)}
             />
-            일반 표시 (숨김)
+            일반 표시
           </Label>
         </RadioGroup>
       </Card>
@@ -270,7 +270,7 @@ export default function SettingsContainer() {
       </Card>
 
       <Button variant="primary" onClick={handleFinish}>
-        저장 후 랜덤팀으로 이동
+        저장
       </Button>
     </div>
   );
