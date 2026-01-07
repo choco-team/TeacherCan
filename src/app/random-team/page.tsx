@@ -4,7 +4,10 @@ export const metadata = {
   title: '랜덤 모둠 뽑기',
 };
 
-function RandomTeam() {
-  return <RandomTeamContainer />;
+export default function RandomTeam() {
+  return (
+    <div>
+      <RandomTeamContainer />
+    </div>
+  );
 }
-export default RandomTeam;
