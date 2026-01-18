@@ -12,6 +12,8 @@ type LocalStorageKey =
   | 'random-pick-list'
   | 'student-data'
   | 'stopwatch-data'
+  | 'clock-memos'
+  | 'clock-memo'
   | 'stopwatch-group-grid-columns';
 
 /**
