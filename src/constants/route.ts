@@ -12,6 +12,7 @@ import {
   MegaphoneIcon,
   CircleDotIcon,
   SplitIcon,
+  ClockIcon,
   WatchIcon,
   GroupIcon,
 } from 'lucide-react';
@@ -69,7 +70,7 @@ type PathData<T extends string> = Partial<
 export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   '/clock': {
     title: '시계',
-    Icon: WatchIcon,
+    Icon: ClockIcon,
     href: MENU_ROUTE.CLOCK,
     isNew: true,
     children: [
