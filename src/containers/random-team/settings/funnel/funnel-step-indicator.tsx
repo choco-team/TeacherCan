@@ -1,5 +1,3 @@
-// src/containers/random-team/settings/funnel/funnel-step-indicator.tsx
-
 'use client';
 
 import React from 'react';

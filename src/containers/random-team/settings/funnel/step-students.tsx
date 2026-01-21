@@ -1,5 +1,3 @@
-// src/containers/random-team/settings/funnel/step-students.tsx
-
 'use client';
 
 import React, { useState, useCallback } from 'react';
