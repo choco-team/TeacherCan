@@ -32,7 +32,7 @@ export default function FunnelContainer() {
       }),
     );
 
-    localStorage.setItem('randomTeamRun', 'true');
+    localStorage.setItem('randomTeamAutoRun', 'true');
 
     router.push('/random-team');
   };

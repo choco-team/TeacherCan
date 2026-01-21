@@ -19,9 +19,11 @@ export default function RandomTeamContainer() {
     preAssignments: PreAssignment[];
     showFixedIndicator: boolean;
   } | null>(null);
+
   const [showResult, setShowResult] = useState(false);
   const assignRef = useRef<() => void>();
 
+  /** 설정 불러오기 */
   useEffect(() => {
     const saved = localStorage.getItem('randomTeamSettings');
     if (saved) {
@@ -33,12 +35,25 @@ export default function RandomTeamContainer() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!settings) return;
+
+    const autoRun = localStorage.getItem('randomTeamAutoRun');
+
+    if (autoRun === 'true') {
+      setShowResult(true);
+
+      requestAnimationFrame(() => {
+        assignRef.current?.();
+      });
+
+      localStorage.removeItem('randomTeamAutoRun');
+    }
+  }, [settings]);
+
   const handleAssignTeams = () => {
     setShowResult(true);
-
-    if (assignRef.current) {
-      assignRef.current();
-    }
+    assignRef.current?.();
   };
 
   if (!settings) return <p>설정 데이터를 불러오는 중...</p>;
