@@ -67,7 +67,6 @@ export default function StepBasic({
         </RadioGroup>
       </Card>
 
-      {/* 네비게이션 */}
       <div className="flex justify-between">
         <Button variant="gray-ghost" onClick={onPrev}>
           이전
