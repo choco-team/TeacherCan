@@ -19,7 +19,6 @@ export default function FunnelContainer() {
   const [students, setStudents] = useState<string[]>([]);
   const [teamCount, setTeamCount] = useState<number>(4);
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
-  const [showFixedIndicator, setShowFixedIndicator] = useState<boolean>(true);
 
   const handleRun = () => {
     localStorage.setItem(
@@ -28,7 +27,6 @@ export default function FunnelContainer() {
         students,
         teamCount,
         preAssignments,
-        showFixedIndicator,
       }),
     );
 
@@ -55,12 +53,10 @@ export default function FunnelContainer() {
       {step === 2 && (
         <StepBasic
           teamCount={teamCount}
-          showFixedIndicator={showFixedIndicator}
           onChangeTeamCount={(count) => {
             setTeamCount(count);
             setPreAssignments([]);
           }}
-          onChangeShowFixedIndicator={setShowFixedIndicator}
           onPrev={() => setStep(1)}
           onNext={() => setStep(3)}
         />

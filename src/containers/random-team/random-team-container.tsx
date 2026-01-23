@@ -88,7 +88,6 @@ export default function RandomTeamContainer() {
             students={settings.students}
             groupCount={settings.teamCount}
             preAssignments={settings.preAssignments}
-            showFixedIndicator={settings.showFixedIndicator}
             onAssignRef={assignRef}
           />
         </div>

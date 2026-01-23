@@ -10,7 +10,6 @@ type Props = {
   students: string[];
   groupCount: number;
   preAssignments?: { student: string; groupIndex: number }[];
-  showFixedIndicator?: boolean;
   onAssignRef?: React.MutableRefObject<(() => void) | undefined>;
 };
 
@@ -25,7 +24,6 @@ export default function TeamResult({
   students,
   groupCount,
   preAssignments = [],
-  showFixedIndicator = true,
   onAssignRef,
 }: Props) {
   const [groups, setGroups] = useState<Group[]>([]);
@@ -126,14 +124,10 @@ export default function TeamResult({
                   return (
                     <li
                       key={member.id}
-                      className={
-                        isFixed && showFixedIndicator
-                          ? 'font-bold text-black'
-                          : ''
-                      }
+                      className={isFixed ? 'font-bold text-black' : ''}
                     >
                       {member.name}
-                      {isFixed && showFixedIndicator && ' 🔒'}
+                      {isFixed && ' 🔒'}
                     </li>
                   );
                 })}
