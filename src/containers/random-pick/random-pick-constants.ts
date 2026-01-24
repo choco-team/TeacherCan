@@ -12,3 +12,5 @@ export const PICK_TYPES = [
     label: '학생 데이터',
   },
 ] as const;
+
+export const MAX_RANDOM_PICK_STUDENTS = 100;

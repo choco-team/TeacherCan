@@ -15,6 +15,7 @@ import {
   InnerPickListType,
   PickType,
 } from '@/containers/random-pick/random-pick-type';
+import { MAX_RANDOM_PICK_STUDENTS } from '@/containers/random-pick/random-pick-constants';
 
 type Props = {
   onCreateRandomPick: (
@@ -42,8 +43,8 @@ const formSchema = z.object({
       .refine((names) => names.length >= 2, {
         message: '최소 인원은 2명입니다.',
       })
-      .refine((names) => names.length <= 30, {
-        message: '최대 인원은 30명입니다.',
+      .refine((names) => names.length <= MAX_RANDOM_PICK_STUDENTS, {
+        message: `최대 인원은 ${MAX_RANDOM_PICK_STUDENTS}명입니다.`,
       }),
   ),
 });

@@ -8,6 +8,7 @@ import {
   PickType,
   RandomPickType,
 } from '../random-pick-type';
+import { MAX_RANDOM_PICK_STUDENTS } from '../random-pick-constants';
 
 type RandomPickPlaygroundState = {
   randomPickList: RandomPickType[] | null;
@@ -27,6 +28,8 @@ type RandomPickPlaygroundAction = {
   ) => void;
   updateTitle: (title: string) => void;
   removeRandomPick: (selectedRows: string[]) => void;
+  addStudent: (name: string) => void;
+  removeStudent: (studentId: string) => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -171,6 +174,86 @@ export default function RandomPickPlaygroundProvider({
     });
   };
 
+  const addStudent = (name: string) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      return;
+    }
+
+    setRandomPickList((prev) => {
+      if (!prev) {
+        return prev;
+      }
+
+      const targetIndex = prev.findIndex((item) => item.id === id);
+      if (targetIndex === -1) {
+        return prev;
+      }
+
+      const targetPick = prev[targetIndex];
+      const isDuplicate = targetPick.pickList.some(
+        (item) => item.value === trimmedName,
+      );
+      if (
+        isDuplicate ||
+        targetPick.pickList.length >= MAX_RANDOM_PICK_STUDENTS
+      ) {
+        return prev;
+      }
+
+      const nextPickList: InnerPickListType[] = [
+        ...targetPick.pickList,
+        {
+          id: creatId(),
+          value: trimmedName,
+          isPicked: false,
+          isUsed: true,
+        },
+      ];
+
+      const nextRandomPickList = [...prev];
+      nextRandomPickList[targetIndex] = {
+        ...targetPick,
+        pickList: nextPickList,
+      };
+
+      return nextRandomPickList;
+    });
+  };
+
+  const removeStudent = (studentId: string) => {
+    setRandomPickList((prev) => {
+      if (!prev) {
+        return prev;
+      }
+
+      const targetIndex = prev.findIndex((item) => item.id === id);
+      if (targetIndex === -1) {
+        return prev;
+      }
+
+      const targetPick = prev[targetIndex];
+      const targetStudent = targetPick.pickList.find(
+        (item) => item.id === studentId,
+      );
+      if (!targetStudent || targetStudent.isPicked) {
+        return prev;
+      }
+
+      const nextPickList = targetPick.pickList.filter(
+        (item) => item.id !== studentId,
+      );
+
+      const nextRandomPickList = [...prev];
+      nextRandomPickList[targetIndex] = {
+        ...targetPick,
+        pickList: nextPickList,
+      };
+
+      return nextRandomPickList;
+    });
+  };
+
   return (
     <RandomPickPlaygroundStateContext.Provider
       value={{
@@ -191,6 +274,8 @@ export default function RandomPickPlaygroundProvider({
           createRandomPick,
           updateTitle,
           removeRandomPick,
+          addStudent,
+          removeStudent,
         }}
       >
         {children}
