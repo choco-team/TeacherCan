@@ -43,8 +43,8 @@ export default function Card({
         'md:h-24',
         'lg:h-32 lg:rounded-3xl',
         isAlreadyPicked
-          ? 'border-gray-200 dark:border-gray-800 bg-gray-200 dark:bg-stone-950 opacity-40'
-          : 'border-gray-200/50 dark:border-stone-800 bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-stone-950 dark:via-stone-900 dark:to-stone-800',
+          ? 'border-gray-200 dark:border-gray-800 bg-gray-200 dark:bg-gray-950 opacity-40'
+          : 'border-gray-200/50 dark:border-gray-800 bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-950 dark:to-gray-900',
       )}
     >
       {canRemove ? (

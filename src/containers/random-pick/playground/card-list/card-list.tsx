@@ -127,7 +127,7 @@ export default function CardList({ isMixingCards }: Props) {
             'w-full h-24 text-text-title border flex items-center justify-center font-semibold rounded-2xl relative',
             'md:h-24',
             'lg:h-32 lg:rounded-3xl',
-            'border-dashed border-gray-200/80 dark:border-stone-800 bg-white/60 dark:bg-stone-950/60',
+            'border-dashed border-gray-200/80 dark:border-gray-800 bg-white/60 dark:bg-gray-950/60',
             isAddDisabled && 'opacity-50 cursor-not-allowed',
           )}
         >
