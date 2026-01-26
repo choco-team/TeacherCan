@@ -1,15 +1,16 @@
 'use client';
 
 import { Button } from '@/components/button';
+import { Heading2 } from '@/components/heading';
 import type { PreAssignment } from './types';
 
-interface StepReviewProps {
+type StepReviewProps = {
   students: string[];
   teamCount: number;
   fixedAssignments: PreAssignment[];
   onPrev: () => void;
   onRun: () => void;
-}
+};
 
 export default function StepReview({
   students,
@@ -20,7 +21,7 @@ export default function StepReview({
 }: StepReviewProps) {
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-xl font-semibold">설정 확인</h2>
+      <Heading2 className="text-xl font-semibold">설정 확인</Heading2>
 
       <div className="text-sm text-muted-foreground space-y-2">
         <p>학생 수: {students.length}명</p>

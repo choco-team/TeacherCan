@@ -10,25 +10,26 @@ import StepFixed from './step-fixed';
 import StepReview from './step-review';
 
 import type { PreAssignment } from './types';
+import { useRandomTeamSettings } from '../../hooks/useRandomTeamStorage';
 
 export default function FunnelContainer() {
   const router = useRouter();
   const [step, setStep] = useState(1);
 
-  // 퍼널 전체에서 공유될 상태들
+  /** 퍼널 내부 상태 */
   const [students, setStudents] = useState<string[]>([]);
   const [teamCount, setTeamCount] = useState<number>(4);
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
 
+  /** ✅ random-team 전용 로컬스토리지 */
+  const [, setRandomTeamSettings] = useRandomTeamSettings();
+
   const handleRun = () => {
-    localStorage.setItem(
-      'randomTeamSettings',
-      JSON.stringify({
-        students,
-        teamCount,
-        preAssignments,
-      }),
-    );
+    setRandomTeamSettings({
+      students,
+      teamCount,
+      preAssignments,
+    });
 
     router.push('/random-team');
   };
