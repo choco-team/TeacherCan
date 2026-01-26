@@ -34,7 +34,7 @@ export default function StepReview({
         </Button>
 
         <Button variant="primary" onClick={onRun}>
-          모둠 생성
+          모둠 생성으로 가기
         </Button>
       </div>
     </div>

@@ -40,7 +40,7 @@ export default function StepBasic({
       </Card>
 
       <div className="flex justify-between">
-        <Button variant="gray-ghost" onClick={onPrev}>
+        <Button variant="primary-outline" onClick={onPrev}>
           이전
         </Button>
         <Button variant="primary" onClick={onNext}>

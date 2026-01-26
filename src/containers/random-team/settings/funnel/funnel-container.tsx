@@ -30,8 +30,6 @@ export default function FunnelContainer() {
       }),
     );
 
-    localStorage.setItem('randomTeamAutoRun', 'true');
-
     router.push('/random-team');
   };
 
