@@ -626,7 +626,15 @@ const SidebarMenuAction = React.forwardRef<
       ref={ref}
       data-sidebar="menu-action"
       className={cn(
-        'absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0',
+        'absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform',
+        // Light mode hover: match selected item bg/text
+        'hover:bg-bg-secondary hover:text-text-title',
+        // Dark mode hover: keep sidebar accent scheme
+        'dark:hover:bg-sidebar-accent dark:hover:text-sidebar-accent-foreground',
+        'focus-visible:ring-2',
+        // Sync icon color on parent hover
+        'peer-hover/menu-button:text-text-title dark:peer-hover/menu-item:text-sidebar-accent-foreground',
+        '[&>svg]:size-4 [&>svg]:shrink-0',
         // Increases the hit area of the button on mobile.
         'after:absolute after:-inset-2 after:md:hidden',
         'peer-data-[size=sm]/menu-button:top-1',
@@ -710,7 +718,8 @@ const SidebarMenuSub = React.forwardRef<
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5',
+      // Light mode uses a softer divider; dark keeps sidebar border tone
+      'mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-primary-200 dark:border-sidebar-border px-2.5 py-0.5',
       'group-data-[collapsible=icon]:hidden',
       className,
     )}
@@ -742,8 +751,16 @@ const SidebarMenuSubButton = React.forwardRef<
       data-size={size}
       data-active={isActive}
       className={cn(
-        'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground',
-        'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
+        'flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-text-subtitle outline-none ring-sidebar-ring',
+        // Hover should match parent menu
+        'hover:bg-bg-secondary hover:text-text-title dark:hover:bg-gray-950 dark:hover:text-text-title',
+        'focus-visible:ring-2',
+        'active:bg-bg-secondary active:text-text-title dark:active:bg-gray-950 dark:active:text-text-title',
+        'disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50',
+        // Icons follow current text color
+        '[&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-current',
+        // Active state colors (match parent menu)
+        'data-[active=true]:bg-bg-secondary data-[active=true]:text-text-title dark:data-[active=true]:bg-gray-950',
         size === 'sm' && 'text-xs',
         size === 'md' && 'text-sm',
         'group-data-[collapsible=icon]:hidden',

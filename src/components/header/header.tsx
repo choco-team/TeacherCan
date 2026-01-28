@@ -14,6 +14,7 @@ import {
   Users,
   Timer,
   SplitIcon,
+  ClockIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -31,8 +32,21 @@ import { useSidebar } from '../sidebar';
 
 const breadcrumbs: Record<
   string,
-  { name: string; url: string; icon: ReactNode }
+  { name: string; url: string; icon?: ReactNode }
 > = {
+  clock: {
+    name: '시계',
+    url: '/clock',
+    icon: <ClockIcon size="1rem" />,
+  },
+  analog: {
+    name: '아날로그',
+    url: '/clock/analog',
+  },
+  digital: {
+    name: '디지털',
+    url: '/clock/digital',
+  },
   'qr-code': {
     name: 'QR코드',
     url: '/qr-code',

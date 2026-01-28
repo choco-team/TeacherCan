@@ -12,6 +12,7 @@ import {
   MegaphoneIcon,
   CircleDotIcon,
   SplitIcon,
+  ClockIcon,
   WatchIcon,
   GroupIcon,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ export const MENU_ROUTE = {
   NOTICE: '/notice',
   NOTICE_SUGGESTION: '/notice-suggestion',
   QR_CODE: '/qr-code',
+  CLOCK: '/clock',
   TIMER: '/timer',
   STOPWATCH_SOLO: '/stopwatch',
   STOPWATCH_GROUP: '/group-stopwatch',
@@ -56,23 +58,35 @@ type PathData<T extends string> = Partial<
       >;
       href: string;
       isNew?: boolean;
+      children?: Array<{
+        title: string;
+        href: string;
+      }>;
     }
   >
 >;
 
 // NOTE:(김홍동) 네이게이션의 메뉴 영역과 최근 방문 페이지에서 사용되는 객체입니다.
 export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
+  '/clock': {
+    title: '시계',
+    Icon: ClockIcon,
+    href: MENU_ROUTE.CLOCK,
+    isNew: true,
+    children: [
+      { title: '아날로그', href: `${MENU_ROUTE.CLOCK}/analog` },
+      { title: '디지털', href: `${MENU_ROUTE.CLOCK}/digital` },
+    ],
+  },
   '/stopwatch': {
     title: '스톱워치',
     Icon: WatchIcon,
     href: MENU_ROUTE.STOPWATCH_SOLO,
-    isNew: true,
   },
   '/group-stopwatch': {
     title: '그룹 스톱워치',
     Icon: GroupIcon,
     href: MENU_ROUTE.STOPWATCH_GROUP,
-    isNew: true,
   },
   '/qr-code': {
     title: 'QR코드',
