@@ -1,5 +1,3 @@
-'use client';
-
 import useLocalStorage from '@/hooks/useLocalStorage';
 
 type PreAssignment = {
@@ -14,7 +12,7 @@ export type RandomTeamSettings = {
 };
 
 export function useRandomTeamSettings() {
-  return useLocalStorage<RandomTeamSettings>('random-team-settings' as any, {
+  return useLocalStorage<RandomTeamSettings>('random-team-settings', {
     students: [],
     teamCount: 4,
     preAssignments: [],
@@ -22,5 +20,5 @@ export function useRandomTeamSettings() {
 }
 
 export function useRandomTeamAutoRun() {
-  return useLocalStorage<boolean>('random-team-auto-run' as any, false);
+  return useLocalStorage<boolean>('random-team-auto-run', false);
 }
