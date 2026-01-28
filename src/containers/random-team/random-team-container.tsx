@@ -1,76 +1,64 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
-import { Button } from '@/components/button';
-import { Settings } from 'lucide-react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import TeamResult from '@/containers/random-team/team-result/team-result';
+import { Settings, Shuffle } from 'lucide-react';
+
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Heading1 } from '@/components/heading';
 
-type PreAssignment = {
-  student: string;
-  groupIndex: number;
-};
+import TeamResult from '@/containers/random-team/team-result/team-result';
+import { useRandomTeamSettings } from './hooks/useRandomTeamStorage';
 
 export default function RandomTeamContainer() {
-  const [settings, setSettings] = useState<{
-    students: string[];
-    teamCount: number;
-    preAssignments: PreAssignment[];
-    showFixedIndicator: boolean;
-  } | null>(null);
+  const [settings] = useRandomTeamSettings();
+
   const [showResult, setShowResult] = useState(false);
   const assignRef = useRef<() => void>();
 
-  useEffect(() => {
-    const saved = localStorage.getItem('randomTeamSettings');
-    if (saved) {
-      try {
-        setSettings(JSON.parse(saved));
-      } catch (e) {
-        console.error('Failed to parse settings', e);
-      }
-    }
-  }, []);
-
   const handleAssignTeams = () => {
     setShowResult(true);
-
-    if (assignRef.current) {
-      assignRef.current();
-    }
+    assignRef.current?.();
   };
 
-  if (!settings) return <p>설정 데이터를 불러오는 중...</p>;
+  if (!settings) {
+    return <p>설정 데이터를 불러오는 중...</p>;
+  }
 
   return (
-    <div className="p-4 max-w-6xl mx-auto flex flex-col gap-4">
-      <div className="flex items-center gap-2">
-        <Heading1 className="text-xl font-bold">랜덤 팀 구성</Heading1>
-        <Link href="/random-team/settings/1">
-          <Button variant="gray-ghost" size="sm" className="p-2">
-            <Settings className="w-5 h-5" />
-          </Button>
-        </Link>
-      </div>
+    <div className="p-6 max-w-6xl mx-auto flex flex-col gap-6">
+      <Card className="p-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <Heading1 className="text-xl font-bold">랜덤 모둠 구성</Heading1>
 
-      <Button
-        variant="primary"
-        size="sm"
-        onClick={handleAssignTeams}
-        className="w-fit"
-      >
-        {showResult ? '재배정' : '랜덤 팀 뽑기'}
-      </Button>
+          <Link href="/random-team/settings/1">
+            <Button variant="gray-ghost" size="sm" className="p-2">
+              <Settings className="w-5 h-5" />
+            </Button>
+          </Link>
+        </div>
+
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={handleAssignTeams}
+          className="flex items-center gap-2 w-fit"
+        >
+          <Shuffle className="w-4 h-4" />
+          {showResult ? '모둠 재배정' : '랜덤 모둠 뽑기'}
+        </Button>
+      </Card>
 
       {showResult && (
-        <TeamResult
-          students={settings.students}
-          groupCount={settings.teamCount}
-          preAssignments={settings.preAssignments}
-          showFixedIndicator={settings.showFixedIndicator}
-          onAssignRef={assignRef}
-        />
+        <div className="animate-fade-in">
+          <TeamResult
+            students={settings.students}
+            teamCount={settings.teamCount}
+            preAssignments={settings.preAssignments}
+            assignRef={assignRef}
+          />
+        </div>
       )}
     </div>
   );
