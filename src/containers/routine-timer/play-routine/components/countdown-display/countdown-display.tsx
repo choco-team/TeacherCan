@@ -1,6 +1,3 @@
-import { SquareIcon, PlayIcon, PauseIcon, RotateCcwIcon } from 'lucide-react';
-import { Button } from '@/components/button';
-import { cn } from '@/styles/utils';
 import {
   HOUR_TO_SECONDS,
   MAX_TIME,
@@ -12,24 +9,10 @@ import Colon from './colon';
 import CountdownStepper from './countdown-stepper';
 import { usePlayRoutineContext } from '../../hooks/use-play-routine-context';
 
-const timerButtonClassName =
-  'size-10 max-md:p-1.5 md:size-16 lg:size-32 rounded-full';
-const timerButtonIconClassName = 'size-6 md:size-12 lg:size-20 fill-inherit';
-
 export default function CountdownDisplay() {
   const {
-    // routine,
     currentActivity,
-    // currentIndex,
     timeLeft,
-    // totalProgress,
-    isRunning,
-    // isPaused,
-    startTimer,
-    pauseTimer,
-    //  resumeTimer,
-    stopTimer,
-    //  setTimeValue,
     updateHours,
     updateMinutes,
     updateSeconds,
@@ -82,54 +65,6 @@ export default function CountdownDisplay() {
             onIncrease={() => updateSeconds(1, true)}
             onDecrease={() => updateSeconds(-1, true)}
           />
-        </div>
-
-        <div className="flex items-center justify-center gap-x-12 md:gap-x-16 lg:gap-x-28 z-10">
-          {isRunning ? (
-            <Button
-              variant="primary-ghost"
-              className={timerButtonClassName}
-              onClick={pauseTimer}
-            >
-              <PauseIcon className={timerButtonIconClassName} />
-              <span className="sr-only">Pause</span>
-            </Button>
-          ) : (
-            <Button
-              variant="primary-ghost"
-              className={timerButtonClassName}
-              disabled={timeLeft <= NO_TIME}
-              onClick={startTimer}
-            >
-              <PlayIcon className={timerButtonIconClassName} />
-              <span className="sr-only">Start</span>
-            </Button>
-          )}
-
-          {timeLeft > NO_TIME ? (
-            <Button
-              variant="primary-ghost"
-              className={timerButtonClassName}
-              onClick={stopTimer}
-            >
-              <SquareIcon
-                className={cn(timerButtonIconClassName, 'scale-90')}
-              />
-              <span className="sr-only">Stop</span>
-            </Button>
-          ) : (
-            <Button
-              variant="primary-ghost"
-              className={timerButtonClassName}
-              disabled={timeLeft === NO_TIME}
-              onClick={stopTimer}
-            >
-              <RotateCcwIcon
-                className={cn(timerButtonIconClassName, 'fill-none')}
-              />
-              <span className="sr-only">Reset</span>
-            </Button>
-          )}
         </div>
       </div>
     </div>

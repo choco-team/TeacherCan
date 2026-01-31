@@ -21,6 +21,7 @@ export function PlayRoutineProvider({
     ) {
       routineData.startTimer();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routineData.routine]);
 
   const value = useMemo(() => routineData, [routineData]);

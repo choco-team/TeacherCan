@@ -6,7 +6,8 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, ArrowLeft, Play } from 'lucide-react';
 import { MENU_ROUTE } from '@/constants/route';
-import { formatTime } from '../play-routine/utils/formatter';
+import { getScreenSize } from '@/utils/getScreenSize';
+import { formatSecondsToTime } from '../play-routine/utils/formatter';
 import { useRoutine } from './use-routine';
 import { RouteParams } from './routine-types';
 
@@ -24,7 +25,27 @@ export default function RoutineView({ params }: RouteParams): JSX.Element {
   };
 
   const handleStartRoutine = () => {
-    router.push(`${MENU_ROUTE.ROUTINE_TIMER}/play/${routineId}`);
+    const { width, height } = getScreenSize();
+
+    if (!width || !height) {
+      router.push(`${MENU_ROUTE.ROUTINE_TIMER}/play/${routineId}`);
+      return;
+    }
+
+    const scale = 7 / 8;
+    const popupWidth = width * scale;
+    const popupHeight = height * scale;
+
+    const top = Math.round(height / 2 - popupHeight / 2);
+    const left = Math.round(width / 2 - popupWidth / 2);
+
+    const popupName = `routine_popup_${new Date().getTime()}`;
+
+    window.open(
+      `${MENU_ROUTE.ROUTINE_TIMER}/play/${routineId}`,
+      popupName,
+      `top=${top},left=${left},width=${popupWidth},height=${popupHeight}`,
+    );
   };
 
   return (
@@ -104,7 +125,7 @@ export default function RoutineView({ params }: RouteParams): JSX.Element {
                     <div className="flex items-center gap-1">
                       <Clock className="size-4 text-gray-400" />
                       <div className="w-16 text-end text-sm font-mono text-gray-700">
-                        {formatTime(time)}
+                        {formatSecondsToTime(time)}
                       </div>
                     </div>
                   </div>

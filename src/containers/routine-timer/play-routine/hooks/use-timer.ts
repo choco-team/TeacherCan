@@ -47,7 +47,7 @@ export const useTimer = () => {
         setTimeLeft(0);
 
         // isRunning은 false로 설정하지 않고, 콜백 호출
-        if (onTimerCompleteRef.current) {
+        if (typeof onTimerCompleteRef.current === 'function') {
           onTimerCompleteRef.current();
         }
       } else {

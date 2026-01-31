@@ -1,15 +1,21 @@
 import { Button } from '@/components/button';
-import { Play, Pause, SkipForward, SkipBack } from 'lucide-react';
-// import { formatTime } from '../utils/formatter';
+import {
+  PlayIcon,
+  PauseIcon,
+  SkipForwardIcon,
+  SkipBackIcon,
+} from 'lucide-react';
 import ProgressBar from './progress-bar';
 import { usePlayRoutineContext } from '../hooks/use-play-routine-context';
 import CountdownDisplay from './countdown-display/countdown-display';
 
+const timerButtonClassName =
+  'size-8 max-md:p-1.5 md:size-12 lg:size-16 rounded-full';
+const timerButtonIconClassName = 'size-6 md:size-8 lg:size-10 fill-inherit';
+
 export default function ActivityDisplay() {
   const {
     currentActivity,
-    // currentIndex,
-    // timeLeft,
     totalProgress,
     isPaused,
     resumeTimer,
@@ -22,42 +28,39 @@ export default function ActivityDisplay() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      {/* <h2 className="text-5xl font-bold mb-6">
-        {currentActivity.action || `활동 ${currentIndex + 1}`}
-      </h2> */}
-
       <CountdownDisplay />
 
       <ProgressBar progress={totalProgress} />
 
-      <div className="flex gap-4">
+      <div className="flex items-center gap-x-6">
         <Button
           onClick={previousActivity}
-          className="bg-blue-500 text-white p-4 rounded-full"
+          className={timerButtonClassName}
+          variant="primary-outline"
         >
-          <SkipBack />
+          <SkipBackIcon className={timerButtonIconClassName} />
+          <span className="sr-only">Previous</span>
         </Button>
+
         {isPaused ? (
-          <Button
-            onClick={resumeTimer}
-            className="bg-yellow-500 text-white p-4 rounded-full"
-          >
-            <Play size={24} />
+          <Button onClick={resumeTimer} className={timerButtonClassName}>
+            <PlayIcon className={timerButtonIconClassName} />
+            <span className="sr-only">Resume</span>
           </Button>
         ) : (
-          <Button
-            onClick={pauseTimer}
-            className="bg-yellow-500 text-white p-4 rounded-full"
-          >
-            <Pause size={24} />
+          <Button onClick={pauseTimer} className={timerButtonClassName}>
+            <PauseIcon className={timerButtonIconClassName} />
+            <span className="sr-only">Pause</span>
           </Button>
         )}
 
         <Button
           onClick={skipActivity}
-          className="bg-blue-500 text-white p-4 rounded-full"
+          className={timerButtonClassName}
+          variant="primary-outline"
         >
-          <SkipForward size={24} />
+          <SkipForwardIcon className={timerButtonIconClassName} />
+          <span className="sr-only">Skip</span>
         </Button>
       </div>
     </div>
