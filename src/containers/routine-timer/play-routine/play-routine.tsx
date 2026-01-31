@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { MENU_ROUTE } from '@/constants/route';
 import { PlayRoutineProvider } from './play-routine-provider';
 import ActivityDisplay from './components/activity-display';
-import NextActivities from './components/next-activities';
+import Activities from './components/activities';
 import RoutineComplete from './components/routine-complete';
 import RoutineBackgroundMusic from '../background-music/music';
 import { usePlayRoutineContext } from './hooks/use-play-routine-context';
@@ -19,21 +19,45 @@ type PlayRoutineProps = {
 function PlayRoutineContent({ routineId }: { routineId: string }) {
   const router = useRouter();
   const [isMusicEnabled, setIsMusicEnabled] = useState(true);
-  const { routine, isCompleted, exitTimer, restartRoutine, isRunning } =
-    usePlayRoutineContext();
+
+  const {
+    routine,
+    isLoading,
+    isCompleted,
+    exitTimer,
+    restartRoutine,
+    isRunning,
+  } = usePlayRoutineContext();
 
   const handleExit = () => {
     exitTimer();
-    router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${routineId}`);
+
+    // 팝업 창인 경우 창을 닫고, 아니면 이전 페이지로 이동
+    if (window.opener) {
+      window.close();
+    } else {
+      router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${routineId}`);
+    }
   };
 
   const toggleMusic = () => {
     setIsMusicEnabled(!isMusicEnabled);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-dvh">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin" />
+          <p className="text-lg text-gray-600">루틴을 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!routine) {
     return (
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center min-h-dvh">
         <p className="text-2xl text-gray-500 mb-4">루틴을 찾을 수 없습니다</p>
         <Button
           onClick={() => router.push('/routine-timer')}
@@ -46,7 +70,7 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="w-full flex flex-col min-h-dvh p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{routine.title}</h1>
         <div className="flex items-center gap-2">
@@ -70,7 +94,7 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
       ) : (
         <>
           <ActivityDisplay />
-          <NextActivities />
+          <Activities />
         </>
       )}
 

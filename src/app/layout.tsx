@@ -37,7 +37,7 @@ const pyeongtaek = localFont({
 });
 
 const isMinimalLayoutPages = {
-  startsWith: ['/timer', '/music-request/student/'],
+  startsWith: ['/timer', '/music-request/student/', '/routine-timer/play'],
   equal: [MENU_ROUTE.NOTICE],
 };
 
