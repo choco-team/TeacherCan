@@ -6,6 +6,7 @@ import { useTimer } from './use-timer';
 export const usePlayRoutine = (routineId: string) => {
   const [routines] = useLocalStorage<Routine[]>('routines', []);
   const [routine, setRoutine] = useState<Routine | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [totalProgress, setTotalProgress] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -38,6 +39,8 @@ export const usePlayRoutine = (routineId: string) => {
         }
       } catch (error) {
         console.error('Failed to load routine', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -172,6 +175,7 @@ export const usePlayRoutine = (routineId: string) => {
 
   return {
     routine,
+    isLoading,
     currentActivity,
     currentIndex,
     timeLeft,

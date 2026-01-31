@@ -3,6 +3,7 @@ import type { Activity, Routine } from '../../create-routine/routine-types';
 
 type PlayRoutineContextType = {
   routine: Routine | null;
+  isLoading: boolean;
   currentActivity: Activity | null;
   currentIndex: number;
   timeLeft: number;
