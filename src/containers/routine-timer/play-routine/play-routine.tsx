@@ -2,9 +2,9 @@
 
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/button';
-import { X, Music } from 'lucide-react';
-import { useState } from 'react';
+import { PanelLeft } from 'lucide-react';
 import { MENU_ROUTE } from '@/constants/route';
+import DualPanel from '@/components/dual-panel';
 import { PlayRoutineProvider } from './play-routine-provider';
 import ActivityDisplay from './components/activity-display';
 import Activities from './components/activities';
@@ -18,7 +18,6 @@ type PlayRoutineProps = {
 
 function PlayRoutineContent({ routineId }: { routineId: string }) {
   const router = useRouter();
-  const [isMusicEnabled, setIsMusicEnabled] = useState(true);
 
   const {
     routine,
@@ -38,10 +37,6 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
     } else {
       router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${routineId}`);
     }
-  };
-
-  const toggleMusic = () => {
-    setIsMusicEnabled(!isMusicEnabled);
   };
 
   if (isLoading) {
@@ -70,41 +65,57 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
   }
 
   return (
-    <div className="w-full flex flex-col min-h-dvh p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">{routine.title}</h1>
-        <div className="flex items-center gap-2">
+    <DualPanel.Root defaultOpen side="left">
+      <DualPanel.Side>
+        <DualPanel.Trigger asChild>
           <Button
-            onClick={toggleMusic}
-            className={`p-2 ${isMusicEnabled ? 'text-blue-600' : 'text-gray-400'}`}
+            variant="gray-ghost"
+            className="fixed top-6 left-6 z-[1] size-10 p-1"
           >
-            <Music size={20} />
+            <PanelLeft size={24} />
+            <span className="sr-only">사이드바 토글</span>
           </Button>
-          <Button
-            onClick={handleExit}
-            className="p-2 text-gray-500 hover:text-gray-700"
-          >
-            <X size={24} />
-          </Button>
-        </div>
+        </DualPanel.Trigger>
+
+        <DualPanel.Content className="!max-w-[280px] px-5" hideCloseButton>
+          <div className="h-full flex flex-col gap-4">
+            <DualPanel.Close asChild>
+              <Button
+                variant="gray-ghost"
+                className="absolute top-2 right-2 size-6 p-1"
+              >
+                <PanelLeft size={16} className="text-gray-600" />
+                <span className="sr-only">사이드바 닫기</span>
+              </Button>
+            </DualPanel.Close>
+
+            {/* 헤더: 제목 + 닫기 버튼 */}
+            <h2 className="mt-1 text-xl font-bold text-gray-900 break-words">
+              {routine.title}
+            </h2>
+
+            <Activities />
+          </div>
+        </DualPanel.Content>
+      </DualPanel.Side>
+
+      <div className="relative flex flex-col min-h-dvh">
+        <DualPanel.Main className="flex flex-col min-h-dvh data-[state=open]:!ml-[280px]">
+          <div className="flex-1 flex items-center justify-center">
+            {isCompleted ? (
+              <RoutineComplete onRestart={restartRoutine} onExit={handleExit} />
+            ) : (
+              <ActivityDisplay />
+            )}
+          </div>
+
+          <RoutineBackgroundMusic
+            routineId={routineId}
+            isPlaying={isRunning && !isCompleted}
+          />
+        </DualPanel.Main>
       </div>
-
-      {isCompleted ? (
-        <RoutineComplete onRestart={restartRoutine} onExit={handleExit} />
-      ) : (
-        <>
-          <ActivityDisplay />
-          <Activities />
-        </>
-      )}
-
-      {isMusicEnabled && (
-        <RoutineBackgroundMusic
-          routineId={routineId}
-          isPlaying={isRunning && !isCompleted}
-        />
-      )}
-    </div>
+    </DualPanel.Root>
   );
 }
 
