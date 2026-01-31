@@ -4,6 +4,7 @@ import { Badge } from '@/components/badge';
 import { SparkleIcon } from 'lucide-react';
 import { Heading1, Heading2, Heading3 } from '@/components/heading';
 import { getAnnouncementNoteDetail } from './announcement-detail.utils';
+import { ImageWithSkeleton } from './image-with-skeleton';
 
 type Props = {
   id: string;
@@ -90,20 +91,11 @@ function NotionBlockRenderer({ block }: { block: any }) {
 
     case 'image':
       return imageUrl ? (
-        <figure className="mb-6">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={imageUrl}
-            alt={imageCaption || 'Notion 이미지'}
-            className="w-full h-auto rounded-lg shadow-md"
-            loading="lazy"
-          />
-          {imageCaption && (
-            <figcaption className="text-sm text-gray-600 text-center mt-2 italic">
-              {imageCaption}
-            </figcaption>
-          )}
-        </figure>
+        <ImageWithSkeleton
+          src={imageUrl}
+          alt={imageCaption || 'Notion 이미지'}
+          caption={imageCaption}
+        />
       ) : null;
 
     case 'divider':
@@ -152,7 +144,7 @@ export default async function AnnouncementDetail({ id }: Props) {
   const pageSummary = getPageSummary(data.page);
 
   return (
-    <div className="p-6 mx-auto max-w-screen-sm w-full">
+    <div className="mx-auto max-w-screen-sm w-full lg:p-6">
       {pageTitle && (
         <h1 className="text-4xl font-bold mb-2 text-text-title">{pageTitle}</h1>
       )}

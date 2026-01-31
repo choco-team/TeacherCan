@@ -42,6 +42,12 @@ async function fetchMealInfo(schoolCode: string, officeCode: string) {
 
     const data = await response.json();
 
+    // NOTE:(김홍동) 급식 데이터가 없는 경우
+    // @https://open.neis.go.kr/portal/data/service/selectServicePage.do?page=1&rows=10&sortColumn=&sortDirection=&infId=OPEN17320190722180924242823&infSeq=2
+    if (data?.RESULT?.CODE === 'INFO-200') {
+      return [];
+    }
+
     if (!data.mealServiceDietInfo || !Array.isArray(data.mealServiceDietInfo)) {
       throw new Error('급식 데이터 형식이 올바르지 않습니다.');
     }

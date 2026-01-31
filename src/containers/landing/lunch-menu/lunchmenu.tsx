@@ -65,6 +65,16 @@ function LunchMenu() {
       return <MealList mealData={mealData} />;
     }
 
+    if (mealData.length === 0) {
+      return (
+        <div className="flex flex-col gap-4 justify-center items-center min-h-64 bg-bg-origin">
+          <div className="text-center text-sm text-gray-500">
+            등록된 점심 식단이 없습니다.
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex gap-2 px-4 h-64">
         {Array.from({ length: 5 }).map((_, index) => (

@@ -9,7 +9,14 @@ type LocalStorageKey =
   | 'allergies'
   | 'routines'
   | 'roomIds'
-  | 'random-pick-list';
+  | 'random-pick-list'
+  | 'student-data'
+  | 'stopwatch-data'
+  | 'stopwatch-group-grid-columns'
+  | 'random-team-settings'
+  | 'random-team-auto-run'
+  | 'clock-memos'
+  | 'clock-memo';
 
 /**
  * @description 페이지 새로 고침을 통해 상태가 유지되도록 로컬 저장소에 동기화합니다.

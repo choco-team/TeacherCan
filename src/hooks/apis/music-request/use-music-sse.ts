@@ -33,7 +33,7 @@ export function useMusicSSE(
       retryCount.current = 0;
     };
 
-    es.addEventListener('init-music-list', (event: MessageEvent) => {
+    es.addEventListener('room-update', (event: MessageEvent) => {
       try {
         const parsed = JSON.parse(event.data);
         handleMusicInit(parsed.musicList);

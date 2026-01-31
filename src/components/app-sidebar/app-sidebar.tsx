@@ -1,12 +1,14 @@
 'use client';
 
+import React from 'react';
 import {
+  DATA_PATH_DATA,
   HELP_PATH_DATA,
   MENU_PATH_DATA,
   MENU_ROUTE,
   MenuRoutePath,
 } from '@/constants/route';
-import { ChevronsLeft, TimerIcon } from 'lucide-react';
+import { ChevronsLeft, ChevronDown, TimerIcon } from 'lucide-react';
 import useRecentlyVisited from '@/hooks/use-recently-visited';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -22,13 +24,17 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   useSidebar,
 } from '../sidebar';
 import { Badge } from '../badge';
 
 const linkClass =
-  'w-full text-sm flex gap-2 items-center px-2 py-1 rounded text-text-subtitle hover:text-text-title hover:bg-bg-secondary hover:cursor-pointer';
+  'w-full text-sm flex gap-2 items-center px-2 py-1 rounded text-text-subtitle hover:text-text-title dark:hover:text-text-title hover:bg-bg-secondary dark:hover:bg-gray-950 hover:cursor-pointer';
 
 export default function AppSidebar() {
   const pathname = usePathname();
@@ -37,6 +43,7 @@ export default function AppSidebar() {
   );
 
   const { setOpenMobile, openMobile, isMobile, open, setOpen } = useSidebar();
+  const [clockOpen, setClockOpen] = React.useState(false);
 
   const showSidebarIcon = isMobile ? openMobile : open;
   const handleClickSidebarIcon = () => {
@@ -96,36 +103,91 @@ export default function AppSidebar() {
                 </PopupLink>
               </SidebarMenuItem>
               {Object.entries(MENU_PATH_DATA).map(
-                ([path, { title, Icon, isNew }]) => {
+                ([path, { title, Icon, isNew, children }]) => {
                   if (path === MENU_ROUTE.TIMER) {
                     return null;
                   }
 
                   return (
                     <SidebarMenuItem key={path}>
-                      <Link
-                        onClick={handleClickMenu}
-                        href={path}
-                        className={cn(
-                          pathname.startsWith(path) &&
-                            'text-text-title bg-bg-secondary dark:bg-gray-950',
-                          linkClass,
-                        )}
-                      >
-                        <Icon size="1rem" />
-                        <div className="flex items-center gap-0.5">
-                          <span>{title}</span>
-                          {isNew && (
-                            <Badge
-                              size="xs"
-                              variant="primary-outline"
-                              className="border-0"
-                            >
-                              New
-                            </Badge>
-                          )}
-                        </div>
-                      </Link>
+                      {/*
+                        Parent link
+                      */}
+                      {(() => {
+                        const hasChildren = Boolean(children?.length);
+                        const parentActive = hasChildren
+                          ? pathname === path
+                          : pathname.startsWith(path);
+                        return (
+                          <Link
+                            onClick={handleClickMenu}
+                            href={path}
+                            className={cn(
+                              parentActive &&
+                                'text-text-title bg-bg-secondary dark:bg-gray-950',
+                              linkClass,
+                            )}
+                          >
+                            <Icon size="1rem" />
+                            <div className="flex items-center gap-0.5">
+                              <span>{title}</span>
+                              {isNew && (
+                                <Badge
+                                  size="xs"
+                                  variant="primary-outline"
+                                  className="border-0"
+                                >
+                                  New
+                                </Badge>
+                              )}
+                            </div>
+                          </Link>
+                        );
+                      })()}
+                      {children && children.length > 0 && (
+                        <>
+                          <SidebarMenuAction
+                            aria-label="Toggle submenu"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setClockOpen((v) => !v);
+                            }}
+                            className="right-1 top-1.5"
+                          >
+                            <ChevronDown
+                              className={cn(
+                                'transition-transform ',
+                                (clockOpen || pathname.startsWith(path)) &&
+                                  'rotate-180',
+                              )}
+                            />
+                          </SidebarMenuAction>
+                          {clockOpen || pathname.startsWith(path) ? (
+                            <SidebarMenuSub className="bg-transparent">
+                              {children.map((child) => {
+                                const active = pathname.startsWith(child.href);
+                                return (
+                                  <SidebarMenuSubItem key={child.href}>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={active}
+                                      className={cn(
+                                        active &&
+                                          'bg-bg-secondary dark:bg-gray-950 text-text-title',
+                                      )}
+                                    >
+                                      <Link href={child.href}>
+                                        <span>{child.title}</span>
+                                      </Link>
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                );
+                              })}
+                            </SidebarMenuSub>
+                          ) : null}
+                        </>
+                      )}
                     </SidebarMenuItem>
                   );
                 },
@@ -133,6 +195,38 @@ export default function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>데이터 관리</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {Object.entries(DATA_PATH_DATA).map(
+                ([path, { title, Icon, isNew }]) => (
+                  <SidebarMenuItem key={path}>
+                    <Link
+                      onClick={handleClickMenu}
+                      href={path}
+                      className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                    >
+                      <Icon size="1rem" />
+                      <span>{title}</span>
+                      {isNew && (
+                        <Badge
+                          size="xs"
+                          variant="primary-outline"
+                          className="border-0"
+                        >
+                          New
+                        </Badge>
+                      )}
+                    </Link>
+                  </SidebarMenuItem>
+                ),
+              )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>도움</SidebarGroupLabel>
           <SidebarGroupContent>
