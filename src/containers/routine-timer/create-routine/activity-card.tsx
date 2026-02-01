@@ -1,12 +1,13 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { Trash2, Clock, GripVertical } from 'lucide-react';
-import { formatTime } from '../play-routine/utils/formatter';
+import { formatSecondsToTime } from '../play-routine/utils/formatter';
 import { Activity } from './routine-types';
 
 interface ActivityCardProps {
@@ -33,42 +34,59 @@ export function ActivityCard({
     isDragging,
   } = useSortable({ id: activity.id });
 
+  const [timeInput, setTimeInput] = useState(
+    formatSecondsToTime(activity.time),
+  );
+  const isInternalChange = useRef(false);
+
+  // 외부에서 activity.time이 변경될 때만 동기화 (내부 변경은 무시)
+  useEffect(() => {
+    if (!isInternalChange.current) {
+      setTimeInput(formatSecondsToTime(activity.time));
+    }
+    isInternalChange.current = false;
+  }, [activity.time]);
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const handleActionChange = (value: string) => {
-    onActivityChange(activity.id, 'action', value);
-  };
-
   const handleChangeTimeInput = (value: string) => {
-    // 숫자만 입력된 경우 mm:ss 형태로 자동 변환 (최대 4자리)
     const numericValue = value.replace(/[^0-9]/g, '').slice(0, 4);
 
     if (numericValue.length === 0) {
-      // 빈 값인 경우 0초로 설정
+      setTimeInput('');
+      isInternalChange.current = true;
       onActivityChange(activity.id, 'time', 0);
       return;
     }
 
+    // mm:ss 포맷 적용 및 초 계산
     let minutes = 0;
     let seconds = 0;
 
     if (numericValue.length <= 2) {
-      // 1-2자리: 초로 처리
       seconds = parseInt(numericValue, 10);
+    } else if (numericValue.length === 3) {
+      minutes = parseInt(numericValue[0], 10);
+      seconds = parseInt(numericValue.slice(1), 10);
     } else {
-      // 3-4자리: 앞 1-2자리는 분, 나머지는 초
-      const minStr = numericValue.slice(0, -2);
-      const secStr = numericValue.slice(-2);
-      minutes = parseInt(minStr, 10);
-      seconds = parseInt(secStr, 10);
+      minutes = parseInt(numericValue.slice(0, 2), 10);
+      seconds = parseInt(numericValue.slice(2), 10);
     }
 
-    const totalSeconds = minutes * 60 + seconds;
-    onActivityChange(activity.id, 'time', totalSeconds);
+    const formatted = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    setTimeInput(formatted);
+
+    isInternalChange.current = true;
+    onActivityChange(activity.id, 'time', minutes * 60 + seconds);
+  };
+
+  const handleBlurTimeInput = () => {
+    // blur 시 초가 60 이상이면 정규화
+    setTimeInput(formatSecondsToTime(activity.time));
   };
 
   return (
@@ -98,7 +116,9 @@ export function ActivityCard({
         <Input
           type="text"
           value={activity.action}
-          onChange={(e) => handleActionChange(e.target.value)}
+          onChange={(e) =>
+            onActivityChange(activity.id, 'action', e.target.value)
+          }
           placeholder="활동 이름"
           className="flex-1 min-w-0 text-sm"
         />
@@ -108,9 +128,10 @@ export function ActivityCard({
           <Input
             type="text"
             inputMode="numeric"
-            value={formatTime(activity.time)}
+            value={timeInput}
             onChange={(event) => handleChangeTimeInput(event.target.value)}
-            placeholder="00:00"
+            onBlur={handleBlurTimeInput}
+            placeholder="0:00"
             className="w-[5.5rem] text-end text-sm font-mono"
           />
           <Clock className="size-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
