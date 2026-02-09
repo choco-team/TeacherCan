@@ -14,7 +14,7 @@ type LocalStorageKey =
   | 'stopwatch-data'
   | 'stopwatch-group-grid-columns'
   | 'random-team-settings'
-  | 'random-team-auto-run';
+  | 'random-team-auto-run'
   | 'clock-memos'
   | 'clock-memo'
   | 'stopwatch-group-grid-columns';

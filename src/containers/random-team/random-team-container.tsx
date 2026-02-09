@@ -22,6 +22,11 @@ export default function RandomTeamContainer() {
     assignRef.current?.();
   };
 
+  const isReady =
+    settings &&
+    Array.isArray(settings.students) &&
+    typeof settings.teamCount === 'number';
+
   if (!settings) {
     return <p>설정 데이터를 불러오는 중...</p>;
   }
@@ -50,7 +55,7 @@ export default function RandomTeamContainer() {
         </Button>
       </Card>
 
-      {showResult && (
+      {showResult && isReady && (
         <div className="animate-fade-in">
           <TeamResult
             students={settings.students}
