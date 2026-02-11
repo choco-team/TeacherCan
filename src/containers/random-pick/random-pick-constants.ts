@@ -14,3 +14,4 @@ export const PICK_TYPES = [
 ] as const;
 
 export const MAX_RANDOM_PICK_STUDENTS = 100;
+export const MAX_RANDOM_PICK_HISTORY = 10;

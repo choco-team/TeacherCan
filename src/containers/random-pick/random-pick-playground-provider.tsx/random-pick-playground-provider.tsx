@@ -8,7 +8,10 @@ import {
   PickType,
   RandomPickType,
 } from '../random-pick-type';
-import { MAX_RANDOM_PICK_STUDENTS } from '../random-pick-constants';
+import {
+  MAX_RANDOM_PICK_HISTORY,
+  MAX_RANDOM_PICK_STUDENTS,
+} from '../random-pick-constants';
 
 type RandomPickPlaygroundState = {
   randomPickList: RandomPickType[] | null;
@@ -30,6 +33,7 @@ type RandomPickPlaygroundAction = {
   removeRandomPick: (selectedRows: string[]) => void;
   addStudent: (name: string) => void;
   removeStudent: (studentId: string) => void;
+  clearHistory: () => void;
 };
 
 export const RandomPickPlaygroundActionContext =
@@ -63,6 +67,7 @@ export default function RandomPickPlaygroundProvider({
         title: '새로운 랜덤뽑기',
         pickType,
         pickList: newPickList,
+        history: [],
         options: {
           isExcludingSelected: true,
           isHideResult: true,
@@ -122,6 +127,13 @@ export default function RandomPickPlaygroundProvider({
     setNewWinners(newPickedList);
     setRandomPickList((prev) => {
       const newRandomPickList = [...prev];
+      const nextHistory = [
+        {
+          pickedAt: new Date().toISOString(),
+          winners: newPickedList,
+        },
+        ...(randomPick.history ?? []),
+      ].slice(0, MAX_RANDOM_PICK_HISTORY);
       newRandomPickList[randomPickList.findIndex((item) => item.id === id)] = {
         ...randomPick,
         pickList: randomPick.pickList.map((item) => ({
@@ -131,6 +143,7 @@ export default function RandomPickPlaygroundProvider({
             ...newPickedList.map((v) => v.id),
           ].includes(item.id),
         })),
+        history: nextHistory,
       };
 
       return newRandomPickList;
@@ -254,6 +267,22 @@ export default function RandomPickPlaygroundProvider({
     });
   };
 
+  const clearHistory = () => {
+    if (!randomPick) {
+      return;
+    }
+
+    setRandomPickList((prev) => {
+      const newRandomPickList = [...prev];
+      newRandomPickList[randomPickList.findIndex((item) => item.id === id)] = {
+        ...randomPick,
+        history: [],
+      };
+
+      return newRandomPickList;
+    });
+  };
+
   return (
     <RandomPickPlaygroundStateContext.Provider
       value={{
@@ -276,6 +305,7 @@ export default function RandomPickPlaygroundProvider({
           removeRandomPick,
           addStudent,
           removeStudent,
+          clearHistory,
         }}
       >
         {children}
