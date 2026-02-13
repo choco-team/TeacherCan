@@ -15,6 +15,7 @@ import {
   InnerPickListType,
   PickType,
 } from '@/containers/random-pick/random-pick-type';
+import { MAX_RANDOM_PICK_STUDENTS } from '@/containers/random-pick/random-pick-constants';
 
 const formSchema = z.object({
   number: z.coerce
@@ -22,8 +23,8 @@ const formSchema = z.object({
     .min(2, {
       message: '최소 인원은 2명입니다.',
     })
-    .max(100, {
-      message: '최대 인원은 100명입니다.',
+    .max(MAX_RANDOM_PICK_STUDENTS, {
+      message: `최대 인원은 ${MAX_RANDOM_PICK_STUDENTS}명입니다.`,
     }),
 });
 
@@ -70,7 +71,7 @@ export default function SettingStudentNumber({ onCreateRandomPick }: Props) {
                 <Input type="number" {...field} />
               </FormControl>
               <FormDescription>
-                2 ~ 100 사이의 숫자를 입력하세요.
+                2 ~ {MAX_RANDOM_PICK_STUDENTS} 사이의 숫자를 입력하세요.
               </FormDescription>
               <FormMessage />
             </div>
