@@ -6,6 +6,7 @@ import { Label } from '@/components/label';
 import { Button } from '@/components/button';
 import { RadioGroup, RadioGroupItem } from '@/components/radio-group';
 import { Heading1 } from '@/components/heading';
+import { useToast } from '@/hooks/use-toast';
 
 import SettingStudentName from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-name/setting-student-name';
 import SettingStudentNumber from '@/containers/random-pick/random-pick-list/random-pick-setting/setting-student-number/setting-student-number';
@@ -22,6 +23,8 @@ export default function StepStudents({
   onChangeStudents,
   onNext,
 }: Props) {
+  const { toast } = useToast();
+
   const [mode, setMode] = useState<'numbers' | 'names' | 'student-data'>(
     'numbers',
   );
@@ -29,8 +32,14 @@ export default function StepStudents({
   const handleGenerated = useCallback(
     (list: string[]) => {
       onChangeStudents(list);
+
+      toast({
+        title: '학생 명단이 구성되었습니다.',
+        description: `${list.length}명이 등록되었습니다.`,
+        variant: 'success',
+      });
     },
-    [onChangeStudents],
+    [onChangeStudents, toast],
   );
 
   const handleStudentDataImport = useCallback(
