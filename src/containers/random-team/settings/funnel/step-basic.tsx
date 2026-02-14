@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Card } from '@/components/card';
 import { Label } from '@/components/label';
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { Heading1 } from '@/components/heading';
+import { useToast } from '@/hooks/use-toast';
 
 type Props = {
   teamCount: number;
@@ -20,9 +21,39 @@ export default function StepBasic({
   onPrev,
   onNext,
 }: Props) {
+  const { toast } = useToast();
+
+  const prevValueRef = useRef(teamCount);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (prevValueRef.current !== teamCount) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        toast({
+          title: '모둠 수가 설정되었습니다.',
+          description: `${teamCount}개 모둠으로 설정되었습니다.`,
+          variant: 'success',
+        });
+
+        prevValueRef.current = teamCount;
+      }, 500);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [teamCount, toast]);
+
   return (
     <>
       <Heading1 className="text-xl font-bold">2단계 · 모둠 기본 설정</Heading1>
+
       <p className="text-sm text-gray-600">
         모둠의 전체 구조를 먼저 정합니다. 고정 학생 설정은 다음 단계에서 할 수
         있어요.
