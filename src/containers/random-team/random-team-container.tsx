@@ -44,6 +44,14 @@ export default function RandomTeamContainer() {
           </Link>
         </div>
 
+        {isReady && (
+          <div className="text-sm text-muted-foreground space-y-1 bg-gray-50 p-3 rounded border max-w-5xl">
+            <p>학생 수: {settings.students.length}명</p>
+            <p>모둠 수: {settings.teamCount}개</p>
+            <p>고정 배정: {settings.preAssignments?.length ?? 0}명</p>
+          </div>
+        )}
+
         <Button
           variant="primary"
           size="lg"
