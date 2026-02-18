@@ -62,7 +62,7 @@ export default function RandomTeamContainer() {
         {isReady && (
           <Button
             variant="primary"
-            size="lg"
+            size="sm"
             onClick={handleAssignTeams}
             className="flex items-center gap-2 w-fit"
           >
