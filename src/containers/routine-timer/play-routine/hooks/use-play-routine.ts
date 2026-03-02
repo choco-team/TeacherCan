@@ -152,12 +152,8 @@ export const usePlayRoutine = (routineId: string) => {
       setCurrentIndex(targetIndex);
       const targetTime = routine.activities[targetIndex].time;
       setTimeValue(targetTime);
-
-      setTimeout(() => {
-        startTimer();
-      }, 0);
     },
-    [routine, stopTimer, setTimeValue, startTimer],
+    [routine, stopTimer, setTimeValue],
   );
 
   const restartRoutine = useCallback(() => {

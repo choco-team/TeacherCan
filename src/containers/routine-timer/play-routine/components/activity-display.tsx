@@ -17,7 +17,7 @@ export default function ActivityDisplay() {
   const {
     currentActivity,
     totalProgress,
-    isPaused,
+    isRunning,
     resumeTimer,
     pauseTimer,
     skipActivity,
@@ -42,15 +42,15 @@ export default function ActivityDisplay() {
           <span className="sr-only">Previous</span>
         </Button>
 
-        {isPaused ? (
-          <Button onClick={resumeTimer} className={timerButtonClassName}>
-            <PlayIcon className={timerButtonIconClassName} />
-            <span className="sr-only">Resume</span>
-          </Button>
-        ) : (
+        {isRunning ? (
           <Button onClick={pauseTimer} className={timerButtonClassName}>
             <PauseIcon className={timerButtonIconClassName} />
             <span className="sr-only">Pause</span>
+          </Button>
+        ) : (
+          <Button onClick={resumeTimer} className={timerButtonClassName}>
+            <PlayIcon className={timerButtonIconClassName} />
+            <span className="sr-only">Resume</span>
           </Button>
         )}
 
