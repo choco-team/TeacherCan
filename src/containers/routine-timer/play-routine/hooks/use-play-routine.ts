@@ -43,7 +43,8 @@ export const usePlayRoutine = (routineId: string) => {
     };
 
     loadRoutine();
-  }, [routineId, routines, setTimeValue, startTimer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routineId, routines, setTimeValue]);
 
   const currentActivity = routine?.activities[currentIndex] || null;
 
@@ -51,7 +52,8 @@ export const usePlayRoutine = (routineId: string) => {
     if (!currentActivity || !routine) return;
 
     const originalTime = currentActivity.time;
-    const progress = ((originalTime - timeLeft) / originalTime) * 100;
+    const progress =
+      originalTime > 0 ? ((originalTime - timeLeft) / originalTime) * 100 : 100;
     setTotalProgress(progress);
   }, [timeLeft, currentActivity, routine]);
 
@@ -63,15 +65,10 @@ export const usePlayRoutine = (routineId: string) => {
 
       stopTimer();
 
-      const audio = new Audio('/audio/timer/alarm/melody-1.mp3');
-      audio.play();
-
-      if (nextIndex >= routine.activities.length) {
-        audio.onended = () => {
+      const goNext = () => {
+        if (nextIndex >= routine.activities.length) {
           setIsCompleted(true);
-        };
-      } else {
-        audio.onended = () => {
+        } else {
           setCurrentIndex(nextIndex);
           const nextTime = routine.activities[nextIndex].time;
           setTimeValue(nextTime);
@@ -79,8 +76,12 @@ export const usePlayRoutine = (routineId: string) => {
           setTimeout(() => {
             startTimer();
           }, 300);
-        };
-      }
+        }
+      };
+
+      const audio = new Audio('/audio/timer/alarm/melody-1.mp3');
+      audio.onended = goNext;
+      audio.play().catch(goNext);
     }
   }, [
     timeLeft,
@@ -115,26 +116,16 @@ export const usePlayRoutine = (routineId: string) => {
   }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
 
   const previousActivity = useCallback(() => {
-    if (!routine) {
+    if (!routine || currentIndex <= 0) {
       return;
     }
 
     stopTimer();
 
-    const nextIndex = currentIndex - 1;
-
-    if (nextIndex < 0) {
-      setIsCompleted(true);
-    } else {
-      setCurrentIndex(nextIndex);
-      const nextTime = routine.activities[nextIndex].time;
-      setTimeValue(nextTime);
-
-      setTimeout(() => {
-        startTimer();
-      }, 0);
-    }
-  }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
+    const prevIndex = currentIndex - 1;
+    setCurrentIndex(prevIndex);
+    setTimeValue(routine.activities[prevIndex].time);
+  }, [routine, currentIndex, stopTimer, setTimeValue]);
 
   const jumpToActivity = useCallback(
     (targetIndex: number) => {

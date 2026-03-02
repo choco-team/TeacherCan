@@ -96,7 +96,9 @@ export const useRoutine = (routineId: string | null) => {
 
   const saveRoutine = () => {
     if (isNew) {
-      setRoutines((prev) => [...prev, { ...routine, id: nanoid() }]);
+      const newId = nanoid();
+      setRoutines((prev) => [...prev, { ...routine, id: newId }]);
+      router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${newId}`);
     } else {
       const index = routines.findIndex(({ id }) => id === routineId);
       if (index > -1) {
@@ -106,9 +108,8 @@ export const useRoutine = (routineId: string | null) => {
           ...prev.slice(index + 1),
         ]);
       }
+      router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${routineId}`);
     }
-
-    router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${routineId}`);
   };
 
   return {

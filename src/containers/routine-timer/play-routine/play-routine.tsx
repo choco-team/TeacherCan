@@ -55,7 +55,7 @@ function PlayRoutineContent({ routineId }: { routineId: string }) {
       <div className="flex flex-col items-center justify-center min-h-dvh">
         <p className="text-2xl text-gray-500 mb-4">루틴을 찾을 수 없습니다</p>
         <Button
-          onClick={() => router.push('/routine-timer')}
+          onClick={() => router.push(MENU_ROUTE.ROUTINE_TIMER)}
           className="bg-primary-500 text-white px-4 py-2 rounded"
         >
           돌아가기
