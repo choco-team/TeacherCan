@@ -7,6 +7,7 @@ import {
   QrCodeIcon,
   Users,
   Hourglass,
+  DatabaseIcon,
   TimerIcon,
   WandSparklesIcon,
   MegaphoneIcon,
@@ -45,6 +46,7 @@ export const HELP_ROUTE = {
 
 export const DATA_ROUTE = {
   STUDENT: '/data-service/student-data',
+  LOCAL_DATA: '/data-service/local-data',
 } as const;
 
 type DataRoutePath = (typeof DATA_ROUTE)[keyof typeof DATA_ROUTE];
@@ -166,4 +168,30 @@ export const DATA_PATH_DATA: PathData<DataRoutePath> = {
     Icon: Users,
     href: DATA_ROUTE.STUDENT,
   },
+  '/data-service/local-data': {
+    title: '로컬 데이터 관리',
+    Icon: DatabaseIcon,
+    href: DATA_ROUTE.LOCAL_DATA,
+  },
 };
+
+/**
+ * 저장된 pathname(최근 방문 등)을 사용자용 제목으로 변환.
+ * 메뉴/데이터/도움말 경로와 시계 하위(아날로그·디지털)를 모두 처리.
+ */
+export function getPathDisplayTitle(path: string): string {
+  if (!path || typeof path !== 'string') return '(알 수 없음)';
+  const p = path.trim();
+  const menu = MENU_PATH_DATA[p as MenuRoutePath];
+  if (menu?.title) return menu.title;
+  const childMatch = Object.values(MENU_PATH_DATA).find(
+    (entry) => entry?.children?.find((c) => c.href === p) != null,
+  );
+  const child = childMatch?.children?.find((c) => c.href === p);
+  if (child?.title) return child.title;
+  const data = DATA_PATH_DATA[p as DataRoutePath];
+  if (data?.title) return data.title;
+  const help = HELP_PATH_DATA[p as HelpRoutePath];
+  if (help?.title) return help.title;
+  return p || '(알 수 없음)';
+}

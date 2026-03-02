@@ -77,11 +77,7 @@ const ARTICLE_FOUR_NOTE = [
   '티처캔은 개인정보 보유 기간 최소화를 원칙으로 합니다.',
 ].join(' ');
 
-const ARTICLE_FIVE_TEXT = [
-  '티처캔은 서비스 운영을 위한 기술적 인프라 제공을 위해 다음과 같이 개인정보',
-  '처리 업무를 위탁하고 있습니다. Vercel은 서버 및 네트워크 환경 제공 역할만',
-  '수행하며, 이용자의 개인정보를 독자적으로 이용하지 않습니다.',
-].join(' ');
+const ARTICLE_FIVE_TEXT = ['개인정보 제3자 제공 없음'].join(' ');
 
 const ARTICLE_SIX_TEXT =
   '이용자는 언제든지 자신의 개인정보에 대해 열람, 정정, 삭제를 요청할 수 있는 권리를 가집니다.';
@@ -221,30 +217,6 @@ export default function PrivacyPolicyContainer() {
           <p className="text-sm md:text-base text-text-subtitle leading-7">
             {ARTICLE_FIVE_TEXT}
           </p>
-          <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800">
-            <table className="w-full border-collapse text-sm md:text-base text-text-subtitle">
-              <thead className="bg-gray-50 dark:bg-gray-900/40">
-                <tr className="text-left">
-                  <th className="border-b border-gray-200 dark:border-gray-800 px-4 py-3 font-semibold">
-                    수탁업체
-                  </th>
-                  <th className="border-b border-gray-200 dark:border-gray-800 px-4 py-3 font-semibold">
-                    위탁 업무 내용
-                  </th>
-                  <th className="border-b border-gray-200 dark:border-gray-800 px-4 py-3 font-semibold">
-                    보유 및 이용 기간
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="bg-white dark:bg-gray-950/40">
-                  <td className="px-4 py-3">Vercel Inc.</td>
-                  <td className="px-4 py-3">웹 서비스 호스팅 및 인프라 제공</td>
-                  <td className="px-4 py-3">서비스 운영 기간 동안</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </section>
 
         <section className="space-y-4">
