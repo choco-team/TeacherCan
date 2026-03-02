@@ -63,15 +63,16 @@ export const usePlayRoutine = (routineId: string) => {
     if (timeLeft === 0) {
       const nextIndex = currentIndex + 1;
 
+      stopTimer();
+
+      const audio = new Audio('/audio/timer/alarm/melody-1.mp3');
+      audio.play();
+
       if (nextIndex >= routine.activities.length) {
-        stopTimer();
-        setIsCompleted(true);
+        audio.onended = () => {
+          setIsCompleted(true);
+        };
       } else {
-        stopTimer();
-
-        const audio = new Audio('/audio/timer/alarm/melody-1.mp3');
-        audio.play();
-
         audio.onended = () => {
           setCurrentIndex(nextIndex);
           const nextTime = routine.activities[nextIndex].time;
