@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { Routine } from '../../create-routine/routine-types';
-import { formatTime } from '../utils/time-formatter';
 import { useTimer } from './use-timer';
 
 export const usePlayRoutine = (routineId: string) => {
   const [routines] = useLocalStorage<Routine[]>('routines', []);
   const [routine, setRoutine] = useState<Routine | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [totalProgress, setTotalProgress] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -20,27 +20,31 @@ export const usePlayRoutine = (routineId: string) => {
     resumeTimer,
     stopTimer,
     setTimeValue,
+    updateHours,
+    updateMinutes,
+    updateSeconds,
   } = useTimer();
 
   useEffect(() => {
     const loadRoutine = () => {
       try {
         if (Array.isArray(routines)) {
-          const found = routines.find((r) => r.key === routineId);
+          const found = routines.find((r) => r.id === routineId);
           if (found && found.activities.length > 0) {
             setRoutine(found);
             setTimeValue(found.activities[0].time);
-
-            startTimer();
           }
         }
       } catch (error) {
         console.error('Failed to load routine', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadRoutine();
-  }, [routineId, routines, setTimeValue, startTimer]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routineId, routines, setTimeValue]);
 
   const currentActivity = routine?.activities[currentIndex] || null;
 
@@ -48,7 +52,8 @@ export const usePlayRoutine = (routineId: string) => {
     if (!currentActivity || !routine) return;
 
     const originalTime = currentActivity.time;
-    const progress = ((originalTime - timeLeft) / originalTime) * 100;
+    const progress =
+      originalTime > 0 ? ((originalTime - timeLeft) / originalTime) * 100 : 100;
     setTotalProgress(progress);
   }, [timeLeft, currentActivity, routine]);
 
@@ -58,16 +63,12 @@ export const usePlayRoutine = (routineId: string) => {
     if (timeLeft === 0) {
       const nextIndex = currentIndex + 1;
 
-      if (nextIndex >= routine.activities.length) {
-        stopTimer();
-        setIsCompleted(true);
-      } else {
-        stopTimer();
+      stopTimer();
 
-        const audio = new Audio('/audio/timer/alarm/melody-1.mp3');
-        audio.play();
-
-        audio.onended = () => {
+      const goNext = () => {
+        if (nextIndex >= routine.activities.length) {
+          setIsCompleted(true);
+        } else {
           setCurrentIndex(nextIndex);
           const nextTime = routine.activities[nextIndex].time;
           setTimeValue(nextTime);
@@ -75,8 +76,12 @@ export const usePlayRoutine = (routineId: string) => {
           setTimeout(() => {
             startTimer();
           }, 300);
-        };
-      }
+        }
+      };
+
+      const audio = new Audio('/audio/timer/alarm/melody-1.mp3');
+      audio.onended = goNext;
+      audio.play().catch(goNext);
     }
   }, [
     timeLeft,
@@ -111,26 +116,16 @@ export const usePlayRoutine = (routineId: string) => {
   }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
 
   const previousActivity = useCallback(() => {
-    if (!routine) {
+    if (!routine || currentIndex <= 0) {
       return;
     }
 
     stopTimer();
 
-    const nextIndex = currentIndex - 1;
-
-    if (nextIndex < 0) {
-      setIsCompleted(true);
-    } else {
-      setCurrentIndex(nextIndex);
-      const nextTime = routine.activities[nextIndex].time;
-      setTimeValue(nextTime);
-
-      setTimeout(() => {
-        startTimer();
-      }, 0);
-    }
-  }, [routine, currentIndex, stopTimer, setTimeValue, startTimer]);
+    const prevIndex = currentIndex - 1;
+    setCurrentIndex(prevIndex);
+    setTimeValue(routine.activities[prevIndex].time);
+  }, [routine, currentIndex, stopTimer, setTimeValue]);
 
   const jumpToActivity = useCallback(
     (targetIndex: number) => {
@@ -146,12 +141,8 @@ export const usePlayRoutine = (routineId: string) => {
       setCurrentIndex(targetIndex);
       const targetTime = routine.activities[targetIndex].time;
       setTimeValue(targetTime);
-
-      setTimeout(() => {
-        startTimer();
-      }, 0);
     },
-    [routine, stopTimer, setTimeValue, startTimer],
+    [routine, stopTimer, setTimeValue],
   );
 
   const restartRoutine = useCallback(() => {
@@ -170,6 +161,7 @@ export const usePlayRoutine = (routineId: string) => {
 
   return {
     routine,
+    isLoading,
     currentActivity,
     currentIndex,
     timeLeft,
@@ -177,7 +169,6 @@ export const usePlayRoutine = (routineId: string) => {
     isRunning,
     isPaused,
     isCompleted,
-    formatTime,
     startTimer,
     pauseTimer,
     resumeTimer,
@@ -186,5 +177,10 @@ export const usePlayRoutine = (routineId: string) => {
     previousActivity,
     restartRoutine,
     exitTimer,
+    setTimeValue,
+    stopTimer,
+    updateHours,
+    updateMinutes,
+    updateSeconds,
   };
 };

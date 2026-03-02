@@ -1,24 +1,29 @@
 import { createContext, useContext } from 'react';
-import { Routine } from '../../create-routine/routine-types';
+import type { Activity, Routine } from '../../create-routine/routine-types';
 
 type PlayRoutineContextType = {
   routine: Routine | null;
-  currentActivity: any | null;
+  isLoading: boolean;
+  currentActivity: Activity | null;
   currentIndex: number;
   timeLeft: number;
   totalProgress: number;
   isRunning: boolean;
   isPaused: boolean;
   isCompleted: boolean;
-  formatTime: (timeInSeconds?: number) => string;
   startTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
+  stopTimer: () => void;
   skipActivity: () => void;
   jumpToActivity: (targetIndex: number) => void;
   previousActivity: () => void;
   restartRoutine: () => void;
   exitTimer: () => void;
+  setTimeValue: (value: number) => void;
+  updateHours: (value: number, isIncrement: boolean) => void;
+  updateMinutes: (value: number, isIncrement: boolean) => void;
+  updateSeconds: (value: number, isIncrement: boolean) => void;
 };
 
 export const PlayRoutineContext = createContext<

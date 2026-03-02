@@ -1,136 +1,125 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { nanoid } from 'nanoid';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { useRouter } from 'next/navigation';
+import { MENU_ROUTE } from '@/constants/route';
 import { Activity, Routine } from './routine-types';
 
-export const useRoutine = (routineId: string) => {
-  const [routines, setRoutines] = useLocalStorage<Routine[]>('routines', []);
-  const [routine, setRoutine] = useState<Routine>({
-    key: routineId,
-    title: '새 루틴',
+export const useRoutine = (routineId: string | null) => {
+  const [routine, setRoutine] = useState<Routine>(() => ({
+    id: routineId,
+    title: '',
+    activities: [
+      {
+        id: nanoid(),
+        order: 1,
+        action: '',
+        time: 0,
+      },
+    ],
     totalTime: 0,
-    activities: [],
-    videoId: '',
-  });
+  }));
+  const [routines, setRoutines] = useLocalStorage<Routine[]>('routines', []);
 
-  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(
-    null,
-  );
-  const currentActivity =
-    routine.activities.find((a) => a.activityKey === selectedActivityId) ||
-    null;
+  const router = useRouter();
+  const isNew = routineId === null;
 
   useEffect(() => {
-    if (Array.isArray(routines)) {
-      const found = routines.find((r) => r.key === routineId);
-      if (found) {
-        setRoutine(found);
-        setSelectedActivityId(found.activities[0]?.activityKey ?? null);
-      }
+    if (Array.isArray(routines) && !isNew) {
+      const found = routines.find((r) => r.id === routineId);
+      if (found) setRoutine(found);
     }
-  }, [routineId, routines]);
+  }, [routineId, routines, isNew]);
 
-  const handleActivityChange = (field: 'action', value: string) => {
-    if (!selectedActivityId) return;
+  const totalTime = useMemo(
+    () => routine.activities.reduce((sum, activity) => sum + activity.time, 0),
+    [routine.activities],
+  );
 
+  const handleChangeActivity = (
+    activityId: string,
+    field: 'action' | 'time',
+    value: string | number,
+  ) => {
     const updated = routine.activities.map((activity) =>
-      activity.activityKey === selectedActivityId
-        ? { ...activity, [field]: value }
-        : activity,
+      activity.id === activityId ? { ...activity, [field]: value } : activity,
     );
 
     setRoutine({ ...routine, activities: updated });
   };
 
   const handleAddActivity = () => {
+    if (routine.activities.length >= 10) return;
+
     const newActivity: Activity = {
-      activityKey: nanoid(),
+      id: nanoid(),
       order: routine.activities.length + 1,
       action: '',
       time: 0,
     };
-    const updated = [...routine.activities, newActivity];
-    setRoutine({ ...routine, activities: updated });
-    setSelectedActivityId(newActivity.activityKey);
+
+    setRoutine((prev) => ({
+      ...prev,
+      activities: [...prev.activities, newActivity],
+    }));
   };
 
-  const handleRemoveActivity = () => {
-    if (!selectedActivityId) return;
-
-    const updated = routine.activities
-      .filter((a) => a.activityKey !== selectedActivityId)
-      .map((a, i) => ({ ...a, order: i + 1 }));
-
-    setRoutine({ ...routine, activities: updated });
-    setSelectedActivityId(updated[0]?.activityKey ?? null);
+  const handleRemoveActivity = (activityId: string) => {
+    setRoutine((prev) => {
+      const activities = prev.activities
+        .filter(({ id }) => id !== activityId)
+        .map((activity, i) => ({ ...activity, order: i + 1 }));
+      return { ...prev, activities };
+    });
   };
 
-  useEffect(() => {
-    const total = routine.activities.reduce(
-      (sum, activity) => sum + activity.time,
-      0,
-    );
-    setRoutine((prev) => ({ ...prev, totalTime: total }));
-  }, [routine.activities]);
+  const handleReorderActivities = (newOrder: Activity[]) => {
+    const reordered = newOrder.map((activity, index) => ({
+      ...activity,
+      order: index + 1,
+    }));
 
-  const handleUpdateTime = (timeInSeconds: number) => {
-    if (!selectedActivityId) return;
-    const updated = routine.activities.map((activity) =>
-      activity.activityKey === selectedActivityId
-        ? { ...activity, time: timeInSeconds }
-        : activity,
-    );
-
-    setRoutine({ ...routine, activities: updated });
-  };
-
-  const handleSelect = (key: string) => {
-    setSelectedActivityId(key);
+    setRoutine((prev) => ({ ...prev, activities: reordered }));
   };
 
   const updateRoutineTitle = (title: string) => {
-    setRoutine({ ...routine, title });
+    setRoutine((prev) => ({ ...prev, title }));
   };
 
-  // 새로 추가된 음악 업데이트 함수
-  const updateRoutineMusic = (videoId: string, url?: string) => {
+  const updateMusic = (videoId: string, videoTitle?: string) => {
     setRoutine((prev) => ({
       ...prev,
-      videoId,
-      url,
+      videoId: videoId || undefined,
+      videoTitle: videoTitle || undefined,
     }));
   };
 
   const saveRoutine = () => {
-    const index = routines.findIndex((r) => r.key === routineId);
-    if (index !== -1) {
-      const updatedRoutines = [...routines];
-      updatedRoutines[index] = routine;
-      setRoutines(updatedRoutines);
+    if (isNew) {
+      const newId = nanoid();
+      setRoutines((prev) => [...prev, { ...routine, id: newId }]);
+      router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${newId}`);
     } else {
-      setRoutines([...routines, routine]);
+      const index = routines.findIndex(({ id }) => id === routineId);
+      if (index > -1) {
+        setRoutines((prev) => [
+          ...prev.slice(0, index),
+          routine,
+          ...prev.slice(index + 1),
+        ]);
+      }
+      router.push(`${MENU_ROUTE.ROUTINE_TIMER}/${routineId}`);
     }
   };
 
-  const formatTime = (timeInSeconds?: number): string => {
-    if (timeInSeconds === undefined) return '00:00';
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = timeInSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-
   return {
-    routine,
-    currentActivity,
-    selectedActivityId,
-    formatTime,
-    handleActivityChange,
+    routine: { ...routine, totalTime },
+    handleChangeActivity,
     handleAddActivity,
     handleRemoveActivity,
-    handleUpdateTime,
-    handleSelect,
+    handleReorderActivities,
     updateRoutineTitle,
-    updateRoutineMusic,
+    updateMusic,
     saveRoutine,
   };
 };

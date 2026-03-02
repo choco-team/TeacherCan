@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useEffect } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { PlayRoutineContext } from './hooks/use-play-routine-context';
 import { usePlayRoutine } from './hooks/use-play-routine';
 
@@ -12,16 +12,6 @@ export function PlayRoutineProvider({
   children,
 }: PlayRoutineProviderProps) {
   const routineData = usePlayRoutine(routineId);
-
-  useEffect(() => {
-    if (
-      routineData.routine &&
-      !routineData.isRunning &&
-      !routineData.isPaused
-    ) {
-      routineData.startTimer();
-    }
-  }, [routineData.routine]);
 
   const value = useMemo(() => routineData, [routineData]);
 

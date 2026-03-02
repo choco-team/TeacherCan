@@ -6,7 +6,7 @@ import {
   SettingsIcon,
   QrCodeIcon,
   Users,
-  // Hourglass,
+  Hourglass,
   TimerIcon,
   WandSparklesIcon,
   MegaphoneIcon,
@@ -71,6 +71,12 @@ type PathData<T extends string> = Partial<
 
 // NOTE:(김홍동) 네이게이션의 메뉴 영역과 최근 방문 페이지에서 사용되는 객체입니다.
 export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
+  '/routine-timer': {
+    title: '루틴타이머',
+    Icon: Hourglass,
+    href: MENU_ROUTE.ROUTINE_TIMER,
+    isNew: true,
+  },
   '/clock': {
     title: '시계',
     Icon: ClockIcon,
@@ -126,11 +132,6 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
   },
-  // '/routine-timer': {
-  //   title: '루틴타이머',
-  //   Icon: Hourglass,
-  //   href: MENU_ROUTE.ROUTINE_TIMER,
-  // },
 };
 
 type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import YouTube from 'react-youtube';
 import { Music, VolumeX, Volume2 } from 'lucide-react';
+import { Slider } from '@/components/slider';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { Routine } from '../create-routine/routine-types';
 
@@ -16,7 +17,7 @@ export default function RoutineBackgroundMusic({
   const youtubePlayerRef = useRef<YT.Player | null>(null);
   const [musicData, setMusicData] = useState<{
     videoId: string;
-    url?: string;
+    title?: string;
   } | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(30);
@@ -28,14 +29,12 @@ export default function RoutineBackgroundMusic({
       return;
     }
 
-    const currentRoutine = routines.find(
-      (routine) => routine.key === routineId,
-    );
+    const currentRoutine = routines.find((routine) => routine.id === routineId);
 
     if (currentRoutine && currentRoutine.videoId) {
       setMusicData({
         videoId: currentRoutine.videoId,
-        url: currentRoutine.url,
+        title: currentRoutine.videoTitle,
       });
     } else {
       setMusicData(null);
@@ -86,14 +85,11 @@ export default function RoutineBackgroundMusic({
 
   return (
     <>
-      <div className="fixed bottom-4 left-4 flex items-center gap-3 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg z-10">
-        <Music className="w-5 h-5 text-blue-600" />
-        <div className="flex flex-col">
-          <span className="text-sm font-medium text-gray-800 max-w-48 truncate">
-            배경음악
-          </span>
-          <span className="text-xs text-gray-500">YouTube 음악</span>
-        </div>
+      <div className="fixed bottom-4 right-4 flex items-center gap-3 bg-white/90 border border-gray-200 backdrop-blur-sm rounded-lg px-4 py-2 z-10">
+        <Music className="w-5 h-5 text-primary-500 shrink-0" />
+        <span className="text-sm font-medium text-gray-800 max-w-64 truncate">
+          {musicData?.title || '배경음악'}
+        </span>
 
         <div className="flex items-center gap-2">
           <button
@@ -108,13 +104,11 @@ export default function RoutineBackgroundMusic({
             )}
           </button>
 
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={volume}
-            onChange={(e) => handleVolumeChange(Number(e.target.value))}
-            className="w-16 h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer slider"
+          <Slider
+            value={[volume]}
+            onValueChange={([v]) => handleVolumeChange(v)}
+            max={100}
+            className="w-20"
           />
         </div>
       </div>

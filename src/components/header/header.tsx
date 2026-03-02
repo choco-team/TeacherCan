@@ -16,6 +16,7 @@ import {
   SplitIcon,
   ClockIcon,
   FileTextIcon,
+  Hourglass,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -116,6 +117,11 @@ const breadcrumbs: Record<
   'privacy-policy': {
     name: '개인정보처리방침',
     url: '/legal/privacy-policy',
+  },
+  'routine-timer': {
+    name: '루틴타이머',
+    url: '/routine-timer',
+    icon: <Hourglass size="1rem" />,
   },
 };
 

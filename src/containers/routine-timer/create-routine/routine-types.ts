@@ -1,21 +1,19 @@
 export type Activity = {
-  activityKey: string;
+  id: string;
   order: number;
   action: string;
   time: number;
 };
 
 export type Routine = {
-  key: string;
+  id: string;
   title: string;
-  totalTime: number;
   activities: Activity[];
-  videoId: string;
-  url?: string;
+  totalTime: number;
+  videoId?: string;
+  videoTitle?: string;
 };
 
 export type RouteParams = {
-  params: {
-    id: string;
-  };
+  params?: { id: string };
 };
