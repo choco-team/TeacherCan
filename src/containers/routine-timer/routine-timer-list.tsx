@@ -39,7 +39,7 @@ export default function RoutineTimerList(): JSX.Element {
   };
 
   return (
-    <div className="max-w-screen-md mx-auto">
+    <div className="max-w-screen-md w-full mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           내 루틴 타이머
@@ -58,10 +58,10 @@ export default function RoutineTimerList(): JSX.Element {
                 <Clock className="size-8 text-gray-400" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                아직 루틴이 없습니다
+                아직 루틴이 없어요
               </h3>
               <p className="text-gray-600 mb-6">
-                새로운 루틴을 만들어 활동을 관리해보세요
+                반복되는 활동들을 루틴으로 만들어보세요
               </p>
               <Button onClick={handleAddRoutine} className="gap-2">
                 <Plus className="size-4" />첫 루틴 만들기
