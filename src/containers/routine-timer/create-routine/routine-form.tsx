@@ -24,6 +24,7 @@ import {
 } from '@dnd-kit/sortable';
 import { MENU_ROUTE } from '@/constants/route';
 import { formatSecondsToTime } from '../play-routine/utils/formatter';
+import { MusicSelector } from '../background-music/music-selector';
 import { ActivityCard } from './activity-card';
 import { useRoutine } from './use-routine';
 import { Activity, RouteParams } from './routine-types';
@@ -42,6 +43,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     handleRemoveActivity,
     handleReorderActivities,
     updateRoutineTitle,
+    updateMusic,
     saveRoutine,
   } = useRoutine(isNew ? null : routineId);
 
@@ -213,6 +215,14 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      <div className="mt-6">
+        <MusicSelector
+          videoId={routine.videoId}
+          videoTitle={routine.videoTitle}
+          onMusicChange={updateMusic}
+        />
+      </div>
     </div>
   );
 }

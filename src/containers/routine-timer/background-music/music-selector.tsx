@@ -1,115 +1,127 @@
+import { useState, useEffect } from 'react';
+import { Music, X } from 'lucide-react';
 import { Input } from '@/components/input';
-import React, { useState, useEffect } from 'react';
-import { Music } from 'lucide-react';
+import { Button } from '@/components/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+import { getMusicTitle } from '@/utils/api/youtubeAPI';
 
 type MusicSelectorProps = {
-  videoId: string;
-  url?: string;
-  onMusicChange: (videoId: string, url?: string) => void;
+  videoId?: string;
+  videoTitle?: string;
+  onMusicChange: (videoId: string, videoTitle?: string) => void;
+};
+
+const extractVideoId = (url: string): string => {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+  ];
+
+  const matched = patterns
+    .map((pattern) => url.match(pattern))
+    .find((match) => match?.[1]);
+
+  return matched?.[1] ?? '';
 };
 
 export function MusicSelector({
-  videoId: initialVideoId,
-  url: initialUrl,
+  videoId,
+  videoTitle,
   onMusicChange,
 }: MusicSelectorProps) {
   const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [musicVideoId, setMusicVideoId] = useState('');
-  const [isLoadingMusic, setIsLoadingMusic] = useState(false);
-  const [musicError, setMusicError] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (initialVideoId) {
-      setMusicVideoId(initialVideoId);
-      if (initialUrl) {
-        setYoutubeUrl(initialUrl);
-      }
+    if (videoId && !youtubeUrl) {
+      setYoutubeUrl(`https://www.youtube.com/watch?v=${videoId}`);
     }
-  }, [initialVideoId, initialUrl]);
+  }, [videoId, youtubeUrl]);
 
-  const extractVideoId = (url: string): string => {
-    const patterns = [
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-      /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
-    ];
+  const handleSubmit = async () => {
+    setError('');
 
-    const matchResult = patterns.find((pattern) => {
-      const match = url.match(pattern);
-      return match && match[1];
-    });
-
-    if (matchResult) {
-      const match = url.match(matchResult);
-      return match ? match[1] : '';
+    if (!youtubeUrl.trim()) {
+      onMusicChange('');
+      return;
     }
 
-    return '';
+    const extracted = extractVideoId(youtubeUrl);
+    if (!extracted) {
+      setError('유튜브 동영상 URL을 다시 확인해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const title = await getMusicTitle(extracted);
+      onMusicChange(extracted, title);
+    } catch {
+      setError('동영상 정보를 가져오지 못했어요. URL을 다시 확인해주세요.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleYoutubeUrlChange = async (inputUrl: string) => {
-    setYoutubeUrl(inputUrl);
-    setMusicError('');
-
-    if (!inputUrl.trim()) {
-      setMusicVideoId('');
-      onMusicChange('', undefined);
-      return;
-    }
-
-    const extractedVideoId = extractVideoId(inputUrl);
-
-    if (!extractedVideoId) {
-      setMusicError('유튜브 동영상 URL을 다시 확인해주세요.');
-      return;
-    }
-
-    if (extractedVideoId === musicVideoId) return;
-
-    setIsLoadingMusic(true);
-    try {
-      setMusicVideoId(extractedVideoId);
-      onMusicChange(extractedVideoId, inputUrl);
-    } catch (error) {
-      console.error('Error getting music title:', error);
-      setMusicError('동영상을 찾지 못했어요. 다시 시도해주세요.');
-      setMusicVideoId('');
-      onMusicChange('', undefined);
-    } finally {
-      setIsLoadingMusic(false);
-    }
+  const handleRemove = () => {
+    setYoutubeUrl('');
+    setError('');
+    onMusicChange('');
   };
 
   return (
-    <div className="bg-blue-50 rounded-xl p-6 mb-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Music className="h-5 w-5 text-blue-600" />
-        <h3 className="text-lg font-semibold text-blue-800">배경음악 설정</h3>
-      </div>
+    <Card className="shadow-none">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg text-gray-800 flex items-center gap-2">
+          <Music className="size-5" />
+          배경음악
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-sm text-gray-500">
+          유튜브 동영상 URL을 입력해주세요.
+        </p>
+        <div className="flex items-center gap-2">
+          <Input
+            type="text"
+            value={youtubeUrl}
+            onChange={(e) => {
+              setYoutubeUrl(e.target.value);
+              setError('');
+            }}
+            placeholder="https://www.youtube.com/watch?v=..."
+            className="flex-1"
+          />
+          <Button
+            type="button"
+            variant="primary-outline"
+            onClick={handleSubmit}
+            disabled={!youtubeUrl.trim() || isLoading}
+          >
+            {isLoading ? '가져오는 중...' : '가져오기'}
+          </Button>
+        </div>
 
-      <div className="space-y-3">
-        <Input
-          type="text"
-          value={youtubeUrl}
-          onChange={(e) => handleYoutubeUrlChange(e.target.value)}
-          className="w-full p-3 border rounded-lg"
-          placeholder="유튜브 동영상 URL을 입력하세요 (예: https://www.youtube.com/watch?v=...)"
-        />
+        {error && <p className="text-sm text-red-500">{error}</p>}
 
-        {isLoadingMusic && (
-          <div className="text-blue-600 text-sm">
-            음악 정보를 불러오는 중...
+        {videoId && (
+          <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-primary-50">
+            <p className="text-sm line-clamp-1">
+              {videoTitle || '배경음악이 설정되었습니다'}
+            </p>
+            <Button
+              type="button"
+              variant="primary-ghost"
+              size="xs"
+              onClick={handleRemove}
+              className="shrink-0 text-gray-500 hover:text-red-500"
+            >
+              <X className="size-4" />
+            </Button>
           </div>
         )}
-
-        {musicError && <div className="text-red-500 text-sm">{musicError}</div>}
-
-        {/* 현재 설정된 음악 표시 */}
-        {musicVideoId && (
-          <div className="text-green-600 text-sm">
-            ✓ 배경음악이 설정되었습니다 (Video ID: {musicVideoId})
-          </div>
-        )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

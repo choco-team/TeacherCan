@@ -86,6 +86,14 @@ export const useRoutine = (routineId: string | null) => {
     setRoutine((prev) => ({ ...prev, title }));
   };
 
+  const updateMusic = (videoId: string, videoTitle?: string) => {
+    setRoutine((prev) => ({
+      ...prev,
+      videoId: videoId || undefined,
+      videoTitle: videoTitle || undefined,
+    }));
+  };
+
   const saveRoutine = () => {
     if (isNew) {
       setRoutines((prev) => [...prev, { ...routine, id: nanoid() }]);
@@ -110,6 +118,7 @@ export const useRoutine = (routineId: string | null) => {
     handleRemoveActivity,
     handleReorderActivities,
     updateRoutineTitle,
+    updateMusic,
     saveRoutine,
   };
 };

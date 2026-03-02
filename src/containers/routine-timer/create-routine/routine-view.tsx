@@ -4,7 +4,7 @@ import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock, ArrowLeft, Play } from 'lucide-react';
+import { Clock, ArrowLeft, Play, Music } from 'lucide-react';
 import { MENU_ROUTE } from '@/constants/route';
 import { getScreenSize } from '@/utils/getScreenSize';
 import useLocalStorage from '@/hooks/useLocalStorage';
@@ -146,6 +146,15 @@ export default function RoutineView({ params }: RouteParams): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {routine.videoId && (
+        <div className="mt-6 flex items-center gap-2 px-4 py-3 rounded-lg bg-primary-50">
+          <Music className="size-4 shrink-0" />
+          <span className="text-sm font-medium line-clamp-1">
+            {routine.videoTitle || '배경음악이 설정되어 있습니다'}
+          </span>
+        </div>
+      )}
 
       <div className="mt-8 flex justify-end">
         <DeleteRoutineDialog

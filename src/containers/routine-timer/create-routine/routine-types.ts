@@ -11,6 +11,7 @@ export type Routine = {
   activities: Activity[];
   totalTime: number;
   videoId?: string;
+  videoTitle?: string;
 };
 
 export type RouteParams = {
