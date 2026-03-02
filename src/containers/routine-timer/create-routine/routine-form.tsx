@@ -3,9 +3,9 @@
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Clock, Plus, ArrowLeft } from 'lucide-react';
+import { Clock, Plus, ArrowLeft, GripVertical } from 'lucide-react';
 import {
   DndContext,
   closestCenter,
@@ -13,7 +13,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  DragStartEvent,
   DragEndEvent,
+  DragOverlay,
 } from '@dnd-kit/core';
 import {
   arrayMove,
@@ -21,9 +23,10 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { MENU_ROUTE } from '@/constants/route';
+import { formatSecondsToTime } from '../play-routine/utils/formatter';
 import { ActivityCard } from './activity-card';
 import { useRoutine } from './use-routine';
-import { RouteParams } from './routine-types';
+import { Activity, RouteParams } from './routine-types';
 
 export default function RoutineForm({ params }: RouteParams): JSX.Element {
   const router = useRouter();
@@ -42,12 +45,22 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     saveRoutine,
   } = useRoutine(isNew ? null : routineId);
 
+  const [activeActivity, setActiveActivity] = useState<Activity | null>(null);
+
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
     useSensor(KeyboardSensor),
   );
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const found = routine.activities.find((a) => a.id === event.active.id);
+    setActiveActivity(found ?? null);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveActivity(null);
     const { active, over } = event;
 
     if (active.id !== over?.id) {
@@ -77,7 +90,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
     <div className="w-full max-w-screen-md mx-auto">
       {/* 헤더 섹션 */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <Button
             variant="gray-ghost"
             size="sm"
@@ -87,7 +100,7 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
             <ArrowLeft className="size-4" />
             목록으로
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 text-gray-700 font-medium flex items-center whitespace-nowrap shadow-sm">
               <Clock className="size-4 mr-2" />
               {Math.floor(routine.totalTime / 60)}분 {routine.totalTime % 60}초
@@ -154,7 +167,9 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onDragCancel={() => setActiveActivity(null)}
             >
               <SortableContext
                 items={routine.activities.map((activity) => activity.id)}
@@ -171,6 +186,29 @@ export default function RoutineForm({ params }: RouteParams): JSX.Element {
                   ))}
                 </div>
               </SortableContext>
+              <DragOverlay dropAnimation={null}>
+                {activeActivity && (
+                  <Card className="p-4 border-gray-200 bg-white shadow-lg scale-[1.02]">
+                    <div className="flex items-center gap-3">
+                      <div className="p-1">
+                        <GripVertical className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <div className="flex items-center justify-center size-7 bg-gradient-to-br from-primary-300 to-primary-500 text-white rounded-full text-xs font-bold shadow-sm">
+                        {activeActivity.order}
+                      </div>
+                      <div className="flex-1 min-w-0 text-sm text-gray-800 truncate">
+                        {activeActivity.action || '활동 이름'}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="size-4 text-gray-400" />
+                        <span className="w-16 text-end text-sm font-mono text-gray-700">
+                          {formatSecondsToTime(activeActivity.time)}
+                        </span>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+              </DragOverlay>
             </DndContext>
           )}
         </CardContent>
