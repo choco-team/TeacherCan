@@ -26,20 +26,19 @@ type LocalStorageKey =
  * @returns [storedValue, setValue] - 로컬 저장소에 저장된 값, 저장 함수
  */
 function useLocalStorage<T>(key: LocalStorageKey, initialValue: T) {
-  const [storedValue, setStoredValue] = useState<T>(() => {
-    if (typeof window === 'undefined') {
-      return initialValue;
-    }
+  const [storedValue, setStoredValue] = useState<T>(initialValue);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     try {
       const item = window.localStorage.getItem(key);
-
-      return item ? JSON.parse(item) : initialValue;
+      setStoredValue(item ? JSON.parse(item) : initialValue);
     } catch (error) {
       console.error(error);
-
-      return initialValue;
     }
-  });
+    // key만 의존성으로 두어 initialValue 객체 참조 변경 시 불필요한 재실행 방지
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
 
   const setValue = (value: T | ((val: T) => T)) => {
     try {
@@ -54,21 +53,7 @@ function useLocalStorage<T>(key: LocalStorageKey, initialValue: T) {
     }
   };
 
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) {
-    return [null, setValue] as const;
-  }
-
-  if (hasMounted) {
-    return [storedValue, setValue] as const;
-  }
-
-  return [initialValue, setValue] as const;
+  return [storedValue, setValue] as const;
 }
 
 export default useLocalStorage;
