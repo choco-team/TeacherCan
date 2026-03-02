@@ -15,6 +15,7 @@ import {
   Timer,
   SplitIcon,
   ClockIcon,
+  Hourglass,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -106,6 +107,11 @@ const breadcrumbs: Record<
     name: '그룹 스톱워치',
     url: '/group-stopwatch',
     icon: <Users size="1rem" />,
+  },
+  'routine-timer': {
+    name: '루틴타이머',
+    url: '/routine-timer',
+    icon: <Hourglass size="1rem" />,
   },
 };
 
