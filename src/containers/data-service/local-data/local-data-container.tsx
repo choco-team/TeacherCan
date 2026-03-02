@@ -46,8 +46,10 @@ function itemToReadable(item: unknown): string {
   return `항목 (${keys.slice(0, 3).join(', ')}${keys.length > 3 ? '…' : ''})`;
 }
 
+type DisplayValue = { summary: string; detail?: string };
+
 /** localStorage 값을 고객이 이해하기 쉬운 형태로 풀어서 설명 (실제 저장 데이터 기준, "예:" 없음) */
-function getValueDisplay(key: string): { summary: string; detail?: string } {
+function getValueDisplay(key: string): DisplayValue {
   if (typeof window === 'undefined') return { summary: '—' };
   try {
     const raw = window.localStorage.getItem(key);
@@ -424,9 +426,10 @@ export default function LocalDataContainer() {
             </div>
             <ul className="space-y-3">
               {group.keys.map((key) => {
-                const { summary, detail } = isReady
+                const display: DisplayValue = isReady
                   ? getValueDisplay(key)
-                  : { summary: '—' };
+                  : { summary: '—', detail: undefined };
+                const { summary, detail } = display;
                 const label = getKeyLabel(key);
                 const description = getKeyDescription(key);
                 return (
