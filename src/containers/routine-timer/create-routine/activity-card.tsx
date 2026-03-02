@@ -48,9 +48,8 @@ export function ActivityCard({
   }, [activity.time]);
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
   };
 
   const handleChangeTimeInput = (value: string) => {
@@ -93,8 +92,10 @@ export function ActivityCard({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`p-4 hover:shadow-md transition-all duration-200 border-gray-200 bg-white ${
-        isDragging ? 'shadow-lg scale-[1.01]' : ''
+      className={`p-4 border-gray-200 bg-white ${
+        isDragging
+          ? 'opacity-40 border-dashed'
+          : 'hover:shadow-md transition-all duration-200'
       }`}
     >
       <div className="flex items-center gap-3">

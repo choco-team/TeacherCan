@@ -2,19 +2,23 @@
 
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock, ArrowLeft, Play } from 'lucide-react';
 import { MENU_ROUTE } from '@/constants/route';
 import { getScreenSize } from '@/utils/getScreenSize';
+import useLocalStorage from '@/hooks/useLocalStorage';
 import { formatSecondsToTime } from '../play-routine/utils/formatter';
 import { useRoutine } from './use-routine';
-import { RouteParams } from './routine-types';
+import { RouteParams, Routine } from './routine-types';
+import DeleteRoutineDialog from './delete-routine-dialog';
 
 export default function RoutineView({ params }: RouteParams): JSX.Element {
   const router = useRouter();
   const routineId = params.id;
   const { routine } = useRoutine(routineId);
+  const [routines, setRoutines] = useLocalStorage<Routine[]>('routines', []);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleRoutineList = () => {
     router.push(MENU_ROUTE.ROUTINE_TIMER);
@@ -22,6 +26,13 @@ export default function RoutineView({ params }: RouteParams): JSX.Element {
 
   const handleEditMode = () => {
     router.push(`${MENU_ROUTE.ROUTINE_TIMER}/edit/${routineId}`);
+  };
+
+  const handleDeleteRoutine = () => {
+    setIsDeleting(true);
+    const updatedRoutines = routines.filter((r) => r.id !== routineId);
+    setRoutines(updatedRoutines);
+    router.push(MENU_ROUTE.ROUTINE_TIMER);
   };
 
   const handleStartRoutine = () => {
@@ -52,7 +63,7 @@ export default function RoutineView({ params }: RouteParams): JSX.Element {
     <div className="w-full max-w-screen-md mx-auto">
       {/* 헤더 섹션 */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <Button
             variant="gray-ghost"
             size="sm"
@@ -62,7 +73,7 @@ export default function RoutineView({ params }: RouteParams): JSX.Element {
             <ArrowLeft className="size-4" />
             목록으로
           </Button>
-          <div className="flex items-center gap-x-3">
+          <div className="flex flex-wrap items-center gap-3">
             <div className="bg-white px-4 py-2 rounded-lg border border-gray-200 text-gray-700 font-medium flex items-center whitespace-nowrap shadow-sm">
               <Clock className="size-4 mr-2" />
               {Math.floor(routine.totalTime / 60)}분 {routine.totalTime % 60}초
@@ -135,6 +146,14 @@ export default function RoutineView({ params }: RouteParams): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      <div className="mt-8 flex justify-end">
+        <DeleteRoutineDialog
+          routineTitle={routine.title}
+          disabled={isDeleting}
+          onDelete={handleDeleteRoutine}
+        />
+      </div>
     </div>
   );
 }

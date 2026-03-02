@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { nanoid } from 'nanoid';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import { useRouter } from 'next/navigation';
@@ -31,14 +31,10 @@ export const useRoutine = (routineId: string | null) => {
     }
   }, [routineId, routines, isNew]);
 
-  // 총 시간 계산
-  useEffect(() => {
-    const totalTime = routine.activities.reduce(
-      (sum, activity) => sum + activity.time,
-      0,
-    );
-    setRoutine((prev) => ({ ...prev, totalTime }));
-  }, [routine.activities]);
+  const totalTime = useMemo(
+    () => routine.activities.reduce((sum, activity) => sum + activity.time, 0),
+    [routine.activities],
+  );
 
   const handleChangeActivity = (
     activityId: string,
@@ -108,7 +104,7 @@ export const useRoutine = (routineId: string | null) => {
   };
 
   return {
-    routine,
+    routine: { ...routine, totalTime },
     handleChangeActivity,
     handleAddActivity,
     handleRemoveActivity,
