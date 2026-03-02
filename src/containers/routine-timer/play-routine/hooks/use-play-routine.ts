@@ -33,8 +33,6 @@ export const usePlayRoutine = (routineId: string) => {
           if (found && found.activities.length > 0) {
             setRoutine(found);
             setTimeValue(found.activities[0].time);
-
-            startTimer();
           }
         }
       } catch (error) {
