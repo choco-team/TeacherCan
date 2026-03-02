@@ -15,6 +15,7 @@ import {
   Timer,
   SplitIcon,
   ClockIcon,
+  FileTextIcon,
   Hourglass,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -107,6 +108,15 @@ const breadcrumbs: Record<
     name: '그룹 스톱워치',
     url: '/group-stopwatch',
     icon: <Users size="1rem" />,
+  },
+  legal: {
+    name: '약관/정책',
+    url: '/legal',
+    icon: <FileTextIcon size="1rem" />,
+  },
+  'privacy-policy': {
+    name: '개인정보처리방침',
+    url: '/legal/privacy-policy',
   },
   'routine-timer': {
     name: '루틴타이머',

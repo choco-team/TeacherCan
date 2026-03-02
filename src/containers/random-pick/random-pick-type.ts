@@ -7,6 +7,7 @@ export type RandomPickType = {
   pickType: PickType;
   pickList: InnerPickListType[];
   options: OptionsType;
+  history?: RandomPickHistoryItem[];
 };
 
 export type InnerPickListType = {
@@ -22,6 +23,11 @@ export type OptionsType = {
   isExcludingSelected: boolean;
   isHideResult: boolean;
   isMixingAnimation: boolean;
+};
+
+export type RandomPickHistoryItem = {
+  pickedAt: string;
+  winners: { id: string; value: string }[];
 };
 
 // 공통 Student 인터페이스

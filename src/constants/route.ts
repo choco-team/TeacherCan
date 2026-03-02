@@ -15,6 +15,7 @@ import {
   ClockIcon,
   WatchIcon,
   GroupIcon,
+  FileTextIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -38,6 +39,8 @@ export const HELP_ROUTE = {
   FEEDBACK: '/feedback',
   SETTING: '/setting',
   ANNOUNCEMENT: '/announcement',
+  LEGAL: '/legal',
+  PRIVACY_POLICY: '/legal/privacy-policy',
 } as const;
 
 export const DATA_ROUTE = {
@@ -148,6 +151,11 @@ export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
     title: '설정',
     Icon: SettingsIcon,
     href: HELP_ROUTE.SETTING,
+  },
+  '/legal': {
+    title: '약관/정책',
+    Icon: FileTextIcon,
+    href: HELP_ROUTE.LEGAL,
   },
 };
 

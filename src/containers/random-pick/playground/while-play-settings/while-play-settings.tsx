@@ -2,6 +2,7 @@ import { Label } from '@/components/label';
 import { Switch } from '@/components/switch';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import HistoryModal from '../history-modal/history-modal';
 import {
   useRandomPickPlaygroundAction,
   useRandomPickPlaygroundState,
@@ -69,6 +70,18 @@ export default function WhilePlaySettings({ title, updateTitle }: Props) {
         </div>
 
         <div className="flex items-center gap-x-2 md:gap-x-4 w-full md:w-fit">
+          <HistoryModal
+            trigger={
+              <Button
+                variant="gray-outline"
+                size="md"
+                type="button"
+                className="flex-1"
+              >
+                뽑기 기록
+              </Button>
+            }
+          />
           <Button
             variant={
               randomPick.pickList.length === winners.length
