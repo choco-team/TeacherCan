@@ -16,20 +16,14 @@ export default function FunnelContainer() {
   const router = useRouter();
   const [step, setStep] = useState(1);
 
-  /** localStorage 설정 */
   const [savedSettings, setRandomTeamSettings] = useRandomTeamSettings();
 
-  /** 퍼널 상태 */
   const [students, setStudents] = useState<string[]>([]);
   const [teamCount, setTeamCount] = useState<number>(4);
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
 
-  /** 초기화 여부 */
   const [initialized, setInitialized] = useState(false);
 
-  /**
-   * localStorage → 퍼널 상태 초기화 (단 1회)
-   */
   useEffect(() => {
     if (initialized) return;
     if (!savedSettings) return;
@@ -41,10 +35,6 @@ export default function FunnelContainer() {
     setInitialized(true);
   }, [savedSettings, initialized]);
 
-  /**
-   * 학생 삭제 시
-   * 존재하지 않는 학생의 고정배정 제거
-   */
   useEffect(() => {
     if (!initialized) return;
 
@@ -53,19 +43,12 @@ export default function FunnelContainer() {
     );
   }, [students, initialized]);
 
-  /**
-   * 모둠 수 감소 시
-   * 줄어든 팀에 속한 학생만 제거
-   */
   useEffect(() => {
     if (!initialized) return;
 
     setPreAssignments((prev) => prev.filter((p) => p.groupIndex < teamCount));
   }, [teamCount, initialized]);
 
-  /**
-   * 실행
-   */
   const handleRun = () => {
     setRandomTeamSettings({
       students,

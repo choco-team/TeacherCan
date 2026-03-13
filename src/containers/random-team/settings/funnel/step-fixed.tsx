@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { Card } from '@/components/card';
 import { Label } from '@/components/label';
 import { Button } from '@/components/button';
 import { Heading1, Heading3 } from '@/components/heading';
-import { X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 type PreAssignment = {
@@ -83,7 +83,6 @@ export default function StepFixed({
     setLocalAssignments(localAssignments.filter((a) => a.student !== student));
   };
 
-  // ✅ StepBasic 스타일에 맞춘 toast
   const handleSave = () => {
     onChangePreAssignments(localAssignments);
 
@@ -172,7 +171,6 @@ export default function StepFixed({
           })}
         </div>
 
-        {/* ✅ 가운데 저장 버튼 */}
         <div className="flex justify-center mt-6">
           <Button variant="primary" onClick={handleSave} className="px-6">
             고정 배정 저장

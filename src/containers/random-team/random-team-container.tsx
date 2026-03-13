@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Shuffle, Settings } from 'lucide-react';
 
@@ -12,15 +12,25 @@ import TeamResult from '@/containers/random-team/team-result/team-result';
 import { useRandomTeamSettings } from './hooks/useRandomTeamStorage';
 
 export default function RandomTeamContainer() {
+  const [mounted, setMounted] = useState(false);
+
   const [settings] = useRandomTeamSettings();
 
   const [showResult, setShowResult] = useState(false);
   const assignRef = useRef<() => void>();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleAssignTeams = () => {
     setShowResult(true);
     assignRef.current?.();
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   const hasSettings =
     settings &&
@@ -28,10 +38,6 @@ export default function RandomTeamContainer() {
     settings.students.length > 0;
 
   const isReady = hasSettings && typeof settings.teamCount === 'number';
-
-  if (!settings) {
-    return <p>설정 데이터를 불러오는 중...</p>;
-  }
 
   return (
     <div className="p-6 max-w-6xl mx-auto flex flex-col gap-6">

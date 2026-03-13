@@ -64,7 +64,6 @@ export default function StepStudents({
     <>
       <Heading1 className="text-xl font-bold">1단계 · 학생 목록 생성</Heading1>
 
-      {/* 기존 학생 목록 표시 */}
       {students.length > 0 && (
         <Card className="p-4 w-full flex flex-col gap-2">
           <Label className="font-semibold text-sm">
@@ -84,6 +83,7 @@ export default function StepStudents({
 
           {!showAllStudents && hiddenCount > 0 && (
             <button
+              type="button"
               onClick={() => setShowAllStudents(true)}
               className="text-xs text-blue-600 hover:underline w-fit"
             >
@@ -94,11 +94,11 @@ export default function StepStudents({
       )}
 
       <Card className="p-4 w-full">
-        <Label className="mb-2 font-semibold text-sm">
-          학생 목록 생성 방식
+        <Label className="font-semibold text-sm">
+          {students.length > 0 ? '학생 목록 수정하기' : '학생 목록 생성하기'}
         </Label>
 
-        <RadioGroup className="flex gap-x-4 mb-4">
+        <RadioGroup className="flex gap-x-4 mb-4 mt-2">
           <Label className="flex items-center gap-x-2">
             <RadioGroupItem
               value="numbers"
