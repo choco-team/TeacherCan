@@ -9,7 +9,7 @@ export const formatTime = (seconds: number) => {
   return `${m}:${String(s).padStart(2, '0')}`;
 };
 
-export const findNextVideIndex = (
+export const findNextVideoIndex = (
   order: 'next' | 'prev',
   playerType: 'order' | 'shuffle',
   currentVideoIndex: number,

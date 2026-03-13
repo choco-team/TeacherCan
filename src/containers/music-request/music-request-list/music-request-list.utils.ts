@@ -1,14 +1,11 @@
 import { YoutubeVideo } from '@/apis/music-request/musicRequest';
-import { head } from 'lodash';
 
 export const hasMusic = (musicList: YoutubeVideo[]) => {
-  const music = head(musicList);
-
-  return Boolean(music);
+  return musicList.length > 0;
 };
 
 export const getMusicRoomImage = (musicList: YoutubeVideo[]) => {
-  const music = head(musicList);
+  const music = musicList[0];
 
   if (!music) {
     return null;
@@ -17,7 +14,7 @@ export const getMusicRoomImage = (musicList: YoutubeVideo[]) => {
 };
 
 export const getMusicRoomDescription = (musicList: YoutubeVideo[]) => {
-  const music = head(musicList);
+  const music = musicList[0];
 
   if (!music) {
     return null;

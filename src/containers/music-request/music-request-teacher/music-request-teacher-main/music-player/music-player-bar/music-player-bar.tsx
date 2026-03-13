@@ -29,8 +29,8 @@ type Props = {
     value: MusicOptions[K],
   ) => void;
   handleMusicChange: (order: 'next' | 'prev') => void;
-  sseConnectionStatus: 'connected' | 'disconnected' | 'reconnecting';
-  reconnectSse: () => void;
+  connectionStatus: 'connected' | 'disconnected' | 'reconnecting';
+  reconnect: () => void;
 };
 
 export function MusicPlayerBar({
@@ -39,8 +39,8 @@ export function MusicPlayerBar({
   musicOptions,
   updateMusicOption,
   handleMusicChange,
-  sseConnectionStatus,
-  reconnectSse,
+  connectionStatus,
+  reconnect,
 }: Props) {
   const [hoverTime, setHoverTime] = useState<number | null>(null);
   const [hoverVolume, setHoverVolume] = useState(false);
@@ -205,7 +205,7 @@ export function MusicPlayerBar({
             }}
           />
           <div className="flex items-center gap-2 text-sm font-medium">
-            {sseConnectionStatus === 'connected' && (
+            {connectionStatus === 'connected' && (
               <span
                 title="연결됨"
                 className="flex items-center gap-1 text-green-600"
@@ -215,7 +215,7 @@ export function MusicPlayerBar({
               </span>
             )}
 
-            {sseConnectionStatus === 'reconnecting' && (
+            {connectionStatus === 'reconnecting' && (
               <span
                 title="재연결"
                 className="flex items-center gap-1 text-blue-600"
@@ -225,8 +225,8 @@ export function MusicPlayerBar({
               </span>
             )}
 
-            {sseConnectionStatus === 'disconnected' && (
-              <Button size="sm" variant="gray-ghost" onClick={reconnectSse}>
+            {connectionStatus === 'disconnected' && (
+              <Button size="sm" variant="gray-ghost" onClick={reconnect}>
                 <span
                   title="끊김"
                   className="flex items-center gap-1 text-red-500"

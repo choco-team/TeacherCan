@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { YouTubeEvent } from 'react-youtube';
 import { YoutubeVideo } from '@/apis/music-request/musicRequest';
-import { findNextVideIndex } from './music-player.utils';
+import { findNextVideoIndex } from './music-player.utils';
 
 export type MusicOptions = {
   playerType: 'order' | 'shuffle';
@@ -67,7 +67,7 @@ export const useMusicPlayer = ({
   };
 
   const handleMusicChange = (order: 'next' | 'prev') => {
-    const nextVideoIndex = findNextVideIndex(
+    const nextVideoIndex = findNextVideoIndex(
       order,
       musicOptions.playerType,
       currentVideoIndex,
