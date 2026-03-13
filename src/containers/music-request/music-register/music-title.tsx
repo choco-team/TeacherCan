@@ -2,8 +2,6 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/skeleton';
 
-const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 type MusicTitleProps = {
   musicId: string;
   setTitle: Dispatch<SetStateAction<string>>;
@@ -13,9 +11,7 @@ export default function MusicTitle({ musicId, setTitle }: MusicTitleProps) {
   const { data, isLoading, error } = useQuery({
     queryKey: [musicId],
     queryFn: () =>
-      fetch(`${originURL}/api/youtube/video/title/${musicId}`).then((res) =>
-        res.json(),
-      ),
+      fetch(`/api/youtube/video/title/${musicId}`).then((res) => res.json()),
   });
 
   useEffect(() => {
@@ -24,7 +20,7 @@ export default function MusicTitle({ musicId, setTitle }: MusicTitleProps) {
     }
 
     setTitle(data.title);
-  }, [data]);
+  }, [data, isLoading, setTitle]);
 
   if (isLoading) {
     return (

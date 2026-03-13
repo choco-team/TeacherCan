@@ -1,83 +1,81 @@
-import { YoutubeVideo } from '@/apis/music-request/musicRequest';
+import {
+  YoutubeVideo,
+  getMusicRequestRoom,
+} from '@/apis/music-request/musicRequest';
+import { supabase } from '@/utils/supabase';
 import { useEffect, useRef, useState } from 'react';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
+/**
+ * Supabase Realtime을 이용한 음악 목록 실시간 구독 훅
+ * (기존 SSE/EventSource 방식 대체)
+ */
 export function useMusicSSE(
   roomId: string,
   handleMusicInit: (musicList: YoutubeVideo[]) => void,
   handleMusicUpdate: (newMusic: YoutubeVideo) => void,
   handleMusicDelete: (deletedId: number) => void,
-  handleRoomTitleUpdate: (newRoomTItle: string) => void,
+  handleRoomTitleUpdate: (newRoomTitle: string) => void,
 ) {
   const [connectionStatus, setConnectionStatus] = useState<
     'connected' | 'disconnected' | 'reconnecting'
   >('disconnected');
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const pingTimeout = useRef<NodeJS.Timeout | null>(null);
-  const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
-  const retryCount = useRef(0);
-  const maxRetries = 5;
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
-  const connect = () => {
-    if (retryCount.current >= maxRetries) {
-      setConnectionStatus('disconnected');
-      return;
-    }
+  const connect = async () => {
+    if (!roomId) return;
+
     setConnectionStatus('reconnecting');
-    retryCount.current += 1;
 
-    const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/music-request/sse?roomId=${roomId}`;
-    const es = new EventSource(url, { withCredentials: true });
+    // 1) 초기 데이터 로드 (기존 room-update 이벤트 대체)
+    try {
+      const roomData = await getMusicRequestRoom({ roomId });
+      handleMusicInit(roomData.musicList);
+      handleRoomTitleUpdate(roomData.roomTitle);
+    } catch (err) {
+      console.error('초기 음악 목록 로드 실패:', err);
+    }
 
-    es.onopen = () => {
-      setConnectionStatus('connected');
-      retryCount.current = 0;
-    };
+    // 2) Supabase Realtime 구독
+    const channel = supabase
+      .channel(`room-${roomId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'musics',
+          filter: `roomId=eq.${roomId}`,
+        },
+        (payload) => {
+          const newMusic = payload.new as YoutubeVideo;
+          handleMusicUpdate(newMusic);
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'musics',
+          filter: `roomId=eq.${roomId}`,
+        },
+        (payload) => {
+          const deletedId = (payload.old as { id: number }).id;
+          handleMusicDelete(deletedId);
+        },
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setConnectionStatus('connected');
+        } else if (status === 'CLOSED') {
+          setConnectionStatus('disconnected');
+        } else if (status === 'CHANNEL_ERROR') {
+          setConnectionStatus('disconnected');
+        }
+      });
 
-    es.addEventListener('room-update', (event: MessageEvent) => {
-      try {
-        const parsed = JSON.parse(event.data);
-        handleMusicInit(parsed.musicList);
-        handleRoomTitleUpdate(parsed.roomTitle);
-      } catch (err) {
-        throw new Error('SSE-musicList 파싱 오류');
-      }
-    });
-
-    es.addEventListener('new-music', (event: MessageEvent) => {
-      try {
-        const { musicList } = JSON.parse(event.data);
-        handleMusicUpdate(musicList);
-      } catch (err) {
-        throw new Error('SSE-musicList 파싱 오류');
-      }
-    });
-
-    es.addEventListener('deleted-music', (event: MessageEvent) => {
-      try {
-        const { id } = JSON.parse(event.data);
-        handleMusicDelete(id);
-      } catch (err) {
-        throw new Error('SSE-musicList 파싱 오류');
-      }
-    });
-
-    // NOTE:(정승민)  cloud run 에서 5분마다 연결 끊는것 방지
-    es.addEventListener('ping', () => {
-      if (pingTimeout.current) clearTimeout(pingTimeout.current); // ping 수신 → 연결 유지 확인됨 -> pingTimeout 제거
-      pingTimeout.current = setTimeout(() => {
-        setConnectionStatus('reconnecting');
-        es.close();
-        connect(); // 재연결
-      }, 90000); // 90초 내 ping 없으면 재연결
-    });
-
-    es.onerror = () => {
-      setConnectionStatus('reconnecting');
-      es.close();
-      reconnectTimeout.current = setTimeout(connect, 3000);
-    };
-
-    eventSourceRef.current = es;
+    channelRef.current = channel;
   };
 
   useEffect(() => {
@@ -86,16 +84,22 @@ export function useMusicSSE(
     }
 
     return () => {
-      eventSourceRef.current?.close();
-      clearTimeout(pingTimeout.current!);
-      clearTimeout(reconnectTimeout.current!);
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
       setConnectionStatus('disconnected');
     };
-  }, [roomId, handleMusicUpdate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roomId]);
 
-  const reconnectSse = () => {
-    retryCount.current = 0;
-    connect();
+  const reconnectSse = async () => {
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+    await connect();
   };
+
   return [connectionStatus, reconnectSse] as const;
 }
