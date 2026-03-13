@@ -46,7 +46,6 @@ export default function MusicRequestContainer() {
   const [isRemoveAllOpen, setIsRemoveAllOpen] = useState(false);
   const [roomIds, setRoomIds] = useLocalStorage<string[] | null>('roomIds', []);
 
-  const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const router = useRouter();
 
   const { mutate: createRoom, isPending } = useCreateMusicRequestRoom();
@@ -65,7 +64,7 @@ export default function MusicRequestContainer() {
       {
         onSuccess: ({ roomId }) => {
           setRoomIds((prev) => [...prev, roomId]);
-          router.push(`${originURL}/music-request/teacher/${roomId}`);
+          router.push(`/music-request/teacher/${roomId}`);
         },
         onError: () => {
           form.setError('roomTitle', {

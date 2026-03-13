@@ -14,8 +14,6 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { useState } from 'react';
 import { MAX_MUSIC_COUNT } from '@/containers/music-request/music-request-constants';
 
-const originURL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 type Props = {
   roomTitle: string;
   roomId: string;
@@ -76,7 +74,7 @@ export default function RoomInfo({ roomTitle, roomId }: Props) {
       </div>
       <div className="flex justify-center">
         <QRCodeCanvas
-          value={`${originURL}/music-request/student/${roomId}`}
+          value={`${typeof window !== 'undefined' ? window.location.origin : ''}/music-request/student/${roomId}`}
           size={380}
         />
       </div>

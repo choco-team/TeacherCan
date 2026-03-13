@@ -1,9 +1,8 @@
 import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import { useCallback, useEffect, useState } from 'react';
-import { head } from 'lodash';
 import MusicRegister from '@/containers/music-request/music-register/music-register';
-import { useMusicSSE } from '@/hooks/apis/music-request/use-music-sse';
+import { useMusicRealtime } from '@/hooks/apis/music-request/use-music-realtime';
 import { YoutubeVideo } from '@/apis/music-request/musicRequest';
 import MusicPlayer from './music-player/music-player';
 import RoomInfo from './room-info/room-info';
@@ -36,7 +35,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
     setRoomTitle(newRoomTitle);
   }, []);
 
-  const [sseConnectionStatus, reconnectSse] = useMusicSSE(
+  const [connectionStatus, reconnect] = useMusicRealtime(
     roomId,
     handleMusicInit,
     handleMusicUpdate,
@@ -61,10 +60,10 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
       return;
     }
 
-    setCurrentMusicId(head(musicList).musicId);
+    setCurrentMusicId(musicList[0].musicId);
   }, [currentMusicId, musicList]);
 
-  const defaultTabMenu = musicList.length === 0 ? 'rome-info' : 'music-list';
+  const defaultTabMenu = musicList.length === 0 ? 'room-info' : 'music-list';
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-0">
@@ -73,8 +72,8 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
           currentMusicId={currentMusicId}
           updateCurrentVideoId={updateCurrentVideoId}
           musicList={musicList}
-          sseConnectionStatus={sseConnectionStatus}
-          reconnectSse={reconnectSse}
+          connectionStatus={connectionStatus}
+          reconnect={reconnect}
         />
       </div>
       <Tabs
@@ -84,7 +83,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="music-list">신청목록</TabsTrigger>
           <TabsTrigger value="music-register">음악등록</TabsTrigger>
-          <TabsTrigger value="rome-info">방 정보</TabsTrigger>
+          <TabsTrigger value="room-info">방 정보</TabsTrigger>
         </TabsList>
         <TabsContent value="music-list">
           <MusicList
@@ -99,7 +98,7 @@ export default function MusicRequestTeacherMain({ roomId }: Props) {
             <MusicRegister roomId={roomId} studentName="선생님" />
           </div>
         </TabsContent>
-        <TabsContent value="rome-info">
+        <TabsContent value="room-info">
           <RoomInfo roomId={roomId} roomTitle={roomTitle} />
         </TabsContent>
       </Tabs>

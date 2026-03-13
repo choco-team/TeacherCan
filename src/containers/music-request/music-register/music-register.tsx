@@ -4,6 +4,7 @@ import { Input } from '@/components/input';
 import { ClipboardPaste, LoaderCircle } from 'lucide-react';
 import { Label } from '@/components/label';
 import { useCreateMusicRequestMusic } from '@/hooks/apis/music-request/use-create-music-request-music';
+import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import {
   AlertDialog,
@@ -39,7 +40,21 @@ export default function MusicRegister({ roomId, studentName }: Props) {
   }>({
     value: null,
   });
-  const [title, setTitle] = useState<string>(null);
+
+  const {
+    data: titleData,
+    isLoading: isTitleLoading,
+    error: titleError,
+  } = useQuery({
+    queryKey: ['youtube-title', result.musicId],
+    queryFn: () =>
+      fetch(`/api/youtube/video/title/${result.musicId}`).then((res) =>
+        res.json(),
+      ),
+    enabled: !!result.musicId,
+  });
+
+  const title = titleData?.title as string | undefined;
 
   const handleRequestMusic = () => {
     requestMusic(
@@ -61,7 +76,14 @@ export default function MusicRegister({ roomId, studentName }: Props) {
   };
 
   const handelClickClipboardPaste = async () => {
-    const url = await navigator.clipboard.readText();
+    let url: string;
+    try {
+      url = await navigator.clipboard.readText();
+    } catch {
+      return setResult({
+        value: '클립보드 접근에 실패했어요. HTTPS 환경에서 다시 시도해주세요.',
+      });
+    }
 
     if (!isValidUrl(url)) {
       return setResult({
@@ -140,7 +162,11 @@ export default function MusicRegister({ roomId, studentName }: Props) {
               fill
             />
           </div>
-          <MusicTitle musicId={result.musicId} setTitle={setTitle} />
+          <MusicTitle
+            title={title}
+            isLoading={isTitleLoading}
+            error={titleError}
+          />
           <Button
             variant="primary"
             size="sm"

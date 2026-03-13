@@ -7,16 +7,16 @@ type Props = {
   musicList: YoutubeVideo[];
   currentMusicId: string;
   updateCurrentVideoId: (musicId: string) => void;
-  sseConnectionStatus: 'connected' | 'disconnected' | 'reconnecting';
-  reconnectSse: () => void;
+  connectionStatus: 'connected' | 'disconnected' | 'reconnecting';
+  reconnect: () => void;
 };
 
 export default function MusicPlayer({
   musicList,
   currentMusicId,
   updateCurrentVideoId,
-  sseConnectionStatus,
-  reconnectSse,
+  connectionStatus,
+  reconnect,
 }: Props) {
   const currentVideoIndex = musicList.findIndex(
     ({ musicId }) => musicId === currentMusicId,
@@ -47,8 +47,8 @@ export default function MusicPlayer({
         musicOptions={musicOptions}
         updateMusicOption={updateMusicOption}
         handleMusicChange={musicHandler.handleMusicChange}
-        sseConnectionStatus={sseConnectionStatus}
-        reconnectSse={reconnectSse}
+        connectionStatus={connectionStatus}
+        reconnect={reconnect}
       />
     </>
   );
