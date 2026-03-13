@@ -24,6 +24,8 @@
       "error",
       { "some": ["nesting", "id"] }
     ],
-    "no-nested-ternary": "warn"
+    "no-nested-ternary": "warn",
+     "import/extensions": "off",
+    "react/button-has-type": "off"
   }
 }

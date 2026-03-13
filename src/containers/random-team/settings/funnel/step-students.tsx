@@ -29,6 +29,8 @@ export default function StepStudents({
     'numbers',
   );
 
+  const [showAllStudents, setShowAllStudents] = useState(false);
+
   const handleGenerated = useCallback(
     (list: string[]) => {
       onChangeStudents(list);
@@ -51,9 +53,45 @@ export default function StepStudents({
 
   const canProceed = students.length > 0;
 
+  const previewCount = 6;
+  const previewStudents = showAllStudents
+    ? students
+    : students.slice(0, previewCount);
+
+  const hiddenCount = students.length - previewCount;
+
   return (
     <>
       <Heading1 className="text-xl font-bold">1단계 · 학생 목록 생성</Heading1>
+
+      {/* 기존 학생 목록 표시 */}
+      {students.length > 0 && (
+        <Card className="p-4 w-full flex flex-col gap-2">
+          <Label className="font-semibold text-sm">
+            현재 학생 명단 ({students.length}명)
+          </Label>
+
+          <div className="flex flex-wrap gap-2 text-sm">
+            {previewStudents.map((name) => (
+              <span
+                key={name}
+                className="px-2 py-1 bg-gray-100 rounded text-xs"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+
+          {!showAllStudents && hiddenCount > 0 && (
+            <button
+              onClick={() => setShowAllStudents(true)}
+              className="text-xs text-blue-600 hover:underline w-fit"
+            >
+              +{hiddenCount}명 더 보기
+            </button>
+          )}
+        </Card>
+      )}
 
       <Card className="p-4 w-full">
         <Label className="mb-2 font-semibold text-sm">

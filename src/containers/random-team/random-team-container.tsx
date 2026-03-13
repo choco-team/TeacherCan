@@ -41,7 +41,7 @@ export default function RandomTeamContainer() {
 
           <Link href="/random-team/settings/1">
             <Button
-              variant="secondary"
+              variant="primary"
               size="sm"
               className="flex items-center gap-2 px-4 hover:shadow-md transition-all"
             >
