@@ -101,7 +101,6 @@ export default function TeamResult({
 
   useEffect(() => {
     if (!assignRef) return;
-
     const ref = assignRef;
     ref.current = assignTeams;
   }, [assignTeams, assignRef]);
@@ -111,9 +110,9 @@ export default function TeamResult({
   }, [assignTeams]);
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 space-y-6">
       {groups.length > 0 && (
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
           {groups.map((group, idx) => (
             <div
               key={group.id}

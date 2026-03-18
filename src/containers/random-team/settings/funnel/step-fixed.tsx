@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { Card } from '@/components/card';
 import { Label } from '@/components/label';
 import { Button } from '@/components/button';
 import { Heading1, Heading3 } from '@/components/heading';
-import { X } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 type PreAssignment = {
   student: string;
@@ -29,9 +30,18 @@ export default function StepFixed({
   onPrev,
   onNext,
 }: Props) {
+  const { toast } = useToast();
+
+  const [localAssignments, setLocalAssignments] =
+    useState<PreAssignment[]>(preAssignments);
+
+  useEffect(() => {
+    setLocalAssignments(preAssignments);
+  }, [preAssignments]);
+
   const assignedStudents = useMemo(
-    () => new Set(preAssignments.map((a) => a.student)),
-    [preAssignments],
+    () => new Set(localAssignments.map((a) => a.student)),
+    [localAssignments],
   );
 
   const unassignedStudents = useMemo(
@@ -42,7 +52,7 @@ export default function StepFixed({
   const maxSize = Math.ceil(students.length / teamCount);
 
   const getTeamAssignments = (groupIndex: number) =>
-    preAssignments.filter((a) => a.groupIndex === groupIndex);
+    localAssignments.filter((a) => a.groupIndex === groupIndex);
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
@@ -61,14 +71,26 @@ export default function StepFixed({
   ) => {
     e.preventDefault();
     const student = e.dataTransfer.getData('text/plain');
-    if (!student || assignedStudents.has(student)) return;
+    if (!student) return;
+
+    if (assignedStudents.has(student)) return;
     if (getTeamAssignments(groupIndex).length >= maxSize) return;
 
-    onChangePreAssignments([...preAssignments, { student, groupIndex }]);
+    setLocalAssignments([...localAssignments, { student, groupIndex }]);
   };
 
   const handleRemoveFixed = (student: string) => {
-    onChangePreAssignments(preAssignments.filter((a) => a.student !== student));
+    setLocalAssignments(localAssignments.filter((a) => a.student !== student));
+  };
+
+  const handleSave = () => {
+    onChangePreAssignments(localAssignments);
+
+    toast({
+      title: '고정 배정이 저장되었습니다.',
+      description: `총 ${localAssignments.length}명의 학생이 고정되었습니다.`,
+      variant: 'success',
+    });
   };
 
   return (
@@ -76,8 +98,7 @@ export default function StepFixed({
       <Heading1 className="text-xl font-bold">3단계 · 고정 학생 설정</Heading1>
 
       <p className="text-sm text-gray-600">
-        특정 학생을 미리 같은 모둠으로 지정할 수 있습니다. 설정하지 않아도
-        배정에는 문제가 없습니다.
+        특정 학생을 미리 같은 모둠으로 지정할 수 있습니다.
       </p>
 
       <Card className="p-4 w-full">
@@ -127,6 +148,7 @@ export default function StepFixed({
                       <span className="truncate max-w-[70px]">
                         {assignment.student}
                       </span>
+
                       <Button
                         variant="gray-ghost"
                         size="sm"
@@ -147,6 +169,12 @@ export default function StepFixed({
               </Card>
             );
           })}
+        </div>
+
+        <div className="flex justify-center mt-6">
+          <Button variant="primary" onClick={handleSave} className="px-6">
+            고정 배정 저장
+          </Button>
         </div>
       </Card>
 

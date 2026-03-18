@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import FunnelStepIndicator from './funnel-step-indicator';
@@ -16,13 +16,38 @@ export default function FunnelContainer() {
   const router = useRouter();
   const [step, setStep] = useState(1);
 
-  /** 퍼널 내부 상태 */
+  const [savedSettings, setRandomTeamSettings] = useRandomTeamSettings();
+
   const [students, setStudents] = useState<string[]>([]);
   const [teamCount, setTeamCount] = useState<number>(4);
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
 
-  /** ✅ random-team 전용 로컬스토리지 */
-  const [, setRandomTeamSettings] = useRandomTeamSettings();
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    if (initialized) return;
+    if (!savedSettings) return;
+
+    setStudents(savedSettings.students ?? []);
+    setTeamCount(savedSettings.teamCount ?? 4);
+    setPreAssignments(savedSettings.preAssignments ?? []);
+
+    setInitialized(true);
+  }, [savedSettings, initialized]);
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    setPreAssignments((prev) =>
+      prev.filter((p) => students.includes(p.student)),
+    );
+  }, [students, initialized]);
+
+  useEffect(() => {
+    if (!initialized) return;
+
+    setPreAssignments((prev) => prev.filter((p) => p.groupIndex < teamCount));
+  }, [teamCount, initialized]);
 
   const handleRun = () => {
     setRandomTeamSettings({
@@ -41,10 +66,7 @@ export default function FunnelContainer() {
       {step === 1 && (
         <StepStudents
           students={students}
-          onChangeStudents={(list) => {
-            setStudents(list);
-            setPreAssignments([]);
-          }}
+          onChangeStudents={setStudents}
           onNext={() => setStep(2)}
         />
       )}
@@ -52,10 +74,7 @@ export default function FunnelContainer() {
       {step === 2 && (
         <StepBasic
           teamCount={teamCount}
-          onChangeTeamCount={(count) => {
-            setTeamCount(count);
-            setPreAssignments([]);
-          }}
+          onChangeTeamCount={setTeamCount}
           onPrev={() => setStep(1)}
           onNext={() => setStep(3)}
         />
