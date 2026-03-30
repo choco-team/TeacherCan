@@ -34,6 +34,7 @@ export const MENU_ROUTE = {
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
   RANDOM_TEAM: '/random-team',
+  SKIP_NUMBER: '/skip_number',
 } as const;
 
 export const HELP_ROUTE = {
@@ -113,6 +114,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '랜덤 모둠 뽑기',
     Icon: SplitIcon,
     href: MENU_ROUTE.RANDOM_TEAM,
+  },
+  '/skip_number': {
+    title: '스킵 카운팅',
+    Icon: DicesIcon,
+    href: MENU_ROUTE.SKIP_NUMBER,
   },
   '/timer': {
     title: '타이머',

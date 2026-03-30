@@ -99,6 +99,11 @@ const breadcrumbs: Record<
     url: '/random-team',
     icon: <SplitIcon size="1rem" />,
   },
+  skip_number: {
+    name: '스킵 카운팅',
+    url: '/skip_number',
+    icon: <DicesIcon size="1rem" />,
+  },
   stopwatch: {
     name: '스톱워치',
     url: '/stopwatch',
