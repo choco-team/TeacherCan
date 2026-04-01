@@ -17,6 +17,7 @@ import {
   WatchIcon,
   GroupIcon,
   FileTextIcon,
+  VoteIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -34,6 +35,7 @@ export const MENU_ROUTE = {
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
   RANDOM_TEAM: '/random-team',
+  QUICKPOLL: '/quickpoll',
 } as const;
 
 export const HELP_ROUTE = {
@@ -133,6 +135,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '알림장 문구 추천',
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
+  },
+  '/quickpoll': {
+    title: '투표 시스템',
+    Icon: VoteIcon,
+    href: MENU_ROUTE.QUICKPOLL,
+    isNew: true,
   },
 };
 
