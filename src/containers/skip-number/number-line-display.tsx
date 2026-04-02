@@ -24,7 +24,7 @@ export function NumberLineDisplay({
 
     const padding = Math.max(Math.abs(hi - lo) * 0.2, tickInterval * 3);
     const calculatedMin =
-      Math.floor((lo - padding) / tickInterval) * tickInterval; // Math.max(0, ...) 제거
+      Math.floor((lo - padding) / tickInterval) * tickInterval;
     const calculatedMax =
       Math.ceil((hi + padding) / tickInterval) * tickInterval;
 
@@ -60,6 +60,8 @@ export function NumberLineDisplay({
     ['--jump-forward' as any]: '0 64% 68%',
     ['--jump-backward' as any]: '197 100% 32%',
   };
+
+  const latestNum = allNumbers[allNumbers.length - 1];
 
   return (
     <div
@@ -153,7 +155,6 @@ export function NumberLineDisplay({
 
         {/* Number line axis */}
         <div className="relative h-2 bg-foreground/30 rounded-full">
-          {/* Major tick marks */}
           {ticks.map((tick) => {
             const pct = numToPercent(tick);
             const isHighlighted = allNumbers.includes(tick);
@@ -189,8 +190,7 @@ export function NumberLineDisplay({
             );
           })}
 
-          {/* Highlighted dots */}
-          {/* start dot */}
+          {/* 지나온 점들 (애니메이션 없음) */}
           <div
             key="dot-start"
             className="absolute rounded-full border-2 border-card bg-accent w-6 h-6"
@@ -198,30 +198,34 @@ export function NumberLineDisplay({
               left: `${numToPercent(allNumbers[0])}%`,
               top: '50%',
               transform: 'translate(-50%, -50%)',
-              zIndex: jumps.length > 0 ? 5 : 10,
+              zIndex: 5,
             }}
           />
 
-          {jumps.map((jump) => {
-            const pct = numToPercent(jump.to);
-            const isLatest = jump.index === jumps.length - 1;
-            const dotClass = isLatest
-              ? 'bg-primary w-7 h-7 animate-bounce'
-              : 'bg-primary/70 w-5 h-5';
+          {jumps.slice(0, -1).map((jump) => (
+            <div
+              key={`dot-${jump.index}`}
+              className="absolute rounded-full border-2 border-card bg-primary/70 w-5 h-5"
+              style={{
+                left: `${numToPercent(jump.to)}%`,
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 5,
+              }}
+            />
+          ))}
 
-            return (
-              <div
-                key={`dot-${jump.index}`}
-                className={`absolute rounded-full border-2 border-card ${dotClass}`}
-                style={{
-                  left: `${pct}%`,
-                  top: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: isLatest ? 10 : 5,
-                }}
-              />
-            );
-          })}
+          {/* 현재 위치 원 — transition으로 부드럽게 이동 */}
+          <div
+            className="absolute rounded-full border-2 border-card bg-primary w-7 h-7"
+            style={{
+              left: `${numToPercent(latestNum)}%`,
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 10,
+              transition: 'left 0.4s ease',
+            }}
+          />
         </div>
       </div>
     </div>
