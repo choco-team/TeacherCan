@@ -6,9 +6,9 @@ import { Heading1 } from '@/components/heading';
 
 import { Card } from '@/components/card';
 
-import { NumberLineControls } from './NumberLineControls';
-import { NumberLineDisplay } from './NumberLineDisplay';
-import { JumpHistory } from './JumpHistory';
+import { NumberLineControls } from './number-line-controls';
+import { NumberLineDisplay } from './number-line-display';
+import { JumpHistory } from './jump-history';
 
 import type { Jump } from './types';
 
@@ -53,7 +53,7 @@ export default function SkipNumberContainer() {
   return (
     <div className="p-6 max-w-6xl mx-auto flex flex-col gap-6">
       <Card className="p-5 flex flex-col gap-3">
-        <Heading1 className="text-xl font-bold">스킵 카운팅</Heading1>
+        <Heading1 className="text-xl font-bold">숫자 뛰어세기</Heading1>
         <p className="text-sm text-muted-foreground">
           시작 숫자부터 `뛰어셀 수(스텝)`만큼 건너뛰며 수직선을 연습해요.
         </p>

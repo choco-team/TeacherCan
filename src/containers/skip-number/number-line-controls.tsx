@@ -71,7 +71,7 @@ export function NumberLineControls({
   onReset,
 }: NumberLineControlsProps) {
   const startInput = useNumberInput(startNumber, onStartNumberChange, 0);
-  const stepInput = useNumberInput(stepSize, onStepSizeChange, 1, 1);
+  const stepInput = useNumberInput(stepSize, onStepSizeChange, 1); // minVal 제거
   const tickInput = useNumberInput(tickInterval, onTickIntervalChange, 1, 1);
 
   return (
@@ -109,7 +109,7 @@ export function NumberLineControls({
               onChange={stepInput.handleChange}
               onBlur={stepInput.handleBlur}
               className="w-28 text-right text-lg font-bold"
-              min={1}
+              // min={1} 제거
             />
           </div>
 

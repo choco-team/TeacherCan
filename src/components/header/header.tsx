@@ -100,7 +100,7 @@ const breadcrumbs: Record<
     icon: <SplitIcon size="1rem" />,
   },
   skip_number: {
-    name: '스킵 카운팅',
+    name: '숫자 뛰어세기',
     url: '/skip_number',
     icon: <DicesIcon size="1rem" />,
   },

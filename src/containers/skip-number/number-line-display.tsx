@@ -22,12 +22,9 @@ export function NumberLineDisplay({
     const lo = Math.min(...nums);
     const hi = Math.max(...nums);
 
-    // 새 프로젝트의 padding 로직을 그대로 가져옵니다.
     const padding = Math.max(Math.abs(hi - lo) * 0.2, tickInterval * 3);
-    const calculatedMin = Math.max(
-      0,
-      Math.floor((lo - padding) / tickInterval) * tickInterval,
-    );
+    const calculatedMin =
+      Math.floor((lo - padding) / tickInterval) * tickInterval; // Math.max(0, ...) 제거
     const calculatedMax =
       Math.ceil((hi + padding) / tickInterval) * tickInterval;
 
