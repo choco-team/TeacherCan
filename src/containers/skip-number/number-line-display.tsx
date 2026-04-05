@@ -22,7 +22,7 @@ export function NumberLineDisplay({
     const lo = Math.min(...nums);
     const hi = Math.max(...nums);
 
-    const padding = Math.max(Math.abs(hi - lo) * 0.2, tickInterval * 3);
+    const padding = tickInterval * 2; // 항상 눈금 2칸씩 고정 패딩
     const calculatedMin =
       Math.floor((lo - padding) / tickInterval) * tickInterval;
     const calculatedMax =
