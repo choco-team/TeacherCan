@@ -17,6 +17,7 @@ import {
   ClockIcon,
   FileTextIcon,
   Hourglass,
+  UnfoldHorizontal,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -102,7 +103,7 @@ const breadcrumbs: Record<
   skip_number: {
     name: '숫자 뛰어세기',
     url: '/skip_number',
-    icon: <DicesIcon size="1rem" />,
+    icon: <UnfoldHorizontal size="1rem" />,
   },
   stopwatch: {
     name: '스톱워치',

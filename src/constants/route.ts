@@ -17,6 +17,7 @@ import {
   WatchIcon,
   GroupIcon,
   FileTextIcon,
+  UnfoldHorizontal,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -117,7 +118,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   },
   '/skip-number': {
     title: '숫자 뛰어세기',
-    Icon: DicesIcon,
+    Icon: UnfoldHorizontal,
     href: MENU_ROUTE.SKIP_NUMBER,
   },
   '/timer': {
