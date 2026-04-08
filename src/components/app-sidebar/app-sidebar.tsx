@@ -1,17 +1,18 @@
 'use client';
 
 import React from 'react';
+import { ChevronsLeft, ChevronDown, TimerIcon } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import useRecentlyVisited from '@/hooks/use-recently-visited';
 import {
   DATA_PATH_DATA,
   HELP_PATH_DATA,
   MENU_PATH_DATA,
   MENU_ROUTE,
   MenuRoutePath,
+  TOOL_PATH_DATA,
 } from '@/constants/route';
-import { ChevronsLeft, ChevronDown, TimerIcon } from 'lucide-react';
-import useRecentlyVisited from '@/hooks/use-recently-visited';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 import EventIcon from '@/components/event-icon';
 import { cn } from '@/styles/utils';
 import PopupLink from '../popup-link';
@@ -192,6 +193,26 @@ export default function AppSidebar() {
                   );
                 },
               )}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>수업 도구</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {Object.entries(TOOL_PATH_DATA).map(([path, { title, Icon }]) => (
+                <SidebarMenuItem key={path}>
+                  <Link
+                    onClick={handleClickMenu}
+                    href={path}
+                    className={`${pathname.startsWith(path) ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                  >
+                    <Icon size="1rem" />
+                    <span>{title}</span>
+                  </Link>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
