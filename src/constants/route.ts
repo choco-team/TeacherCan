@@ -17,9 +17,11 @@ import {
   WatchIcon,
   GroupIcon,
   FileTextIcon,
+  UnfoldHorizontal,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
+// NOTE:(김홍동) 메인 네비게이션(메뉴)에서 사용하는 라우트
 export const MENU_ROUTE = {
   LANDING: '/',
   NOTICE: '/notice',
@@ -36,6 +38,12 @@ export const MENU_ROUTE = {
   RANDOM_TEAM: '/random-team',
 } as const;
 
+// NOTE:(김홍동) 수업도구 전용 라우트 (메뉴와 분리하여 관리)
+export const TOOL_ROUTE = {
+  SKIP_NUMBER: '/skip-number',
+} as const;
+
+// NOTE:(김홍동) 도움 영역에서 사용하는 라우트
 export const HELP_ROUTE = {
   FEEDBACK: '/feedback',
   SETTING: '/setting',
@@ -44,15 +52,26 @@ export const HELP_ROUTE = {
   PRIVACY_POLICY: '/legal/privacy-policy',
 } as const;
 
+// NOTE:(김홍동) 데이터 관리 영역에서 사용하는 라우트
 export const DATA_ROUTE = {
   STUDENT: '/data-service/student-data',
   LOCAL_DATA: '/data-service/local-data',
 } as const;
 
+// ================= 타입 정의 =================
+
 type DataRoutePath = (typeof DATA_ROUTE)[keyof typeof DATA_ROUTE];
 
+// NOTE:(김홍동) 메뉴 라우트 타입
 export type MenuRoutePath = (typeof MENU_ROUTE)[keyof typeof MENU_ROUTE];
 
+// NOTE:(김홍동) 수업도구 라우트 타입
+export type ToolRoutePath = (typeof TOOL_ROUTE)[keyof typeof TOOL_ROUTE];
+
+// NOTE:(김홍동) 도움 라우트 타입
+type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
+
+// NOTE:(김홍동) 공통 PathData 타입 (사이드바/최근 방문에서 사용)
 type PathData<T extends string> = Partial<
   Record<
     T,
@@ -71,19 +90,19 @@ type PathData<T extends string> = Partial<
   >
 >;
 
-// NOTE:(김홍동) 네이게이션의 메뉴 영역과 최근 방문 페이지에서 사용되는 객체입니다.
+// ================= 메뉴 =================
+
+// NOTE:(김홍동) 네비게이션의 메뉴 영역과 최근 방문 페이지에서 사용되는 객체입니다.
 export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   '/routine-timer': {
     title: '루틴타이머',
     Icon: Hourglass,
     href: MENU_ROUTE.ROUTINE_TIMER,
-    isNew: true,
   },
   '/clock': {
     title: '시계',
     Icon: ClockIcon,
     href: MENU_ROUTE.CLOCK,
-    isNew: true,
     children: [
       { title: '아날로그', href: `${MENU_ROUTE.CLOCK}/analog` },
       { title: '디지털', href: `${MENU_ROUTE.CLOCK}/digital` },
@@ -136,9 +155,37 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
   },
 };
 
-type HelpRoutePath = (typeof HELP_ROUTE)[keyof typeof HELP_ROUTE];
+// ================= 수업도구 =================
 
-// NOTE:(김홍동) 네이게이션의 도움 영역에서 사용되는 객체입니다.
+// NOTE:(김홍동) 네비게이션의 수업도구 영역에서 사용되는 객체입니다.
+export const TOOL_PATH_DATA: PathData<ToolRoutePath> = {
+  '/skip-number': {
+    title: '숫자 뛰어세기',
+    Icon: UnfoldHorizontal,
+    href: TOOL_ROUTE.SKIP_NUMBER,
+    isNew: true,
+  },
+};
+
+// ================= 데이터 =================
+
+// NOTE:(김홍동) 네비게이션의 데이터 관리 영역에서 사용되는 객체입니다.
+export const DATA_PATH_DATA: PathData<DataRoutePath> = {
+  '/data-service/student-data': {
+    title: '학생 데이터 관리',
+    Icon: Users,
+    href: DATA_ROUTE.STUDENT,
+  },
+  '/data-service/local-data': {
+    title: '로컬 데이터 관리',
+    Icon: DatabaseIcon,
+    href: DATA_ROUTE.LOCAL_DATA,
+  },
+};
+
+// ================= 도움 =================
+
+// NOTE:(김홍동) 네비게이션의 도움 영역에서 사용되는 객체입니다.
 export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
   '/announcement': {
     title: '공지사항',
@@ -162,36 +209,34 @@ export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
   },
 };
 
-export const DATA_PATH_DATA: PathData<DataRoutePath> = {
-  '/data-service/student-data': {
-    title: '학생 데이터 관리',
-    Icon: Users,
-    href: DATA_ROUTE.STUDENT,
-  },
-  '/data-service/local-data': {
-    title: '로컬 데이터 관리',
-    Icon: DatabaseIcon,
-    href: DATA_ROUTE.LOCAL_DATA,
-  },
-};
+// ================= 유틸 =================
 
 /**
+ * NOTE:(김홍동)
  * 저장된 pathname(최근 방문 등)을 사용자용 제목으로 변환.
- * 메뉴/데이터/도움말 경로와 시계 하위(아날로그·디지털)를 모두 처리.
+ * 메뉴 / 수업도구 / 데이터 / 도움 / 시계 하위(아날로그·디지털)까지 모두 처리
  */
 export function getPathDisplayTitle(path: string): string {
   if (!path || typeof path !== 'string') return '(알 수 없음)';
   const p = path.trim();
+
   const menu = MENU_PATH_DATA[p as MenuRoutePath];
   if (menu?.title) return menu.title;
+
+  const tool = TOOL_PATH_DATA[p as ToolRoutePath];
+  if (tool?.title) return tool.title;
+
   const childMatch = Object.values(MENU_PATH_DATA).find(
     (entry) => entry?.children?.find((c) => c.href === p) != null,
   );
   const child = childMatch?.children?.find((c) => c.href === p);
   if (child?.title) return child.title;
+
   const data = DATA_PATH_DATA[p as DataRoutePath];
   if (data?.title) return data.title;
+
   const help = HELP_PATH_DATA[p as HelpRoutePath];
   if (help?.title) return help.title;
+
   return p || '(알 수 없음)';
 }

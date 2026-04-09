@@ -17,6 +17,7 @@ import {
   ClockIcon,
   FileTextIcon,
   Hourglass,
+  UnfoldHorizontal,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -98,6 +99,11 @@ const breadcrumbs: Record<
     name: '랜덤 모둠 뽑기',
     url: '/random-team',
     icon: <SplitIcon size="1rem" />,
+  },
+  'skip-number': {
+    name: '숫자 뛰어세기',
+    url: '/skip-number',
+    icon: <UnfoldHorizontal size="1rem" />,
   },
   stopwatch: {
     name: '스톱워치',
