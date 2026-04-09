@@ -100,9 +100,9 @@ const breadcrumbs: Record<
     url: '/random-team',
     icon: <SplitIcon size="1rem" />,
   },
-  skip_number: {
+  'skip-number': {
     name: '숫자 뛰어세기',
-    url: '/skip_number',
+    url: '/skip-number',
     icon: <UnfoldHorizontal size="1rem" />,
   },
   stopwatch: {

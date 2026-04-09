@@ -98,13 +98,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '루틴타이머',
     Icon: Hourglass,
     href: MENU_ROUTE.ROUTINE_TIMER,
-    isNew: true,
   },
   '/clock': {
     title: '시계',
     Icon: ClockIcon,
     href: MENU_ROUTE.CLOCK,
-    isNew: true,
     children: [
       { title: '아날로그', href: `${MENU_ROUTE.CLOCK}/analog` },
       { title: '디지털', href: `${MENU_ROUTE.CLOCK}/digital` },
@@ -165,6 +163,7 @@ export const TOOL_PATH_DATA: PathData<ToolRoutePath> = {
     title: '숫자 뛰어세기',
     Icon: UnfoldHorizontal,
     href: TOOL_ROUTE.SKIP_NUMBER,
+    isNew: true,
   },
 };
 

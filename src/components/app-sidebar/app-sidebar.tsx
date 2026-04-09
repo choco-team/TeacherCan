@@ -47,12 +47,12 @@ export default function AppSidebar() {
   const [clockOpen, setClockOpen] = React.useState(false);
 
   const showSidebarIcon = isMobile ? openMobile : open;
+
   const handleClickSidebarIcon = () => {
     if (isMobile) {
       setOpenMobile(false);
       return;
     }
-
     setOpen(false);
   };
 
@@ -62,6 +62,7 @@ export default function AppSidebar() {
 
   return (
     <Sidebar className="border-none shadow-md">
+      {/* ================= 헤더 ================= */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center justify-between gap-1">
@@ -77,21 +78,25 @@ export default function AppSidebar() {
               <EventIcon width={16} height={16} className="size-4" />
               <span>티처캔</span>
             </Link>
-            {showSidebarIcon ? (
+
+            {showSidebarIcon && (
               <ChevronsLeft
                 onClick={handleClickSidebarIcon}
                 size="1.2rem"
                 className="cursor-pointer text-text-subtitle"
               />
-            ) : null}
+            )}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
+        {/* ================= 메뉴 ================= */}
         <SidebarGroup>
           <SidebarGroupLabel>메뉴</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              {/* 타이머 (팝업) */}
               <SidebarMenuItem>
                 <PopupLink
                   size={7 / 8}
@@ -103,22 +108,20 @@ export default function AppSidebar() {
                   <span>타이머</span>
                 </PopupLink>
               </SidebarMenuItem>
+
               {Object.entries(MENU_PATH_DATA).map(
                 ([path, { title, Icon, isNew, children }]) => {
-                  if (path === MENU_ROUTE.TIMER) {
-                    return null;
-                  }
+                  if (path === MENU_ROUTE.TIMER) return null;
 
                   return (
                     <SidebarMenuItem key={path}>
-                      {/*
-                        Parent link
-                      */}
+                      {/* 부모 메뉴 */}
                       {(() => {
                         const hasChildren = Boolean(children?.length);
                         const parentActive = hasChildren
                           ? pathname === path
                           : pathname.startsWith(path);
+
                         return (
                           <Link
                             onClick={handleClickMenu}
@@ -145,6 +148,8 @@ export default function AppSidebar() {
                           </Link>
                         );
                       })()}
+
+                      {/* 하위 메뉴 */}
                       {children && children.length > 0 && (
                         <>
                           <SidebarMenuAction
@@ -158,13 +163,14 @@ export default function AppSidebar() {
                           >
                             <ChevronDown
                               className={cn(
-                                'transition-transform ',
+                                'transition-transform',
                                 (clockOpen || pathname.startsWith(path)) &&
                                   'rotate-180',
                               )}
                             />
                           </SidebarMenuAction>
-                          {clockOpen || pathname.startsWith(path) ? (
+
+                          {(clockOpen || pathname.startsWith(path)) && (
                             <SidebarMenuSub className="bg-transparent">
                               {children.map((child) => {
                                 const active = pathname.startsWith(child.href);
@@ -186,7 +192,7 @@ export default function AppSidebar() {
                                 );
                               })}
                             </SidebarMenuSub>
-                          ) : null}
+                          )}
                         </>
                       )}
                     </SidebarMenuItem>
@@ -197,26 +203,45 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* ================= 수업 도구 ================= */}
         <SidebarGroup>
           <SidebarGroupLabel>수업 도구</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {Object.entries(TOOL_PATH_DATA).map(([path, { title, Icon }]) => (
-                <SidebarMenuItem key={path}>
-                  <Link
-                    onClick={handleClickMenu}
-                    href={path}
-                    className={`${pathname.startsWith(path) ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
-                  >
-                    <Icon size="1rem" />
-                    <span>{title}</span>
-                  </Link>
-                </SidebarMenuItem>
-              ))}
+              {Object.entries(TOOL_PATH_DATA).map(
+                ([path, { title, Icon, isNew }]) => (
+                  <SidebarMenuItem key={path}>
+                    <Link
+                      onClick={handleClickMenu}
+                      href={path}
+                      className={cn(
+                        pathname.startsWith(path) &&
+                          'text-text-title bg-bg-secondary dark:bg-gray-950',
+                        linkClass,
+                      )}
+                    >
+                      <Icon size="1rem" />
+                      <div className="flex items-center gap-0.5">
+                        <span>{title}</span>
+                        {isNew && (
+                          <Badge
+                            size="xs"
+                            variant="primary-outline"
+                            className="border-0"
+                          >
+                            New
+                          </Badge>
+                        )}
+                      </div>
+                    </Link>
+                  </SidebarMenuItem>
+                ),
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* ================= 데이터 ================= */}
         <SidebarGroup>
           <SidebarGroupLabel>데이터 관리</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -227,7 +252,11 @@ export default function AppSidebar() {
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname === path ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                      className={cn(
+                        pathname === path &&
+                          'text-text-title bg-bg-secondary dark:bg-gray-950',
+                        linkClass,
+                      )}
                     >
                       <Icon size="1rem" />
                       <span>{title}</span>
@@ -248,21 +277,24 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* ================= 도움 ================= */}
         <SidebarGroup>
           <SidebarGroupLabel>도움</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {Object.entries(HELP_PATH_DATA).map(([path, { title, Icon }]) => {
-                if (path === MENU_ROUTE.TIMER) {
-                  return null;
-                }
+                if (path === MENU_ROUTE.TIMER) return null;
 
                 return (
                   <SidebarMenuItem key={path}>
                     <Link
                       onClick={handleClickMenu}
                       href={path}
-                      className={`${pathname.startsWith(path) ? 'text-text-title bg-bg-secondary dark:bg-gray-950' : ''} ${linkClass}`}
+                      className={cn(
+                        pathname.startsWith(path) &&
+                          'text-text-title bg-bg-secondary dark:bg-gray-950',
+                        linkClass,
+                      )}
                     >
                       <Icon size="1rem" />
                       <span>{title}</span>
@@ -274,6 +306,7 @@ export default function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter />
     </Sidebar>
   );
