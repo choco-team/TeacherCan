@@ -28,6 +28,7 @@ type Props = {
   teamCount: number;
   preAssignments?: PreAssignment[];
   assignRef?: MutableRefObject<(() => void) | undefined>;
+  showFixedMark?: boolean; // 추가
 };
 
 function makeId(): string {
@@ -46,6 +47,7 @@ export default function TeamResult({
   teamCount,
   preAssignments = [],
   assignRef,
+  showFixedMark = true, // 추가
 }: Props) {
   const [groups, setGroups] = useState<Group[]>([]);
 
@@ -127,9 +129,12 @@ export default function TeamResult({
                   );
 
                   return (
-                    <li key={member.id} className={isFixed ? 'font-bold' : ''}>
+                    <li
+                      key={member.id}
+                      className={isFixed && showFixedMark ? 'font-bold' : ''}
+                    >
                       {member.name}
-                      {isFixed && ' 🔒'}
+                      {isFixed && showFixedMark && ' 🔒'} {/* 수정 */}
                     </li>
                   );
                 })}

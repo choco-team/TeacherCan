@@ -85,6 +85,7 @@ export default function RandomTeamContainer() {
             teamCount={settings.teamCount}
             preAssignments={settings.preAssignments}
             assignRef={assignRef}
+            showFixedMark={settings.showFixedMark}
           />
         </div>
       )}
