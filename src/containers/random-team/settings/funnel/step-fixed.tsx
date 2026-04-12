@@ -107,7 +107,7 @@ export default function StepFixed({
         <div>
           <Label className="font-semibold text-sm">고정 학생 표시 🔒</Label>
           <p className="text-xs text-gray-500 mt-0.5">
-            결과 화면에서 고정된 학생에게 자물쇠를 표시합니다.
+            결과 화면에서 고정된 학생을 표시합니다.
           </p>
         </div>
         <button
