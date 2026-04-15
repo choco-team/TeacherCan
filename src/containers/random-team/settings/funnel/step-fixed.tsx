@@ -17,7 +17,9 @@ type Props = {
   students: string[];
   teamCount: number;
   preAssignments: PreAssignment[];
+  showFixedMark: boolean; // 추가
   onChangePreAssignments: (list: PreAssignment[]) => void;
+  onChangeShowFixedMark: (value: boolean) => void; // 추가
   onPrev: () => void;
   onNext: () => void;
 };
@@ -26,7 +28,9 @@ export default function StepFixed({
   students,
   teamCount,
   preAssignments,
+  showFixedMark,
   onChangePreAssignments,
+  onChangeShowFixedMark,
   onPrev,
   onNext,
 }: Props) {
@@ -72,10 +76,8 @@ export default function StepFixed({
     e.preventDefault();
     const student = e.dataTransfer.getData('text/plain');
     if (!student) return;
-
     if (assignedStudents.has(student)) return;
     if (getTeamAssignments(groupIndex).length >= maxSize) return;
-
     setLocalAssignments([...localAssignments, { student, groupIndex }]);
   };
 
@@ -85,7 +87,6 @@ export default function StepFixed({
 
   const handleSave = () => {
     onChangePreAssignments(localAssignments);
-
     toast({
       title: '고정 배정이 저장되었습니다.',
       description: `총 ${localAssignments.length}명의 학생이 고정되었습니다.`,
@@ -101,6 +102,30 @@ export default function StepFixed({
         특정 학생을 미리 같은 모둠으로 지정할 수 있습니다.
       </p>
 
+      {/* 🔒 표시 여부 토글 */}
+      <Card className="p-4 w-full flex items-center justify-between">
+        <div>
+          <Label className="font-semibold text-sm">고정 학생 표시 🔒</Label>
+          <p className="text-xs text-gray-500 mt-0.5">
+            결과 화면에서 고정된 학생을 표시합니다.
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-label="고정 학생 표시 여부 토글"
+          onClick={() => onChangeShowFixedMark(!showFixedMark)}
+          className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none ${
+            showFixedMark ? 'bg-primary' : 'bg-gray-300'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200 ${
+              showFixedMark ? 'translate-x-5' : 'translate-x-0'
+            }`}
+          />
+        </button>
+      </Card>
+
       <Card className="p-4 w-full">
         <Label className="mb-2 font-semibold text-sm">고정되지 않은 학생</Label>
 
@@ -115,7 +140,6 @@ export default function StepFixed({
               {student}
             </div>
           ))}
-
           {unassignedStudents.length === 0 && (
             <p className="text-xs text-gray-500">남은 학생 없음</p>
           )}
@@ -129,9 +153,7 @@ export default function StepFixed({
             return (
               <Card
                 key={idx}
-                className={`p-1 border-dashed border-2 min-h-[100px] ${
-                  isFull ? 'opacity-50' : ''
-                }`}
+                className={`p-1 border-dashed border-2 min-h-[100px] ${isFull ? 'opacity-50' : ''}`}
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, idx)}
               >
@@ -148,7 +170,6 @@ export default function StepFixed({
                       <span className="truncate max-w-[70px]">
                         {assignment.student}
                       </span>
-
                       <Button
                         variant="gray-ghost"
                         size="sm"
@@ -159,7 +180,6 @@ export default function StepFixed({
                       </Button>
                     </div>
                   ))}
-
                   {teamAssignments.length === 0 && (
                     <p className="text-xs text-gray-500 w-full text-center mt-1">
                       학생 없음

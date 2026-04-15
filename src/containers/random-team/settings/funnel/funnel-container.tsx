@@ -21,6 +21,7 @@ export default function FunnelContainer() {
   const [students, setStudents] = useState<string[]>([]);
   const [teamCount, setTeamCount] = useState<number>(4);
   const [preAssignments, setPreAssignments] = useState<PreAssignment[]>([]);
+  const [showFixedMark, setShowFixedMark] = useState<boolean>(true); // 추가
 
   const [initialized, setInitialized] = useState(false);
 
@@ -31,13 +32,13 @@ export default function FunnelContainer() {
     setStudents(savedSettings.students ?? []);
     setTeamCount(savedSettings.teamCount ?? 4);
     setPreAssignments(savedSettings.preAssignments ?? []);
+    setShowFixedMark(savedSettings.showFixedMark ?? true); // 추가
 
     setInitialized(true);
   }, [savedSettings, initialized]);
 
   useEffect(() => {
     if (!initialized) return;
-
     setPreAssignments((prev) =>
       prev.filter((p) => students.includes(p.student)),
     );
@@ -45,7 +46,6 @@ export default function FunnelContainer() {
 
   useEffect(() => {
     if (!initialized) return;
-
     setPreAssignments((prev) => prev.filter((p) => p.groupIndex < teamCount));
   }, [teamCount, initialized]);
 
@@ -54,6 +54,7 @@ export default function FunnelContainer() {
       students,
       teamCount,
       preAssignments,
+      showFixedMark, // 추가
     });
 
     router.push('/random-team');
@@ -85,7 +86,9 @@ export default function FunnelContainer() {
           students={students}
           teamCount={teamCount}
           preAssignments={preAssignments}
+          showFixedMark={showFixedMark}
           onChangePreAssignments={setPreAssignments}
+          onChangeShowFixedMark={setShowFixedMark}
           onPrev={() => setStep(2)}
           onNext={() => setStep(4)}
         />

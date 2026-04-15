@@ -28,6 +28,7 @@ type Props = {
   teamCount: number;
   preAssignments?: PreAssignment[];
   assignRef?: MutableRefObject<(() => void) | undefined>;
+  showFixedMark?: boolean;
 };
 
 function makeId(): string {
@@ -46,6 +47,7 @@ export default function TeamResult({
   teamCount,
   preAssignments = [],
   assignRef,
+  showFixedMark = true,
 }: Props) {
   const [groups, setGroups] = useState<Group[]>([]);
 
@@ -96,7 +98,12 @@ export default function TeamResult({
       capacities[cursor] -= 1;
     });
 
-    setGroups(groupsBase);
+    const shuffledGroups = groupsBase.map((group) => ({
+      ...group,
+      members: shuffle(group.members),
+    }));
+
+    setGroups(shuffledGroups);
   }, [students, teamCount, preAssignments]);
 
   useEffect(() => {
@@ -127,9 +134,12 @@ export default function TeamResult({
                   );
 
                   return (
-                    <li key={member.id} className={isFixed ? 'font-bold' : ''}>
+                    <li
+                      key={member.id}
+                      className={isFixed && showFixedMark ? 'font-bold' : ''}
+                    >
                       {member.name}
-                      {isFixed && ' 🔒'}
+                      {isFixed && showFixedMark && ' 🔒'}
                     </li>
                   );
                 })}
