@@ -65,6 +65,14 @@ export const LOCAL_STORAGE_KEY_META: Record<
     label: '음악 신청 방 목록',
     description: '음악 신청에서 사용하는 방(교실) ID 목록입니다.',
   },
+  'vote-room-ids': {
+    label: '투표 방 목록',
+    description: '투표하기에서 저장한 투표 방 ID 목록입니다.',
+  },
+  'vote-active-room-id': {
+    label: '진행 중 투표 방',
+    description: '투표하기에서 복구 가능한 진행 중 방 ID입니다.',
+  },
   routines: {
     label: '루틴 목록',
     description: '루틴 타이머에 저장한 루틴 목록입니다.',
@@ -117,6 +125,11 @@ export const LOCAL_STORAGE_GROUPS = [
     id: 'music-request',
     label: '음악신청',
     keys: ['roomIds'],
+  },
+  {
+    id: 'vote',
+    label: '투표하기',
+    keys: ['vote-room-ids', 'vote-active-room-id'],
   },
   {
     id: 'routine-timer',

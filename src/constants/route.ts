@@ -12,6 +12,7 @@ import {
   WandSparklesIcon,
   MegaphoneIcon,
   CircleDotIcon,
+  VoteIcon,
   SplitIcon,
   ClockIcon,
   WatchIcon,
@@ -36,6 +37,7 @@ export const MENU_ROUTE = {
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
   RANDOM_TEAM: '/random-team',
+  VOTE: '/vote',
 } as const;
 
 // NOTE:(김홍동) 수업도구 전용 라우트 (메뉴와 분리하여 관리)
@@ -107,6 +109,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
       { title: '아날로그', href: `${MENU_ROUTE.CLOCK}/analog` },
       { title: '디지털', href: `${MENU_ROUTE.CLOCK}/digital` },
     ],
+  },
+  '/vote': {
+    title: '투표하기',
+    Icon: VoteIcon,
+    href: MENU_ROUTE.VOTE,
+    isNew: true,
   },
   '/stopwatch': {
     title: '스톱워치',
