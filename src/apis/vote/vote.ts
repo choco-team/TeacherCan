@@ -46,6 +46,8 @@ export type SubmitVoteBallotParams = {
   participantName: string;
 };
 
+const MAX_VOTE_OPTIONS = 10;
+
 const buildRoundResults = (
   rounds: VoteRoundRow[],
   options: VoteOptionRow[],
@@ -195,8 +197,10 @@ export const createVoteRound = async ({
     throw new Error('선택지는 최소 2개 이상 필요합니다.');
   }
 
-  if (trimmedOptions.length > 50) {
-    throw new Error('선택지는 최대 50개까지 만들 수 있습니다.');
+  if (trimmedOptions.length > MAX_VOTE_OPTIONS) {
+    throw new Error(
+      `선택지는 최대 ${MAX_VOTE_OPTIONS}개까지 만들 수 있습니다.`,
+    );
   }
 
   const { data: latestRound } = await supabase

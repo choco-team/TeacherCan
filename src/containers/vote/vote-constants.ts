@@ -1,1 +1,1 @@
-export const MAX_VOTE_OPTIONS = 50;
+export const MAX_VOTE_OPTIONS = 10;

@@ -130,7 +130,7 @@ export default function VoteContainer() {
               handleCreateRoom();
             }
           }}
-          placeholder="투표 제목을 입력하세요."
+          placeholder="제목을 입력하세요."
           className="h-12 text-lg"
         />
         <Button
@@ -142,7 +142,7 @@ export default function VoteContainer() {
           {isPending ? (
             <LoaderCircle className="size-5 text-white animate-spin" />
           ) : (
-            '만들기'
+            '시작하기'
           )}
         </Button>
       </div>
