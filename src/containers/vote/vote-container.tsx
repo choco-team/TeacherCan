@@ -53,61 +53,61 @@ export default function VoteContainer() {
 
       <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         <div className="rounded-xl bg-primary-50 dark:bg-primary-900/20 px-3.5 py-3">
-          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+          <div className="flex items-center gap-2 text-sm font-semibold text-text-title">
             <Vote className="size-4 text-primary" />
             빠른 시작
           </div>
-          <p className="mt-1 text-sm text-text-subtitle">
+          <p className="mt-1 text-xs text-text-subtitle">
             옵션 설정 후 즉시 투표를 시작할 수 있습니다.
           </p>
         </div>
 
         <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 px-3.5 py-3">
-          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+          <div className="flex items-center gap-2 text-sm font-semibold text-text-title">
             <QrCode className="size-4 text-blue-500" />
             쉬운 참여
           </div>
-          <p className="mt-1 text-sm text-text-subtitle">
+          <p className="mt-1 text-xs text-text-subtitle">
             링크/QR로 학생을 바로 초대할 수 있습니다.
           </p>
         </div>
 
         <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 px-3.5 py-3">
-          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+          <div className="flex items-center gap-2 text-sm font-semibold text-text-title">
             <RefreshCw className="size-4 text-emerald-500" />
             재투표 지원
           </div>
-          <p className="mt-1 text-sm text-text-subtitle">
+          <p className="mt-1 text-xs text-text-subtitle">
             종료 후 선택지를 골라 다시 투표를 만들 수 있습니다.
           </p>
         </div>
 
         <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 px-3.5 py-3">
-          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+          <div className="flex items-center gap-2 text-sm font-semibold text-text-title">
             <BarChart3 className="size-4 text-violet-500" />
             결과 분석
           </div>
-          <p className="mt-1 text-sm text-text-subtitle">
+          <p className="mt-1 text-xs text-text-subtitle">
             실시간 집계와 최종 결과를 바로 확인합니다.
           </p>
         </div>
 
         <div className="rounded-xl bg-cyan-50 dark:bg-cyan-900/20 px-3.5 py-3">
-          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+          <div className="flex items-center gap-2 text-sm font-semibold text-text-title">
             <Users2 className="size-4 text-cyan-500" />
             실시간 동기화
           </div>
-          <p className="mt-1 text-sm text-text-subtitle">
+          <p className="mt-1 text-xs text-text-subtitle">
             참여, 시작, 결과가 즉시 반영됩니다.
           </p>
         </div>
 
         <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 px-3.5 py-3">
-          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+          <div className="flex items-center gap-2 text-sm font-semibold text-text-title">
             <Timer className="size-4 text-amber-500" />
             진행 제어
           </div>
-          <p className="mt-1 text-sm text-text-subtitle">
+          <p className="mt-1 text-xs text-text-subtitle">
             교사가 시작/종료를 제어합니다.
           </p>
         </div>
@@ -148,7 +148,8 @@ export default function VoteContainer() {
       </div>
       <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-text-subtitle">
         <li>투표방 목록은 제공하지 않습니다.</li>
-        <li>생성한 투표방은 목록으로 재사용되지 않습니다.</li>
+        <li>이전 투표방 자동 재입장 기능은 지원하지 않습니다.</li>
+        <li>종료된 투표는 다시 시작할 수 없으며, 새로 만들어야 합니다.</li>
         <li>다시 접속하려면 방 주소를 별도로 보관해주세요.</li>
       </ul>
     </div>
