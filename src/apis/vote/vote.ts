@@ -38,6 +38,14 @@ export type CreateVoteRoundParams = {
   options: string[];
 };
 
+export type UpdateReadyVoteRoundParams = {
+  roomId: string;
+  roundId: string;
+  question: string;
+  maxSelections: number;
+  options: string[];
+};
+
 export type SubmitVoteBallotParams = {
   roomId: string;
   roundId: string;
@@ -256,6 +264,83 @@ export const createVoteRound = async ({
   }
 
   return { roundId: round.id };
+};
+
+export const updateReadyVoteRound = async ({
+  roomId,
+  roundId,
+  question,
+  maxSelections,
+  options,
+}: UpdateReadyVoteRoundParams): Promise<{ roundId: string }> => {
+  const trimmedOptions = options.map((option) => option.trim()).filter(Boolean);
+  if (trimmedOptions.length < 2) {
+    throw new Error('선택지는 최소 2개 이상 필요합니다.');
+  }
+
+  if (trimmedOptions.length > MAX_VOTE_OPTIONS) {
+    throw new Error(
+      `선택지는 최대 ${MAX_VOTE_OPTIONS}개까지 만들 수 있습니다.`,
+    );
+  }
+
+  if (maxSelections > trimmedOptions.length - 1) {
+    throw new Error(
+      '최대 선택 개수는 유효한 선택지 개수보다 1개 적어야 합니다.',
+    );
+  }
+
+  const { data: targetRound, error: targetRoundError } = await supabase
+    .from(VOTE_TABLES.ROUNDS)
+    .select('id, status')
+    .eq('id', roundId)
+    .eq('roomId', roomId)
+    .single();
+
+  if (targetRoundError) {
+    throw new Error(targetRoundError.message);
+  }
+
+  if (targetRound.status !== 'ready') {
+    throw new Error('준비 상태의 투표만 수정할 수 있습니다.');
+  }
+
+  const { error: roundUpdateError } = await supabase
+    .from(VOTE_TABLES.ROUNDS)
+    .update({
+      question,
+      maxSelections,
+    })
+    .eq('id', roundId);
+
+  if (roundUpdateError) {
+    throw new Error(roundUpdateError.message);
+  }
+
+  const { error: deleteOptionError } = await supabase
+    .from(VOTE_TABLES.OPTIONS)
+    .delete()
+    .eq('roundId', roundId);
+
+  if (deleteOptionError) {
+    throw new Error(deleteOptionError.message);
+  }
+
+  const { error: insertOptionError } = await supabase
+    .from(VOTE_TABLES.OPTIONS)
+    .insert(
+      trimmedOptions.map((option, index) => ({
+        roundId,
+        label: option,
+        displayOrder: index + 1,
+      })),
+    );
+
+  if (insertOptionError) {
+    throw new Error(insertOptionError.message);
+  }
+
+  return { roundId };
 };
 
 export const startVoteRound = async ({

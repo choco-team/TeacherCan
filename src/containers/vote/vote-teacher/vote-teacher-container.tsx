@@ -24,6 +24,7 @@ import { Badge } from '@/components/badge';
 import { useGetVoteTeacherSnapshot } from '@/hooks/apis/vote/use-get-vote-snapshot';
 import { useVoteRealtime } from '@/hooks/apis/vote/use-vote-realtime';
 import { useCreateVoteRound } from '@/hooks/apis/vote/use-create-vote-round';
+import { useUpdateReadyVoteRound } from '@/hooks/apis/vote/use-update-ready-vote-round';
 import { useStartVoteRound } from '@/hooks/apis/vote/use-start-vote-round';
 import { useEndVoteRound } from '@/hooks/apis/vote/use-end-vote-round';
 import { useFinishVoteRoom } from '@/hooks/apis/vote/use-finish-vote-room';
@@ -44,6 +45,18 @@ type Props = {
 };
 
 const DEFAULT_OPTIONS = ['', ''];
+const RESULT_CHART_COLORS = [
+  '#93c5fd',
+  '#c4b5fd',
+  '#86efac',
+  '#fcd34d',
+  '#fca5a5',
+  '#67e8f9',
+  '#bef264',
+  '#fdba74',
+  '#a5b4fc',
+  '#f9a8d4',
+];
 type RevoteOptionItem = {
   id: string;
   label: string;
@@ -68,9 +81,16 @@ export default function VoteTeacherContainer({ params }: Props) {
   const [origin, setOrigin] = useState('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isCreatingRevote, setIsCreatingRevote] = useState(false);
+  const [isEditingReadyRound, setIsEditingReadyRound] = useState(false);
+  const [isResultDialogOpen, setIsResultDialogOpen] = useState(false);
+  const [resultDialogView, setResultDialogView] = useState<'pie' | 'bar'>(
+    'pie',
+  );
 
   const { mutate: createVoteRoundMutation, isPending: isRoundCreating } =
     useCreateVoteRound();
+  const { mutate: updateReadyVoteRoundMutation, isPending: isRoundUpdating } =
+    useUpdateReadyVoteRound();
   const { mutate: startVoteRoundMutation, isPending: isStarting } =
     useStartVoteRound();
   const { mutate: endVoteRoundMutation, isPending: isEnding } =
@@ -106,13 +126,130 @@ export default function VoteTeacherContainer({ params }: Props) {
   const resultSourceRound =
     currentRound?.status === 'ended' ? currentRound : latestEndedRound;
 
+  const rankedResultOptions = useMemo(() => {
+    const sortedOptions = [...(resultSourceRound?.options ?? [])].sort(
+      (a, b) => b.voteCount - a.voteCount,
+    );
+
+    let currentRank = 0;
+    let previousVoteCount: number | null = null;
+
+    return sortedOptions.map((option) => {
+      if (
+        previousVoteCount === null ||
+        option.voteCount !== previousVoteCount
+      ) {
+        currentRank += 1;
+        previousVoteCount = option.voteCount;
+      }
+
+      return {
+        ...option,
+        rank: currentRank,
+      };
+    });
+  }, [resultSourceRound]);
   const top3 = useMemo(
-    () =>
-      [...(resultSourceRound?.options ?? [])]
-        .sort((a, b) => b.voteCount - a.voteCount)
-        .slice(0, 3),
-    [resultSourceRound],
+    () => rankedResultOptions.filter((option) => option.rank <= 3),
+    [rankedResultOptions],
   );
+  const chartResultOptions = useMemo(
+    () => rankedResultOptions.filter((option) => option.voteCount > 0),
+    [rankedResultOptions],
+  );
+  const maxRankedVoteCount = useMemo(
+    () => Math.max(...rankedResultOptions.map((option) => option.voteCount), 1),
+    [rankedResultOptions],
+  );
+
+  const rankCountMap = useMemo(
+    () =>
+      rankedResultOptions.reduce<Record<number, number>>(
+        (accumulator, option) => {
+          accumulator[option.rank] = (accumulator[option.rank] ?? 0) + 1;
+          return accumulator;
+        },
+        {},
+      ),
+    [rankedResultOptions],
+  );
+  const pieChartSegments = useMemo(() => {
+    const totalVotes = resultSourceRound?.totalVotes ?? 0;
+    if (chartResultOptions.length === 0 || totalVotes <= 0) {
+      return [];
+    }
+
+    let currentAngle = 0;
+    return chartResultOptions.map((option, index) => {
+      const percentage = (option.voteCount / totalVotes) * 100;
+      const start = currentAngle;
+      const end = currentAngle + percentage;
+      currentAngle = end;
+
+      return {
+        id: option.id,
+        label: option.label,
+        percentage,
+        start,
+        end,
+        color: RESULT_CHART_COLORS[index % RESULT_CHART_COLORS.length],
+      };
+    });
+  }, [chartResultOptions, resultSourceRound]);
+  const pieChartBackground = useMemo(() => {
+    if (chartResultOptions.length === 0) {
+      return 'conic-gradient(#e5e7eb 0 100%)';
+    }
+    if (pieChartSegments.length === 0) {
+      return 'conic-gradient(#e5e7eb 0 100%)';
+    }
+
+    const segments = pieChartSegments.map(
+      (segment) => `${segment.color} ${segment.start}% ${segment.end}%`,
+    );
+
+    return `conic-gradient(${segments.join(', ')})`;
+  }, [chartResultOptions, pieChartSegments]);
+  const validOptionCount = useMemo(
+    () => options.filter((value) => value.trim()).length,
+    [options],
+  );
+  const selectionCountCandidates = useMemo(
+    () => Array.from({ length: MAX_VOTE_OPTIONS - 1 }, (_, index) => index + 1),
+    [],
+  );
+  const createMaxSelectionLimit = Math.min(
+    MAX_VOTE_OPTIONS - 1,
+    Math.max(0, validOptionCount - 1),
+  );
+  const revoteMaxSelectionLimit = Math.min(
+    MAX_VOTE_OPTIONS - 1,
+    Math.max(0, revoteOptionIds.length - 1),
+  );
+
+  useEffect(() => {
+    if (!currentRound || currentRound.status !== 'ready') {
+      setIsEditingReadyRound(false);
+    }
+  }, [currentRound]);
+
+  useEffect(() => {
+    if (createMaxSelectionLimit <= 0) {
+      setMaxSelections(1);
+      return;
+    }
+    setMaxSelections((previous) => Math.min(previous, createMaxSelectionLimit));
+  }, [createMaxSelectionLimit]);
+
+  useEffect(() => {
+    if (revoteMaxSelectionLimit <= 0) {
+      setRevoteMaxSelections(1);
+      return;
+    }
+    setRevoteMaxSelections((previous) =>
+      Math.min(previous, revoteMaxSelectionLimit),
+    );
+  }, [revoteMaxSelectionLimit]);
 
   const updateOptionValue = (index: number, value: string) => {
     setOptions((previous) => {
@@ -138,7 +275,10 @@ export default function VoteTeacherContainer({ params }: Props) {
       }
 
       const next = previous.filter((_, idx) => idx !== index);
-      setMaxSelections((oldValue) => Math.min(oldValue, next.length));
+      const nextValidOptionCount = next.filter((value) => value.trim()).length;
+      setMaxSelections((oldValue) =>
+        Math.min(oldValue, Math.max(1, nextValidOptionCount - 1)),
+      );
       return next;
     });
   };
@@ -159,8 +299,10 @@ export default function VoteTeacherContainer({ params }: Props) {
       return;
     }
 
-    if (maxSelections > trimmedOptions.length) {
-      setErrorMessage('최대 선택 개수는 선택지 개수를 넘을 수 없습니다.');
+    if (maxSelections > trimmedOptions.length - 1) {
+      setErrorMessage(
+        '최대 선택 개수는 유효한 선택지 개수보다 1개 적어야 합니다.',
+      );
       return;
     }
 
@@ -183,6 +325,67 @@ export default function VoteTeacherContainer({ params }: Props) {
           setRevoteQuestion('');
           setRevoteMaxSelections(1);
           setIsCreatingRevote(false);
+          refetch();
+        },
+        onError: (error) => {
+          setErrorMessage(error.message);
+        },
+      },
+    );
+  };
+
+  const initializeReadyRoundEditForm = () => {
+    if (!currentRound || currentRound.status !== 'ready') return;
+
+    setQuestion(currentRound.question);
+    setOptions(currentRound.options.map((option) => option.label));
+    setMaxSelections(
+      Math.min(
+        Math.max(1, currentRound.maxSelections),
+        Math.max(1, currentRound.options.length - 1),
+      ),
+    );
+    setIsEditingReadyRound(true);
+    setErrorMessage('');
+  };
+
+  const saveReadyRound = (nextOptions: string[]) => {
+    if (!currentRound || currentRound.status !== 'ready') return;
+
+    const trimmedQuestion = question.trim();
+    const trimmedOptions = nextOptions
+      .map((option) => option.trim())
+      .filter(Boolean);
+
+    if (!trimmedQuestion) {
+      setErrorMessage('질문을 입력해주세요.');
+      return;
+    }
+
+    if (trimmedOptions.length < 2) {
+      setErrorMessage('선택지는 최소 2개가 필요합니다.');
+      return;
+    }
+
+    if (maxSelections > trimmedOptions.length - 1) {
+      setErrorMessage(
+        '최대 선택 개수는 유효한 선택지 개수보다 1개 적어야 합니다.',
+      );
+      return;
+    }
+
+    setErrorMessage('');
+    updateReadyVoteRoundMutation(
+      {
+        roomId,
+        roundId: currentRound.id,
+        question: trimmedQuestion,
+        maxSelections,
+        options: trimmedOptions,
+      },
+      {
+        onSuccess: () => {
+          setIsEditingReadyRound(false);
           refetch();
         },
         onError: (error) => {
@@ -236,7 +439,7 @@ export default function VoteTeacherContainer({ params }: Props) {
     setRevoteOptionIds([]);
     setRevoteOptionDraft('');
     setRevoteQuestion(currentRound.question);
-    setRevoteMaxSelections(Math.max(1, currentRound.maxSelections));
+    setRevoteMaxSelections(1);
   };
 
   const addRevoteOption = () => {
@@ -303,8 +506,10 @@ export default function VoteTeacherContainer({ params }: Props) {
       return;
     }
 
-    if (revoteMaxSelections > revoteOptionIds.length) {
-      setErrorMessage('최대 선택 개수는 선택지 개수를 넘을 수 없습니다.');
+    if (revoteMaxSelections > revoteOptionIds.length - 1) {
+      setErrorMessage(
+        '최대 선택 개수는 선택한 선택지 개수보다 1개 적어야 합니다.',
+      );
       return;
     }
 
@@ -520,56 +725,77 @@ export default function VoteTeacherContainer({ params }: Props) {
 
               {currentRound ? (
                 <>
-                  <div className="rounded-xl border border-primary-100 dark:border-gray-800 p-4 bg-white dark:bg-gray-950">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                      <Heading3 className="text-base leading-relaxed tracking-tight">
-                        {currentRound.question}
-                      </Heading3>
-                      <div className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-200 whitespace-nowrap">
-                        최대 선택 {currentRound.maxSelections}개
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    {currentRound.options.map((option) => {
-                      const totalVotes = Math.max(currentRound.totalVotes, 1);
-                      const ratio = Math.round(
-                        (option.voteCount / totalVotes) * 100,
-                      );
-                      return (
-                        <div
-                          key={option.id}
-                          className="space-y-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-4 bg-white dark:bg-gray-950"
-                        >
-                          <div className="flex justify-between text-sm items-center gap-2">
-                            <span className="font-medium leading-5">
-                              {option.label}
-                            </span>
-                            <span className="text-text-subtitle whitespace-nowrap text-xs">
-                              {option.voteCount}표 · {ratio}%
-                            </span>
-                          </div>
-                          <div className="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                            <div
-                              className="h-full bg-primary transition-all duration-300"
-                              style={{ width: `${ratio}%` }}
-                            />
+                  {snapshot.room.status !== 'ended' ? (
+                    <>
+                      <div className="rounded-xl border border-primary-100 dark:border-gray-800 p-4 bg-white dark:bg-gray-950">
+                        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                          <Heading3 className="text-base leading-relaxed tracking-tight">
+                            {currentRound.question}
+                          </Heading3>
+                          <div className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-200 whitespace-nowrap">
+                            최대 선택 {currentRound.maxSelections}개
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        {currentRound.options.map((option) => {
+                          const totalVotes = Math.max(
+                            currentRound.totalVotes,
+                            1,
+                          );
+                          const ratio = Math.round(
+                            (option.voteCount / totalVotes) * 100,
+                          );
+                          return (
+                            <div
+                              key={option.id}
+                              className="space-y-2 rounded-lg border border-gray-200 dark:border-gray-800 px-3 py-4 bg-white dark:bg-gray-950"
+                            >
+                              <div className="flex justify-between text-sm items-center gap-2">
+                                <span className="font-medium leading-5">
+                                  {option.label}
+                                </span>
+                                <span className="text-text-subtitle whitespace-nowrap text-xs">
+                                  {option.voteCount}표 · {ratio}%
+                                </span>
+                              </div>
+                              <div className="w-full h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                                <div
+                                  className="h-full bg-primary transition-all duration-300"
+                                  style={{ width: `${ratio}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-gray-200 dark:border-gray-700 px-4 py-3 text-sm text-text-subtitle">
+                      투표가 종료되어 질문/선택지 상세는 숨겨집니다. 결과
+                      보기에서 전체 결과를 확인해주세요.
+                    </div>
+                  )}
 
                   {currentRound.status === 'ready' && (
-                    <Button
-                      variant="primary"
-                      onClick={handleStartRound}
-                      isPending={isStarting}
-                      className="w-full h-11"
-                    >
-                      투표 시작하기
-                    </Button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <Button
+                        variant="gray-outline"
+                        onClick={initializeReadyRoundEditForm}
+                        className="w-full h-11"
+                      >
+                        수정하기
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={handleStartRound}
+                        isPending={isStarting}
+                        className="w-full h-11"
+                      >
+                        투표 시작하기
+                      </Button>
+                    </div>
                   )}
 
                   {currentRound.status === 'live' && (
@@ -640,27 +866,36 @@ export default function VoteTeacherContainer({ params }: Props) {
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label
-                                  htmlFor="revote-max-selections"
-                                  className="text-sm font-semibold text-text-title"
-                                >
+                                <Label className="text-sm font-semibold text-text-title">
                                   최대 선택 개수
                                 </Label>
-                                <Input
-                                  id="revote-max-selections"
-                                  type="number"
-                                  min={1}
-                                  max={Math.max(1, revoteOptionIds.length)}
-                                  value={revoteMaxSelections}
-                                  onChange={(event) => {
-                                    const value = Number(event.target.value);
-                                    if (!Number.isNaN(value)) {
-                                      setRevoteMaxSelections(
-                                        Math.max(1, value),
-                                      );
-                                    }
-                                  }}
-                                />
+                                <div className="grid grid-cols-5 gap-2">
+                                  {selectionCountCandidates.map((count) => {
+                                    const isEnabled =
+                                      count <= revoteMaxSelectionLimit;
+                                    const isActive =
+                                      isEnabled &&
+                                      revoteMaxSelections === count;
+
+                                    return (
+                                      <Button
+                                        key={count}
+                                        type="button"
+                                        variant={
+                                          isActive ? 'primary' : 'gray-outline'
+                                        }
+                                        size="sm"
+                                        className="h-9"
+                                        disabled={!isEnabled}
+                                        onClick={() =>
+                                          setRevoteMaxSelections(count)
+                                        }
+                                      >
+                                        {count}
+                                      </Button>
+                                    );
+                                  })}
+                                </div>
                               </div>
                             </div>
 
@@ -676,59 +911,81 @@ export default function VoteTeacherContainer({ params }: Props) {
                               </div>
 
                               <div className="grid grid-cols-1 gap-3">
-                                {revoteOptions.map((option, index) => (
-                                  <div
-                                    key={option.id}
-                                    role="button"
-                                    tabIndex={0}
-                                    onClick={() =>
-                                      toggleRevoteOption(option.id)
-                                    }
-                                    onKeyDown={(event) => {
-                                      if (
-                                        event.key === 'Enter' ||
-                                        event.key === ' '
-                                      ) {
-                                        event.preventDefault();
-                                        toggleRevoteOption(option.id);
+                                {revoteOptions.map((option, index) => {
+                                  const originalOption =
+                                    currentRound.options.find(
+                                      (item) => item.id === option.id,
+                                    );
+                                  const voteCount =
+                                    originalOption?.voteCount ?? 0;
+                                  const voteRatio =
+                                    currentRound.totalVotes > 0
+                                      ? Math.round(
+                                          (voteCount /
+                                            currentRound.totalVotes) *
+                                            100,
+                                        )
+                                      : 0;
+
+                                  return (
+                                    <div
+                                      key={option.id}
+                                      role="button"
+                                      tabIndex={0}
+                                      onClick={() =>
+                                        toggleRevoteOption(option.id)
                                       }
-                                    }}
-                                    className="flex min-h-12 items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-2 py-2 cursor-pointer"
-                                  >
-                                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary text-xs font-semibold px-1">
-                                      {index + 1}
-                                    </span>
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                      <Checkbox
-                                        checked={revoteOptionIds.includes(
-                                          option.id,
-                                        )}
-                                        onCheckedChange={() =>
-                                          toggleRevoteOption(option.id)
+                                      onKeyDown={(event) => {
+                                        if (
+                                          event.key === 'Enter' ||
+                                          event.key === ' '
+                                        ) {
+                                          event.preventDefault();
+                                          toggleRevoteOption(option.id);
                                         }
-                                        className="pointer-events-none"
-                                      />
-                                      <span className="truncate">
-                                        {option.label}
+                                      }}
+                                      className="flex min-h-12 items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-2 py-2 cursor-pointer"
+                                    >
+                                      <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary text-xs font-semibold px-1">
+                                        {index + 1}
                                       </span>
+                                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                                        <Checkbox
+                                          checked={revoteOptionIds.includes(
+                                            option.id,
+                                          )}
+                                          onCheckedChange={() =>
+                                            toggleRevoteOption(option.id)
+                                          }
+                                          className="pointer-events-none"
+                                        />
+                                        <span className="truncate">
+                                          {option.label}
+                                        </span>
+                                        <span className="text-[11px] text-text-subtitle whitespace-nowrap">
+                                          {option.isCustom
+                                            ? '신규 선택지'
+                                            : `${voteCount}표 · ${voteRatio}%`}
+                                        </span>
+                                      </div>
+                                      {option.isCustom && (
+                                        <Button
+                                          type="button"
+                                          variant="gray-outline"
+                                          size="sm"
+                                          onClick={(event) => {
+                                            event.stopPropagation();
+                                            removeRevoteOption(option.id);
+                                          }}
+                                          className="h-8 w-8 min-w-0 p-0"
+                                          aria-label="추가한 선택지 삭제"
+                                        >
+                                          <Trash2 className="size-4" />
+                                        </Button>
+                                      )}
                                     </div>
-                                    {option.isCustom && (
-                                      <Button
-                                        type="button"
-                                        variant="gray-outline"
-                                        size="sm"
-                                        onClick={(event) => {
-                                          event.stopPropagation();
-                                          removeRevoteOption(option.id);
-                                        }}
-                                        className="h-8 w-8 min-w-0 p-0"
-                                        aria-label="추가한 선택지 삭제"
-                                      >
-                                        <Trash2 className="size-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
 
                               <div className="flex min-h-10 items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-2 py-2">
@@ -783,10 +1040,12 @@ export default function VoteTeacherContainer({ params }: Props) {
             </CardContent>
           </Card>
 
-          {!currentRound && (
+          {(!currentRound || isEditingReadyRound) && (
             <Card className="border-primary-100/70 dark:border-gray-800 shadow-sm">
               <CardHeader>
-                <CardTitle>투표 만들기</CardTitle>
+                <CardTitle>
+                  {isEditingReadyRound ? '투표 수정하기' : '투표 만들기'}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
@@ -803,27 +1062,27 @@ export default function VoteTeacherContainer({ params }: Props) {
                   </div>
 
                   <div className="rounded-lg px-3 py-3 flex flex-col gap-2">
-                    <Label htmlFor="max-selections">최대 선택 개수</Label>
-                    <Input
-                      id="max-selections"
-                      type="number"
-                      min={1}
-                      max={Math.max(
-                        1,
-                        options.filter((value) => value.trim()).length,
-                      )}
-                      value={maxSelections}
-                      onChange={(event) => {
-                        const value = Number(event.target.value);
-                        if (!Number.isNaN(value)) {
-                          setMaxSelections(Math.max(1, value));
-                        }
-                      }}
-                      className="bg-white dark:bg-gray-950"
-                    />
-                    <p className="text-xs text-text-subtitle">
-                      유효한 선택지 수 기준으로 자동 제한됩니다.
-                    </p>
+                    <Label>최대 선택 개수</Label>
+                    <div className="grid grid-cols-5 gap-2">
+                      {selectionCountCandidates.map((count) => {
+                        const isEnabled = count <= createMaxSelectionLimit;
+                        const isActive = isEnabled && maxSelections === count;
+
+                        return (
+                          <Button
+                            key={count}
+                            type="button"
+                            variant={isActive ? 'primary' : 'gray-outline'}
+                            size="sm"
+                            className="h-9"
+                            disabled={!isEnabled}
+                            onClick={() => setMaxSelections(count)}
+                          >
+                            {count}
+                          </Button>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 
@@ -883,12 +1142,31 @@ export default function VoteTeacherContainer({ params }: Props) {
                   <Button
                     variant="primary"
                     size="sm"
-                    onClick={() => createRound(options)}
-                    isPending={isRoundCreating}
-                    className="w-full"
+                    onClick={() => {
+                      if (isEditingReadyRound) {
+                        saveReadyRound(options);
+                        return;
+                      }
+                      createRound(options);
+                    }}
+                    isPending={isRoundCreating || isRoundUpdating}
+                    className="w-full h-11"
                   >
-                    만들기
+                    {isEditingReadyRound ? '수정 내용 저장' : '만들기'}
                   </Button>
+                  {isEditingReadyRound && (
+                    <Button
+                      variant="gray-outline"
+                      size="sm"
+                      onClick={() => {
+                        setIsEditingReadyRound(false);
+                        setErrorMessage('');
+                      }}
+                      className="w-full h-11"
+                    >
+                      수정 취소
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -910,7 +1188,7 @@ export default function VoteTeacherContainer({ params }: Props) {
                     집계된 결과가 없습니다.
                   </div>
                 ) : (
-                  top3.map((option, index) => (
+                  top3.map((option) => (
                     <div
                       key={option.id}
                       className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 px-3 py-3"
@@ -918,7 +1196,9 @@ export default function VoteTeacherContainer({ params }: Props) {
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary text-xs font-semibold px-1">
-                            {index + 1}
+                            {rankCountMap[option.rank] > 1
+                              ? `공동 ${option.rank}`
+                              : `${option.rank}`}
                           </span>
                           <div className="font-medium text-text-title truncate">
                             {option.label}
@@ -931,6 +1211,174 @@ export default function VoteTeacherContainer({ params }: Props) {
                     </div>
                   ))
                 )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    variant="gray-outline"
+                    size="sm"
+                    className="w-full h-11"
+                    onClick={() => {
+                      setResultDialogView('pie');
+                      setIsResultDialogOpen(true);
+                    }}
+                  >
+                    원 그래프로 보기
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="gray-outline"
+                    size="sm"
+                    className="w-full h-11"
+                    onClick={() => {
+                      setResultDialogView('bar');
+                      setIsResultDialogOpen(true);
+                    }}
+                  >
+                    막대 그래프로 보기
+                  </Button>
+                </div>
+
+                <Dialog
+                  open={isResultDialogOpen}
+                  onOpenChange={setIsResultDialogOpen}
+                >
+                  <DialogContent className="max-w-[96vw] lg:max-w-6xl p-6 max-h-[92vh] overflow-y-auto">
+                    <DialogTitle>
+                      {resultDialogView === 'pie'
+                        ? '전체 원 그래프'
+                        : '전체 막대 그래프'}
+                    </DialogTitle>
+                    {resultDialogView === 'pie' &&
+                      chartResultOptions.length === 0 && (
+                        <div className="text-sm text-text-subtitle py-8 text-center">
+                          배정된 득표가 없어 그래프를 표시할 수 없습니다.
+                        </div>
+                      )}
+                    {chartResultOptions.length > 0 &&
+                      resultDialogView === 'pie' && (
+                        <div className="space-y-6">
+                          <div className="flex justify-center">
+                            <div
+                              className="relative size-[min(72vw,520px)] rounded-full border border-gray-200 dark:border-gray-700"
+                              style={{ background: pieChartBackground }}
+                            >
+                              {pieChartSegments.map((segment) => {
+                                const midPoint =
+                                  (segment.start + segment.end) / 2;
+                                const angleInRadians =
+                                  (midPoint / 100) * Math.PI * 2 - Math.PI / 2;
+                                const xPosition =
+                                  50 + Math.cos(angleInRadians) * 34;
+                                const yPosition =
+                                  50 + Math.sin(angleInRadians) * 34;
+
+                                return (
+                                  <div
+                                    key={segment.id}
+                                    className="absolute pointer-events-none text-[13px] leading-tight text-slate-700 dark:text-gray-100 text-center max-w-[110px] -translate-x-1/2 -translate-y-1/2"
+                                    style={{
+                                      left: `${xPosition}%`,
+                                      top: `${yPosition}%`,
+                                    }}
+                                  >
+                                    <div className="truncate font-semibold">
+                                      {segment.label}
+                                    </div>
+                                    <div>{Math.round(segment.percentage)}%</div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {chartResultOptions.map((option, index) => {
+                              const percentage =
+                                resultSourceRound.totalVotes > 0
+                                  ? Math.round(
+                                      (option.voteCount /
+                                        resultSourceRound.totalVotes) *
+                                        100,
+                                    )
+                                  : 0;
+                              return (
+                                <div
+                                  key={option.id}
+                                  className="flex items-center gap-2 text-sm"
+                                >
+                                  <span
+                                    className="size-2.5 rounded-full"
+                                    style={{
+                                      backgroundColor:
+                                        RESULT_CHART_COLORS[
+                                          index % RESULT_CHART_COLORS.length
+                                        ],
+                                    }}
+                                  />
+                                  <span className="truncate flex-1">
+                                    {option.label}
+                                  </span>
+                                  <span className="text-text-subtitle">
+                                    {percentage}%
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    {rankedResultOptions.length > 0 &&
+                      resultDialogView === 'bar' && (
+                        <div className="space-y-3">
+                          <p className="text-xs text-text-subtitle">
+                            총 {resultSourceRound.totalVotes}표 기준
+                          </p>
+                          <div className="h-[65vh]">
+                            <div
+                              className="h-full w-full grid items-end gap-3"
+                              style={{
+                                gridTemplateColumns: `repeat(${Math.max(rankedResultOptions.length, 1)}, minmax(0, 1fr))`,
+                              }}
+                            >
+                              {rankedResultOptions.map((option, index) => {
+                                const heightRatio = Math.max(
+                                  8,
+                                  Math.round(
+                                    (option.voteCount / maxRankedVoteCount) *
+                                      100,
+                                  ),
+                                );
+                                return (
+                                  <div
+                                    key={option.id}
+                                    className="h-full min-w-0 flex flex-col items-center gap-2"
+                                  >
+                                    <span className="h-5 inline-flex items-center text-sm text-text-subtitle">
+                                      {option.voteCount}표
+                                    </span>
+                                    <div className="h-[78%] w-full flex items-end">
+                                      <div
+                                        className="w-full rounded-t-md border border-black/10 dark:border-white/10 transition-all"
+                                        style={{
+                                          height: `${heightRatio}%`,
+                                          backgroundColor:
+                                            RESULT_CHART_COLORS[
+                                              index % RESULT_CHART_COLORS.length
+                                            ],
+                                        }}
+                                      />
+                                    </div>
+                                    <span className="h-8 inline-flex items-start justify-center text-xs text-text-subtitle truncate w-full text-center leading-4">
+                                      {option.label}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                  </DialogContent>
+                </Dialog>
                 <Button
                   variant="primary"
                   size="sm"
