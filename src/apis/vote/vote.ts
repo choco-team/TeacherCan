@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase';
+import { supabaseVote as supabase } from '@/utils/supabase';
 import {
   VOTE_TABLES,
   VoteBallotRow,
@@ -46,26 +46,6 @@ export type SubmitVoteBallotParams = {
   participantName: string;
 };
 
-export const createVoteRoom = async ({
-  title,
-}: CreateVoteRoomParams): Promise<{ roomId: string }> => {
-  const { data, error } = await supabase
-    .from(VOTE_TABLES.ROOMS)
-    .insert({
-      title,
-      status: 'draft' as VoteRoomStatus,
-      currentRoundId: null,
-    })
-    .select('id')
-    .single();
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return { roomId: data.id };
-};
-
 const buildRoundResults = (
   rounds: VoteRoundRow[],
   options: VoteOptionRow[],
@@ -99,6 +79,26 @@ const buildRoundResults = (
       totalVotes,
     };
   });
+};
+
+export const createVoteRoom = async ({
+  title,
+}: CreateVoteRoomParams): Promise<{ roomId: string }> => {
+  const { data, error } = await supabase
+    .from(VOTE_TABLES.ROOMS)
+    .insert({
+      title,
+      status: 'draft' as VoteRoomStatus,
+      currentRoundId: null,
+    })
+    .select('id')
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { roomId: data.id };
 };
 
 export const getVoteTeacherSnapshot = async ({

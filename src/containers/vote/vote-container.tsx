@@ -2,41 +2,25 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, LoaderCircle, ChevronRight } from 'lucide-react';
+import {
+  BarChart3,
+  LoaderCircle,
+  QrCode,
+  RefreshCw,
+  Sparkles,
+  Timer,
+  Users2,
+  Vote,
+} from 'lucide-react';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Heading1 } from '@/components/heading';
-import { Skeleton } from '@/components/skeleton';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/dialog';
-import useLocalStorage from '@/hooks/useLocalStorage';
 import { useCreateVoteRoom } from '@/hooks/apis/vote/use-create-vote-room';
-import { useGetVoteTeacherSnapshots } from '@/hooks/apis/vote/use-get-vote-snapshot';
-import { VOTE_LOCAL_STORAGE_KEYS } from './vote-constants';
 
 export default function VoteContainer() {
   const router = useRouter();
   const [roomTitle, setRoomTitle] = useState('');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [showRestoreModal, setShowRestoreModal] = useState(true);
-  const [roomIds, setRoomIds] = useLocalStorage<string[]>(
-    VOTE_LOCAL_STORAGE_KEYS.ROOM_IDS,
-    [],
-  );
-  const [activeRoomId, setActiveRoomId] = useLocalStorage<string>(
-    VOTE_LOCAL_STORAGE_KEYS.ACTIVE_ROOM_ID,
-    '',
-  );
   const { mutate: createVoteRoomMutation, isPending } = useCreateVoteRoom();
-  const snapshotQueries = useGetVoteTeacherSnapshots(roomIds ?? []);
-
-  const hasPendingRestore = Boolean(activeRoomId) && showRestoreModal;
-  const hasLoadingRoom = snapshotQueries.some((query) => query.isLoading);
 
   const handleCreateRoom = () => {
     const title = roomTitle.trim();
@@ -46,11 +30,6 @@ export default function VoteContainer() {
       { title },
       {
         onSuccess: ({ roomId }) => {
-          setRoomIds((prev) =>
-            prev.includes(roomId) ? prev : [...prev, roomId],
-          );
-          setActiveRoomId(roomId);
-          setIsCreateModalOpen(false);
           setRoomTitle('');
           router.push(`/vote/teacher/${roomId}`);
         },
@@ -58,147 +37,120 @@ export default function VoteContainer() {
     );
   };
 
-  const voteRooms = snapshotQueries
-    .map((query, index) => {
-      if (!query.data) return null;
-      return {
-        roomId: roomIds[index],
-        title: query.data.room.title,
-        status: query.data.room.status,
-        currentRound: query.data.currentRound,
-      };
-    })
-    .filter((room): room is NonNullable<typeof room> => room !== null);
-
   return (
-    <>
-      <div className="flex items-center justify-between mb-6">
-        <Heading1 className="mb-0">투표하기</Heading1>
-        <Button
-          variant="primary-ghost"
-          size="sm"
-          onClick={() => {
-            setRoomIds([]);
-            setActiveRoomId('');
+    <div className="flex-grow flex flex-col gap-y-5 text-text-title w-full max-w-screen-sm mx-auto">
+      <div className="rounded-2xl border border-primary-200/60 bg-gradient-to-br from-primary-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 px-5 py-6">
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-200 px-3 py-1 text-xs font-semibold">
+          <Sparkles className="size-3.5" />
+          실시간 클래스 투표
+        </div>
+        <Heading1 className="mt-3">투표하기</Heading1>
+        <p className="mt-2 text-sm text-text-subtitle leading-relaxed">
+          질문과 선택지를 만들고 학생을 초대하면, 투표 진행과 결과를 실시간으로
+          확인할 수 있어요.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+        <div className="rounded-xl bg-primary-50 dark:bg-primary-900/20 px-3.5 py-3">
+          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+            <Vote className="size-4 text-primary" />
+            빠른 시작
+          </div>
+          <p className="mt-1 text-sm text-text-subtitle">
+            옵션 설정 후 즉시 투표를 시작할 수 있습니다.
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 px-3.5 py-3">
+          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+            <QrCode className="size-4 text-blue-500" />
+            쉬운 참여
+          </div>
+          <p className="mt-1 text-sm text-text-subtitle">
+            링크/QR로 학생을 바로 초대할 수 있습니다.
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 px-3.5 py-3">
+          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+            <RefreshCw className="size-4 text-emerald-500" />
+            재투표 지원
+          </div>
+          <p className="mt-1 text-sm text-text-subtitle">
+            종료 후 선택지를 골라 다시 투표를 만들 수 있습니다.
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-violet-50 dark:bg-violet-900/20 px-3.5 py-3">
+          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+            <BarChart3 className="size-4 text-violet-500" />
+            결과 분석
+          </div>
+          <p className="mt-1 text-sm text-text-subtitle">
+            실시간 집계와 최종 결과를 바로 확인합니다.
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-cyan-50 dark:bg-cyan-900/20 px-3.5 py-3">
+          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+            <Users2 className="size-4 text-cyan-500" />
+            실시간 동기화
+          </div>
+          <p className="mt-1 text-sm text-text-subtitle">
+            참여, 시작, 결과가 즉시 반영됩니다.
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-amber-50 dark:bg-amber-900/20 px-3.5 py-3">
+          <div className="flex items-center gap-2 text-base font-semibold text-text-title">
+            <Timer className="size-4 text-amber-500" />
+            진행 제어
+          </div>
+          <p className="mt-1 text-sm text-text-subtitle">
+            교사가 시작/종료를 제어합니다.
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border dark:border-gray-800 bg-white/90 dark:bg-gray-950 px-4 py-4 space-y-3">
+        <div className="space-y-1">
+          <h2 className="text-base font-semibold text-text-title">
+            지금 바로 투표 시작하기
+          </h2>
+          <p className="text-sm text-text-subtitle">
+            투표 제목을 입력하고 만들기 버튼을 눌러 새 투표방을 생성하세요.
+          </p>
+        </div>
+        <Input
+          value={roomTitle}
+          onChange={(event) => setRoomTitle(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              handleCreateRoom();
+            }
           }}
+          placeholder="투표 제목을 입력하세요."
+          className="h-12 text-lg"
+        />
+        <Button
+          variant="primary"
+          onClick={handleCreateRoom}
+          disabled={!roomTitle.trim() || isPending}
+          className="h-12 text-base w-full"
         >
-          투표 목록 초기화
+          {isPending ? (
+            <LoaderCircle className="size-5 text-white animate-spin" />
+          ) : (
+            '만들기'
+          )}
         </Button>
       </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {hasLoadingRoom
-          ? Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                className="w-full aspect-video rounded-md"
-              />
-            ))
-          : voteRooms.map((room) => (
-              <button
-                type="button"
-                key={room.roomId}
-                className="aspect-video rounded-md border dark:border-gray-700 p-4 text-left flex flex-col justify-between hover:bg-gray-50 dark:hover:bg-gray-900"
-                onClick={() => {
-                  setActiveRoomId(room.roomId);
-                  router.push(`/vote/teacher/${room.roomId}`);
-                }}
-              >
-                <div className="text-lg font-semibold text-text-title line-clamp-2">
-                  {room.title}
-                </div>
-                <div className="text-sm text-text-subtitle">
-                  <div>
-                    상태:{' '}
-                    {room.status === 'live'
-                      ? '진행 중'
-                      : room.status === 'ended'
-                        ? '종료됨'
-                        : '준비 중'}
-                  </div>
-                  <div className="line-clamp-1">
-                    질문: {room.currentRound?.question ?? '아직 없음'}
-                  </div>
-                </div>
-                <div className="text-primary flex items-center gap-1 text-sm">
-                  방 입장하기
-                  <ChevronRight className="size-4" />
-                </div>
-              </button>
-            ))}
-
-        <button
-          type="button"
-          className="aspect-video rounded-md border-2 border-dashed border-primary-300 text-primary flex items-center justify-center hover:bg-primary-50 dark:hover:bg-gray-900"
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-          <Plus className="size-8" />
-        </button>
-      </div>
-
-      <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>투표방 만들기</DialogTitle>
-            <DialogDescription className="pt-4 space-y-4">
-              <Input
-                value={roomTitle}
-                onChange={(event) => setRoomTitle(event.target.value)}
-                placeholder="투표 제목을 입력해주세요."
-              />
-              <div className="flex justify-end">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleCreateRoom}
-                  disabled={!roomTitle.trim() || isPending}
-                >
-                  {isPending ? (
-                    <LoaderCircle className="size-4 text-white animate-spin" />
-                  ) : (
-                    '방 만들기'
-                  )}
-                </Button>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={hasPendingRestore} onOpenChange={setShowRestoreModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>진행 중인 투표가 있어요</DialogTitle>
-            <DialogDescription className="pt-4 text-sm text-text-subtitle">
-              이전에 진행하던 투표를 계속할지, 초기화하고 새로 시작할지
-              선택해주세요.
-            </DialogDescription>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="gray-ghost"
-                size="sm"
-                onClick={() => {
-                  setActiveRoomId('');
-                  setShowRestoreModal(false);
-                }}
-              >
-                초기화하고 새로 만들기
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => {
-                  setShowRestoreModal(false);
-                  router.push(`/vote/teacher/${activeRoomId}`);
-                }}
-              >
-                계속하기
-              </Button>
-            </div>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    </>
+      <ul className="list-disc pl-5 space-y-1 text-xs leading-relaxed text-text-subtitle">
+        <li>투표방 목록은 제공하지 않습니다.</li>
+        <li>생성한 투표방은 목록으로 재사용되지 않습니다.</li>
+        <li>다시 접속하려면 방 주소를 별도로 보관해주세요.</li>
+      </ul>
+    </div>
   );
 }

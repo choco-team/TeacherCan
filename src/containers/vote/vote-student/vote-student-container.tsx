@@ -12,6 +12,7 @@ import { Heading2 } from '@/components/heading';
 import { useJoinVoteRoomParticipant } from '@/hooks/apis/vote/use-join-vote-room-participant';
 import { useGetVoteStudentSnapshot } from '@/hooks/apis/vote/use-get-vote-snapshot';
 import { useSubmitVoteBallot } from '@/hooks/apis/vote/use-submit-vote-ballot';
+import { useVoteStudentRealtime } from '@/hooks/apis/vote/use-vote-realtime';
 
 type Props = {
   params: {
@@ -39,6 +40,7 @@ export default function VoteStudentContainer({ params }: Props) {
     roomId,
     participantToken,
   });
+  useVoteStudentRealtime(roomId, Boolean(roomId && participantToken), refetch);
 
   useEffect(() => {
     const cookieName = Cookies.get(getParticipantNameCookieKey(roomId)) ?? '';
@@ -62,12 +64,12 @@ export default function VoteStudentContainer({ params }: Props) {
   }, [roomId]);
 
   useEffect(() => {
-    if (!participantName || !participantToken) return;
+    if (!participantToken) return;
 
     joinParticipant({
       roomId,
       token: participantToken,
-      name: participantName,
+      name: participantName || '익명',
     });
   }, [joinParticipant, participantName, participantToken, roomId]);
 

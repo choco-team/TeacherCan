@@ -1,9 +1,32 @@
 import { getVoteTeacherSnapshot, VoteTeacherSnapshot } from '@/apis/vote/vote';
-import { supabase } from '@/utils/supabase';
+import { supabaseVote as supabase } from '@/utils/supabase';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const MAX_RETRIES = 5;
 const BASE_DELAY_MS = 1000;
+type RealtimeRoomPayload = {
+  new: Record<string, unknown>;
+  old: Record<string, unknown>;
+};
+
+const isTargetRoomEvent = (
+  roomId: string,
+  payload: {
+    new: Record<string, unknown>;
+    old: Record<string, unknown>;
+  },
+  roomIdKey: 'roomId' | 'id',
+) => {
+  const changedRoomId = payload.new?.[roomIdKey];
+  const deletedRoomId = payload.old?.[roomIdKey];
+
+  // payload 제한으로 roomId가 없으면 안전하게 갱신해서 이벤트 누락을 방지합니다.
+  if (!changedRoomId && !deletedRoomId) {
+    return true;
+  }
+
+  return changedRoomId === roomId || deletedRoomId === roomId;
+};
 
 export function useVoteRealtime(
   roomId: string,
@@ -74,9 +97,13 @@ export function useVoteRealtime(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'vote_ballots' },
           (payload) => {
-            const changedRoomId = (payload.new as { roomId?: string }).roomId;
-            const deletedRoomId = (payload.old as { roomId?: string }).roomId;
-            if (changedRoomId === roomId || deletedRoomId === roomId) {
+            if (
+              isTargetRoomEvent(
+                roomId,
+                payload as RealtimeRoomPayload,
+                'roomId',
+              )
+            ) {
               queueRefresh();
             }
           },
@@ -85,9 +112,13 @@ export function useVoteRealtime(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'vote_participants' },
           (payload) => {
-            const changedRoomId = (payload.new as { roomId?: string }).roomId;
-            const deletedRoomId = (payload.old as { roomId?: string }).roomId;
-            if (changedRoomId === roomId || deletedRoomId === roomId) {
+            if (
+              isTargetRoomEvent(
+                roomId,
+                payload as RealtimeRoomPayload,
+                'roomId',
+              )
+            ) {
               queueRefresh();
             }
           },
@@ -96,9 +127,13 @@ export function useVoteRealtime(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'vote_rounds' },
           (payload) => {
-            const changedRoomId = (payload.new as { roomId?: string }).roomId;
-            const deletedRoomId = (payload.old as { roomId?: string }).roomId;
-            if (changedRoomId === roomId || deletedRoomId === roomId) {
+            if (
+              isTargetRoomEvent(
+                roomId,
+                payload as RealtimeRoomPayload,
+                'roomId',
+              )
+            ) {
               queueRefresh();
             }
           },
@@ -107,9 +142,9 @@ export function useVoteRealtime(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'vote_rooms' },
           (payload) => {
-            const changedRoomId = (payload.new as { id?: string }).id;
-            const deletedRoomId = (payload.old as { id?: string }).id;
-            if (changedRoomId === roomId || deletedRoomId === roomId) {
+            if (
+              isTargetRoomEvent(roomId, payload as RealtimeRoomPayload, 'id')
+            ) {
               queueRefresh();
             }
           },
@@ -157,4 +192,113 @@ export function useVoteRealtime(
   }, []);
 
   return [connectionStatus, reconnect] as const;
+}
+
+export function useVoteStudentRealtime(
+  roomId: string,
+  enabled: boolean,
+  refreshSnapshot: () => Promise<unknown>,
+) {
+  useEffect(() => {
+    if (!enabled || !roomId) return undefined;
+
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let fetching = false;
+    let initialLoadDone = false;
+    let pendingReload = false;
+
+    const cleanupChannel = () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+        channel = null;
+      }
+    };
+
+    const refresh = async () => {
+      if (cancelled || fetching) return;
+      fetching = true;
+      try {
+        await refreshSnapshot();
+      } catch (error) {
+        if (!cancelled) {
+          console.error('학생 투표 스냅샷 갱신 실패:', error);
+        }
+      } finally {
+        fetching = false;
+      }
+    };
+
+    const queueRefresh = () => {
+      if (!initialLoadDone) {
+        pendingReload = true;
+        return;
+      }
+      refresh();
+    };
+
+    channel = supabase
+      .channel(`vote-student-room-${roomId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'vote_rooms' },
+        (payload) => {
+          if (isTargetRoomEvent(roomId, payload as RealtimeRoomPayload, 'id')) {
+            queueRefresh();
+          }
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'vote_rounds' },
+        (payload) => {
+          if (
+            isTargetRoomEvent(roomId, payload as RealtimeRoomPayload, 'roomId')
+          ) {
+            queueRefresh();
+          }
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'vote_participants' },
+        (payload) => {
+          if (
+            isTargetRoomEvent(roomId, payload as RealtimeRoomPayload, 'roomId')
+          ) {
+            queueRefresh();
+          }
+        },
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'vote_ballots' },
+        (payload) => {
+          if (
+            isTargetRoomEvent(roomId, payload as RealtimeRoomPayload, 'roomId')
+          ) {
+            queueRefresh();
+          }
+        },
+      )
+      .subscribe((status) => {
+        if (cancelled) return;
+
+        if (status === 'SUBSCRIBED') {
+          refresh().finally(() => {
+            if (cancelled) return;
+            initialLoadDone = true;
+            if (pendingReload) {
+              pendingReload = false;
+              refresh();
+            }
+          });
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      cleanupChannel();
+    };
+  }, [enabled, refreshSnapshot, roomId]);
 }

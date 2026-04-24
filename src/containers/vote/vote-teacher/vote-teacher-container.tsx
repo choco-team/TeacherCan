@@ -12,7 +12,6 @@ import { Checkbox } from '@/components/checkbox';
 import { Label } from '@/components/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Badge } from '@/components/badge';
-import useLocalStorage from '@/hooks/useLocalStorage';
 import { useGetVoteTeacherSnapshot } from '@/hooks/apis/vote/use-get-vote-snapshot';
 import { useVoteRealtime } from '@/hooks/apis/vote/use-vote-realtime';
 import { useCreateVoteRound } from '@/hooks/apis/vote/use-create-vote-round';
@@ -20,7 +19,7 @@ import { useStartVoteRound } from '@/hooks/apis/vote/use-start-vote-round';
 import { useEndVoteRound } from '@/hooks/apis/vote/use-end-vote-round';
 import { useFinishVoteRoom } from '@/hooks/apis/vote/use-finish-vote-room';
 import { VoteTeacherSnapshot } from '@/apis/vote/vote';
-import { MAX_VOTE_OPTIONS, VOTE_LOCAL_STORAGE_KEYS } from '../vote-constants';
+import { MAX_VOTE_OPTIONS } from '../vote-constants';
 
 type Props = {
   params: {
@@ -33,10 +32,6 @@ const DEFAULT_OPTIONS = ['', ''];
 export default function VoteTeacherContainer({ params }: Props) {
   const { roomId } = params;
   const router = useRouter();
-  const [, setActiveRoomId] = useLocalStorage<string>(
-    VOTE_LOCAL_STORAGE_KEYS.ACTIVE_ROOM_ID,
-    '',
-  );
   const { data, refetch } = useGetVoteTeacherSnapshot({ roomId });
   const [snapshot, setSnapshot] = useState<VoteTeacherSnapshot | null>(null);
   const [question, setQuestion] = useState('');
@@ -67,10 +62,6 @@ export default function VoteTeacherContainer({ params }: Props) {
       setSnapshot(data);
     }
   }, [data]);
-
-  useEffect(() => {
-    setActiveRoomId(roomId);
-  }, [roomId, setActiveRoomId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -195,7 +186,6 @@ export default function VoteTeacherContainer({ params }: Props) {
       { roomId },
       {
         onSuccess: () => {
-          setActiveRoomId('');
           refetch();
         },
       },
@@ -433,7 +423,7 @@ export default function VoteTeacherContainer({ params }: Props) {
             <div className="space-y-2">
               {options.map((option, index) => (
                 // eslint-disable-next-line react/no-array-index-key
-                <div key={`${index}-${option}`} className="flex gap-2">
+                <div key={index} className="flex gap-2">
                   <Input
                     value={option}
                     onChange={(event) =>
@@ -523,7 +513,6 @@ export default function VoteTeacherContainer({ params }: Props) {
               variant="primary"
               size="sm"
               onClick={() => {
-                setActiveRoomId('');
                 router.push('/vote');
               }}
             >
