@@ -18,6 +18,7 @@ import {
   GroupIcon,
   FileTextIcon,
   UnfoldHorizontal,
+  BoxIcon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -41,6 +42,7 @@ export const MENU_ROUTE = {
 // NOTE:(김홍동) 수업도구 전용 라우트 (메뉴와 분리하여 관리)
 export const TOOL_ROUTE = {
   SKIP_NUMBER: '/skip-number',
+  VOLUME_BLOCKS: '/volumeblocks',
 } as const;
 
 // NOTE:(김홍동) 도움 영역에서 사용하는 라우트
@@ -163,6 +165,12 @@ export const TOOL_PATH_DATA: PathData<ToolRoutePath> = {
     title: '숫자 뛰어세기',
     Icon: UnfoldHorizontal,
     href: TOOL_ROUTE.SKIP_NUMBER,
+    isNew: true,
+  },
+  '/volumeblocks': {
+    title: '직육면체 부피 구하기',
+    Icon: BoxIcon,
+    href: TOOL_ROUTE.VOLUME_BLOCKS,
     isNew: true,
   },
 };

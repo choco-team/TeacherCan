@@ -18,6 +18,7 @@ import {
   FileTextIcon,
   Hourglass,
   UnfoldHorizontal,
+  BoxIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -105,6 +106,11 @@ const breadcrumbs: Record<
     url: '/skip-number',
     icon: <UnfoldHorizontal size="1rem" />,
   },
+  volumeblocks: {
+    name: '부피 구하기',
+    url: '/volumeblocks',
+    icon: <BoxIcon size="1rem" />,
+  },
   stopwatch: {
     name: '스톱워치',
     url: '/stopwatch',
@@ -150,7 +156,14 @@ export default function Header() {
 
   const breadcrumbList = pathnames
     .map((path) => breadcrumbs[path])
-    .filter((item) => item);
+    .filter((item) => item)
+    .filter((item) => {
+      if (pathname === '/volumeblocks') {
+        return item.url !== '/skip-number';
+      }
+
+      return true;
+    });
 
   return (
     <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-bg z-50">
@@ -183,7 +196,7 @@ export default function Header() {
           </BreadcrumbItem>
 
           {breadcrumbList.map((item, index) => (
-            <>
+            <React.Fragment key={item.url}>
               {item.url !== '/' && <BreadcrumbSeparator>/</BreadcrumbSeparator>}
               {index === breadcrumbList.length - 1 ? (
                 <BreadcrumbPage className="flex items-center gap-2 text-text-title">
@@ -198,7 +211,7 @@ export default function Header() {
                   </div>
                 </BreadcrumbLink>
               )}
-            </>
+            </React.Fragment>
           ))}
         </BreadcrumbList>
       </Breadcrumb>
