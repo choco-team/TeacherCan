@@ -108,7 +108,7 @@ const breadcrumbs: Record<
   },
   volumeblocks: {
     name: '부피 구하기',
-    url: '/skip-number/volumeblocks',
+    url: '/volumeblocks',
     icon: <BoxIcon size="1rem" />,
   },
   stopwatch: {
@@ -158,7 +158,7 @@ export default function Header() {
     .map((path) => breadcrumbs[path])
     .filter((item) => item)
     .filter((item) => {
-      if (pathname === '/skip-number/volumeblocks') {
+      if (pathname === '/volumeblocks') {
         return item.url !== '/skip-number';
       }
 

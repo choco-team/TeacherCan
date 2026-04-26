@@ -42,7 +42,7 @@ export const MENU_ROUTE = {
 // NOTE:(김홍동) 수업도구 전용 라우트 (메뉴와 분리하여 관리)
 export const TOOL_ROUTE = {
   SKIP_NUMBER: '/skip-number',
-  VOLUME_BLOCKS: '/skip-number/volumeblocks',
+  VOLUME_BLOCKS: '/volumeblocks',
 } as const;
 
 // NOTE:(김홍동) 도움 영역에서 사용하는 라우트
@@ -167,7 +167,7 @@ export const TOOL_PATH_DATA: PathData<ToolRoutePath> = {
     href: TOOL_ROUTE.SKIP_NUMBER,
     isNew: true,
   },
-  '/skip-number/volumeblocks': {
+  '/volumeblocks': {
     title: '직육면체 부피 구하기',
     Icon: BoxIcon,
     href: TOOL_ROUTE.VOLUME_BLOCKS,

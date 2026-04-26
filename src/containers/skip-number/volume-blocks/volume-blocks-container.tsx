@@ -332,6 +332,65 @@ function ThreeVolumeScene({
       });
     };
 
+    const addCentimeterSurfaceGrid = (
+      dimension: Dimension,
+      unitScale: number,
+    ) => {
+      const width = dimension.width * unitScale;
+      const height = dimension.height * unitScale;
+      const depth = dimension.depth * unitScale;
+      const xValues = getIntervals(dimension.width, 1).map(
+        (value) => value * unitScale - width / 2,
+      );
+      const yValues = getIntervals(dimension.height, 1).map(
+        (value) => value * unitScale - height / 2,
+      );
+      const zValues = getIntervals(dimension.depth, 1).map(
+        (value) => depth / 2 - value * unitScale,
+      );
+      const points: THREE.Vector3[] = [];
+      const offset = unitScale * 0.35;
+
+      xValues.forEach((x) => {
+        points.push(
+          new THREE.Vector3(x, -height / 2, depth / 2 + offset),
+          new THREE.Vector3(x, height / 2, depth / 2 + offset),
+          new THREE.Vector3(x, height / 2 + offset, -depth / 2),
+          new THREE.Vector3(x, height / 2 + offset, depth / 2),
+        );
+      });
+
+      yValues.forEach((y) => {
+        points.push(
+          new THREE.Vector3(-width / 2, y, depth / 2 + offset),
+          new THREE.Vector3(width / 2, y, depth / 2 + offset),
+          new THREE.Vector3(width / 2 + offset, y, -depth / 2),
+          new THREE.Vector3(width / 2 + offset, y, depth / 2),
+        );
+      });
+
+      zValues.forEach((z) => {
+        points.push(
+          new THREE.Vector3(width / 2 + offset, -height / 2, z),
+          new THREE.Vector3(width / 2 + offset, height / 2, z),
+          new THREE.Vector3(-width / 2, height / 2 + offset, z),
+          new THREE.Vector3(width / 2, height / 2 + offset, z),
+        );
+      });
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const grid = new THREE.LineSegments(
+        geometry,
+        new THREE.LineBasicMaterial({
+          color: 0x334155,
+          transparent: true,
+          opacity: 0.16,
+        }),
+      );
+
+      group.add(grid);
+    };
+
     const fitCamera = (maxDimension: number) => {
       const distance = Math.max(maxDimension * 2.15, 10);
       camera.position.set(distance, distance * 0.78, distance * 1.15);
@@ -416,12 +475,12 @@ function ThreeVolumeScene({
         convertSize.depth * unitScale,
       );
       const solid = new THREE.Mesh(geometry, [
-        createPastelMaterial(PASTEL_COLORS.depth, 0.78),
-        createPastelMaterial(PASTEL_COLORS.block, 0.78),
-        createPastelMaterial(PASTEL_COLORS.block, 0.78),
-        createPastelMaterial(PASTEL_COLORS.block, 0.78),
-        createPastelMaterial(PASTEL_COLORS.width, 0.78),
-        createPastelMaterial(PASTEL_COLORS.height, 0.78),
+        createPastelMaterial(PASTEL_COLORS.depth, 0.9),
+        createPastelMaterial(PASTEL_COLORS.block, 0.9),
+        createPastelMaterial(PASTEL_COLORS.height, 0.9),
+        createPastelMaterial(PASTEL_COLORS.block, 0.9),
+        createPastelMaterial(PASTEL_COLORS.width, 0.9),
+        createPastelMaterial(PASTEL_COLORS.block, 0.9),
       ]);
       const lineColor =
         convertUnit === 'cm'
@@ -438,6 +497,7 @@ function ThreeVolumeScene({
         ),
       );
       group.add(solid);
+      addCentimeterSurfaceGrid(convertSize, unitScale);
       if (convertUnit === 'm') addMeterUnitLines(convertSize, unitScale);
       fitCamera(9);
     }
