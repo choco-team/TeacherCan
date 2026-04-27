@@ -124,7 +124,13 @@ export default function VoteTeacherContainer({ params }: Props) {
     [snapshot],
   );
   const resultSourceRound =
-    currentRound?.status === 'ended' ? currentRound : latestEndedRound;
+    currentRound && currentRound.status !== 'ready'
+      ? currentRound
+      : latestEndedRound;
+  const showResultCard =
+    Boolean(resultSourceRound) && snapshot?.room.status === 'ended';
+  const isLiveResultView = currentRound?.status === 'live';
+  const canOpenResultCharts = Boolean(resultSourceRound);
 
   const rankedResultOptions = useMemo(() => {
     const sortedOptions = [...(resultSourceRound?.options ?? [])].sort(
@@ -178,7 +184,6 @@ export default function VoteTeacherContainer({ params }: Props) {
     if (chartResultOptions.length === 0 || totalVotes <= 0) {
       return [];
     }
-
     let currentAngle = 0;
     return chartResultOptions.map((option, index) => {
       const percentage = (option.voteCount / totalVotes) * 100;
@@ -189,6 +194,7 @@ export default function VoteTeacherContainer({ params }: Props) {
       return {
         id: option.id,
         label: option.label,
+        voteCount: option.voteCount,
         percentage,
         start,
         end,
@@ -197,9 +203,6 @@ export default function VoteTeacherContainer({ params }: Props) {
     });
   }, [chartResultOptions, resultSourceRound]);
   const pieChartBackground = useMemo(() => {
-    if (chartResultOptions.length === 0) {
-      return 'conic-gradient(#e5e7eb 0 100%)';
-    }
     if (pieChartSegments.length === 0) {
       return 'conic-gradient(#e5e7eb 0 100%)';
     }
@@ -209,7 +212,7 @@ export default function VoteTeacherContainer({ params }: Props) {
     );
 
     return `conic-gradient(${segments.join(', ')})`;
-  }, [chartResultOptions, pieChartSegments]);
+  }, [pieChartSegments]);
   const validOptionCount = useMemo(
     () => options.filter((value) => value.trim()).length,
     [options],
@@ -1172,11 +1175,13 @@ export default function VoteTeacherContainer({ params }: Props) {
             </Card>
           )}
 
-          {snapshot.room.status === 'ended' && resultSourceRound && (
+          {showResultCard && resultSourceRound && (
             <Card className="border-primary-100/70 dark:border-gray-800 shadow-sm">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>최종 결과 Top 3</span>
+                  <span>
+                    {isLiveResultView ? '실시간 결과 Top 3' : '최종 결과 Top 3'}
+                  </span>
                   <Badge variant="primary-outline">
                     총 {resultSourceRound.totalVotes}표
                   </Badge>
@@ -1211,184 +1216,18 @@ export default function VoteTeacherContainer({ params }: Props) {
                     </div>
                   ))
                 )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {snapshot.room.status === 'ended' && (
                   <Button
-                    type="button"
-                    variant="gray-outline"
+                    variant="primary"
                     size="sm"
                     className="w-full h-11"
                     onClick={() => {
-                      setResultDialogView('pie');
-                      setIsResultDialogOpen(true);
+                      router.push('/vote');
                     }}
                   >
-                    원 그래프로 보기
+                    새로운 투표 만들기
                   </Button>
-                  <Button
-                    type="button"
-                    variant="gray-outline"
-                    size="sm"
-                    className="w-full h-11"
-                    onClick={() => {
-                      setResultDialogView('bar');
-                      setIsResultDialogOpen(true);
-                    }}
-                  >
-                    막대 그래프로 보기
-                  </Button>
-                </div>
-
-                <Dialog
-                  open={isResultDialogOpen}
-                  onOpenChange={setIsResultDialogOpen}
-                >
-                  <DialogContent className="max-w-[96vw] lg:max-w-6xl p-6 max-h-[92vh] overflow-y-auto">
-                    <DialogTitle>
-                      {resultDialogView === 'pie'
-                        ? '전체 원 그래프'
-                        : '전체 막대 그래프'}
-                    </DialogTitle>
-                    {resultDialogView === 'pie' &&
-                      chartResultOptions.length === 0 && (
-                        <div className="text-sm text-text-subtitle py-8 text-center">
-                          배정된 득표가 없어 그래프를 표시할 수 없습니다.
-                        </div>
-                      )}
-                    {chartResultOptions.length > 0 &&
-                      resultDialogView === 'pie' && (
-                        <div className="space-y-6">
-                          <div className="flex justify-center">
-                            <div
-                              className="relative size-[min(72vw,520px)] rounded-full border border-gray-200 dark:border-gray-700"
-                              style={{ background: pieChartBackground }}
-                            >
-                              {pieChartSegments.map((segment) => {
-                                const midPoint =
-                                  (segment.start + segment.end) / 2;
-                                const angleInRadians =
-                                  (midPoint / 100) * Math.PI * 2 - Math.PI / 2;
-                                const xPosition =
-                                  50 + Math.cos(angleInRadians) * 34;
-                                const yPosition =
-                                  50 + Math.sin(angleInRadians) * 34;
-
-                                return (
-                                  <div
-                                    key={segment.id}
-                                    className="absolute pointer-events-none text-[13px] leading-tight text-slate-700 dark:text-gray-100 text-center max-w-[110px] -translate-x-1/2 -translate-y-1/2"
-                                    style={{
-                                      left: `${xPosition}%`,
-                                      top: `${yPosition}%`,
-                                    }}
-                                  >
-                                    <div className="truncate font-semibold">
-                                      {segment.label}
-                                    </div>
-                                    <div>{Math.round(segment.percentage)}%</div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                          <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {chartResultOptions.map((option, index) => {
-                              const percentage =
-                                resultSourceRound.totalVotes > 0
-                                  ? Math.round(
-                                      (option.voteCount /
-                                        resultSourceRound.totalVotes) *
-                                        100,
-                                    )
-                                  : 0;
-                              return (
-                                <div
-                                  key={option.id}
-                                  className="flex items-center gap-2 text-sm"
-                                >
-                                  <span
-                                    className="size-2.5 rounded-full"
-                                    style={{
-                                      backgroundColor:
-                                        RESULT_CHART_COLORS[
-                                          index % RESULT_CHART_COLORS.length
-                                        ],
-                                    }}
-                                  />
-                                  <span className="truncate flex-1">
-                                    {option.label}
-                                  </span>
-                                  <span className="text-text-subtitle">
-                                    {percentage}%
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
-                    {rankedResultOptions.length > 0 &&
-                      resultDialogView === 'bar' && (
-                        <div className="space-y-3">
-                          <p className="text-xs text-text-subtitle">
-                            총 {resultSourceRound.totalVotes}표 기준
-                          </p>
-                          <div className="h-[65vh]">
-                            <div
-                              className="h-full w-full grid items-end gap-3"
-                              style={{
-                                gridTemplateColumns: `repeat(${Math.max(rankedResultOptions.length, 1)}, minmax(0, 1fr))`,
-                              }}
-                            >
-                              {rankedResultOptions.map((option, index) => {
-                                const heightRatio = Math.max(
-                                  8,
-                                  Math.round(
-                                    (option.voteCount / maxRankedVoteCount) *
-                                      100,
-                                  ),
-                                );
-                                return (
-                                  <div
-                                    key={option.id}
-                                    className="h-full min-w-0 flex flex-col items-center gap-2"
-                                  >
-                                    <span className="h-5 inline-flex items-center text-sm text-text-subtitle">
-                                      {option.voteCount}표
-                                    </span>
-                                    <div className="h-[78%] w-full flex items-end">
-                                      <div
-                                        className="w-full rounded-t-md border border-black/10 dark:border-white/10 transition-all"
-                                        style={{
-                                          height: `${heightRatio}%`,
-                                          backgroundColor:
-                                            RESULT_CHART_COLORS[
-                                              index % RESULT_CHART_COLORS.length
-                                            ],
-                                        }}
-                                      />
-                                    </div>
-                                    <span className="h-8 inline-flex items-start justify-center text-xs text-text-subtitle truncate w-full text-center leading-4">
-                                      {option.label}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                  </DialogContent>
-                </Dialog>
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="w-full h-11"
-                  onClick={() => {
-                    router.push('/vote');
-                  }}
-                >
-                  새로운 투표 만들기
-                </Button>
+                )}
               </CardContent>
             </Card>
           )}
@@ -1460,6 +1299,159 @@ export default function VoteTeacherContainer({ params }: Props) {
               </div>
             </CardContent>
           </Card>
+
+          {canOpenResultCharts && resultSourceRound && (
+            <div className="w-full mt-3 space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="gray-outline"
+                  size="sm"
+                  className="w-full h-11"
+                  onClick={() => {
+                    setResultDialogView('pie');
+                    setIsResultDialogOpen(true);
+                  }}
+                >
+                  원 그래프로 보기
+                </Button>
+                <Button
+                  type="button"
+                  variant="gray-outline"
+                  size="sm"
+                  className="w-full h-11"
+                  onClick={() => {
+                    setResultDialogView('bar');
+                    setIsResultDialogOpen(true);
+                  }}
+                >
+                  막대 그래프로 보기
+                </Button>
+              </div>
+              <Dialog
+                open={isResultDialogOpen}
+                onOpenChange={setIsResultDialogOpen}
+              >
+                <DialogContent className="max-w-[96vw] lg:max-w-6xl p-6 max-h-[92vh] overflow-y-auto">
+                  <DialogTitle>
+                    {resultDialogView === 'pie'
+                      ? '전체 원 그래프'
+                      : '전체 막대 그래프'}
+                  </DialogTitle>
+                  {resultDialogView === 'pie' &&
+                    rankedResultOptions.length > 0 && (
+                      <div className="space-y-6">
+                        <div className="flex justify-center">
+                          <div
+                            className="relative size-[min(72vw,520px)] rounded-full border border-gray-200 dark:border-gray-700"
+                            style={{ background: pieChartBackground }}
+                          >
+                            {pieChartSegments.map((segment) => {
+                              const midPoint =
+                                (segment.start + segment.end) / 2;
+                              const angleInRadians =
+                                (midPoint / 100) * Math.PI * 2 - Math.PI / 2;
+                              const xPosition =
+                                50 + Math.cos(angleInRadians) * 34;
+                              const yPosition =
+                                50 + Math.sin(angleInRadians) * 34;
+
+                              return (
+                                <div
+                                  key={segment.id}
+                                  className="absolute pointer-events-none text-[13px] leading-tight text-slate-700 dark:text-gray-100 text-center max-w-[110px] -translate-x-1/2 -translate-y-1/2"
+                                  style={{
+                                    left: `${xPosition}%`,
+                                    top: `${yPosition}%`,
+                                  }}
+                                >
+                                  <div className="truncate font-semibold">
+                                    {segment.label}
+                                  </div>
+                                  <div>
+                                    {Math.round(segment.percentage)}% ·{' '}
+                                    {segment.voteCount}표
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {pieChartSegments.map((segment) => (
+                            <div
+                              key={segment.id}
+                              className="flex items-center gap-2 text-sm"
+                            >
+                              <span
+                                className="size-2.5 rounded-full"
+                                style={{ backgroundColor: segment.color }}
+                              />
+                              <span className="truncate flex-1">
+                                {segment.label}
+                              </span>
+                              <span className="text-text-subtitle">
+                                {Math.round(segment.percentage)}% ·{' '}
+                                {segment.voteCount}표
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  {resultDialogView === 'bar' && (
+                    <div className="space-y-3">
+                      <p className="text-xs text-text-subtitle">
+                        총 {resultSourceRound.totalVotes}표 기준
+                      </p>
+                      <div className="h-[65vh]">
+                        <div
+                          className="h-full w-full grid items-end gap-3"
+                          style={{
+                            gridTemplateColumns: `repeat(${Math.max(rankedResultOptions.length, 1)}, minmax(0, 1fr))`,
+                          }}
+                        >
+                          {rankedResultOptions.map((option, index) => {
+                            const heightRatio = Math.max(
+                              8,
+                              Math.round(
+                                (option.voteCount / maxRankedVoteCount) * 100,
+                              ),
+                            );
+                            return (
+                              <div
+                                key={option.id}
+                                className="h-full min-w-0 flex flex-col items-center gap-2"
+                              >
+                                <span className="h-5 inline-flex items-center text-sm text-text-subtitle">
+                                  {option.voteCount}표
+                                </span>
+                                <div className="h-[78%] w-full flex items-end">
+                                  <div
+                                    className="w-full rounded-t-md border border-black/10 dark:border-white/10 transition-all"
+                                    style={{
+                                      height: `${heightRatio}%`,
+                                      backgroundColor:
+                                        RESULT_CHART_COLORS[
+                                          index % RESULT_CHART_COLORS.length
+                                        ],
+                                    }}
+                                  />
+                                </div>
+                                <span className="h-8 inline-flex items-start justify-center text-xs text-text-subtitle truncate w-full text-center leading-4">
+                                  {option.label}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </div>
+          )}
         </div>
       </div>
     </div>
