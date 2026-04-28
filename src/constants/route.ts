@@ -18,6 +18,7 @@ import {
   GroupIcon,
   FileTextIcon,
   UnfoldHorizontal,
+  Presentation,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -36,6 +37,7 @@ export const MENU_ROUTE = {
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
   RANDOM_TEAM: '/random-team',
+  PRESENTATION_ASSISTANT: '/presentation-assistant',
 } as const;
 
 // NOTE:(김홍동) 수업도구 전용 라우트 (메뉴와 분리하여 관리)
@@ -152,6 +154,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '알림장 문구 추천',
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
+  },
+  '/presentation-assistant': {
+    title: '발표 도우미',
+    Icon: Presentation,
+    href: MENU_ROUTE.PRESENTATION_ASSISTANT,
+    isNew: true,
   },
 };
 
