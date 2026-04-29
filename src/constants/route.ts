@@ -12,7 +12,7 @@ import {
   WandSparklesIcon,
   // MegaphoneIcon,
   CircleDotIcon,
-  // VoteIcon,
+  VoteIcon,
   SplitIcon,
   ClockIcon,
   WatchIcon,
@@ -110,12 +110,6 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
       { title: '디지털', href: `${MENU_ROUTE.CLOCK}/digital` },
     ],
   },
-  // '/vote': {
-  //   title: '투표하기',
-  //   Icon: VoteIcon,
-  //   href: MENU_ROUTE.VOTE,
-  //   isNew: true,
-  // },
   '/stopwatch': {
     title: '스톱워치',
     Icon: WatchIcon,
@@ -160,6 +154,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '알림장 문구 추천',
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
+  },
+  '/vote': {
+    title: '투표하기',
+    Icon: VoteIcon,
+    href: MENU_ROUTE.VOTE,
+    isNew: true,
   },
 };
 
