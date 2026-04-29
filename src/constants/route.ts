@@ -10,9 +10,9 @@ import {
   DatabaseIcon,
   TimerIcon,
   WandSparklesIcon,
-  MegaphoneIcon,
+  // MegaphoneIcon,
   CircleDotIcon,
-  VoteIcon,
+  // VoteIcon,
   SplitIcon,
   ClockIcon,
   WatchIcon,
@@ -110,12 +110,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
       { title: '디지털', href: `${MENU_ROUTE.CLOCK}/digital` },
     ],
   },
-  '/vote': {
-    title: '투표하기',
-    Icon: VoteIcon,
-    href: MENU_ROUTE.VOTE,
-    isNew: true,
-  },
+  // '/vote': {
+  //   title: '투표하기',
+  //   Icon: VoteIcon,
+  //   href: MENU_ROUTE.VOTE,
+  //   isNew: true,
+  // },
   '/stopwatch': {
     title: '스톱워치',
     Icon: WatchIcon,
@@ -195,11 +195,11 @@ export const DATA_PATH_DATA: PathData<DataRoutePath> = {
 
 // NOTE:(김홍동) 네비게이션의 도움 영역에서 사용되는 객체입니다.
 export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
-  '/announcement': {
-    title: '공지사항',
-    Icon: MegaphoneIcon,
-    href: HELP_ROUTE.ANNOUNCEMENT,
-  },
+  // '/announcement': {
+  //   title: '공지사항',
+  //   Icon: MegaphoneIcon,
+  //   href: HELP_ROUTE.ANNOUNCEMENT,
+  // },
   '/feedback': {
     title: '피드백',
     Icon: MessageCircleHeartIcon,
