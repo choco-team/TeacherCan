@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Gift } from 'lucide-react';
 import { PresentationStudent } from '@/types/presentation-assistant';
 import chickStage0 from '@/assets/images/presentation-assistant/chick-stage-0.png';
@@ -14,103 +13,15 @@ interface StudentCardProps {
 
 const STAGE_IMAGE = [chickStage0, chickStage1, chickStage2, chickStage3];
 
-const isPurplePixel = (r: number, g: number, b: number, a: number) => {
-  if (a < 20) return false;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const delta = max - min;
-  if (delta < 18) return false;
-
-  let hue = 0;
-  if (delta !== 0) {
-    if (max === r) hue = ((g - b) / delta) % 6;
-    else if (max === g) hue = (b - r) / delta + 2;
-    else hue = (r - g) / delta + 4;
-    hue *= 60;
-    if (hue < 0) hue += 360;
-  }
-
-  return hue >= 260 && hue <= 340;
-};
-
-const recolorPurpleToWhite = (source: string): Promise<string> =>
-  new Promise((resolve) => {
-    const image = new Image();
-    image.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = image.width;
-      canvas.height = image.height;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        resolve(source);
-        return;
-      }
-
-      ctx.drawImage(image, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const { data } = imageData;
-
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        const a = data[i + 3];
-
-        if (isPurplePixel(r, g, b, a)) {
-          data[i] = 245;
-          data[i + 1] = 245;
-          data[i + 2] = 245;
-        }
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-      resolve(canvas.toDataURL('image/png'));
-    };
-
-    image.onerror = () => resolve(source);
-    image.src = source;
-  });
-
 export default function StudentCard({
   student,
   onClick,
   onDecorate,
 }: StudentCardProps) {
-  const [recoloredStageImages, setRecoloredStageImages] = useState<string[]>([
-    STAGE_IMAGE[0].src,
-    STAGE_IMAGE[1].src,
-    STAGE_IMAGE[2].src,
-    STAGE_IMAGE[3].src,
-  ]);
-
-  useEffect(() => {
-    let active = true;
-
-    const recolorStages = async () => {
-      const recolored1 = await recolorPurpleToWhite(STAGE_IMAGE[1].src);
-      const recolored2 = await recolorPurpleToWhite(STAGE_IMAGE[2].src);
-      const recolored3 = await recolorPurpleToWhite(STAGE_IMAGE[3].src);
-
-      if (!active) return;
-      setRecoloredStageImages([
-        STAGE_IMAGE[0].src,
-        recolored1,
-        recolored2,
-        recolored3,
-      ]);
-    };
-
-    recolorStages();
-    return () => {
-      active = false;
-    };
-  }, []);
-
   const isActive = student.count > 0;
   const canDecorate = student.count >= 3;
-  const stage = Math.min(student.count, recoloredStageImages.length - 1);
-  const faceImage = recoloredStageImages[stage];
+  const stage = Math.min(student.count, STAGE_IMAGE.length - 1);
+  const faceImage = STAGE_IMAGE[stage].src;
 
   return (
     <button
