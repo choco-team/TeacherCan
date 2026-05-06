@@ -19,6 +19,7 @@ import {
   GroupIcon,
   FileTextIcon,
   UnfoldHorizontal,
+  Presentation,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -37,6 +38,7 @@ export const MENU_ROUTE = {
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
   RANDOM_TEAM: '/random-team',
+  PRESENTATION_ASSISTANT: '/presentation-assistant',
   VOTE: '/vote',
 } as const;
 
@@ -155,6 +157,10 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
   },
+  '/presentation-assistant': {
+    title: '발표 도우미',
+    Icon: Presentation,
+    href: MENU_ROUTE.PRESENTATION_ASSISTANT,
   '/vote': {
     title: '투표하기',
     Icon: VoteIcon,
