@@ -13,6 +13,7 @@ const buttonVariants = cva(
           'bg-primary text-primary-foreground fill-primary-foreground hover:bg-primary/90 active:bg-primary-600',
         secondary:
           'bg-secondary text-secondary-foreground fill-secondary-foreground hover:bg-secondary/90 active:bg-secondary-600',
+        gray: 'bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 fill-gray-900 dark:fill-gray-100 hover:bg-gray-100 dark:hover:bg-gray-600 active:bg-gray-400 dark:active:bg-gray-500',
         red: 'bg-red text-red-foreground hover:bg-red/90 active:bg-red-600',
 
         'primary-outline':
