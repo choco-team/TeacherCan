@@ -185,7 +185,7 @@ export default function PresentationAssistantPage() {
           <div className="mb-6 flex items-center gap-3">
             <button
               onClick={handleBack}
-              className="rounded-lg p-2 transition-colors hover:bg-secondary"
+              className="rounded-lg p-2 transition-colors hover:bg-primary-300"
             >
               <ArrowLeft className="h-5 w-5 text-muted-foreground" />
             </button>
@@ -318,14 +318,14 @@ export default function PresentationAssistantPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowEditStudents(false)}
-                    className="rounded-xl border border-border px-6 py-3 font-medium text-foreground transition-colors hover:bg-secondary"
+                    className="rounded-xl border border-border px-6 py-3 font-medium text-foreground transition-colors hover:bg-gray-200"
                   >
                     취소
                   </button>
                   <button
                     onClick={handleEditComplete}
                     disabled={editStudentNames.length === 0}
-                    className="flex-1 rounded-xl bg-primary py-3 font-medium text-primary-foreground transition-opacity disabled:opacity-40"
+                    className="flex-1 rounded-xl bg-primary py-3 font-medium text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-90"
                   >
                     저장 ({editStudentNames.length}명)
                   </button>

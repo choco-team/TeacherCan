@@ -54,7 +54,7 @@ export default function StudentCard({
           height={128}
         />
         {student.decoration && (
-          <span className="absolute -right-1 -top-1 text-2xl drop-shadow-sm">
+          <span className="absolute -left-1 -top-1 text-2xl drop-shadow-sm">
             {student.decoration}
           </span>
         )}
