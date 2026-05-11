@@ -161,6 +161,7 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '발표 도우미',
     Icon: Presentation,
     href: MENU_ROUTE.PRESENTATION_ASSISTANT,
+  },
   '/vote': {
     title: '투표하기',
     Icon: VoteIcon,
