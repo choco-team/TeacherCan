@@ -215,7 +215,9 @@ export default function AppSidebar() {
                       onClick={handleClickMenu}
                       href={path}
                       className={cn(
-                        pathname.startsWith(path) &&
+                        (path === '/skip-number'
+                          ? pathname === path
+                          : pathname.startsWith(path)) &&
                           'text-text-title bg-bg-secondary dark:bg-gray-950',
                         linkClass,
                       )}
