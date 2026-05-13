@@ -10,8 +10,9 @@ import {
   DatabaseIcon,
   TimerIcon,
   WandSparklesIcon,
-  MegaphoneIcon,
+  // MegaphoneIcon,
   CircleDotIcon,
+  VoteIcon,
   SplitIcon,
   ClockIcon,
   WatchIcon,
@@ -19,6 +20,7 @@ import {
   FileTextIcon,
   UnfoldHorizontal,
   BoxIcon,
+  Presentation,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -37,6 +39,8 @@ export const MENU_ROUTE = {
   ROUTINE_TIMER: '/routine-timer',
   ROULETTE: '/roulette',
   RANDOM_TEAM: '/random-team',
+  PRESENTATION_ASSISTANT: '/presentation-assistant',
+  VOTE: '/vote',
 } as const;
 
 // NOTE:(김홍동) 수업도구 전용 라우트 (메뉴와 분리하여 관리)
@@ -155,6 +159,18 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     Icon: WandSparklesIcon,
     href: MENU_ROUTE.NOTICE_SUGGESTION,
   },
+  '/presentation-assistant': {
+    title: '발표 도우미',
+    Icon: Presentation,
+    href: MENU_ROUTE.PRESENTATION_ASSISTANT,
+    isNew: true,
+  },
+  '/vote': {
+    title: '투표하기',
+    Icon: VoteIcon,
+    href: MENU_ROUTE.VOTE,
+    isNew: true,
+  },
 };
 
 // ================= 수업도구 =================
@@ -195,11 +211,11 @@ export const DATA_PATH_DATA: PathData<DataRoutePath> = {
 
 // NOTE:(김홍동) 네비게이션의 도움 영역에서 사용되는 객체입니다.
 export const HELP_PATH_DATA: PathData<HelpRoutePath> = {
-  '/announcement': {
-    title: '공지사항',
-    Icon: MegaphoneIcon,
-    href: HELP_ROUTE.ANNOUNCEMENT,
-  },
+  // '/announcement': {
+  //   title: '공지사항',
+  //   Icon: MegaphoneIcon,
+  //   href: HELP_ROUTE.ANNOUNCEMENT,
+  // },
   '/feedback': {
     title: '피드백',
     Icon: MessageCircleHeartIcon,

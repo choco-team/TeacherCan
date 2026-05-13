@@ -19,6 +19,7 @@ import {
   Hourglass,
   UnfoldHorizontal,
   BoxIcon,
+  VoteIcon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -65,6 +66,11 @@ const breadcrumbs: Record<
     name: '음악신청',
     url: '/music-request',
     icon: <MusicIcon size="1rem" />,
+  },
+  vote: {
+    name: '투표하기',
+    url: '/vote',
+    icon: <VoteIcon size="1rem" />,
   },
   feedback: {
     name: '피드백',
