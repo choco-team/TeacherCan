@@ -108,7 +108,7 @@ export default function RandomTeamContainer() {
                 className="flex items-center gap-2 px-4 hover:shadow-md transition-all"
               >
                 <UserPen className="h-4 w-4" />
-                학생 편집
+                학생편집
               </Button>
             )}
 
