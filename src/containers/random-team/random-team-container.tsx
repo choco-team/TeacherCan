@@ -100,7 +100,6 @@ export default function RandomTeamContainer() {
           <Heading1 className="text-xl font-bold">랜덤 모둠 구성</Heading1>
 
           <div className="flex items-center gap-2">
-            {/* 🎨 발표 도우미 스타일과 동일하게 변경된 [학생 편집] 버튼 */}
             {isReady && (
               <Button
                 onClick={openEditStudents}
@@ -159,7 +158,6 @@ export default function RandomTeamContainer() {
         </div>
       )}
 
-      {/* ================= 🎨 발표 도우미 테마로 통일된 학생 편집 모달 UI ================= */}
       {showEditStudents && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-sm"
