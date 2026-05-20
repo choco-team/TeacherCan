@@ -62,7 +62,7 @@ export default function SetupPage({ onComplete, onClose }: SetupPageProps) {
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1 transition-colors hover:bg-primary"
+          className="absolute right-4 top-4 rounded-full p-1 transition-colors hover:bg-primary/10"
         >
           <X className="h-5 w-5 text-muted-foreground" />
         </button>

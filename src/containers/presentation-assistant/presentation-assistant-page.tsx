@@ -251,7 +251,7 @@ export default function PresentationAssistantPage() {
                   </h3>
                   <button
                     onClick={() => setShowEditStudents(false)}
-                    className="rounded-full p-1 transition-colors hover:bg-secondary"
+                    className="rounded-full p-1 transition-colors hover:bg-primary/10"
                   >
                     <X className="h-5 w-5 text-muted-foreground" />
                   </button>
@@ -282,7 +282,7 @@ export default function PresentationAssistantPage() {
                     placeholder="학생 이름"
                     className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
                   />
-                  <button
+                  <Button
                     onClick={() => {
                       if (editStudentInput.includes(',')) {
                         handleEditAddBulk();
@@ -290,10 +290,11 @@ export default function PresentationAssistantPage() {
                         handleEditAddStudent();
                       }
                     }}
-                    className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                    variant="primary"
+                    className="rounded-xl px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
                   >
-                    <Plus className="h-4 w-4" />
-                  </button>
+                    <Plus className="h-5 w-5" />
+                  </Button>
                 </div>
 
                 {editStudentNames.length > 0 && (
@@ -321,19 +322,21 @@ export default function PresentationAssistantPage() {
                 )}
 
                 <div className="flex gap-2">
-                  <button
+                  <Button
                     onClick={() => setShowEditStudents(false)}
-                    className="rounded-xl border border-border px-6 py-3 font-medium text-foreground transition-colors hover:bg-gray-200"
+                    variant="primary"
+                    className="px-6 py-3 font-medium text-primary-foreground hover:opacity-90"
                   >
                     취소
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleEditComplete}
                     disabled={editStudentNames.length === 0}
-                    className="flex-1 rounded-xl bg-primary py-3 font-medium text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-90"
+                    variant="primary"
+                    className="flex-1 py-3 font-medium text-primary-foreground hover:opacity-90"
                   >
                     저장 ({editStudentNames.length}명)
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
