@@ -137,7 +137,7 @@ export function NumberLineControls({
               onClick={onJumpBackward}
               variant="gray-outline"
               size="md"
-              className="gap-2 text-base font-bold border-2 hover:bg-foreground/10"
+              className="gap-2 text-base font-bold border-2 hover:bg-foreground/10 w-24"
             >
               <ArrowLeft className="w-5 h-5" />
               뒤로
@@ -146,7 +146,7 @@ export function NumberLineControls({
             <Button
               onClick={onJumpForward}
               size="md"
-              className="gap-2 text-base font-bold "
+              className="gap-2 text-base font-bold w-24"
             >
               앞으로
               <ArrowRight className="w-5 h-5" />
