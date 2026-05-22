@@ -25,6 +25,7 @@ import {
   PresentationStudent,
   SavedPresentation,
 } from '@/types/presentation-assistant';
+import { Button } from '@/components/button';
 
 export default function PresentationAssistantPage() {
   const [presentations, setPresentations] = useState<SavedPresentation[]>([]);
@@ -185,27 +186,31 @@ export default function PresentationAssistantPage() {
           <div className="mb-6 flex items-center gap-3">
             <button
               onClick={handleBack}
-              className="rounded-lg p-2 transition-colors hover:bg-primary-300"
+              className="rounded-lg p-2 transition-colors hover:bg-beige-400"
             >
               <ArrowLeft className="h-5 w-5 text-muted-foreground" />
             </button>
             <h1 className="flex-1 text-xl font-bold text-foreground">
               {activePresentation.title}
             </h1>
-            <button
+            <Button
               onClick={openEditStudents}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 active:scale-95"
+              variant="primary"
+              size="sm"
+              className="flex items-center gap-2 px-4 hover:shadow-md transition-all"
             >
               <UserPen className="h-4 w-4" />
-              학생 편집
-            </button>
-            <button
+              학생편집
+            </Button>
+            <Button
               onClick={handleReset}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 active:scale-95"
+              variant="primary"
+              size="sm"
+              className="flex items-center gap-2 px-4 hover:shadow-md transition-all"
             >
               <RotateCcw className="h-4 w-4" />
               초기화
-            </button>
+            </Button>
           </div>
 
           <div className="mb-6">
@@ -242,11 +247,11 @@ export default function PresentationAssistantPage() {
               >
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-lg font-bold text-foreground">
-                    학생 편집
+                    학생편집
                   </h3>
                   <button
                     onClick={() => setShowEditStudents(false)}
-                    className="rounded-full p-1 transition-colors hover:bg-secondary"
+                    className="rounded-full p-1 transition-colors hover:bg-primary/10"
                   >
                     <X className="h-5 w-5 text-muted-foreground" />
                   </button>
@@ -277,7 +282,7 @@ export default function PresentationAssistantPage() {
                     placeholder="학생 이름"
                     className="flex-1 rounded-xl border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
                   />
-                  <button
+                  <Button
                     onClick={() => {
                       if (editStudentInput.includes(',')) {
                         handleEditAddBulk();
@@ -285,10 +290,11 @@ export default function PresentationAssistantPage() {
                         handleEditAddStudent();
                       }
                     }}
-                    className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                    variant="primary"
+                    className="rounded-xl px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
                   >
-                    <Plus className="h-4 w-4" />
-                  </button>
+                    <Plus className="h-5 w-5" />
+                  </Button>
                 </div>
 
                 {editStudentNames.length > 0 && (
@@ -316,19 +322,21 @@ export default function PresentationAssistantPage() {
                 )}
 
                 <div className="flex gap-2">
-                  <button
+                  <Button
                     onClick={() => setShowEditStudents(false)}
-                    className="rounded-xl border border-border px-6 py-3 font-medium text-foreground transition-colors hover:bg-gray-200"
+                    variant="primary"
+                    className="px-6 py-3 font-medium text-primary-foreground hover:opacity-90"
                   >
                     취소
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleEditComplete}
                     disabled={editStudentNames.length === 0}
-                    className="flex-1 rounded-xl bg-primary py-3 font-medium text-primary-foreground transition-opacity disabled:opacity-40 hover:opacity-90"
+                    variant="primary"
+                    className="flex-1 py-3 font-medium text-primary-foreground hover:opacity-90"
                   >
                     저장 ({editStudentNames.length}명)
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -355,13 +363,15 @@ export default function PresentationAssistantPage() {
 
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-lg font-bold text-foreground">발표 목록</h2>
-          <button
+          <Button
             onClick={() => setShowSetup(true)}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 active:scale-95"
+            variant="primary"
+            size="sm"
+            className="flex items-center gap-2 px-4 hover:shadow-md transition-all"
           >
             <Plus className="h-4 w-4" />
             새로 만들기
-          </button>
+          </Button>
         </div>
 
         {presentations.length === 0 ? (

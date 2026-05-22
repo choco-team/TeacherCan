@@ -13,6 +13,7 @@ import { Slider } from '@/components/slider';
 import { Switch } from '@/components/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/tabs';
 import { cn } from '@/styles/utils';
+import { Label } from '@/components/label';
 
 type Mode = 'build' | 'convert' | 'meter';
 type BuildUnit = 'single' | 'row' | 'layer' | 'all';
@@ -121,9 +122,9 @@ function DimensionInput({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={id} className={cn('text-xs font-bold', accentClassName)}>
+      <Label htmlFor={id} className={cn('text-xs font-bold', accentClassName)}>
         {label}
-      </label>
+      </Label>
       <Input
         id={id}
         type="number"

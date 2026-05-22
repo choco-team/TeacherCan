@@ -23,6 +23,11 @@ interface SetupPageProps {
   onClose?: () => void;
 }
 
+const STEPS = [
+  { value: 1, label: '발표 제목' },
+  { value: 2, label: '학생 명단' },
+];
+
 export default function SetupPage({ onComplete, onClose }: SetupPageProps) {
   const [step, setStep] = useState<1 | 2>(1);
   const [title, setTitle] = useState('');
@@ -57,33 +62,43 @@ export default function SetupPage({ onComplete, onClose }: SetupPageProps) {
       {onClose && (
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1 transition-colors hover:bg-secondary"
+          className="absolute right-4 top-4 rounded-full p-1 transition-colors hover:bg-primary/10"
         >
           <X className="h-5 w-5 text-muted-foreground" />
         </button>
       )}
 
-      <div className="mb-6 flex items-center justify-center gap-2">
-        {[1, 2].map((value) => (
-          <div key={value} className="flex items-center gap-2">
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-colors ${
-                step >= value
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-secondary text-muted-foreground'
-              }`}
-            >
-              {value}
+      {/* 스텝 인디케이터 */}
+      <div className="mb-6 flex items-center justify-center gap-24">
+        {STEPS.map(({ value, label }) => {
+          const isActive = step === value;
+          const isDone = step > value;
+
+          return (
+            <div key={value} className="flex items-center">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
+                    isActive
+                      ? 'bg-black text-white'
+                      : isDone
+                        ? 'bg-gray-400 text-white'
+                        : 'bg-gray-200 text-gray-500'
+                  }`}
+                >
+                  {value}
+                </div>
+                <span
+                  className={`mt-1 text-xs ${
+                    isActive ? 'font-semibold text-black' : 'text-gray-500'
+                  }`}
+                >
+                  {label}
+                </span>
+              </div>
             </div>
-            {value < 2 && (
-              <div
-                className={`h-0.5 w-12 transition-colors ${
-                  step > value ? 'bg-primary' : 'bg-border'
-                }`}
-              />
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {step === 1 && (

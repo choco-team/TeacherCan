@@ -108,7 +108,7 @@ export default function RandomTeamContainer() {
                 className="flex items-center gap-2 px-4 hover:shadow-md transition-all"
               >
                 <UserPen className="h-4 w-4" />
-                학생 편집
+                학생편집
               </Button>
             )}
 
@@ -168,10 +168,10 @@ export default function RandomTeamContainer() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-foreground">학생 편집</h3>
+              <h3 className="text-lg font-bold text-foreground">학생편집</h3>
               <button
                 onClick={() => setShowEditStudents(false)}
-                className="rounded-full p-1 transition-colors hover:bg-secondary"
+                className="rounded-full p-1 transition-colors hover:bg-primary/10"
               >
                 <X className="h-5 w-5 text-muted-foreground" />
               </button>
@@ -212,7 +212,7 @@ export default function RandomTeamContainer() {
                 variant="primary"
                 className="rounded-xl px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
               >
-                <Plus className="h-4 w-4" />
+                <Plus className="h-5 w-5" />
               </Button>
             </div>
 

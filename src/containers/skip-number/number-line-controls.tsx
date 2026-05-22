@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Card, CardContent } from '@/components/card';
 import { Input } from '@/components/input';
+import { Label } from '@/components/label';
 
 interface NumberLineControlsProps {
   startNumber: number;
@@ -79,12 +80,12 @@ export function NumberLineControls({
       <CardContent className="p-5">
         <div className="flex flex-wrap items-end gap-4 justify-center">
           <div className="flex flex-col gap-1">
-            <label
+            <Label
               htmlFor="skip-number-start"
-              className="text-sm font-semibold text-foreground"
+              className="text-base font-semibold text-foreground"
             >
               시작 숫자
-            </label>
+            </Label>
             <Input
               id="skip-number-start"
               type="number"
@@ -96,12 +97,12 @@ export function NumberLineControls({
           </div>
 
           <div className="flex flex-col gap-1">
-            <label
+            <Label
               htmlFor="skip-number-step"
-              className="text-sm font-semibold text-foreground"
+              className="text-base font-semibold text-foreground"
             >
               뛰어셀 수
-            </label>
+            </Label>
             <Input
               id="skip-number-step"
               type="number"
@@ -114,12 +115,12 @@ export function NumberLineControls({
           </div>
 
           <div className="flex flex-col gap-1">
-            <label
+            <Label
               htmlFor="skip-number-tick"
-              className="text-sm font-semibold text-foreground"
+              className="text-base font-semibold text-foreground"
             >
               눈금 간격
-            </label>
+            </Label>
             <Input
               id="skip-number-tick"
               type="number"
@@ -135,8 +136,8 @@ export function NumberLineControls({
             <Button
               onClick={onJumpBackward}
               variant="gray-outline"
-              size="lg"
-              className="gap-2 text-base font-bold border-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive"
+              size="md"
+              className="gap-2 text-base font-bold border-2 hover:bg-foreground/10 w-24"
             >
               <ArrowLeft className="w-5 h-5" />
               뒤로
@@ -144,8 +145,8 @@ export function NumberLineControls({
 
             <Button
               onClick={onJumpForward}
-              size="lg"
-              className="gap-2 text-base font-bold"
+              size="md"
+              className="gap-2 text-base font-bold w-24"
             >
               앞으로
               <ArrowRight className="w-5 h-5" />
@@ -155,7 +156,7 @@ export function NumberLineControls({
           <Button
             onClick={onReset}
             variant="gray-ghost"
-            size="lg"
+            size="md"
             className="gap-1 text-destructive hover:text-destructive"
           >
             <RotateCcw className="w-5 h-5" />
