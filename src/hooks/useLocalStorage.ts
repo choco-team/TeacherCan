@@ -11,6 +11,7 @@ type LocalStorageKey =
   | 'roomIds'
   | 'random-pick-list'
   | 'student-data'
+  | 'student-data-sets'
   | 'stopwatch-data'
   | 'stopwatch-group-grid-columns'
   | 'random-team-settings'
