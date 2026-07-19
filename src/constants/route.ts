@@ -21,6 +21,7 @@ import {
   UnfoldHorizontal,
   BoxIcon,
   Presentation,
+  CalendarDays,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
@@ -41,6 +42,7 @@ export const MENU_ROUTE = {
   RANDOM_TEAM: '/random-team',
   PRESENTATION_ASSISTANT: '/presentation-assistant',
   VOTE: '/vote',
+  SHARED_TIME_TABLE: '/shared-time-table',
 } as const;
 
 // NOTE:(김홍동) 수업도구 전용 라우트 (메뉴와 분리하여 관리)
@@ -169,6 +171,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '투표하기',
     Icon: VoteIcon,
     href: MENU_ROUTE.VOTE,
+    isNew: true,
+  },
+  '/shared-time-table': {
+    title: '공용시간표',
+    Icon: CalendarDays,
+    href: MENU_ROUTE.SHARED_TIME_TABLE,
     isNew: true,
   },
 };
