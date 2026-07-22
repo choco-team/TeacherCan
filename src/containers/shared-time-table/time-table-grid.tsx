@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { X, Calendar as CalendarIcon, MapPin, Layers } from 'lucide-react';
+import { X, MapPin, Layers, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/button';
 import { Heading3 } from '@/components/heading';
 import {
@@ -13,6 +12,9 @@ import {
   TableCell,
 } from '@/components/table';
 
+const DAYS = ['월', '화', '수', '목', '금'];
+const PERIODS = [1, 2, 3, 4, 5, 6];
+
 export interface RoomInfo {
   id: string;
   roomName: string;
@@ -22,16 +24,12 @@ export interface RoomInfo {
   endDate: string;
 }
 
-const DAYS = ['월', '화', '수', '목', '금'];
-const PERIODS = [1, 2, 3, 4, 5, 6];
-
 export interface ScheduleEvent {
   id: string;
   timetableId: string;
   day: string;
   period: number;
   className: string;
-  // 💡 장소와 날짜는 폼에서 정한 걸 그대로 끌고 옴!
   location: string;
   startDate: string;
   endDate: string;
@@ -40,17 +38,23 @@ export interface ScheduleEvent {
 interface TimetableGridProps {
   timetables: RoomInfo[];
   activeTimetable: RoomInfo;
+  // 💡 부모로부터 전체 이벤트 데이터와 수정 함수를 내려받습니다!
+  allEvents: ScheduleEvent[];
+  onEventsChange: (events: ScheduleEvent[]) => void;
   onTabChange: (timetable: RoomInfo) => void;
+  onSave: () => void;
 }
 
 export default function TimetableGrid({
   timetables,
   activeTimetable,
+  allEvents,
+  onEventsChange,
   onTabChange,
+  onSave,
 }: TimetableGridProps) {
-  const [allEvents, setAllEvents] = useState<ScheduleEvent[]>([]);
+  // ❌ const [allEvents, setAllEvents] = useState<ScheduleEvent[]>([]); (삭제됨)
 
-  // 💡 모달 없이 셀 안의 드롭다운에서 반을 선택하면 즉시 추가됨!
   const handleQuickAssign = (
     day: string,
     period: number,
@@ -64,25 +68,29 @@ export default function TimetableGrid({
       day,
       period,
       className: selectedClass,
-      location: activeTimetable.location, // 폼에서 입력한 공통 장소 삽입
-      startDate: activeTimetable.startDate, // 공통 시작일 삽입
-      endDate: activeTimetable.endDate, // 공통 종료일 삽입
+      location: activeTimetable.location,
+      startDate: activeTimetable.startDate,
+      endDate: activeTimetable.endDate,
     };
 
-    setAllEvents([...allEvents, newEvent]);
+    // 💡 부모의 데이터를 업데이트합니다.
+    onEventsChange([...allEvents, newEvent]);
   };
 
   const handleDeleteEvent = (eventId: string) => {
-    setAllEvents(allEvents.filter((ev) => ev.id !== eventId));
+    // 💡 부모의 데이터를 업데이트합니다.
+    onEventsChange(allEvents.filter((ev) => ev.id !== eventId));
   };
 
   return (
     <div className="relative animate-in fade-in slide-in-from-top-4 duration-500 mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
-      {/* 탭 영역 */}
       <div className="mb-6 border-b border-border pb-4">
         <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
           <Layers className="h-4 w-4" />
-          <span>편집할 시간표 탭 선택 (다른 시간표는 배경에 표시됩니다)</span>
+          <span>
+            편집할 시간표 선택 (설정한 기간과 겹치는 다른 시간표가 배경에
+            표시됩니다)
+          </span>
         </div>
         <div className="flex flex-wrap gap-2">
           {timetables.map((tt) => (
@@ -106,11 +114,16 @@ export default function TimetableGrid({
       </div>
 
       <div className="mb-4 flex items-center justify-between">
-        <Heading3 className="text-primary">
-          {activeTimetable.roomName} 배정
-        </Heading3>
+        <div>
+          <Heading3 className="text-primary">
+            {activeTimetable.roomName} 배정
+          </Heading3>
+          <p className="text-sm font-medium text-muted-foreground mt-1">
+            기간: {activeTimetable.startDate} ~ {activeTimetable.endDate}
+          </p>
+        </div>
         <p className="text-sm text-muted-foreground">
-          원하는 시간의 <b>[+ 반 선택]</b>을 눌러 학급을 빠르게 배정하세요.
+          원하는 시간의 <b>[+ 반 선택]</b>을 눌러 배정하세요.
         </p>
       </div>
 
@@ -139,17 +152,21 @@ export default function TimetableGrid({
                   {period}
                 </TableCell>
                 {DAYS.map((day) => {
-                  const cellEvents = allEvents.filter(
-                    (e) => e.day === day && e.period === period,
-                  );
+                  const cellEvents = allEvents.filter((e) => {
+                    if (e.day !== day || e.period !== period) return false;
+                    if (e.timetableId === activeTimetable.id) return true;
+                    return (
+                      e.startDate <= activeTimetable.endDate &&
+                      e.endDate >= activeTimetable.startDate
+                    );
+                  });
 
                   return (
                     <TableCell
                       key={`${day}_${period}`}
-                      className="min-h-[100px] w-[calc(100%/5)] border-r border-border p-2 align-top last:border-r-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                      className="min-h-[90px] w-[calc(100%/5)] border-r border-border p-2 align-top last:border-r-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                     >
                       <div className="flex flex-col gap-1.5 h-full">
-                        {/* 1. 배치된 카드들 렌더링 */}
                         {cellEvents.map((ev) => {
                           const isActive =
                             ev.timetableId === activeTimetable.id;
@@ -174,9 +191,10 @@ export default function TimetableGrid({
                                   <X className="h-3 w-3" />
                                 </button>
                               )}
-                              <div className="flex items-center justify-between mb-1">
+
+                              <div className="flex items-center justify-between mb-1.5">
                                 <span
-                                  className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${
+                                  className={`rounded px-1.5 py-0.5 text-xs font-bold ${
                                     isActive
                                       ? 'bg-primary/20 text-primary-700 dark:text-primary-300'
                                       : 'bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
@@ -185,7 +203,7 @@ export default function TimetableGrid({
                                   {ev.className}
                                 </span>
                                 <span
-                                  className={`text-[11px] font-semibold truncate ml-1 ${
+                                  className={`text-xs font-semibold truncate ml-1 ${
                                     isActive
                                       ? 'text-text-title'
                                       : 'text-muted-foreground'
@@ -194,34 +212,29 @@ export default function TimetableGrid({
                                   {parentTimetable?.roomName}
                                 </span>
                               </div>
-                              {/* 💡 장소와 기간이 카드에 예쁘게 표시됩니다! */}
-                              <div className="text-[10px] text-muted-foreground flex items-center gap-1 mb-0.5">
-                                <MapPin className="h-3 w-3 shrink-0" />
-                                <span className="truncate">
-                                  {ev.location || '장소 미지정'}
-                                </span>
-                              </div>
-                              <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                <CalendarIcon className="h-3 w-3 shrink-0" />
-                                <span className="truncate">
-                                  {ev.startDate.slice(5)}~{ev.endDate.slice(5)}
-                                </span>
-                              </div>
+
+                              {ev.location && (
+                                <div className="text-[11px] text-muted-foreground flex items-center gap-1">
+                                  <MapPin className="h-3.5 w-3.5 shrink-0" />
+                                  <span className="truncate leading-none">
+                                    {ev.location}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           );
                         })}
 
-                        {/* 2. 💡 초스피드 배정 드롭다운 (현재 편집 중인 탭 전용) */}
                         <div className="mt-auto pt-1">
                           <select
                             value=""
                             onChange={(e) =>
                               handleQuickAssign(day, period, e.target.value)
                             }
-                            className="w-full cursor-pointer rounded border border-dashed border-primary/50 bg-transparent py-1 text-center text-[11px] font-medium text-primary outline-none transition-colors hover:bg-primary/5"
+                            className="w-full cursor-pointer rounded border border-dashed border-primary/50 bg-transparent py-1 text-center text-xs font-medium text-primary outline-none transition-colors hover:bg-primary/5"
                           >
                             <option value="" disabled>
-                              + 반 배정
+                              + 반 선택
                             </option>
                             {activeTimetable.classes.map((c) => (
                               <option
@@ -242,6 +255,18 @@ export default function TimetableGrid({
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      <div className="mt-4 flex justify-end">
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={onSave}
+          className="gap-1.5 px-6"
+        >
+          <CheckCircle className="h-4 w-4" />
+          저장
+        </Button>
       </div>
     </div>
   );
