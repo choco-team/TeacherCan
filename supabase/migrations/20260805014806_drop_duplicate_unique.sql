@@ -1,0 +1,1 @@
+ALTER TABLE public.musics DROP CONSTRAINT IF EXISTS "musics_roomId_musicId_key";
