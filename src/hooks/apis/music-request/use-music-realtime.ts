@@ -91,7 +91,12 @@ export function useMusicRealtime(
         .channel(`room-${roomId}`)
         .on(
           'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'musics' },
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'musics',
+            filter: `roomId=eq.${roomId}`,
+          },
           (payload) => {
             if (cancelled) return;
             const newMusic = payload.new as YoutubeVideo & {
@@ -108,11 +113,16 @@ export function useMusicRealtime(
         )
         .on(
           'postgres_changes',
-          { event: 'DELETE', schema: 'public', table: 'musics' },
+          {
+            event: 'DELETE',
+            schema: 'public',
+            table: 'musics',
+            filter: `roomId=eq.${roomId}`,
+          },
           (payload) => {
             if (cancelled) return;
-            // DELETE의 payload.old는 REPLICA IDENTITY 설정에 따라 PK만 올 수 있으므로
-            // old.roomId 대신 knownIdsRef로 이 방의 음악인지 판별
+            // musics는 REPLICA IDENTITY FULL이라 서버에서 이 방의 이벤트만 걸러 보낸다.
+            // payload.old의 컬럼 구성에 의존하지 않도록 knownIdsRef 판별은 그대로 둔다.
             const old = payload.old as { id: number };
 
             if (!initialLoadDone) {
