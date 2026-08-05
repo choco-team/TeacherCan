@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { MAX_STUDENT_NAME_LENGTH } from '@/apis/music-request/musicRequest';
 import {
   useMusicRequestStudentAction,
   useMusicRequestStudentState,
@@ -18,13 +19,18 @@ import {
 
 const STUDENT_NAME_ERROR_MESSAGE = {
   EMPTY_INPUT: '이름을 입력해 주세요.',
+  MAX_LENGTH: `이름은 ${MAX_STUDENT_NAME_LENGTH}자 이내로 입력해 주세요.`,
   API_ERROR: '방입장에 실패 했어요. 다시 시도해주세요.',
 } as const;
 
 const formSchema = z.object({
   studentNameInput: z
     .string()
-    .nonempty({ message: STUDENT_NAME_ERROR_MESSAGE.EMPTY_INPUT }),
+    .trim()
+    .nonempty({ message: STUDENT_NAME_ERROR_MESSAGE.EMPTY_INPUT })
+    .max(MAX_STUDENT_NAME_LENGTH, {
+      message: STUDENT_NAME_ERROR_MESSAGE.MAX_LENGTH,
+    }),
 });
 
 type Props = {
@@ -62,8 +68,8 @@ export default function CreateNamePage({ roomId }: Props) {
                   Cookies.remove(roomId);
                   settingStudentName('');
                 }
-              : form.handleSubmit(() =>
-                  handleStudentName(form.getValues('studentNameInput')),
+              : form.handleSubmit((values) =>
+                  handleStudentName(values.studentNameInput),
                 )
           }
           className="space-b-4"
@@ -78,6 +84,7 @@ export default function CreateNamePage({ roomId }: Props) {
                     <Input
                       type="text"
                       {...field}
+                      maxLength={MAX_STUDENT_NAME_LENGTH}
                       placeholder={studentName || '이름을 입력해주세요.'}
                       className={`${studentName ? 'placeholder:text-text-title' : ''}`}
                       disabled={!!studentName}

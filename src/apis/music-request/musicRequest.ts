@@ -1,5 +1,8 @@
 import { supabase } from '@/utils/supabase';
 
+// DB의 musics_student_name_length 제약과 동일한 값
+export const MAX_STUDENT_NAME_LENGTH = 20;
+
 // ─── secret_token 유틸 (방 개설자 인증용) ───
 
 const SECRET_TOKEN_PREFIX = 'music-room-secret-';
@@ -119,7 +122,7 @@ export const createMusicRequestMusic = async (params: {
       musicId: params.musicId,
       title: params.title,
       roomId: params.roomId,
-      studentName: params.student,
+      studentName: params.student.trim().slice(0, MAX_STUDENT_NAME_LENGTH),
       timeStamp: new Date().toISOString(),
     })
     .select()
