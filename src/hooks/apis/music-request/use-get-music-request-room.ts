@@ -13,6 +13,8 @@ export const useGetMusicRequestRooms = (roomIds: string[]) => {
     queries: roomIds.map((roomId) => ({
       queryKey: ['music-request-room', roomId],
       queryFn: () => getMusicRequestRoom({ roomId }),
+      // 삭제된 방은 재시도해도 결과가 달라지지 않는다
+      retry: false,
     })),
   });
 };
