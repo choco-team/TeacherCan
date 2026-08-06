@@ -1,6 +1,7 @@
 import { supabase } from '@/utils/supabase';
 
-// DB의 musics_student_name_length 제약과 동일한 값
+// 입력 UI 에서 쓰는 길이 제한.
+// 실제 강제는 add_music 함수와 musics_student_name_length 제약이 하므로 셋을 함께 맞춰야 한다.
 export const MAX_STUDENT_NAME_LENGTH = 20;
 
 // ─── secret_token 유틸 (방 개설자 인증용) ───
@@ -39,14 +40,6 @@ export type GetMusicRequestRoomResponse = {
 
 type CreateMusicRequestRoomResponse = { roomId: string };
 type GetMusicRequestRoomTitleResponse = { roomTitle: string };
-type CreateMusicRequestMusicResponse = {
-  musicId: string;
-  roomId: string;
-  studentId: number;
-  title: string;
-  id: number;
-  timeStamp: string;
-};
 
 // ─── API 함수들 (Supabase 직접 호출) ───
 
@@ -82,57 +75,38 @@ export const createMusicRequestRoom = async (params: {
 export const getMusicRequestRoomTitle = async (params: {
   roomId: string;
 }): Promise<GetMusicRequestRoomTitleResponse> => {
-  const { data, error } = await supabase
-    .from('rooms')
-    .select('roomTitle')
-    .eq('id', params.roomId)
-    .single();
+  const { data, error } = await supabase.rpc('get_room_title', {
+    p_room_id: params.roomId,
+  });
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return { roomTitle: data.roomTitle };
+  return { roomTitle: data as string };
 };
 
 /**
- * 음악 추가 — musics 테이블에 INSERT (중복 체크 포함)
+ * 음악 추가 — RPC 함수(add_music)를 통해 서버 측에서 검증 후 INSERT
+ * 방 존재 여부 / 유튜브 ID 형식 / 이름 다듬기 / 중복 / 방 곡수 상한을 함수가 처리하고,
+ * 위반 시 사용자에게 보여줄 문구를 그대로 에러 메시지로 던진다.
  */
 export const createMusicRequestMusic = async (params: {
   roomId: string;
   student: string;
   musicId: string;
   title: string;
-}): Promise<CreateMusicRequestMusicResponse> => {
-  // 중복 체크
-  const { data: existing } = await supabase
-    .from('musics')
-    .select('id')
-    .eq('roomId', params.roomId)
-    .eq('musicId', params.musicId)
-    .maybeSingle();
-
-  if (existing) {
-    throw new Error('이미 신청된 음악입니다.');
-  }
-
-  const { data, error } = await supabase
-    .from('musics')
-    .insert({
-      musicId: params.musicId,
-      title: params.title,
-      roomId: params.roomId,
-      studentName: params.student.trim().slice(0, MAX_STUDENT_NAME_LENGTH),
-      timeStamp: new Date().toISOString(),
-    })
-    .select()
-    .single();
+}): Promise<void> => {
+  const { error } = await supabase.rpc('add_music', {
+    p_room_id: params.roomId,
+    p_music_id: params.musicId,
+    p_title: params.title,
+    p_student: params.student,
+  });
 
   if (error) {
     throw new Error(error.message);
   }
-
-  return data as CreateMusicRequestMusicResponse;
 };
 
 /**
