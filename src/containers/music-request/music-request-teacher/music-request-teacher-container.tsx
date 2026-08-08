@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useMusicRooms } from '@/apis/music-request/music-room-storage';
+import { touchMusicRequestRoom } from '@/apis/music-request/musicRequest';
 import { useMusicRoomSession } from '@/hooks/apis/music-request/use-music-room-session';
 import LoadingSpinner from '@/components/loading-spinner';
 import MusicRequestTeacherMain from './music-request-teacher-main/music-request-teacher-main';
@@ -29,6 +31,16 @@ export default function MusicRequestTeacherContainer({ params }: Props) {
   const { isReady, isError } = useMusicRoomSession({
     enabled: isLoaded && isOwnedRoom,
   });
+
+  // 곡을 추가·삭제하지 않고 재생만 하는 사용도 활동으로 기록해야 한다.
+  // 목록 조회가 아니라 상세 진입만 갱신하는 것이 핵심이다.
+  useEffect(() => {
+    if (!isReady || !isOwnedRoom) {
+      return;
+    }
+
+    touchMusicRequestRoom({ roomId: params.roomId });
+  }, [isReady, isOwnedRoom, params.roomId]);
 
   if (!isLoaded) {
     return <LoadingSpinner />;

@@ -122,6 +122,26 @@ export const deleteMusicRequestRoom = async (params: {
 };
 
 /**
+ * 방 상세 진입을 활동으로 기록한다.
+ *
+ * 곡을 추가·삭제하지 않고 재생만 하는 사용도 활동으로 잡아야 하기 때문이다.
+ * 목록 조회에서는 호출하지 않는다 — 모든 방을 한꺼번에 갱신해버린다.
+ *
+ * 부수 효과이므로 실패해도 화면 흐름을 막지 않는다.
+ */
+export const touchMusicRequestRoom = async (params: {
+  roomId: string;
+}): Promise<void> => {
+  const { error } = await supabase.rpc('touch_room', {
+    p_room_id: params.roomId,
+  });
+
+  if (error) {
+    console.error('방 활동 시각 갱신 실패:', error.message);
+  }
+};
+
+/**
  * 방 정보 + 음악 목록 조회 (외래키 조인으로 단일 쿼리)
  */
 export const getMusicRequestRoom = async (params: {
