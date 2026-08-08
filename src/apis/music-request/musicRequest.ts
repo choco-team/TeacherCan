@@ -1,5 +1,5 @@
 import { supabase } from '@/utils/supabase';
-import { getSecretToken, saveMusicRoom } from './music-room-storage';
+import { saveMusicRoom } from './music-room-storage';
 
 // 입력 UI 에서 쓰는 길이 제한.
 // 실제 강제는 add_music 함수와 musics_student_name_length 제약이 하므로 셋을 함께 맞춰야 한다.
@@ -145,28 +145,29 @@ export const getMusicRequestRoom = async (params: {
 };
 
 /**
- * 음악 삭제 — RPC 함수(delete_music)를 통해 서버 측에서 토큰 검증 후 삭제
- * 클라이언트에서 musics 테이블에 직접 DELETE를 날리지 않음
+ * 음악 삭제 — musics_delete 정책이 room_members 소속 여부를 확인한다.
+ *
+ * 소유자가 아니면 에러 없이 0건이 삭제되므로, 방 삭제와 마찬가지로
+ * 삭제된 행을 돌려받아 구분한다.
  */
-export const DeleteMusicRequestMusic = async (params: {
+export const deleteMusicRequestMusic = async (params: {
   roomId: string;
   musicId: string;
-}): Promise<{}> => {
-  const secretToken = getSecretToken(params.roomId);
-
-  if (!secretToken) {
-    throw new Error('삭제 권한이 없습니다. (방 개설자만 삭제 가능)');
-  }
-
-  const { error } = await supabase.rpc('delete_music', {
-    p_room_id: params.roomId,
-    p_music_id: params.musicId,
-    p_secret_token: secretToken,
-  });
+}): Promise<void> => {
+  const { data, error } = await supabase
+    .from('musics')
+    .delete()
+    .eq('roomId', params.roomId)
+    .eq('musicId', params.musicId)
+    .select('id');
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return {};
+  if (!data || data.length === 0) {
+    throw new Error(
+      '곡을 삭제할 권한이 없어요. 방을 만든 기기에서 시도해주세요.',
+    );
+  }
 };

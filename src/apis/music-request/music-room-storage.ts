@@ -94,8 +94,6 @@ const write = (rooms: MusicRooms) => {
 
 export const getMusicRooms = () => read();
 
-export const getSecretToken = (roomId: string) => read()[roomId] ?? null;
-
 export const saveMusicRoom = (roomId: string, token: string) => {
   write({ ...read(), [roomId]: token });
 };

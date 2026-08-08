@@ -49,7 +49,14 @@ export default function MusicCard({
       return;
     }
 
-    mutate({ roomId, musicId: video.musicId });
+    mutate(
+      { roomId, musicId: video.musicId },
+      {
+        onError: (error) => {
+          toast({ title: error.message, variant: 'error' });
+        },
+      },
+    );
   };
 
   const handlePlayButton = () => {
