@@ -1,4 +1,3 @@
-import Cookies from 'js-cookie';
 import { Input } from '@/components/input';
 import {
   Form,
@@ -12,6 +11,10 @@ import { Button } from '@/components/button';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MAX_STUDENT_NAME_LENGTH } from '@/apis/music-request/musicRequest';
+import {
+  clearStudentName,
+  saveStudentName,
+} from '@/apis/music-request/music-student-storage';
 import {
   useMusicRequestStudentAction,
   useMusicRequestStudentState,
@@ -50,9 +53,7 @@ export default function CreateNamePage({ roomId }: Props) {
   });
 
   const handleStudentName = async (name: string) => {
-    Cookies.set(roomId, name, {
-      expires: 1,
-    });
+    saveStudentName(roomId, name);
     settingStudentName(name);
   };
 
@@ -65,7 +66,7 @@ export default function CreateNamePage({ roomId }: Props) {
               ? (event) => {
                   form.reset();
                   event.preventDefault();
-                  Cookies.remove(roomId);
+                  clearStudentName(roomId);
                   settingStudentName('');
                 }
               : form.handleSubmit((values) =>
