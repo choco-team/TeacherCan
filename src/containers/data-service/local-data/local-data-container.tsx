@@ -244,6 +244,21 @@ function getValueDisplay(key: string): DisplayValue {
         };
       }
 
+      if (
+        key === 'music-request-students' &&
+        parsed &&
+        typeof parsed === 'object'
+      ) {
+        const names = Object.values(parsed as Record<string, { name?: string }>)
+          .map((entry) => entry?.name)
+          .filter(Boolean);
+        if (names.length === 0) return { summary: '저장된 데이터 없음' };
+        return {
+          summary: `이름 ${names.length}개`,
+          detail: names.join(', '),
+        };
+      }
+
       if (key === 'routines' && Array.isArray(parsed)) {
         const arr = parsed as { name?: string }[];
         if (arr.length === 0) return { summary: '저장된 데이터 없음' };
