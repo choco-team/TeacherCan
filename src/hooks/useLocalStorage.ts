@@ -8,7 +8,6 @@ type LocalStorageKey =
   | 'selectedSchool'
   | 'allergies'
   | 'routines'
-  | 'roomIds'
   | 'random-pick-list'
   | 'student-data'
   | 'student-data-sets'

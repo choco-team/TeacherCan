@@ -1,26 +1,12 @@
 import { supabase } from '@/utils/supabase';
+import { getSecretToken, saveMusicRoom } from './music-room-storage';
 
 // 입력 UI 에서 쓰는 길이 제한.
 // 실제 강제는 add_music 함수와 musics_student_name_length 제약이 하므로 셋을 함께 맞춰야 한다.
 export const MAX_STUDENT_NAME_LENGTH = 20;
 
-// ─── secret_token 유틸 (방 개설자 인증용) ───
-
-const SECRET_TOKEN_PREFIX = 'music-room-secret-';
-
 function generateSecretToken(): string {
   return crypto.randomUUID();
-}
-
-function saveSecretToken(roomId: string, token: string): void {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(`${SECRET_TOKEN_PREFIX}${roomId}`, token);
-  }
-}
-
-export function getSecretToken(roomId: string): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(`${SECRET_TOKEN_PREFIX}${roomId}`);
 }
 
 // ─── Types ───
@@ -63,8 +49,8 @@ export const createMusicRequestRoom = async (params: {
 
   const roomId = data as string;
 
-  // 방 개설자 토큰을 localStorage에 저장
-  saveSecretToken(roomId, secretToken);
+  // 방 개설자 토큰을 보관한다. 이 토큰이 곧 교사의 방 목록이 된다.
+  saveMusicRoom(roomId, secretToken);
 
   return { roomId };
 };

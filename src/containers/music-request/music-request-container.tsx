@@ -24,11 +24,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/dialog';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { useMusicRooms } from '@/apis/music-request/music-room-storage';
 import { Heading1 } from '@/components/heading';
 import { Skeleton } from '@/components/skeleton';
 import MusicRequestList from './music-request-list/music-request-list';
-import { MAX_MUSIC_COUNT } from './music-request-constants';
 
 const ROOM_TITLE_ERROR_MESSAGE = {
   EMPTY_INPUT: '방이름을 입력해 주세요.',
@@ -43,8 +42,7 @@ const formSchema = z.object({
 
 export default function MusicRequestContainer() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isRemoveAllOpen, setIsRemoveAllOpen] = useState(false);
-  const [roomIds, setRoomIds] = useLocalStorage<string[] | null>('roomIds', []);
+  const { roomIds, isLoaded, refresh } = useMusicRooms();
 
   const router = useRouter();
 
@@ -63,7 +61,8 @@ export default function MusicRequestContainer() {
       { roomTitle },
       {
         onSuccess: ({ roomId }) => {
-          setRoomIds((prev) => [...prev, roomId]);
+          // 토큰은 createMusicRequestRoom 이 저장한다. 목록 상태만 다시 읽으면 된다.
+          refresh();
           router.push(`/music-request/teacher/${roomId}`);
         },
         onError: () => {
@@ -75,22 +74,13 @@ export default function MusicRequestContainer() {
     );
   };
 
-  const enableCreateRoom = roomIds && roomIds.length < MAX_MUSIC_COUNT;
-
   return (
     <>
       <div className="flex justify-between items-center mb-6">
         <Heading1 className="mb-6">음악신청 방 목록</Heading1>
-        <Button
-          variant="primary-ghost"
-          size="sm"
-          onClick={() => setIsRemoveAllOpen(true)}
-        >
-          음악신청 방 목록 초기화
-        </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {roomIds ? (
+        {isLoaded ? (
           <MusicRequestList roomIds={roomIds} />
         ) : (
           Array.from({ length: 3 }, (_, index) => (
@@ -109,11 +99,6 @@ export default function MusicRequestContainer() {
           <DialogHeader>
             <DialogTitle>음악신청 방 만들기</DialogTitle>
             <DialogDescription>
-              {!enableCreateRoom ? (
-                <span className="text-sm text-gray-500 whitespace-pre-line">
-                  {`목록에 최대 ${MAX_MUSIC_COUNT}개의 방만 저장할 수 있어요.\n음악신청 방 > 방 정보 > 목록 노출에서 미노출을 처리할 수 있어요.`}
-                </span>
-              ) : null}
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(() =>
@@ -132,14 +117,12 @@ export default function MusicRequestContainer() {
                               type="text"
                               {...field}
                               placeholder="방 이름을 입력해주세요."
-                              disabled={!enableCreateRoom}
                             />
                           </FormControl>
                           <Button
                             type="submit"
                             variant="primary"
                             className="w-[120px]"
-                            disabled={!enableCreateRoom}
                           >
                             {isPending ? (
                               <LoaderCircle
@@ -160,38 +143,6 @@ export default function MusicRequestContainer() {
                 </form>
               </Form>
             </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={isRemoveAllOpen} onOpenChange={setIsRemoveAllOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>음악신청 방 목록 초기화</DialogTitle>
-            <DialogDescription>
-              <span className="text-sm text-gray-500 whitespace-pre-line">
-                목록에서만 방들이 제거됩니다. 방 ID를 알고 있다면 URL로 직접
-                접근할 수 있어요.
-              </span>
-            </DialogDescription>
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                variant="gray-ghost"
-                size="sm"
-                onClick={() => setIsRemoveAllOpen(false)}
-              >
-                취소
-              </Button>
-              <Button
-                variant="red"
-                size="sm"
-                onClick={() => {
-                  setRoomIds([]);
-                  setIsRemoveAllOpen(false);
-                }}
-              >
-                초기화하기
-              </Button>
-            </div>
           </DialogHeader>
         </DialogContent>
       </Dialog>
