@@ -235,11 +235,11 @@ function getValueDisplay(key: string): DisplayValue {
         };
       }
 
-      if (key === 'roomIds' && Array.isArray(parsed)) {
-        const arr = parsed as string[];
-        if (arr.length === 0) return { summary: '저장된 데이터 없음' };
+      if (key === 'music-rooms' && parsed && typeof parsed === 'object') {
+        const count = Object.keys(parsed).length;
+        if (count === 0) return { summary: '저장된 데이터 없음' };
         return {
-          summary: `방 ${arr.length}개`,
+          summary: `방 ${count}개`,
           detail: undefined,
         };
       }

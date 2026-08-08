@@ -17,9 +17,17 @@ type PendingEvent =
  *
  * 핵심 설계:
  * 1) cancelled 플래그 — Strict Mode 이중 마운트 시 stale 클로저가 상태를 오염시키지 않도록 차단
- * 2) 구독 먼저 → 초기 로드 나중 — 구독이 확정(SUBSCRIBED)된 후 초기 데이터를 불러와서 누락 방지
- * 3) 이벤트 버퍼링 — 초기 로드 완료 전 도착한 Realtime 이벤트를 버퍼에 쌓고,
+ * 2) 채널 신원 비교 — connect() 는 이전 채널을 정리하며 그 채널의 콜백을 CLOSED 로 동기 호출한다.
+ *    어느 채널에서 온 콜백인지 구분하지 않으면 재시도가 자기 자신을 물고 도는 루프가 된다.
+ * 3) 구독 먼저 → 초기 로드 나중 — 구독이 확정(SUBSCRIBED)된 후 초기 데이터를 불러와서 누락 방지
+ * 4) 이벤트 버퍼링 — 초기 로드 완료 전 도착한 Realtime 이벤트를 버퍼에 쌓고,
  *    로드 완료 후 knownIds 기준으로 중복을 걸러내며 replay
+ *
+ * 개발 모드 주의:
+ * StrictMode 이중 마운트로 채널이 만들어졌다 곧바로 정리되는데, supabase 는 마지막 채널이
+ * 사라질 때 소켓까지 끊는다. 내려가는 소켓 위에서 다음 채널이 join 을 시도해 10초(기본 join
+ * 타임아웃)를 기다린 뒤에야 연결되고, 콘솔에 "WebSocket is closed before the connection is
+ * established" 가 찍힌다. 프로덕션 빌드에서는 재현되지 않으므로 쫓지 않아도 된다.
  */
 export function useMusicRealtime(
   roomId: string,
@@ -53,8 +61,11 @@ export function useMusicRealtime(
         retryTimerRef.current = null;
       }
       if (channel) {
-        supabase.removeChannel(channel);
+        // removeChannel 은 그 채널의 subscribe 콜백을 CLOSED 로 동기 호출한다.
+        // channel 을 먼저 비워야 그 콜백이 "교체된 채널"로 판정되어 재시도를 유발하지 않는다.
+        const previousChannel = channel;
         channel = null;
+        supabase.removeChannel(previousChannel);
       }
     };
 
@@ -87,8 +98,12 @@ export function useMusicRealtime(
       pendingEvents.length = 0;
       setConnectionStatus('reconnecting');
 
-      channel = supabase
-        .channel(`room-${roomId}`)
+      // cleanupChannel() 이 이전 채널을 닫으면 그 채널의 콜백이 CLOSED 로 뒤늦게 불린다.
+      // 어느 채널에서 온 콜백인지 구분하지 않으면 재시도가 스스로를 물고 도는 루프가 된다.
+      const nextChannel = supabase.channel(`room-${roomId}`);
+      channel = nextChannel;
+
+      nextChannel
         .on(
           'postgres_changes',
           {
@@ -133,7 +148,8 @@ export function useMusicRealtime(
           },
         )
         .subscribe(async (status) => {
-          if (cancelled) return;
+          // 이미 교체된 채널에서 온 콜백은 무시한다
+          if (cancelled || channel !== nextChannel) return;
 
           if (status === 'SUBSCRIBED') {
             retryCountRef.current = 0;
@@ -160,16 +176,18 @@ export function useMusicRealtime(
             initialLoadDone = true;
             flushPendingEvents();
             setConnectionStatus('connected');
-          } else if (status === 'CHANNEL_ERROR') {
-            if (retryCountRef.current < MAX_RETRIES) {
-              const delay = BASE_DELAY_MS * 2 ** retryCountRef.current;
-              retryCountRef.current += 1;
-              setConnectionStatus('reconnecting');
-              retryTimerRef.current = setTimeout(connect, delay);
-            } else {
-              setConnectionStatus('disconnected');
-            }
-          } else if (status === 'CLOSED') {
+
+            return;
+          }
+
+          // SUBSCRIBED 외의 상태(CHANNEL_ERROR / TIMED_OUT / CLOSED)는 모두 재시도 대상이다.
+          // 하나라도 빠뜨리면 그 상태에 도달했을 때 'reconnecting' 인 채로 멈춘다.
+          if (retryCountRef.current < MAX_RETRIES) {
+            const delay = BASE_DELAY_MS * 2 ** retryCountRef.current;
+            retryCountRef.current += 1;
+            setConnectionStatus('reconnecting');
+            retryTimerRef.current = setTimeout(connect, delay);
+          } else {
             setConnectionStatus('disconnected');
           }
         });
@@ -188,6 +206,20 @@ export function useMusicRealtime(
     retryCountRef.current = 0;
     setReconnectKey((k) => k + 1);
   }, []);
+
+  // 익명 세션도 주기적으로 토큰을 갱신하고, 그때 realtime 소켓이 재설정된다.
+  // 교사가 수업 내내 화면을 켜두는 사용 패턴이라 갱신 시점에 조용히 끊기면 체감이 크다.
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'TOKEN_REFRESHED') {
+        reconnect();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [reconnect]);
 
   return [connectionStatus, reconnect] as const;
 }
