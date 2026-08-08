@@ -122,6 +122,26 @@ export const deleteMusicRequestRoom = async (params: {
 };
 
 /**
+ * 여러 방을 한 번에 삭제한다. 로컬 데이터 관리에서 음악신청 데이터를 통째로 지울 때 쓴다.
+ *
+ * 소속이 아니거나 이미 사라진 방은 조용히 빠진다. 실제로 지워진 id 를 돌려주지만,
+ * 호출부는 "더 이상 쓰지 않겠다"는 의도로 부르는 것이므로 남은 항목도 함께 정리한다.
+ */
+export const deleteMusicRequestRooms = async (
+  roomIds: string[],
+): Promise<void> => {
+  if (roomIds.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase.from('rooms').delete().in('id', roomIds);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+/**
  * 방 상세 진입을 활동으로 기록한다.
  *
  * 곡을 추가·삭제하지 않고 재생만 하는 사용도 활동으로 잡아야 하기 때문이다.
