@@ -25,6 +25,10 @@ import {
   DialogTitle,
 } from '@/components/dialog';
 import { useMusicRooms } from '@/apis/music-request/music-room-storage';
+import {
+  ensureMusicRoomSession,
+  useMusicRoomSession,
+} from '@/hooks/apis/music-request/use-music-room-session';
 import { Heading1 } from '@/components/heading';
 import { Skeleton } from '@/components/skeleton';
 import MusicRequestList from './music-request-list/music-request-list';
@@ -43,6 +47,10 @@ const formSchema = z.object({
 export default function MusicRequestContainer() {
   const [isOpen, setIsOpen] = useState(false);
   const { roomIds, isLoaded, refresh } = useMusicRooms();
+  // 보여줄 방이 있을 때만 세션이 필요하다
+  const { isReady: isSessionReady } = useMusicRoomSession({
+    enabled: isLoaded && roomIds.length > 0,
+  });
 
   const router = useRouter();
 
@@ -56,7 +64,18 @@ export default function MusicRequestContainer() {
     reValidateMode: 'onSubmit',
   });
 
-  const handleRoomTitleSubmit = (roomTitle: string) => {
+  const handleRoomTitleSubmit = async (roomTitle: string) => {
+    // create_room 이 auth.uid() 로 소유자를 등록하므로 세션이 먼저 있어야 한다
+    try {
+      await ensureMusicRoomSession();
+    } catch {
+      form.setError('roomTitle', {
+        message: ROOM_TITLE_ERROR_MESSAGE.API_ERROR,
+      });
+
+      return;
+    }
+
     createRoom(
       { roomTitle },
       {
@@ -80,7 +99,7 @@ export default function MusicRequestContainer() {
         <Heading1 className="mb-6">음악신청 방 목록</Heading1>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {isLoaded ? (
+        {isLoaded && isSessionReady ? (
           <MusicRequestList roomIds={roomIds} />
         ) : (
           Array.from({ length: 3 }, (_, index) => (
