@@ -20,6 +20,7 @@ import {
 import { getPathDisplayTitle } from '@/constants/route';
 import { ALLERGY_MAP } from '@/containers/landing/lunch-menu/allergy/allergy.constant';
 import { cn } from '@/styles/utils';
+import { runServerCleanup } from './server-cleanup';
 
 /** 객체/배열 항목을 [object Object] 없이 짧은 읽기 쉬운 문자열로 변환 */
 function itemToReadable(item: unknown): string {
@@ -244,21 +245,6 @@ function getValueDisplay(key: string): DisplayValue {
         };
       }
 
-      if (
-        key === 'music-request-students' &&
-        parsed &&
-        typeof parsed === 'object'
-      ) {
-        const names = Object.values(parsed as Record<string, { name?: string }>)
-          .map((entry) => entry?.name)
-          .filter(Boolean);
-        if (names.length === 0) return { summary: '저장된 데이터 없음' };
-        return {
-          summary: `이름 ${names.length}개`,
-          detail: names.join(', '),
-        };
-      }
-
       if (key === 'routines' && Array.isArray(parsed)) {
         const arr = parsed as { name?: string }[];
         if (arr.length === 0) return { summary: '저장된 데이터 없음' };
@@ -366,46 +352,67 @@ export default function LocalDataContainer() {
     setIsReady(true);
   }, []);
 
-  const handleDeleteKey = (key: string) => {
+  const handleDeleteKey = async (key: string) => {
     if (typeof window === 'undefined') return;
+    await runServerCleanup(key);
     window.localStorage.removeItem(key);
     refresh();
   };
 
-  const handleDeleteGroup = (groupId: string) => {
+  const handleDeleteGroup = async (groupId: string) => {
     if (typeof window === 'undefined') return;
     const group = LOCAL_STORAGE_GROUPS.find((g) => g.id === groupId);
     if (group) {
+      await Promise.all(group.keys.map(runServerCleanup));
       group.keys.forEach((key) => window.localStorage.removeItem(key));
       refresh();
     }
   };
 
-  const handleDeleteAll = () => {
+  const handleDeleteAll = async () => {
     if (typeof window === 'undefined') return;
-    LOCAL_STORAGE_GROUPS.forEach((group) => {
-      group.keys.forEach((key) => window.localStorage.removeItem(key));
-    });
+    const keys = LOCAL_STORAGE_GROUPS.flatMap((group) => group.keys);
+    await Promise.all(keys.map(runServerCleanup));
+    keys.forEach((key) => window.localStorage.removeItem(key));
     refresh();
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
-    if (deleteTarget.type === 'key') handleDeleteKey(deleteTarget.key);
-    else if (deleteTarget.type === 'group')
-      handleDeleteGroup(deleteTarget.groupId);
-    else if (deleteTarget.type === 'all') handleDeleteAll();
     setDeleteTarget(null);
+
+    try {
+      if (deleteTarget.type === 'key') await handleDeleteKey(deleteTarget.key);
+      else if (deleteTarget.type === 'group')
+        await handleDeleteGroup(deleteTarget.groupId);
+      else if (deleteTarget.type === 'all') await handleDeleteAll();
+    } catch (error) {
+      console.error('데이터 삭제 실패:', error);
+    }
   };
 
+  // 되돌릴 수 없는 항목이 섞여 있으므로 무엇이 사라지는지 확인 시점에 함께 보여준다
   const confirmMessage = (() => {
     if (!deleteTarget) return '';
-    if (deleteTarget.type === 'key')
-      return `"${getKeyLabel(deleteTarget.key)}" 데이터를 삭제하시겠습니까?`;
-    if (deleteTarget.type === 'group')
-      return '이 그룹의 모든 로컬 데이터를 삭제하시겠습니까?';
+
+    if (deleteTarget.type === 'key') {
+      return `"${getKeyLabel(deleteTarget.key)}" 데이터를 삭제하시겠습니까?\n\n${getKeyDescription(deleteTarget.key)}`;
+    }
+
+    if (deleteTarget.type === 'group') {
+      const group = LOCAL_STORAGE_GROUPS.find(
+        (item) => item.id === deleteTarget.groupId,
+      );
+      const descriptions = (group?.keys ?? [])
+        .map((key) => getKeyDescription(key))
+        .join('\n\n');
+
+      return `이 그룹의 모든 데이터를 삭제하시겠습니까?\n\n${descriptions}`;
+    }
+
     if (deleteTarget.type === 'all')
-      return '모든 로컬 데이터를 삭제하시겠습니까? 앱에 저장된 설정·데이터가 모두 제거됩니다.';
+      return '모든 데이터를 삭제하시겠습니까? 앱에 저장된 설정·데이터가 모두 제거됩니다.';
+
     return '';
   })();
 
@@ -506,7 +513,9 @@ export default function LocalDataContainer() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>삭제 확인</AlertDialogTitle>
-            <AlertDialogDescription>{confirmMessage}</AlertDialogDescription>
+            <AlertDialogDescription className="whitespace-pre-line">
+              {confirmMessage}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
