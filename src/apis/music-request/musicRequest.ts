@@ -96,6 +96,32 @@ export const createMusicRequestMusic = async (params: {
 };
 
 /**
+ * 방 삭제 — musics, room_secrets, room_members 는 FK 의 ON DELETE CASCADE 로 함께 정리된다.
+ *
+ * rooms_delete 정책이 room_members 소속 여부를 확인하므로, 소유자가 아니면
+ * 에러 없이 0건이 삭제된다. 그 경우를 구분하려고 삭제된 행을 돌려받아 확인한다.
+ */
+export const deleteMusicRequestRoom = async (params: {
+  roomId: string;
+}): Promise<void> => {
+  const { data, error } = await supabase
+    .from('rooms')
+    .delete()
+    .eq('id', params.roomId)
+    .select('id');
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(
+      '방을 삭제할 권한이 없어요. 방을 만든 기기에서 시도해주세요.',
+    );
+  }
+};
+
+/**
  * 방 정보 + 음악 목록 조회 (외래키 조인으로 단일 쿼리)
  */
 export const getMusicRequestRoom = async (params: {

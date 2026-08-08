@@ -46,7 +46,7 @@ const formSchema = z.object({
 
 export default function MusicRequestContainer() {
   const [isOpen, setIsOpen] = useState(false);
-  const { roomIds, isLoaded, refresh } = useMusicRooms();
+  const { roomIds, isLoaded, refresh, removeRoom } = useMusicRooms();
   // 보여줄 방이 있을 때만 세션이 필요하다
   const { isReady: isSessionReady } = useMusicRoomSession({
     enabled: isLoaded && roomIds.length > 0,
@@ -100,7 +100,7 @@ export default function MusicRequestContainer() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {isLoaded && isSessionReady ? (
-          <MusicRequestList roomIds={roomIds} />
+          <MusicRequestList roomIds={roomIds} onRoomDeleted={removeRoom} />
         ) : (
           Array.from({ length: 3 }, (_, index) => (
             <Skeleton key={index} className="w-full aspect-video rounded-md" />

@@ -11,12 +11,14 @@ import {
   getMusicRoomDescription,
   hasMusic,
 } from './music-request-list.utils';
+import DeleteRoomButton from './delete-room-button/delete-room-button';
 
 type Props = {
   roomIds: string[];
+  onRoomDeleted: (roomId: string) => void;
 };
 
-export default function MusicRequestList({ roomIds }: Props) {
+export default function MusicRequestList({ roomIds, onRoomDeleted }: Props) {
   const router = useRouter();
   const results = useGetMusicRequestRooms(roomIds);
 
@@ -47,6 +49,12 @@ export default function MusicRequestList({ roomIds }: Props) {
         }}
       >
         <div className="w-full aspect-video relative flex justify-center items-center">
+          <DeleteRoomButton
+            roomId={roomId}
+            roomTitle={room.roomTitle}
+            musicCount={room.musicList.length}
+            onDeleted={onRoomDeleted}
+          />
           {hasMusic(room.musicList) ? (
             <Image
               className="object-cover rounded-md"
@@ -86,7 +94,7 @@ export default function MusicRequestList({ roomIds }: Props) {
             )}
           </div>
           {room.musicList.length > 0 && (
-            <Badge className="absolute top-2 right-2">
+            <Badge className="absolute top-2 left-2">
               {room.musicList.length}곡
             </Badge>
           )}
