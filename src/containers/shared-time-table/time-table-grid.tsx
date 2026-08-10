@@ -1,6 +1,14 @@
 'use client';
 
-import { X, MapPin, Layers, CheckCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import {
+  X,
+  MapPin,
+  Layers,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { Button } from '@/components/button';
 import { Heading3 } from '@/components/heading';
 import {
@@ -14,6 +22,36 @@ import {
 
 const DAYS = ['월', '화', '수', '목', '금'];
 const PERIODS = [1, 2, 3, 4, 5, 6];
+
+const parseDate = (dateStr: string) => {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+
+const getMonday = (dateStr: string) => {
+  const date = parseDate(dateStr);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+  date.setDate(diff);
+  return date;
+};
+
+const addDays = (date: Date, days: number) => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
+const toDateString = (date: Date) => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const toShortString = (date: Date) => {
+  return `${date.getMonth() + 1}/${date.getDate()}`;
+};
 
 export interface RoomInfo {
   id: string;
@@ -52,6 +90,17 @@ export default function TimetableGrid({
   onTabChange,
   onSave,
 }: TimetableGridProps) {
+  const [currentWeekMonday, setCurrentWeekMonday] = useState(() =>
+    getMonday(activeTimetable.startDate),
+  );
+
+  useEffect(() => {
+    setCurrentWeekMonday(getMonday(activeTimetable.startDate));
+  }, [activeTimetable.id, activeTimetable.startDate]);
+
+  const weekMondayStr = toDateString(currentWeekMonday);
+  const weekFridayStr = toDateString(addDays(currentWeekMonday, 4));
+
   const handleQuickAssign = (
     day: string,
     period: number,
@@ -77,7 +126,7 @@ export default function TimetableGrid({
 
   return (
     <div className="relative animate-in fade-in slide-in-from-top-4 duration-500 mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
-      {/* 탭 영역 */}
+      {/* 상단 탭 영역 */}
       <div className="mb-6 border-b border-border pb-4">
         <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-muted-foreground">
           <Layers className="h-4 w-4" />
@@ -107,35 +156,62 @@ export default function TimetableGrid({
         </div>
       </div>
 
-      <div className="mb-4 flex items-center justify-between">
+      {/* 헤더 및 주차 네비게이션 */}
+      <div className="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <Heading3 className="text-primary">
             {activeTimetable.roomName} 배정
           </Heading3>
           <p className="text-sm font-medium text-muted-foreground mt-1">
-            기간: {activeTimetable.startDate} ~ {activeTimetable.endDate}
+            전체 기간: {activeTimetable.startDate} ~ {activeTimetable.endDate}
           </p>
         </div>
-        <p className="text-sm text-muted-foreground">
-          원하는 시간의 <b>[+ 반 선택]</b>을 눌러 배정하세요.
-        </p>
+
+        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800/50 p-1.5 rounded-xl border border-gray-200 dark:border-gray-700 w-fit">
+          <Button
+            variant="gray-ghost"
+            size="icon"
+            onClick={() => setCurrentWeekMonday((prev) => addDays(prev, -7))}
+            className="h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="text-sm font-bold text-text-title min-w-[110px] text-center">
+            {toShortString(currentWeekMonday)} ~{' '}
+            {toShortString(addDays(currentWeekMonday, 4))}
+          </div>
+          <Button
+            variant="gray-ghost"
+            size="icon"
+            onClick={() => setCurrentWeekMonday((prev) => addDays(prev, 7))}
+            className="h-8 w-8 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border bg-background">
         <Table>
           <TableHeader className="bg-gray-50 dark:bg-gray-900">
             <TableRow>
-              <TableHead className="w-16 border-r border-border text-center font-semibold text-muted-foreground">
+              <TableHead className="w-16 border-r border-border text-center align-middle font-semibold text-muted-foreground">
                 교시
               </TableHead>
-              {DAYS.map((day) => (
-                <TableHead
-                  key={day}
-                  className="border-r border-border text-center font-semibold text-text-title last:border-r-0"
-                >
-                  {day}
-                </TableHead>
-              ))}
+              {DAYS.map((day, idx) => {
+                const dateForDay = addDays(currentWeekMonday, idx);
+                return (
+                  <TableHead
+                    key={day}
+                    className="border-r border-border text-center font-semibold text-text-title last:border-r-0 py-2"
+                  >
+                    <div>{day}</div>
+                    <div className="text-[10px] text-muted-foreground font-normal mt-0.5">
+                      {toShortString(dateForDay)}
+                    </div>
+                  </TableHead>
+                );
+              })}
             </TableRow>
           </TableHeader>
 
@@ -148,10 +224,10 @@ export default function TimetableGrid({
                 {DAYS.map((day) => {
                   const cellEvents = allEvents.filter((e) => {
                     if (e.day !== day || e.period !== period) return false;
-                    if (e.timetableId === activeTimetable.id) return true;
+
+                    // 💡 핵심: 내가 편집 중인 일정이든 남의 일정이든, 무조건 '보고 있는 주차'에 포함될 때만 표시합니다!
                     return (
-                      e.startDate <= activeTimetable.endDate &&
-                      e.endDate >= activeTimetable.startDate
+                      e.startDate <= weekFridayStr && e.endDate >= weekMondayStr
                     );
                   });
 
@@ -168,7 +244,7 @@ export default function TimetableGrid({
                       className="min-h-[100px] w-[calc(100%/5)] border-r border-border p-2 align-top last:border-r-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                     >
                       <div className="flex flex-col h-full gap-2">
-                        {/* 배경 일정: 꽉 차는 한 줄 띠(Strip) 디자인 */}
+                        {/* 배경 일정 (타 시간표) */}
                         {bgEvents.length > 0 && (
                           <div className="flex flex-col gap-1 mb-1 border-b border-dashed border-border pb-2">
                             {bgEvents.map((ev) => {
@@ -189,7 +265,6 @@ export default function TimetableGrid({
                                     </span>
                                   </div>
                                   {ev.location && (
-                                    // 에러 원인이었던 주석 형태 수정 완료
                                     <div className="flex items-center gap-1 shrink-0 text-xs text-muted-foreground">
                                       <MapPin className="h-3.5 w-3.5" />
                                       <span className="max-w-[60px] truncate">
@@ -203,7 +278,7 @@ export default function TimetableGrid({
                           </div>
                         )}
 
-                        {/* 현재 배정 중인 일정 (빨간색 상세 카드) */}
+                        {/* 현재 배정 중인 일정 */}
                         <div className="flex flex-col gap-1.5">
                           {activeEvents.map((ev) => (
                             <div
@@ -216,7 +291,6 @@ export default function TimetableGrid({
                               >
                                 <X className="h-3 w-3" />
                               </button>
-
                               <div className="flex items-center justify-between mb-1.5">
                                 <span className="rounded bg-primary/20 px-1.5 py-0.5 text-xs font-bold text-primary-700">
                                   {ev.className}
@@ -225,9 +299,7 @@ export default function TimetableGrid({
                                   {activeTimetable.roomName}
                                 </span>
                               </div>
-
                               {ev.location && (
-                                // 에러 원인이었던 주석 형태 수정 완료
                                 <div className="text-xs text-muted-foreground flex items-center gap-1">
                                   <MapPin className="h-3.5 w-3.5 shrink-0" />
                                   <span className="truncate leading-none">
@@ -239,7 +311,7 @@ export default function TimetableGrid({
                           ))}
                         </div>
 
-                        {/* 배정 드롭다운 */}
+                        {/* 💡 배정 드롭다운 (해당 기간이 아닌 곳에서 배정하려 할 때 데이터가 안 보일 수 있다는 점만 참고해주세요!) */}
                         <div className="mt-auto pt-1">
                           <select
                             value=""
