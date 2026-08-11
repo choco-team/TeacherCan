@@ -98,9 +98,6 @@ export default function TimetableGrid({
     setCurrentWeekMonday(getMonday(activeTimetable.startDate));
   }, [activeTimetable.id, activeTimetable.startDate]);
 
-  const weekMondayStr = toDateString(currentWeekMonday);
-  const weekFridayStr = toDateString(addDays(currentWeekMonday, 4));
-
   const handleQuickAssign = (
     day: string,
     period: number,
@@ -221,86 +218,84 @@ export default function TimetableGrid({
                 <TableCell className="border-r border-border bg-gray-50 dark:bg-gray-900 text-center font-semibold text-muted-foreground">
                   {period}
                 </TableCell>
-                {DAYS.map((day) => {
+                {DAYS.map((day, dayIdx) => {
+                  // 정확한 날짜 추출
+                  const dateForDayStr = toDateString(
+                    addDays(currentWeekMonday, dayIdx),
+                  );
+
+                  // 이 칸에 들어갈 이벤트 필터링 (주차 로직 유지)
                   const cellEvents = allEvents.filter((e) => {
                     if (e.day !== day || e.period !== period) return false;
-
-                    // 💡 핵심: 내가 편집 중인 일정이든 남의 일정이든, 무조건 '보고 있는 주차'에 포함될 때만 표시합니다!
                     return (
-                      e.startDate <= weekFridayStr && e.endDate >= weekMondayStr
+                      dateForDayStr >= e.startDate && dateForDayStr <= e.endDate
                     );
                   });
 
-                  const activeEvents = cellEvents.filter(
-                    (e) => e.timetableId === activeTimetable.id,
-                  );
-                  const bgEvents = cellEvents.filter(
-                    (e) => e.timetableId !== activeTimetable.id,
-                  );
+                  // 배정 가능한 기간인지 확인
+                  const isDayWithinActiveTimetable =
+                    dateForDayStr >= activeTimetable.startDate &&
+                    dateForDayStr <= activeTimetable.endDate;
 
                   return (
                     <TableCell
                       key={`${day}_${period}`}
-                      className="min-h-[100px] w-[calc(100%/5)] border-r border-border p-2 align-top last:border-r-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                      className={`min-h-[100px] w-[calc(100%/5)] border-r border-border p-2 align-top last:border-r-0 transition-colors ${
+                        isDayWithinActiveTimetable
+                          ? 'hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                          : 'bg-gray-50/30 dark:bg-gray-900/30'
+                      }`}
                     >
-                      <div className="flex flex-col h-full gap-2">
-                        {/* 배경 일정 (타 시간표) */}
-                        {bgEvents.length > 0 && (
-                          <div className="flex flex-col gap-1 mb-1 border-b border-dashed border-border pb-2">
-                            {bgEvents.map((ev) => {
-                              const parentTimetable = timetables.find(
-                                (t) => t.id === ev.timetableId,
-                              );
-                              return (
-                                <div
-                                  key={ev.id}
-                                  className="flex w-full items-center justify-between rounded-md bg-gray-100/80 px-2 py-1.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                                >
-                                  <div className="flex items-center gap-1.5 overflow-hidden">
-                                    <span className="rounded-sm bg-gray-200 px-1 py-0.5 font-bold text-gray-700 dark:bg-gray-700 dark:text-gray-300">
-                                      {ev.className}
-                                    </span>
-                                    <span className="truncate font-medium">
-                                      {parentTimetable?.roomName}
-                                    </span>
-                                  </div>
-                                  {ev.location && (
-                                    <div className="flex items-center gap-1 shrink-0 text-xs text-muted-foreground">
-                                      <MapPin className="h-3.5 w-3.5" />
-                                      <span className="max-w-[60px] truncate">
-                                        {ev.location}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
+                      <div className="flex flex-col gap-1.5 h-full">
+                        {/* 💡 디자인 원상복구: 모든 이벤트를 기존의 큰 카드 형태로 통일해서 출력합니다! */}
+                        {cellEvents.map((ev) => {
+                          const isActive =
+                            ev.timetableId === activeTimetable.id;
+                          const parentTimetable = timetables.find(
+                            (t) => t.id === ev.timetableId,
+                          );
 
-                        {/* 현재 배정 중인 일정 */}
-                        <div className="flex flex-col gap-1.5">
-                          {activeEvents.map((ev) => (
+                          return (
                             <div
                               key={ev.id}
-                              className="group relative rounded-md border border-primary/30 bg-primary/10 p-2 text-left transition-all hover:border-primary/50"
+                              className={`group relative rounded-md border p-2 text-left transition-all ${
+                                isActive
+                                  ? 'border-primary/30 bg-primary/10 hover:border-primary/50' // 내가 편집 중인 시간표 (빨간 카드)
+                                  : 'border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50 opacity-60' // 배경에 깔리는 다른 시간표 (투명도 있는 점선 회색 카드)
+                              }`}
                             >
-                              <button
-                                onClick={() => handleDeleteEvent(ev.id)}
-                                className="absolute -right-1 -top-1 hidden h-5 w-5 items-center justify-center rounded-full bg-destructive text-white shadow-sm hover:bg-red-600 group-hover:flex"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
+                              {isActive && (
+                                <button
+                                  onClick={() => handleDeleteEvent(ev.id)}
+                                  className="absolute -right-1 -top-1 hidden h-5 w-5 items-center justify-center rounded-full bg-destructive text-white shadow-sm hover:bg-red-600 group-hover:flex"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+
                               <div className="flex items-center justify-between mb-1.5">
-                                <span className="rounded bg-primary/20 px-1.5 py-0.5 text-xs font-bold text-primary-700">
+                                <span
+                                  className={`rounded px-1.5 py-0.5 text-xs font-bold ${
+                                    isActive
+                                      ? 'bg-primary/20 text-primary-700 dark:text-primary-300'
+                                      : 'bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                                  }`}
+                                >
                                   {ev.className}
                                 </span>
-                                <span className="text-xs font-semibold truncate ml-1 text-text-title">
-                                  {activeTimetable.roomName}
+                                <span
+                                  className={`text-xs font-semibold truncate ml-1 ${
+                                    isActive
+                                      ? 'text-text-title'
+                                      : 'text-muted-foreground'
+                                  }`}
+                                >
+                                  {parentTimetable?.roomName}
                                 </span>
                               </div>
+
                               {ev.location && (
-                                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                                <div className="text-[11px] text-muted-foreground flex items-center gap-1">
                                   <MapPin className="h-3.5 w-3.5 shrink-0" />
                                   <span className="truncate leading-none">
                                     {ev.location}
@@ -308,32 +303,38 @@ export default function TimetableGrid({
                                 </div>
                               )}
                             </div>
-                          ))}
-                        </div>
+                          );
+                        })}
 
-                        {/* 💡 배정 드롭다운 (해당 기간이 아닌 곳에서 배정하려 할 때 데이터가 안 보일 수 있다는 점만 참고해주세요!) */}
-                        <div className="mt-auto pt-1">
-                          <select
-                            value=""
-                            onChange={(e) =>
-                              handleQuickAssign(day, period, e.target.value)
-                            }
-                            className="w-full cursor-pointer rounded border border-dashed border-primary/50 bg-transparent py-1 text-center text-xs font-medium text-primary outline-none transition-colors hover:bg-primary/5"
-                          >
-                            <option value="" disabled>
-                              + 반 선택
-                            </option>
-                            {activeTimetable.classes.map((c) => (
-                              <option
-                                key={c}
-                                value={c}
-                                className="text-text-title"
-                              >
-                                {c}
+                        {/* 기간 외 처리 로직 유지 */}
+                        {isDayWithinActiveTimetable ? (
+                          <div className="mt-auto pt-1">
+                            <select
+                              value=""
+                              onChange={(e) =>
+                                handleQuickAssign(day, period, e.target.value)
+                              }
+                              className="w-full cursor-pointer rounded border border-dashed border-primary/50 bg-transparent py-1 text-center text-xs font-medium text-primary outline-none transition-colors hover:bg-primary/5"
+                            >
+                              <option value="" disabled>
+                                + 반 선택
                               </option>
-                            ))}
-                          </select>
-                        </div>
+                              {activeTimetable.classes.map((c) => (
+                                <option
+                                  key={c}
+                                  value={c}
+                                  className="text-text-title"
+                                >
+                                  {c}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        ) : (
+                          <div className="mt-auto pt-2 pb-1 text-center text-[10px] font-medium text-muted-foreground/40 bg-gray-50/50 dark:bg-gray-800/30 rounded">
+                            기간 외
+                          </div>
+                        )}
                       </div>
                     </TableCell>
                   );
