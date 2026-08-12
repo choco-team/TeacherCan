@@ -12,14 +12,12 @@ import {
   TableProperties,
 } from 'lucide-react';
 
-// 하위 컴포넌트 및 타입 불러오기
 import SetupPage from '@/containers/shared-time-table/setup-page';
 import TimetableGrid, {
   RoomInfo,
   ScheduleEvent,
 } from '@/containers/shared-time-table/time-table-grid';
 
-// UI 컴포넌트 불러오기
 import { Heading1, Heading2, Heading3, Heading4 } from '@/components/heading';
 import { Button } from '@/components/button';
 import {
@@ -34,18 +32,15 @@ import {
 type ViewState = 'home' | 'admin-dashboard' | 'admin-grid' | 'view';
 
 export default function SharedTimeTablePage() {
-  // 1. 화면 및 기본 데이터 상태
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [timetables, setTimetables] = useState<RoomInfo[]>([]);
   const [activeTimetable, setActiveTimetable] = useState<RoomInfo | null>(null);
 
-  // 2. 부모 창고: 모든 배정된 일정 데이터를 여기서 꽉 잡고 있습니다! (임시 DB 역할)
+  // 부모 창고: 모든 배정된 일정 데이터
   const [allEvents, setAllEvents] = useState<ScheduleEvent[]>([]);
 
-  // 3. Toast 알림 상태
   const [isToastOpen, setIsToastOpen] = useState(false);
 
-  // --- 공통: 뒤로가기 헤더 ---
   const renderHeader = (title: string, backView: ViewState) => (
     <div className="mb-6 flex items-center gap-3">
       <Button
@@ -60,9 +55,7 @@ export default function SharedTimeTablePage() {
     </div>
   );
 
-  // --- 뷰 렌더링 함수 ---
   const renderContent = () => {
-    // 1️⃣ 서비스 홈 화면
     if (currentView === 'home') {
       return (
         <div className="flex flex-col items-center bg-background px-4 pt-32 pb-10">
@@ -112,7 +105,6 @@ export default function SharedTimeTablePage() {
       );
     }
 
-    // 2️⃣ 관리자 대시보드 화면
     if (currentView === 'admin-dashboard') {
       return (
         <div className="min-h-screen bg-background">
@@ -203,7 +195,6 @@ export default function SharedTimeTablePage() {
       );
     }
 
-    // 3️⃣ 시간표 만들기 & 격자(Grid) 화면
     if (currentView === 'admin-grid') {
       return (
         <div className="min-h-screen bg-background">
@@ -214,7 +205,6 @@ export default function SharedTimeTablePage() {
             )}
 
             <div className="space-y-2">
-              {/* 상단: 기본 환경 세팅 (Setup) */}
               <SetupPage
                 initialData={activeTimetable || undefined}
                 buttonText={
@@ -227,6 +217,20 @@ export default function SharedTimeTablePage() {
                       prev.map((t) => (t.id === updated.id ? updated : t)),
                     );
                     setActiveTimetable(updated);
+
+                    // 💡 [핵심 수정 부분] 시간표 설정이 업데이트되면,
+                    // 기존에 배정해둔 모든 일정 데이터의 시작일/종료일도 새 날짜로 일괄 변경합니다!
+                    setAllEvents((prevEvents) =>
+                      prevEvents.map((ev) =>
+                        ev.timetableId === updated.id
+                          ? {
+                              ...ev,
+                              startDate: updated.startDate, // 연장된 기간 동기화
+                              endDate: updated.endDate, // 연장된 기간 동기화
+                            }
+                          : ev,
+                      ),
+                    );
                   } else {
                     const newTimetable = {
                       id: crypto.randomUUID(),
@@ -238,16 +242,14 @@ export default function SharedTimeTablePage() {
                 }}
               />
 
-              {/* 하단: 시간표 격자 (Grid) */}
               {activeTimetable && (
                 <TimetableGrid
                   timetables={timetables}
                   activeTimetable={activeTimetable}
-                  allEvents={allEvents} // 💡 부모의 데이터를 내려줌
-                  onEventsChange={setAllEvents} // 💡 부모 데이터 업데이트 함수
+                  allEvents={allEvents}
+                  onEventsChange={setAllEvents}
                   onTabChange={(tt) => setActiveTimetable(tt)}
                   onSave={() => {
-                    // 저장 완료 시 Toast를 띄우고 대시보드로 이동
                     setIsToastOpen(true);
                     setCurrentView('admin-dashboard');
                   }}
@@ -259,7 +261,6 @@ export default function SharedTimeTablePage() {
       );
     }
 
-    // 4️⃣ 시간표 조회 화면 (참여교사용)
     if (currentView === 'view') {
       return (
         <div className="min-h-screen bg-background">
@@ -277,12 +278,10 @@ export default function SharedTimeTablePage() {
     return null;
   };
 
-  // --- 전체 렌더링 (ToastProvider 래핑) ---
   return (
     <ToastProvider duration={3000}>
       {renderContent()}
 
-      {/* Toast 메시지 UI */}
       <Toast open={isToastOpen} onOpenChange={setIsToastOpen} variant="success">
         <div className="grid gap-1">
           <ToastTitle>저장 완료</ToastTitle>
