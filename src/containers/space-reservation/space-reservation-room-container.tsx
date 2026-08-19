@@ -45,7 +45,6 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import {
   buildInviteLink,
-  buildInviteSeed,
   createReservation,
   deleteReservation,
   getCurrentParticipant,
@@ -56,10 +55,12 @@ import {
   getWeekDates,
   kickParticipant,
   removeMembership,
-} from '@/lib/space-reservation-storage';
+} from '@/lib/space-reservation-repository';
 import {
   SPACE_RESERVATION_PERIODS,
+  SpaceReservationParticipant,
   SpaceReservationReservation,
+  SpaceReservationRoom,
   SpaceReservationWeekday,
 } from '@/types/space-reservation';
 
@@ -110,35 +111,56 @@ export default function SpaceReservationRoomContainer({
     period: '1',
     purpose: '',
   });
+  const [room, setRoom] = useState<SpaceReservationRoom | null>(null);
+  const [participants, setParticipants] = useState<
+    SpaceReservationParticipant[]
+  >([]);
+  const [reservations, setReservations] = useState<
+    SpaceReservationReservation[]
+  >([]);
+  const [currentParticipant, setCurrentParticipant] =
+    useState<SpaceReservationParticipant | null>(null);
+  const [membership, setMembership] = useState<ReturnType<
+    typeof getMembership
+  > | null>(null);
 
-  const room = useMemo(() => {
-    if (!isMounted) return null;
-    return getRoomById(params.roomId);
-  }, [isMounted, params.roomId, refreshToken]);
-  const participants = useMemo(
-    () => (isMounted ? getRoomParticipants(params.roomId) : []),
-    [isMounted, params.roomId, refreshToken],
-  );
-  const reservations = useMemo(
-    () => (isMounted ? getRoomReservations(params.roomId) : []),
-    [isMounted, params.roomId, refreshToken],
-  );
-  const currentParticipant = useMemo(
-    () => (isMounted ? getCurrentParticipant(params.roomId) : null),
-    [isMounted, params.roomId, refreshToken],
-  );
-  const membership = useMemo(
-    () => (isMounted ? getMembership(params.roomId) : null),
-    [isMounted, params.roomId, refreshToken],
-  );
   const weekDates = useMemo(
     () => (isMounted ? getWeekDates(weekOffset) : []),
     [isMounted, weekOffset],
   );
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    const loadSnapshot = async () => {
+      try {
+        setIsMounted(true);
+        const [
+          roomData,
+          participantsData,
+          reservationsData,
+          currentParticipantData,
+        ] = await Promise.all([
+          getRoomById(params.roomId),
+          getRoomParticipants(params.roomId),
+          getRoomReservations(params.roomId),
+          getCurrentParticipant(params.roomId),
+        ]);
+
+        setRoom(roomData);
+        setParticipants(participantsData);
+        setReservations(reservationsData);
+        setCurrentParticipant(currentParticipantData);
+        setMembership(getMembership(params.roomId));
+      } catch (error) {
+        console.error(error);
+        setRoom(null);
+        setParticipants([]);
+        setReservations([]);
+        setCurrentParticipant(null);
+      }
+    };
+
+    loadSnapshot();
+  }, [params.roomId, refreshToken]);
 
   const reservationMap = useMemo(() => {
     return new Map(
@@ -155,13 +177,10 @@ export default function SpaceReservationRoomContainer({
 
   const getInviteLink = () => {
     if (!room || typeof window === 'undefined') return '';
-
-    const seed = buildInviteSeed(room.id);
     return buildInviteLink({
       origin: window.location.origin,
       roomId: room.id,
       inviteToken: room.inviteToken,
-      seed,
     });
   };
 
@@ -199,7 +218,7 @@ export default function SpaceReservationRoomContainer({
     setIsReservationDialogOpen(true);
   };
 
-  const handleCreateReservation = () => {
+  const handleCreateReservation = async () => {
     if (!currentParticipant) return;
     if (!reservationForm.dateKey) return;
 
@@ -214,17 +233,27 @@ export default function SpaceReservationRoomContainer({
       return;
     }
 
-    const result = createReservation({
-      roomId: params.roomId,
-      dateKey: reservationForm.dateKey,
-      period: Number(
-        reservationForm.period,
-      ) as (typeof SPACE_RESERVATION_PERIODS)[number],
-      grade: participantGrade,
-      className: participantClassName,
-      purpose: reservationForm.purpose,
-      createdByParticipantId: currentParticipant.id,
-    });
+    let result;
+    try {
+      result = await createReservation({
+        roomId: params.roomId,
+        dateKey: reservationForm.dateKey,
+        period: Number(
+          reservationForm.period,
+        ) as (typeof SPACE_RESERVATION_PERIODS)[number],
+        grade: participantGrade,
+        className: participantClassName,
+        purpose: reservationForm.purpose,
+        createdByParticipantId: currentParticipant.id,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: '예약할 수 없어요.',
+        description: 'Supabase 연결 상태를 확인한 뒤 다시 시도해 주세요.',
+      });
+      return;
+    }
 
     if (!result.ok) {
       if (result.reason === 'DUPLICATED') {
@@ -256,9 +285,18 @@ export default function SpaceReservationRoomContainer({
       selectedReservation.createdByParticipantId === currentParticipant.id)
   );
 
-  const handleDeleteReservation = () => {
+  const handleDeleteReservation = async () => {
     if (!pendingDeleteReservationId) return;
-    deleteReservation(pendingDeleteReservationId);
+    try {
+      await deleteReservation(pendingDeleteReservationId);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: '예약 삭제에 실패했어요.',
+        description: '잠시 후 다시 시도해 주세요.',
+      });
+      return;
+    }
     toast({
       title: '예약을 삭제했어요.',
       description: '삭제한 예약은 다시 되돌릴 수 없어요.',
@@ -268,13 +306,23 @@ export default function SpaceReservationRoomContainer({
     refresh();
   };
 
-  const handleKickParticipant = (participantId: string) => {
+  const handleKickParticipant = async (participantId: string) => {
     if (!room) return;
 
-    const success = kickParticipant({
-      roomId: room.id,
-      participantId,
-    });
+    let success = false;
+    try {
+      success = await kickParticipant({
+        roomId: room.id,
+        participantId,
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: '참여자 관리에 실패했어요.',
+        description: '잠시 후 다시 시도해 주세요.',
+      });
+      return;
+    }
     if (!success) return;
 
     toast({

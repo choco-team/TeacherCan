@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Heading1 } from '@/components/heading';
 import { Button } from '@/components/button';
@@ -14,13 +14,11 @@ import {
   SelectValue,
 } from '@/components/select';
 import {
-  decodeInviteSeed,
   getCurrentParticipant,
   getRoomById,
   getRoomParticipants,
-  isBlockedParticipant,
   joinRoom,
-} from '@/lib/space-reservation-storage';
+} from '@/lib/space-reservation-repository';
 import { useToast } from '@/hooks/use-toast';
 
 const GRADE_OPTIONS = Array.from({ length: 6 }, (_, index) =>
@@ -32,7 +30,7 @@ const CLASS_OPTIONS = Array.from({ length: 20 }, (_, index) =>
 
 interface SpaceReservationJoinContainerProps {
   params: { roomId: string };
-  searchParams: { invite?: string; seed?: string };
+  searchParams: { invite?: string };
 }
 
 export default function SpaceReservationJoinContainer({
@@ -41,58 +39,47 @@ export default function SpaceReservationJoinContainer({
 }: SpaceReservationJoinContainerProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [isMounted, setIsMounted] = useState(false);
   const [grade, setGrade] = useState('');
   const [className, setClassName] = useState('');
+  const [roomName, setRoomName] = useState('공간예약');
+  const [occupiedPairs, setOccupiedPairs] = useState<Set<string>>(new Set());
 
-  const room = useMemo(
-    () => (isMounted ? getRoomById(params.roomId) : null),
-    [isMounted, params.roomId],
-  );
   const inviteToken = searchParams.invite?.trim() ?? '';
-  const seed = searchParams.seed?.trim() ?? '';
-  const seedData = useMemo(
-    () => (isMounted ? decodeInviteSeed(seed) : null),
-    [isMounted, seed],
-  );
-  const occupiedPairs = useMemo(() => {
-    if (!isMounted) return new Set<string>();
-
-    const participants = room
-      ? getRoomParticipants(room.id)
-      : (seedData?.participants ?? []).filter(
-          (participant) => !participant.kickedAt,
-        );
-
-    return new Set(
-      participants
-        .filter((participant) => participant.grade && participant.className)
-        .map((participant) => `${participant.grade}-${participant.className}`),
-    );
-  }, [isMounted, room, seedData]);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    const initialize = async () => {
+      try {
+        const participant = await getCurrentParticipant(params.roomId);
+        if (participant) {
+          router.replace(`/space-reservation/rooms/${params.roomId}`);
+          return;
+        }
 
-  useEffect(() => {
-    if (!isMounted) return;
-    const participant = getCurrentParticipant(params.roomId);
-    if (
-      participant &&
-      !isBlockedParticipant(params.roomId, { participantId: participant.id })
-    ) {
-      router.replace(`/space-reservation/rooms/${params.roomId}`);
-    }
-  }, [isMounted, params.roomId, router]);
+        const room = await getRoomById(params.roomId);
+        if (room) {
+          setRoomName(room.name);
+          const participants = await getRoomParticipants(room.id);
+          const nextPairs = new Set(
+            participants
+              .filter((item) => item.grade && item.className)
+              .map((item) => `${item.grade}-${item.className}`),
+          );
+          setOccupiedPairs(nextPairs);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  const handleJoin = () => {
-    const result = joinRoom({
+    initialize();
+  }, [params.roomId, router]);
+
+  const handleJoin = async () => {
+    const result = await joinRoom({
       roomId: params.roomId,
       inviteToken,
       grade: `${grade}학년`,
       className: `${className}반`,
-      seed,
     });
 
     if (!result.ok) {
@@ -119,8 +106,7 @@ export default function SpaceReservationJoinContainer({
       }
       toast({
         title: '공간을 찾지 못했어요.',
-        description:
-          '서버 연동 전 MVP라 다른 기기에서는 최신 상태가 반영되지 않을 수 있어요.',
+        description: '초대 링크와 공간 정보를 다시 확인해 주세요.',
       });
       return;
     }
@@ -131,8 +117,6 @@ export default function SpaceReservationJoinContainer({
     });
     router.push(`/space-reservation/rooms/${params.roomId}`);
   };
-
-  const roomName = room?.name ?? seedData?.room.name ?? '공간예약';
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
@@ -153,12 +137,6 @@ export default function SpaceReservationJoinContainer({
               초대 토큰이 없어 참여할 수 없어요. 링크를 다시 확인해 주세요.
             </p>
           ) : null}
-          {seed && !room ? (
-            <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:bg-amber-900/20 dark:text-amber-200">
-              서버 연동 전 MVP라 초대 시점 데이터로 방을 복원해 입장해요.
-            </p>
-          ) : null}
-
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-2">
               <Label htmlFor="joinGrade" required>

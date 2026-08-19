@@ -20,7 +20,7 @@ import {
   getMemberships,
   getRoomById,
   removeMembership,
-} from '@/lib/space-reservation-storage';
+} from '@/lib/space-reservation-repository';
 
 export default function SpaceReservationHomeContainer() {
   const [isMounted, setIsMounted] = useState(false);
@@ -33,25 +33,37 @@ export default function SpaceReservationHomeContainer() {
   } | null>(null);
 
   useEffect(() => {
-    setIsMounted(true);
+    const loadRooms = async () => {
+      setIsMounted(true);
+      try {
+        const memberships = getMemberships().sort((a, b) =>
+          a.lastVisitedAt > b.lastVisitedAt ? -1 : 1,
+        );
 
-    const memberships = getMemberships().sort((a, b) =>
-      a.lastVisitedAt > b.lastVisitedAt ? -1 : 1,
-    );
-    const nextRecentRooms = memberships
-      .map((membership) => {
-        const room = getRoomById(membership.roomId);
-        if (!room) return null;
+        const roomEntries = await Promise.all(
+          memberships.map(async (membership) => {
+            const room = await getRoomById(membership.roomId);
+            if (!room) return null;
 
-        return {
-          roomId: room.id,
-          roomName: room.name,
-        };
-      })
-      .filter((item): item is NonNullable<typeof item> => item !== null)
-      .slice(0, 8);
+            return {
+              roomId: room.id,
+              roomName: room.name,
+            };
+          }),
+        );
 
-    setRecentRooms(nextRecentRooms);
+        const nextRecentRooms = roomEntries
+          .filter((item): item is NonNullable<typeof item> => item !== null)
+          .slice(0, 8);
+
+        setRecentRooms(nextRecentRooms);
+      } catch (error) {
+        console.error(error);
+        setRecentRooms([]);
+      }
+    };
+
+    loadRooms();
   }, []);
 
   const handleLeaveRoom = () => {

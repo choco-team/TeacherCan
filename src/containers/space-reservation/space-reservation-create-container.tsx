@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/select';
-import { createRoom } from '@/lib/space-reservation-storage';
+import { createRoom } from '@/lib/space-reservation-repository';
 import { useToast } from '@/hooks/use-toast';
 
 const GRADE_OPTIONS = Array.from({ length: 6 }, (_, index) =>
@@ -36,19 +36,26 @@ export default function SpaceReservationCreateContainer() {
     grade.trim().length === 0 ||
     className.trim().length === 0;
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = async () => {
     if (isDisabled) return;
-
-    const created = createRoom({
-      roomName,
-      grade: `${grade}학년`,
-      className: `${className}반`,
-    });
-    toast({
-      title: '공간을 만들었어요.',
-      description: '예약표 화면에서 초대 링크를 복사할 수 있어요.',
-    });
-    router.push(`/space-reservation/rooms/${created.room.id}`);
+    try {
+      const created = await createRoom({
+        roomName,
+        grade: `${grade}학년`,
+        className: `${className}반`,
+      });
+      toast({
+        title: '공간을 만들었어요.',
+        description: '예약표 화면에서 초대 링크를 복사할 수 있어요.',
+      });
+      router.push(`/space-reservation/rooms/${created.room.id}`);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: '공간 생성에 실패했어요.',
+        description: 'Supabase 연결과 테이블 설정을 확인해 주세요.',
+      });
+    }
   };
 
   return (
