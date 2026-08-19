@@ -20,6 +20,7 @@ import {
   UnfoldHorizontal,
   BoxIcon,
   VoteIcon,
+  Building2Icon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -140,6 +141,23 @@ const breadcrumbs: Record<
     name: '루틴타이머',
     url: '/routine-timer',
     icon: <Hourglass size="1rem" />,
+  },
+  'space-reservation': {
+    name: '공간예약',
+    url: '/space-reservation',
+    icon: <Building2Icon size="1rem" />,
+  },
+  create: {
+    name: '공간 만들기',
+    url: '/space-reservation/create',
+  },
+  join: {
+    name: '공간 참여',
+    url: '/space-reservation/join',
+  },
+  rooms: {
+    name: '예약표',
+    url: '/space-reservation/rooms',
   },
 };
 
