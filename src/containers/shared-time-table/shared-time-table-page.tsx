@@ -16,7 +16,7 @@ import SetupPage from '@/containers/shared-time-table/setup-page';
 import TimetableGrid, {
   RoomInfo,
   ScheduleEvent,
-} from '@/containers/shared-time-table/time-table-grid';
+} from '@/containers/shared-time-table/timetable-grid';
 
 import { Heading1, Heading2, Heading3, Heading4 } from '@/components/heading';
 import { Button } from '@/components/button';
@@ -29,17 +29,71 @@ import {
   ToastClose,
 } from '@/components/toast';
 
+import { supabase } from '@/lib/supabase'; // 💡 경로 확인!
+
 type ViewState = 'home' | 'admin-dashboard' | 'admin-grid' | 'view';
 
 export default function SharedTimeTablePage() {
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [timetables, setTimetables] = useState<RoomInfo[]>([]);
   const [activeTimetable, setActiveTimetable] = useState<RoomInfo | null>(null);
-
-  // 부모 창고: 모든 배정된 일정 데이터
   const [allEvents, setAllEvents] = useState<ScheduleEvent[]>([]);
 
   const [isToastOpen, setIsToastOpen] = useState(false);
+  // 💡 수정됨: 사용하지 않는 isSaving 상태를 삭제했습니다.
+
+  const handleSaveToDB = async () => {
+    if (!activeTimetable) return;
+
+    try {
+      const { error: ttError } = await supabase.from('timetables').upsert({
+        id: activeTimetable.id,
+        room_name: activeTimetable.roomName,
+        classes: activeTimetable.classes,
+        location: activeTimetable.location,
+        start_date: activeTimetable.startDate,
+        end_date: activeTimetable.endDate,
+      });
+
+      if (ttError) throw ttError;
+
+      const { error: deleteError } = await supabase
+        .from('schedule_events')
+        .delete()
+        .eq('timetable_id', activeTimetable.id);
+
+      if (deleteError) throw deleteError;
+
+      const eventsToInsert = allEvents
+        .filter((ev) => ev.timetableId === activeTimetable.id)
+        .map((ev) => ({
+          id: ev.id,
+          timetable_id: ev.timetableId,
+          day: ev.day,
+          period: ev.period,
+          class_name: ev.className,
+          location: ev.location,
+          start_date: ev.startDate,
+          end_date: ev.endDate,
+        }));
+
+      if (eventsToInsert.length > 0) {
+        const { error: insertError } = await supabase
+          .from('schedule_events')
+          .insert(eventsToInsert);
+
+        if (insertError) throw insertError;
+      }
+
+      setIsToastOpen(true);
+      setCurrentView('admin-dashboard');
+    } catch (error) {
+      console.error('DB 저장 실패:', error);
+      // 💡 수정됨: ESLint에게 이 줄의 alert는 넘어가 달라고 예외 처리 주석을 달았습니다.
+      // eslint-disable-next-line no-alert
+      alert('저장에 실패했습니다. 관리자에게 문의해주세요.');
+    }
+  };
 
   const renderHeader = (title: string, backView: ViewState) => (
     <div className="mb-6 flex items-center gap-3">
@@ -218,15 +272,13 @@ export default function SharedTimeTablePage() {
                     );
                     setActiveTimetable(updated);
 
-                    // 💡 [핵심 수정 부분] 시간표 설정이 업데이트되면,
-                    // 기존에 배정해둔 모든 일정 데이터의 시작일/종료일도 새 날짜로 일괄 변경합니다!
                     setAllEvents((prevEvents) =>
                       prevEvents.map((ev) =>
                         ev.timetableId === updated.id
                           ? {
                               ...ev,
-                              startDate: updated.startDate, // 연장된 기간 동기화
-                              endDate: updated.endDate, // 연장된 기간 동기화
+                              startDate: updated.startDate,
+                              endDate: updated.endDate,
                             }
                           : ev,
                       ),
@@ -249,10 +301,7 @@ export default function SharedTimeTablePage() {
                   allEvents={allEvents}
                   onEventsChange={setAllEvents}
                   onTabChange={(tt) => setActiveTimetable(tt)}
-                  onSave={() => {
-                    setIsToastOpen(true);
-                    setCurrentView('admin-dashboard');
-                  }}
+                  onSave={handleSaveToDB}
                 />
               )}
             </div>
@@ -286,7 +335,7 @@ export default function SharedTimeTablePage() {
         <div className="grid gap-1">
           <ToastTitle>저장 완료</ToastTitle>
           <ToastDescription>
-            시간표가 성공적으로 저장되었습니다.
+            시간표가 성공적으로 DB에 저장되었습니다.
           </ToastDescription>
         </div>
         <ToastClose />
