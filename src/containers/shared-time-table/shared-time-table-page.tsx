@@ -16,7 +16,7 @@ import SetupPage from '@/containers/shared-time-table/setup-page';
 import TimetableGrid, {
   RoomInfo,
   ScheduleEvent,
-} from '@/containers/shared-time-table/timetable-grid';
+} from '@/containers/shared-time-table/time-table-grid';
 
 import { Heading1, Heading2, Heading3, Heading4 } from '@/components/heading';
 import { Button } from '@/components/button';
