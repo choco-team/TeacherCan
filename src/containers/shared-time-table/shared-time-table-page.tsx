@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   CalendarDays,
   PlusCircle,
@@ -10,6 +10,7 @@ import {
   Share2,
   Plus,
   TableProperties,
+  Loader2,
 } from 'lucide-react';
 
 import SetupPage from '@/containers/shared-time-table/setup-page';
@@ -29,25 +30,92 @@ import {
   ToastClose,
 } from '@/components/toast';
 
-import { supabase } from '@/lib/supabase'; // 💡 경로 확인!
+import { supabase } from '@/lib/supabase';
 
 type ViewState = 'home' | 'admin-dashboard' | 'admin-grid' | 'view';
 
+type Workspace = {
+  id: string;
+  adminCode: string;
+  viewCode: string;
+};
+
 export default function SharedTimeTablePage() {
   const [currentView, setCurrentView] = useState<ViewState>('home');
+  const [activeWorkspace, setActiveWorkspace] = useState<Workspace | null>(
+    null,
+  );
+
   const [timetables, setTimetables] = useState<RoomInfo[]>([]);
   const [activeTimetable, setActiveTimetable] = useState<RoomInfo | null>(null);
   const [allEvents, setAllEvents] = useState<ScheduleEvent[]>([]);
 
   const [isToastOpen, setIsToastOpen] = useState(false);
-  // 💡 수정됨: 사용하지 않는 isSaving 상태를 삭제했습니다.
+  const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+
+  // 💡 사이트 기본 주소(예: localhost:3000)를 안전하게 가져오기 위한 변수
+  const [baseUrl, setBaseUrl] = useState('');
+  useEffect(() => {
+    setBaseUrl(window.location.origin);
+  }, []);
+
+  // 💡 진짜로 텍스트를 클립보드에 복사해주는 마법의 함수
+  const handleCopy = (text: string, successMessage: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => alert(successMessage))
+      .catch(() =>
+        alert('복사에 실패했습니다. 직접 텍스트를 선택해서 복사해주세요.'),
+      );
+  };
+
+  const handleCreateWorkspace = async () => {
+    setIsCreatingWorkspace(true);
+    try {
+      // 참여용 코드는 5자리(예: A3B8C)
+      const randomViewCode = Math.random()
+        .toString(36)
+        .substring(2, 7)
+        .toUpperCase();
+
+      // 💡 관리자 코드는 길고 복잡한 UUID 대신 '12자리'의 깔끔한 무작위 문자열로 생성!
+      const randomAdminCode = crypto.randomUUID().split('-')[4];
+
+      const { data, error } = await supabase
+        .from('workspaces')
+        .insert([
+          {
+            view_code: randomViewCode,
+            admin_code: randomAdminCode,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setActiveWorkspace({
+        id: data.id,
+        adminCode: data.admin_code,
+        viewCode: data.view_code,
+      });
+      setCurrentView('admin-dashboard');
+    } catch (error) {
+      console.error('방 생성 실패:', error);
+      // eslint-disable-next-line no-alert
+      alert('통합 방 생성에 실패했습니다. 관리자에게 문의해주세요.');
+    } finally {
+      setIsCreatingWorkspace(false);
+    }
+  };
 
   const handleSaveToDB = async () => {
-    if (!activeTimetable) return;
+    if (!activeTimetable || !activeWorkspace) return;
 
     try {
       const { error: ttError } = await supabase.from('timetables').upsert({
         id: activeTimetable.id,
+        workspace_id: activeWorkspace.id,
         room_name: activeTimetable.roomName,
         classes: activeTimetable.classes,
         location: activeTimetable.location,
@@ -89,7 +157,6 @@ export default function SharedTimeTablePage() {
       setCurrentView('admin-dashboard');
     } catch (error) {
       console.error('DB 저장 실패:', error);
-      // 💡 수정됨: ESLint에게 이 줄의 alert는 넘어가 달라고 예외 처리 주석을 달았습니다.
       // eslint-disable-next-line no-alert
       alert('저장에 실패했습니다. 관리자에게 문의해주세요.');
     }
@@ -125,19 +192,22 @@ export default function SharedTimeTablePage() {
 
           <div className="grid w-full max-w-2xl grid-cols-1 gap-6 md:grid-cols-2">
             <Button
-              asChild
+              onClick={handleCreateWorkspace}
+              disabled={isCreatingWorkspace}
               variant="gray-outline"
               className="group flex h-auto flex-col rounded-2xl border-border bg-card p-10 hover:border-primary-600 hover:bg-card hover:shadow-md"
             >
-              <button onClick={() => setCurrentView('admin-dashboard')}>
+              {isCreatingWorkspace ? (
+                <Loader2 className="mb-4 h-12 w-12 animate-spin text-primary" />
+              ) : (
                 <PlusCircle className="mb-4 h-12 w-12 text-primary transition-transform group-hover:scale-110" />
-                <Heading2 className="mb-1 transition-colors group-hover:text-primary-600">
-                  공용시간표 만들기
-                </Heading2>
-                <p className="text-xs font-normal text-muted-foreground">
-                  연구부장 전용 통합 방 개설
-                </p>
-              </button>
+              )}
+              <Heading2 className="mb-1 transition-colors group-hover:text-primary-600">
+                공용시간표 만들기
+              </Heading2>
+              <p className="text-xs font-normal text-muted-foreground">
+                연구부장 전용 통합 방 개설
+              </p>
             </Button>
             <Button
               asChild
@@ -160,6 +230,8 @@ export default function SharedTimeTablePage() {
     }
 
     if (currentView === 'admin-dashboard') {
+      const fullAdminUrl = `${baseUrl}/shared-time-table/admin/${activeWorkspace?.adminCode}`;
+
       return (
         <div className="min-h-screen bg-background">
           <div className="mx-auto max-w-4xl px-4 py-6">
@@ -170,11 +242,24 @@ export default function SharedTimeTablePage() {
                 <Heading3 className="mb-1 text-red-600 dark:text-red-400">
                   🛠️ 관리자 전용 링크
                 </Heading3>
-                <p className="mb-4 text-xs text-red-600/80 dark:text-red-400/80">
+                <p className="mb-2 text-xs text-red-600/80 dark:text-red-400/80">
                   이 링크를 꼭 북마크해 주세요! 절대 다른 사람에게 공유하면 안
                   됩니다.
                 </p>
-                <Button variant="red" size="sm" className="w-full gap-2">
+                <p className="mb-4 break-all rounded bg-white/50 p-2 text-xs font-mono text-red-900 dark:bg-black/50 dark:text-red-200">
+                  {fullAdminUrl}
+                </p>
+                <Button
+                  variant="red"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() =>
+                    handleCopy(
+                      fullAdminUrl,
+                      '관리자 링크가 복사되었습니다! 메모장에 붙여넣기(Ctrl+V) 해보세요.',
+                    )
+                  }
+                >
                   <Copy className="h-4 w-4" /> 관리자 링크 복사
                 </Button>
               </div>
@@ -182,12 +267,25 @@ export default function SharedTimeTablePage() {
                 <Heading3 className="mb-1 text-primary">
                   👀 선생님 공유용 링크
                 </Heading3>
-                <p className="mb-4 text-xs text-muted-foreground">
+                <p className="mb-2 text-xs text-muted-foreground">
                   선생님들께 공유할 읽기 전용 링크입니다. 이 방의 모든 시간표를
                   볼 수 있습니다.
                 </p>
-                <Button variant="primary" size="sm" className="w-full gap-2">
-                  <Share2 className="h-4 w-4" /> 공유용 링크 복사
+                <p className="mb-4 text-center text-3xl font-bold tracking-widest text-primary">
+                  {activeWorkspace?.viewCode}
+                </p>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={() =>
+                    handleCopy(
+                      activeWorkspace?.viewCode || '',
+                      '참여 코드가 복사되었습니다! 선생님들께 메신저로 전달해보세요.',
+                    )
+                  }
+                >
+                  <Share2 className="h-4 w-4" /> 참여코드 복사
                 </Button>
               </div>
             </div>
