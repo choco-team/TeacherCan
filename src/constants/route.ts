@@ -165,13 +165,11 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '발표 도우미',
     Icon: Presentation,
     href: MENU_ROUTE.PRESENTATION_ASSISTANT,
-    isNew: true,
   },
   '/vote': {
     title: '투표하기',
     Icon: VoteIcon,
     href: MENU_ROUTE.VOTE,
-    isNew: true,
   },
   '/space-reservation': {
     title: '공간예약',
@@ -189,13 +187,11 @@ export const TOOL_PATH_DATA: PathData<ToolRoutePath> = {
     title: '숫자 뛰어세기',
     Icon: UnfoldHorizontal,
     href: TOOL_ROUTE.SKIP_NUMBER,
-    isNew: true,
   },
   '/volumeblocks': {
     title: '직육면체 부피 구하기',
     Icon: BoxIcon,
     href: TOOL_ROUTE.VOLUME_BLOCKS,
-    isNew: true,
   },
 };
 
