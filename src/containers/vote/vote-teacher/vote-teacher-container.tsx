@@ -21,6 +21,13 @@ import { Checkbox } from '@/components/checkbox';
 import { Label } from '@/components/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import { Badge } from '@/components/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/select';
 import { useGetVoteTeacherSnapshot } from '@/hooks/apis/vote/use-get-vote-snapshot';
 import { useVoteRealtime } from '@/hooks/apis/vote/use-vote-realtime';
 import { useCreateVoteRound } from '@/hooks/apis/vote/use-create-vote-round';
@@ -854,7 +861,7 @@ export default function VoteTeacherContainer({ params }: Props) {
                               재투표 질문과 최대 선택 개수를 설정하고, 포함할
                               선택지를 고를 수 있습니다.
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                               <div className="space-y-2 md:col-span-2">
                                 <Label className="text-sm font-semibold text-text-title">
                                   재투표 질문
@@ -872,33 +879,32 @@ export default function VoteTeacherContainer({ params }: Props) {
                                 <Label className="text-sm font-semibold text-text-title">
                                   최대 선택 개수
                                 </Label>
-                                <div className="grid grid-cols-5 gap-2">
-                                  {selectionCountCandidates.map((count) => {
-                                    const isEnabled =
-                                      count <= revoteMaxSelectionLimit;
-                                    const isActive =
-                                      isEnabled &&
-                                      revoteMaxSelections === count;
-
-                                    return (
-                                      <Button
-                                        key={count}
-                                        type="button"
-                                        variant={
-                                          isActive ? 'primary' : 'gray-outline'
-                                        }
-                                        size="sm"
-                                        className="h-9"
-                                        disabled={!isEnabled}
-                                        onClick={() =>
-                                          setRevoteMaxSelections(count)
-                                        }
-                                      >
-                                        {count}
-                                      </Button>
-                                    );
-                                  })}
-                                </div>
+                                <Select
+                                  value={String(revoteMaxSelections)}
+                                  onValueChange={(value) =>
+                                    setRevoteMaxSelections(Number(value))
+                                  }
+                                  disabled={revoteMaxSelectionLimit <= 0}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="개수 선택" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {selectionCountCandidates
+                                      .filter(
+                                        (count) =>
+                                          count <= revoteMaxSelectionLimit,
+                                      )
+                                      .map((count) => (
+                                        <SelectItem
+                                          key={count}
+                                          value={String(count)}
+                                        >
+                                          {count}개
+                                        </SelectItem>
+                                      ))}
+                                  </SelectContent>
+                                </Select>
                               </div>
                             </div>
 
@@ -1064,28 +1070,26 @@ export default function VoteTeacherContainer({ params }: Props) {
                     />
                   </div>
 
-                  <div className="rounded-lg px-3 py-3 flex flex-col gap-2">
+                  <div className="space-y-2">
                     <Label>최대 선택 개수</Label>
-                    <div className="grid grid-cols-5 gap-2">
-                      {selectionCountCandidates.map((count) => {
-                        const isEnabled = count <= createMaxSelectionLimit;
-                        const isActive = isEnabled && maxSelections === count;
-
-                        return (
-                          <Button
-                            key={count}
-                            type="button"
-                            variant={isActive ? 'primary' : 'gray-outline'}
-                            size="sm"
-                            className="h-9"
-                            disabled={!isEnabled}
-                            onClick={() => setMaxSelections(count)}
-                          >
-                            {count}
-                          </Button>
-                        );
-                      })}
-                    </div>
+                    <Select
+                      value={String(maxSelections)}
+                      onValueChange={(value) => setMaxSelections(Number(value))}
+                      disabled={createMaxSelectionLimit <= 0}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="개수 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectionCountCandidates
+                          .filter((count) => count <= createMaxSelectionLimit)
+                          .map((count) => (
+                            <SelectItem key={count} value={String(count)}>
+                              {count}개
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
