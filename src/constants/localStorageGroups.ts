@@ -70,25 +70,9 @@ export const LOCAL_STORAGE_KEY_META: Record<
     label: '루틴 목록',
     description: '루틴 타이머에 저장한 루틴 목록입니다.',
   },
-  'space-reservation-rooms': {
-    label: '공간예약 방 목록',
-    description: '공간예약에서 생성되거나 참여한 방 정보입니다.',
-  },
-  'space-reservation-participants': {
-    label: '공간예약 참여자 목록',
-    description: '공간예약 방에 참여한 선생님 정보입니다.',
-  },
-  'space-reservation-reservations': {
-    label: '공간예약 예약 정보',
-    description: '공간예약 주간 시간표의 예약 데이터입니다.',
-  },
   'space-reservation-memberships': {
     label: '공간예약 참여 상태',
     description: '현재 기기에서 방에 참여한 사용자 매핑 정보입니다.',
-  },
-  'space-reservation-bans': {
-    label: '공간예약 차단 목록',
-    description: '관리자가 내보낸 참여자 식별 정보입니다.',
   },
 };
 
@@ -147,13 +131,7 @@ export const LOCAL_STORAGE_GROUPS = [
   {
     id: 'space-reservation',
     label: '공간예약',
-    keys: [
-      'space-reservation-rooms',
-      'space-reservation-participants',
-      'space-reservation-reservations',
-      'space-reservation-memberships',
-      'space-reservation-bans',
-    ],
+    keys: ['space-reservation-memberships'],
   },
 ] as const;
 

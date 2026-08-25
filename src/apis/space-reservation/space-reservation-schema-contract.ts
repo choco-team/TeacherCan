@@ -1,4 +1,5 @@
 import {
+  SpaceReservationBan,
   SpaceReservationParticipant,
   SpaceReservationReservation,
   SpaceReservationRoom,
@@ -15,10 +16,4 @@ export type SpaceReservationRoomRow = SpaceReservationRoom;
 export type SpaceReservationParticipantRow = SpaceReservationParticipant;
 export type SpaceReservationReservationRow = SpaceReservationReservation;
 
-export type SpaceReservationBanRow = {
-  id: string;
-  roomId: string;
-  grade: string;
-  className: string;
-  createdAt: string;
-};
+export type SpaceReservationBanRow = SpaceReservationBan;

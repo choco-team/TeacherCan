@@ -1,5 +1,5 @@
-import LoadingSpinner from '@/components/loading-spinner';
+import SpaceReservationRoomSkeleton from '@/containers/space-reservation/space-reservation-room-skeleton';
 
 export default function SpaceReservationRoomLoading() {
-  return <LoadingSpinner />;
+  return <SpaceReservationRoomSkeleton />;
 }

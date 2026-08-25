@@ -52,13 +52,24 @@ export interface SpaceReservationMembership {
 }
 
 export interface SpaceReservationBan {
+  id: string;
   roomId: string;
-  participantIds: string[];
+  grade: string;
+  className: string;
+  createdAt: string;
 }
 
-export interface SpaceReservationInviteSeed {
-  room: SpaceReservationRoom;
-  participants: SpaceReservationParticipant[];
-  reservations: SpaceReservationReservation[];
-  generatedAt: string;
+export interface SpaceReservationDateRange {
+  startDateKey: string;
+  endDateKey: string;
+}
+
+export interface MyWeekReservationItem {
+  id: string;
+  roomId: string;
+  roomName: string;
+  dateKey: string;
+  weekday: SpaceReservationWeekday;
+  period: SpaceReservationPeriod;
+  purpose: string;
 }

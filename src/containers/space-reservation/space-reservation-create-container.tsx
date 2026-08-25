@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { LoaderCircle } from 'lucide-react';
 import { Heading1 } from '@/components/heading';
 import { Button } from '@/components/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
@@ -16,13 +17,11 @@ import {
 } from '@/components/select';
 import { createRoom } from '@/lib/space-reservation-repository';
 import { useToast } from '@/hooks/use-toast';
-
-const GRADE_OPTIONS = Array.from({ length: 6 }, (_, index) =>
-  String(index + 1),
-);
-const CLASS_OPTIONS = Array.from({ length: 20 }, (_, index) =>
-  String(index + 1),
-);
+import {
+  SPACE_RESERVATION_CLASS_OPTIONS,
+  SPACE_RESERVATION_GENERIC_ERROR,
+  SPACE_RESERVATION_GRADE_OPTIONS,
+} from '@/constants/space-reservation';
 
 export default function SpaceReservationCreateContainer() {
   const router = useRouter();
@@ -30,14 +29,17 @@ export default function SpaceReservationCreateContainer() {
   const [roomName, setRoomName] = useState('');
   const [grade, setGrade] = useState('');
   const [className, setClassName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isDisabled =
     roomName.trim().length === 0 ||
     grade.trim().length === 0 ||
-    className.trim().length === 0;
+    className.trim().length === 0 ||
+    isSubmitting;
 
   const handleCreateRoom = async () => {
     if (isDisabled) return;
+    setIsSubmitting(true);
     try {
       const created = await createRoom({
         roomName,
@@ -53,8 +55,10 @@ export default function SpaceReservationCreateContainer() {
       console.error(error);
       toast({
         title: '공간 생성에 실패했어요.',
-        description: 'Supabase 연결과 테이블 설정을 확인해 주세요.',
+        description: SPACE_RESERVATION_GENERIC_ERROR,
+        variant: 'error',
       });
+      setIsSubmitting(false);
     }
   };
 
@@ -93,7 +97,7 @@ export default function SpaceReservationCreateContainer() {
                   <SelectValue placeholder="학년 선택" />
                 </SelectTrigger>
                 <SelectContent>
-                  {GRADE_OPTIONS.map((option) => (
+                  {SPACE_RESERVATION_GRADE_OPTIONS.map((option) => (
                     <SelectItem key={option} value={option}>
                       {option}
                     </SelectItem>
@@ -110,7 +114,7 @@ export default function SpaceReservationCreateContainer() {
                   <SelectValue placeholder="반 선택" />
                 </SelectTrigger>
                 <SelectContent>
-                  {CLASS_OPTIONS.map((option) => (
+                  {SPACE_RESERVATION_CLASS_OPTIONS.map((option) => (
                     <SelectItem key={option} value={option}>
                       {option}
                     </SelectItem>
@@ -119,9 +123,16 @@ export default function SpaceReservationCreateContainer() {
               </Select>
             </div>
           </div>
+          <p className="text-xs text-text-subtitle">
+            학년과 반은 이 공간에서 예약을 등록할 때 자동으로 표시됩니다.
+          </p>
 
           <Button disabled={isDisabled} onClick={handleCreateRoom}>
-            공간 만들기
+            {isSubmitting ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              '공간 만들기'
+            )}
           </Button>
         </CardContent>
       </Card>

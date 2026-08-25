@@ -1,7 +1,9 @@
 'use client';
 
 import {
+  MyWeekReservationItem,
   SPACE_RESERVATION_WEEKDAY_KEYS,
+  SpaceReservationDateRange,
   SpaceReservationMembership,
   SpaceReservationPeriod,
   SpaceReservationWeekday,
@@ -10,24 +12,45 @@ import {
   createSpaceReservation,
   createSpaceReservationRoom,
   deleteSpaceReservation,
+  deleteSpaceReservationBan,
+  getSpaceReservationBans,
   getSpaceReservationParticipantById,
   getSpaceReservationParticipants,
   getSpaceReservationReservations,
+  getSpaceReservationReservationsByRoomIds,
   getSpaceReservationRoomById,
   joinSpaceReservationRoom,
   kickSpaceReservationParticipant,
+  transferSpaceReservationAdmin,
+  updateSpaceReservation,
+  updateSpaceReservationParticipantGradeClass,
+  updateSpaceReservationRoomName,
 } from '@/apis/space-reservation/space-reservation';
 
 const STORAGE_KEYS = {
   MEMBERSHIPS: 'space-reservation-memberships',
 } as const;
 
-function getTodayISODateKey(date = new Date()) {
+export function getTodayISODateKey(date = new Date()) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;
+}
+
+export function isPastDateKey(
+  dateKey: string,
+  todayKey = getTodayISODateKey(),
+) {
+  return dateKey < todayKey;
+}
+
+export function isTodayDateKey(
+  dateKey: string,
+  todayKey = getTodayISODateKey(),
+) {
+  return dateKey === todayKey;
 }
 
 function safeRead<T>(key: string, fallback: T): T {
@@ -108,8 +131,15 @@ export const getRoomParticipants = async (roomId: string) => {
   return getSpaceReservationParticipants(roomId);
 };
 
-export const getRoomReservations = async (roomId: string) => {
-  return getSpaceReservationReservations(roomId);
+export const getRoomReservations = async (
+  roomId: string,
+  range?: SpaceReservationDateRange,
+) => {
+  return getSpaceReservationReservations(roomId, range);
+};
+
+export const getRoomBans = async (roomId: string) => {
+  return getSpaceReservationBans(roomId);
 };
 
 export const joinRoom = async (input: {
@@ -155,8 +185,49 @@ export const createReservation = async (input: {
   });
 };
 
+export const updateReservation = async (input: {
+  reservationId: string;
+  dateKey: string;
+  period: number;
+  purpose: string;
+}) => {
+  return updateSpaceReservation({
+    reservationId: input.reservationId,
+    dateKey: input.dateKey,
+    period: input.period as SpaceReservationPeriod,
+    purpose: input.purpose,
+  });
+};
+
 export const deleteReservation = async (reservationId: string) => {
   return deleteSpaceReservation(reservationId);
+};
+
+export const updateRoomName = async (input: {
+  roomId: string;
+  name: string;
+}) => {
+  return updateSpaceReservationRoomName(input);
+};
+
+export const transferAdmin = async (input: {
+  roomId: string;
+  fromParticipantId: string;
+  toParticipantId: string;
+}) => {
+  return transferSpaceReservationAdmin(input);
+};
+
+export const updateMyGradeClass = async (input: {
+  participantId: string;
+  grade: string;
+  className: string;
+}) => {
+  return updateSpaceReservationParticipantGradeClass(input);
+};
+
+export const unblockBan = async (banId: string) => {
+  return deleteSpaceReservationBan(banId);
 };
 
 export const kickParticipant = async (input: {
@@ -173,20 +244,12 @@ export const kickParticipant = async (input: {
   return success;
 };
 
-export function buildInviteSeed() {
-  return null;
-}
-
 export function buildInviteLink(input: {
   origin: string;
   roomId: string;
   inviteToken: string;
 }) {
   return `${input.origin}/space-reservation/join/${input.roomId}?invite=${input.inviteToken}`;
-}
-
-export function decodeInviteSeed() {
-  return null;
 }
 
 export function getWeekDates(weekOffset = 0) {
@@ -210,4 +273,62 @@ export function getWeekDates(weekOffset = 0) {
       label: `${date.getMonth() + 1}/${date.getDate()}`,
     };
   });
+}
+
+export function getWeekDateRange(weekOffset = 0): SpaceReservationDateRange {
+  const weekDates = getWeekDates(weekOffset);
+
+  return {
+    startDateKey: weekDates[0].dateKey,
+    endDateKey: weekDates[weekDates.length - 1].dateKey,
+  };
+}
+
+export function formatWeekRangeLabel(weekOffset = 0) {
+  const weekDates = getWeekDates(weekOffset);
+  return `${weekDates[0].label} – ${weekDates[weekDates.length - 1].label}`;
+}
+
+export async function getMyWeekReservations(
+  weekOffset = 0,
+): Promise<MyWeekReservationItem[]> {
+  const memberships = getMemberships();
+  if (memberships.length === 0) return [];
+
+  const range = getWeekDateRange(weekOffset);
+  const participantIds = new Set(
+    memberships.map((membership) => membership.participantId),
+  );
+  const roomIds = memberships.map((membership) => membership.roomId);
+
+  const [rooms, reservations] = await Promise.all([
+    Promise.all(roomIds.map((roomId) => getRoomById(roomId))),
+    getSpaceReservationReservationsByRoomIds(roomIds, range),
+  ]);
+
+  const roomNameById = new Map(
+    rooms
+      .filter((room): room is NonNullable<typeof room> => room !== null)
+      .map((room) => [room.id, room.name]),
+  );
+
+  return reservations
+    .filter((reservation) =>
+      participantIds.has(reservation.createdByParticipantId),
+    )
+    .map((reservation) => ({
+      id: reservation.id,
+      roomId: reservation.roomId,
+      roomName: roomNameById.get(reservation.roomId) ?? '공간예약',
+      dateKey: reservation.dateKey,
+      weekday: reservation.weekday,
+      period: reservation.period,
+      purpose: reservation.purpose,
+    }))
+    .sort((left, right) => {
+      if (left.dateKey !== right.dateKey) {
+        return left.dateKey.localeCompare(right.dateKey);
+      }
+      return left.period - right.period;
+    });
 }
