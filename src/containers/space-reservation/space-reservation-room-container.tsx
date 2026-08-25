@@ -648,7 +648,7 @@ export default function SpaceReservationRoomContainer({
                 설정
               </Button>
             ) : null}
-            <Button variant="gray-outline" size="sm" onClick={print}>
+            <Button variant="gray-outline" size="sm" onClick={() => print()}>
               <PrinterIcon className="mr-1 size-4" />
               인쇄
             </Button>
