@@ -2,9 +2,9 @@
 
 import React from 'react';
 
-import type { Jump } from './types';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
+
+import type { Jump } from './types';
 
 interface JumpHistoryProps {
   jumps: Jump[];
