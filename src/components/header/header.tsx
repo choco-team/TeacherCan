@@ -20,11 +20,13 @@ import {
   UnfoldHorizontal,
   BoxIcon,
   VoteIcon,
+  Building2Icon,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { compact } from 'lodash';
 import EventIcon from '@/components/event-icon';
+import { useBreadcrumbOverride } from '@/hooks/use-breadcrumb-override';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -141,11 +143,35 @@ const breadcrumbs: Record<
     url: '/routine-timer',
     icon: <Hourglass size="1rem" />,
   },
+  'space-reservation': {
+    name: '공간예약',
+    url: '/space-reservation',
+    icon: <Building2Icon size="1rem" />,
+  },
+  create: {
+    name: '공간 만들기',
+    url: '/space-reservation/create',
+  },
+  join: {
+    name: '공간 참여',
+    url: '/space-reservation/join',
+  },
+  rooms: {
+    name: '예약표',
+    url: '/space-reservation/rooms',
+  },
 };
 
 export default function Header() {
   const pathname = usePathname();
   const pathnames = compact(pathname.split('/'));
+  const breadcrumbOverride = useBreadcrumbOverride();
+  const isSpaceReservationRoomPage = /^\/space-reservation\/rooms\/[^/]+$/.test(
+    pathname,
+  );
+  const isSpaceReservationJoinPage = /^\/space-reservation\/join\/[^/]+$/.test(
+    pathname,
+  );
 
   const { open, openMobile, setOpen, setOpenMobile, isMobile } = useSidebar();
 
@@ -168,8 +194,42 @@ export default function Header() {
         return item.url !== '/skip-number';
       }
 
+      if (
+        isSpaceReservationRoomPage &&
+        item.url === '/space-reservation/rooms'
+      ) {
+        return false;
+      }
+
+      if (
+        isSpaceReservationJoinPage &&
+        item.url === '/space-reservation/join'
+      ) {
+        return false;
+      }
+
       return true;
     });
+
+  if (
+    (isSpaceReservationRoomPage || isSpaceReservationJoinPage) &&
+    breadcrumbOverride
+  ) {
+    breadcrumbList.push({
+      name: breadcrumbOverride,
+      url: pathname,
+    });
+  } else if (isSpaceReservationRoomPage) {
+    breadcrumbList.push({
+      name: '예약표',
+      url: pathname,
+    });
+  } else if (isSpaceReservationJoinPage) {
+    breadcrumbList.push({
+      name: '공간 참여',
+      url: pathname,
+    });
+  }
 
   return (
     <header className="flex justify-start items-center gap-2 px-4 py-3 fixed w-full bg-bg z-50">

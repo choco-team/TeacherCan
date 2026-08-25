@@ -16,7 +16,8 @@ type LocalStorageKey =
   | 'random-team-settings'
   | 'random-team-auto-run'
   | 'clock-memos'
-  | 'clock-memo';
+  | 'clock-memo'
+  | 'space-reservation-memberships';
 
 /**
  * @description 페이지 새로 고침을 통해 상태가 유지되도록 로컬 저장소에 동기화합니다.

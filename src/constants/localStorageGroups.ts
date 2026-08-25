@@ -70,6 +70,10 @@ export const LOCAL_STORAGE_KEY_META: Record<
     label: '루틴 목록',
     description: '루틴 타이머에 저장한 루틴 목록입니다.',
   },
+  'space-reservation-memberships': {
+    label: '공간예약 참여 상태',
+    description: '현재 기기에서 방에 참여한 사용자 매핑 정보입니다.',
+  },
 };
 
 export const LOCAL_STORAGE_GROUPS = [
@@ -123,6 +127,11 @@ export const LOCAL_STORAGE_GROUPS = [
     id: 'routine-timer',
     label: '루틴타이머',
     keys: ['routines'],
+  },
+  {
+    id: 'space-reservation',
+    label: '공간예약',
+    keys: ['space-reservation-memberships'],
   },
 ] as const;
 
