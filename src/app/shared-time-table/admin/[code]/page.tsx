@@ -192,6 +192,45 @@ export default function AdminWorkspacePage() {
     }
   };
 
+  // 💡 개별 시간표 삭제 기능 추가!
+  const handleDeleteTimetable = async (
+    timetableId: string,
+    roomName: string,
+  ) => {
+    // eslint-disable-next-line no-alert
+    const confirmDelete = window.confirm(
+      `'${roomName}' 시간표를 정말 삭제하시겠습니까?\n삭제된 시간표 데이터는 복구할 수 없습니다.`,
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      // 1. 해당 시간표에 속한 수업 일정(events) 먼저 삭제 (외래키 충돌 방지)
+      const { error: eventsError } = await supabase
+        .from('schedule_events')
+        .delete()
+        .eq('timetable_id', timetableId);
+      if (eventsError) throw eventsError;
+
+      // 2. 시간표(timetable) 자체 삭제
+      const { error: timetableError } = await supabase
+        .from('timetables')
+        .delete()
+        .eq('id', timetableId);
+      if (timetableError) throw timetableError;
+
+      // 3. DB 삭제 성공 시, 화면(상태)에서도 즉시 제거
+      setTimetables((prev) => prev.filter((t) => t.id !== timetableId));
+      setAllEvents((prev) =>
+        prev.filter((ev) => ev.timetableId !== timetableId),
+      );
+    } catch (error) {
+      console.error('시간표 삭제 에러:', error);
+      // eslint-disable-next-line no-alert
+      alert('시간표 삭제에 실패했습니다.');
+    }
+  };
+
   const handleCopy = (text: string, successMessage: string) => {
     navigator.clipboard
       .writeText(text)
@@ -419,21 +458,36 @@ export default function AdminWorkspacePage() {
                           </p>
                         </div>
                       </div>
-                      <Button
-                        variant="primary-outline"
-                        onClick={() => {
-                          setActiveTimetable(tt);
-                          setCurrentView('admin-grid');
-                        }}
-                      >
-                        편집하기
-                      </Button>
+
+                      {/* 💡 편집하기 버튼 옆에 개별 삭제(휴지통) 버튼 추가! */}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="primary-outline"
+                          onClick={() => {
+                            setActiveTimetable(tt);
+                            setCurrentView('admin-grid');
+                          }}
+                        >
+                          편집하기
+                        </Button>
+                        <Button
+                          variant="gray-outline"
+                          size="icon"
+                          onClick={() =>
+                            handleDeleteTimetable(tt.id, tt.roomName)
+                          }
+                          className="text-red-500 hover:text-red-600 hover:border-red-200 hover:bg-red-50 dark:hover:bg-red-950/30"
+                          title="시간표 삭제"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* 삭제 버튼 */}
+              {/* 방 전체 삭제 버튼 */}
               <div className="mt-16 rounded-2xl border border-red-200/60 bg-red-50/30 p-6 dark:border-red-900/30 dark:bg-red-950/10">
                 <Heading3 className="mb-2 text-red-600 dark:text-red-400">
                   위험 구역 (Danger Zone)
