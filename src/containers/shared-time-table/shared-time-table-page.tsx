@@ -120,7 +120,7 @@ export default function SharedTimeTablePage() {
             공용시간표 만들기
           </Heading2>
           <p className="text-xs font-normal text-muted-foreground">
-            연구부장 전용 통합 방 개설
+            관리자 전용 통합 방 개설
           </p>
         </Button>
 
