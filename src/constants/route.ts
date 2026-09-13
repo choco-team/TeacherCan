@@ -21,6 +21,7 @@ import {
   UnfoldHorizontal,
   BoxIcon,
   Presentation,
+  CalendarDays,
   Building2Icon,
 } from 'lucide-react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
@@ -42,6 +43,7 @@ export const MENU_ROUTE = {
   RANDOM_TEAM: '/random-team',
   PRESENTATION_ASSISTANT: '/presentation-assistant',
   VOTE: '/vote',
+  SHARED_TIME_TABLE: '/shared-time-table',
   SPACE_RESERVATION: '/space-reservation',
 } as const;
 
@@ -175,6 +177,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '공간예약',
     Icon: Building2Icon,
     href: MENU_ROUTE.SPACE_RESERVATION,
+    isNew: true,
+  },
+  '/shared-time-table': {
+    title: '공용시간표',
+    Icon: CalendarDays,
+    href: MENU_ROUTE.SHARED_TIME_TABLE,
     isNew: true,
   },
 };
