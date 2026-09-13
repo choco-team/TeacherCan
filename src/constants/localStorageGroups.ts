@@ -61,13 +61,18 @@ export const LOCAL_STORAGE_KEY_META: Record<
     label: '랜덤 모둠 자동 실행',
     description: '랜덤 모둠 화면에서 자동 실행 여부 설정입니다.',
   },
-  roomIds: {
+  'music-rooms': {
     label: '음악 신청 방 목록',
-    description: '음악 신청에서 사용하는 방(교실) ID 목록입니다.',
+    description:
+      '음악 신청에서 만든 방(교실) 목록입니다. 지우면 모든 방의 정보와 신청곡이 함께 삭제되며, 되돌릴 수 없습니다.',
   },
   routines: {
     label: '루틴 목록',
     description: '루틴 타이머에 저장한 루틴 목록입니다.',
+  },
+  'space-reservation-memberships': {
+    label: '공간예약 참여 상태',
+    description: '현재 기기에서 방에 참여한 사용자 매핑 정보입니다.',
   },
 };
 
@@ -116,12 +121,17 @@ export const LOCAL_STORAGE_GROUPS = [
   {
     id: 'music-request',
     label: '음악신청',
-    keys: ['roomIds'],
+    keys: ['music-rooms'],
   },
   {
     id: 'routine-timer',
     label: '루틴타이머',
     keys: ['routines'],
+  },
+  {
+    id: 'space-reservation',
+    label: '공간예약',
+    keys: ['space-reservation-memberships'],
   },
 ] as const;
 

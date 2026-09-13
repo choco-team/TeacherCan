@@ -54,7 +54,7 @@ export type SubmitVoteBallotParams = {
   participantName: string;
 };
 
-const MAX_VOTE_OPTIONS = 10;
+const MAX_VOTE_OPTIONS = 30;
 
 const buildRoundResults = (
   rounds: VoteRoundRow[],

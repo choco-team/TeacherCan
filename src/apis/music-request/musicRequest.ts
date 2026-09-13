@@ -1,22 +1,12 @@
 import { supabase } from '@/utils/supabase';
+import { saveMusicRoom } from './music-room-storage';
 
-// ─── secret_token 유틸 (방 개설자 인증용) ───
-
-const SECRET_TOKEN_PREFIX = 'music-room-secret-';
+// 입력 UI 에서 쓰는 길이 제한.
+// 실제 강제는 add_music 함수와 musics_student_name_length 제약이 하므로 셋을 함께 맞춰야 한다.
+export const MAX_STUDENT_NAME_LENGTH = 20;
 
 function generateSecretToken(): string {
   return crypto.randomUUID();
-}
-
-function saveSecretToken(roomId: string, token: string): void {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(`${SECRET_TOKEN_PREFIX}${roomId}`, token);
-  }
-}
-
-export function getSecretToken(roomId: string): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(`${SECRET_TOKEN_PREFIX}${roomId}`);
 }
 
 // ─── Types ───
@@ -36,14 +26,6 @@ export type GetMusicRequestRoomResponse = {
 
 type CreateMusicRequestRoomResponse = { roomId: string };
 type GetMusicRequestRoomTitleResponse = { roomTitle: string };
-type CreateMusicRequestMusicResponse = {
-  musicId: string;
-  roomId: string;
-  studentId: number;
-  title: string;
-  id: number;
-  timeStamp: string;
-};
 
 // ─── API 함수들 (Supabase 직접 호출) ───
 
@@ -67,8 +49,8 @@ export const createMusicRequestRoom = async (params: {
 
   const roomId = data as string;
 
-  // 방 개설자 토큰을 localStorage에 저장
-  saveSecretToken(roomId, secretToken);
+  // 방 개설자 토큰을 보관한다. 이 토큰이 곧 교사의 방 목록이 된다.
+  saveMusicRoom(roomId, secretToken);
 
   return { roomId };
 };
@@ -79,57 +61,104 @@ export const createMusicRequestRoom = async (params: {
 export const getMusicRequestRoomTitle = async (params: {
   roomId: string;
 }): Promise<GetMusicRequestRoomTitleResponse> => {
-  const { data, error } = await supabase
-    .from('rooms')
-    .select('roomTitle')
-    .eq('id', params.roomId)
-    .single();
+  const { data, error } = await supabase.rpc('get_room_title', {
+    p_room_id: params.roomId,
+  });
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return { roomTitle: data.roomTitle };
+  return { roomTitle: data as string };
 };
 
 /**
- * 음악 추가 — musics 테이블에 INSERT (중복 체크 포함)
+ * 음악 추가 — RPC 함수(add_music)를 통해 서버 측에서 검증 후 INSERT
+ * 방 존재 여부 / 유튜브 ID 형식 / 이름 다듬기 / 중복 / 방 곡수 상한을 함수가 처리하고,
+ * 위반 시 사용자에게 보여줄 문구를 그대로 에러 메시지로 던진다.
  */
 export const createMusicRequestMusic = async (params: {
   roomId: string;
   student: string;
   musicId: string;
   title: string;
-}): Promise<CreateMusicRequestMusicResponse> => {
-  // 중복 체크
-  const { data: existing } = await supabase
-    .from('musics')
-    .select('id')
-    .eq('roomId', params.roomId)
-    .eq('musicId', params.musicId)
-    .maybeSingle();
+}): Promise<void> => {
+  const { error } = await supabase.rpc('add_music', {
+    p_room_id: params.roomId,
+    p_music_id: params.musicId,
+    p_title: params.title,
+    p_student: params.student,
+  });
 
-  if (existing) {
-    throw new Error('이미 신청된 음악입니다.');
+  if (error) {
+    throw new Error(error.message);
   }
+};
 
+/**
+ * 방 삭제 — musics, room_secrets, room_members 는 FK 의 ON DELETE CASCADE 로 함께 정리된다.
+ *
+ * rooms_delete 정책이 room_members 소속 여부를 확인하므로, 소유자가 아니면
+ * 에러 없이 0건이 삭제된다. 그 경우를 구분하려고 삭제된 행을 돌려받아 확인한다.
+ */
+export const deleteMusicRequestRoom = async (params: {
+  roomId: string;
+}): Promise<void> => {
   const { data, error } = await supabase
-    .from('musics')
-    .insert({
-      musicId: params.musicId,
-      title: params.title,
-      roomId: params.roomId,
-      studentName: params.student,
-      timeStamp: new Date().toISOString(),
-    })
-    .select()
-    .single();
+    .from('rooms')
+    .delete()
+    .eq('id', params.roomId)
+    .select('id');
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return data as CreateMusicRequestMusicResponse;
+  if (!data || data.length === 0) {
+    throw new Error(
+      '방을 삭제할 권한이 없어요. 방을 만든 기기에서 시도해주세요.',
+    );
+  }
+};
+
+/**
+ * 여러 방을 한 번에 삭제한다. 로컬 데이터 관리에서 음악신청 데이터를 통째로 지울 때 쓴다.
+ *
+ * 소속이 아니거나 이미 사라진 방은 조용히 빠진다. 실제로 지워진 id 를 돌려주지만,
+ * 호출부는 "더 이상 쓰지 않겠다"는 의도로 부르는 것이므로 남은 항목도 함께 정리한다.
+ */
+export const deleteMusicRequestRooms = async (
+  roomIds: string[],
+): Promise<void> => {
+  if (roomIds.length === 0) {
+    return;
+  }
+
+  const { error } = await supabase.from('rooms').delete().in('id', roomIds);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+/**
+ * 방 상세 진입을 활동으로 기록한다.
+ *
+ * 곡을 추가·삭제하지 않고 재생만 하는 사용도 활동으로 잡아야 하기 때문이다.
+ * 목록 조회에서는 호출하지 않는다 — 모든 방을 한꺼번에 갱신해버린다.
+ *
+ * 부수 효과이므로 실패해도 화면 흐름을 막지 않는다.
+ */
+export const touchMusicRequestRoom = async (params: {
+  roomId: string;
+}): Promise<void> => {
+  const { error } = await supabase.rpc('touch_room', {
+    p_room_id: params.roomId,
+  });
+
+  if (error) {
+    console.error('방 활동 시각 갱신 실패:', error.message);
+  }
 };
 
 /**
@@ -156,28 +185,29 @@ export const getMusicRequestRoom = async (params: {
 };
 
 /**
- * 음악 삭제 — RPC 함수(delete_music)를 통해 서버 측에서 토큰 검증 후 삭제
- * 클라이언트에서 musics 테이블에 직접 DELETE를 날리지 않음
+ * 음악 삭제 — musics_delete 정책이 room_members 소속 여부를 확인한다.
+ *
+ * 소유자가 아니면 에러 없이 0건이 삭제되므로, 방 삭제와 마찬가지로
+ * 삭제된 행을 돌려받아 구분한다.
  */
-export const DeleteMusicRequestMusic = async (params: {
+export const deleteMusicRequestMusic = async (params: {
   roomId: string;
   musicId: string;
-}): Promise<{}> => {
-  const secretToken = getSecretToken(params.roomId);
-
-  if (!secretToken) {
-    throw new Error('삭제 권한이 없습니다. (방 개설자만 삭제 가능)');
-  }
-
-  const { error } = await supabase.rpc('delete_music', {
-    p_room_id: params.roomId,
-    p_music_id: params.musicId,
-    p_secret_token: secretToken,
-  });
+}): Promise<void> => {
+  const { data, error } = await supabase
+    .from('musics')
+    .delete()
+    .eq('roomId', params.roomId)
+    .eq('musicId', params.musicId)
+    .select('id');
 
   if (error) {
     throw new Error(error.message);
   }
 
-  return {};
+  if (!data || data.length === 0) {
+    throw new Error(
+      '곡을 삭제할 권한이 없어요. 방을 만든 기기에서 시도해주세요.',
+    );
+  }
 };
