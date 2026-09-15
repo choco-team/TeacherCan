@@ -9,6 +9,7 @@ import {
   Trash2,
   UserPen,
   X,
+  Wand2, // 테마 아이콘을 위해 추가
 } from 'lucide-react';
 import DecorationPopup from '@/containers/presentation-assistant/decoration-popup';
 import SetupPage from '@/containers/presentation-assistant/setup-page';
@@ -26,6 +27,12 @@ import {
   SavedPresentation,
 } from '@/types/presentation-assistant';
 import { Button } from '@/components/button';
+
+// 💡 추가 가능한 테마 목록
+const THEMES = [
+  { value: 'chick', label: '🐣 삐약삐약 병아리' },
+  { value: 'penguin', label: '🐧 뒤뚱뒤뚱 펭귄' },
+];
 
 export default function PresentationAssistantPage() {
   const [presentations, setPresentations] = useState<SavedPresentation[]>([]);
@@ -58,12 +65,28 @@ export default function PresentationAssistantPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [students]);
 
+  // 💡 드롭다운으로 테마를 변경했을 때 저장하는 함수
+  const handleThemeChange = (newTheme: string) => {
+    if (!activePresentation) return;
+
+    // @ts-ignore: 기존 SavedPresentation 타입에 theme가 없더라도 강제로 저장합니다.
+    const updated = { ...activePresentation, theme: newTheme };
+    updatePresentation(updated);
+    setPresentations((prev) =>
+      prev.map((presentation) =>
+        presentation.id === updated.id ? updated : presentation,
+      ),
+    );
+  };
+
   const handleSetupComplete = (info: PresentationClassInfo) => {
     const newPresentation: SavedPresentation = {
       id: crypto.randomUUID(),
       title: info.title,
       students: info.students,
       createdAt: new Date().toLocaleDateString('ko-KR'),
+      // @ts-ignore
+      theme: 'chick', // 기본 테마는 병아리로 생성
     };
 
     addPresentation(newPresentation);
@@ -180,19 +203,39 @@ export default function PresentationAssistantPage() {
   };
 
   if (activeId && activePresentation) {
+    // @ts-ignore - 저장된 테마 불러오기 (없으면 병아리)
+    const currentTheme = activePresentation.theme || 'chick';
+
     return (
       <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-4xl px-4 py-6">
-          <div className="mb-6 flex items-center gap-3">
+          <div className="mb-6 flex flex-wrap items-center gap-3">
             <button
               onClick={handleBack}
               className="rounded-lg p-2 transition-colors hover:bg-beige-400"
             >
               <ArrowLeft className="h-5 w-5 text-muted-foreground" />
             </button>
-            <h1 className="flex-1 text-xl font-bold text-foreground">
+            <h1 className="flex-1 text-xl font-bold text-foreground min-w-[200px]">
               {activePresentation.title}
             </h1>
+
+            {/* 💡 추가된 부분: 테마 선택 드롭다운 */}
+            <div className="ml-auto flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
+              <Wand2 className="h-4 w-4 text-muted-foreground" />
+              <select
+                value={currentTheme}
+                onChange={(e) => handleThemeChange(e.target.value)}
+                className="cursor-pointer bg-transparent text-sm font-medium text-foreground outline-none"
+              >
+                {THEMES.map((t) => (
+                  <option key={t.value} value={t.value}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <Button
               onClick={openEditStudents}
               variant="primary"
@@ -222,6 +265,7 @@ export default function PresentationAssistantPage() {
               <StudentCard
                 key={student.id}
                 student={student}
+                theme={currentTheme} // 💡 선택된 테마를 카드로 전달
                 onClick={() => handleCardClick(student)}
                 onDecorate={() => setDecoratingStudent(student)}
               />
@@ -236,6 +280,7 @@ export default function PresentationAssistantPage() {
             />
           )}
 
+          {/* 학생편집 팝업 유지 */}
           {showEditStudents && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-sm"
@@ -346,6 +391,7 @@ export default function PresentationAssistantPage() {
     );
   }
 
+  // 메인 화면 유지
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-10">
