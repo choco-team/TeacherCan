@@ -8,6 +8,7 @@ import chickStage2 from '@/assets/images/presentation-assistant/chick-stage-2.pn
 import chickStage3 from '@/assets/images/presentation-assistant/chick-stage-3.png';
 
 // 🐧 펭귄 이미지
+// 🐧 새롭게 추가된 펭귄 이미지 (파일명이 다르면 여기를 수정해주세요!)
 import penguinStage1 from '@/assets/images/presentation-assistant/penguin-stage-1.png';
 import penguinStage2 from '@/assets/images/presentation-assistant/penguin-stage-2.png';
 import penguinStage3 from '@/assets/images/presentation-assistant/penguin-stage-3.png';
@@ -20,6 +21,9 @@ import peacockStage4 from '@/assets/images/presentation-assistant/peacock-stage-
 interface StudentCardProps {
   student: PresentationStudent;
   theme?: string; // 테마 속성 ('chick', 'penguin', 'peacock')
+interface StudentCardProps {
+  student: PresentationStudent;
+  theme?: string; // 💡 테마 속성 추가 ('chick' 또는 'penguin')
   onClick: () => void;
   onDecorate?: () => void;
 }
@@ -30,11 +34,16 @@ const THEME_IMAGES: Record<string, any[]> = {
   penguin: [chickStage0, penguinStage1, penguinStage2, penguinStage3],
   // 공작새: 1단계는 공통 알(chickStage0), 2~4단계는 새로운 공작새 이미지 매칭
   peacock: [chickStage0, peacockStage2, peacockStage3, peacockStage4],
+// 💡 핵심 로직: 테마별 이미지 매핑 (0단계는 병아리 알로 똑같이 통일!)
+const THEME_IMAGES: Record<string, any[]> = {
+  chick: [chickStage0, chickStage1, chickStage2, chickStage3],
+  penguin: [chickStage0, penguinStage1, penguinStage2, penguinStage3], // 0단계는 재사용
 };
 
 export default function StudentCard({
   student,
   theme = 'chick',
+  theme = 'chick', // 기본값은 병아리
   onClick,
   onDecorate,
 }: StudentCardProps) {
