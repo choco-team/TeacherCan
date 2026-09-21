@@ -13,9 +13,9 @@ import penguinStage2 from '@/assets/images/presentation-assistant/penguin-stage-
 import penguinStage3 from '@/assets/images/presentation-assistant/penguin-stage-3.png';
 
 // 🦚 새로운 공작새 이미지 (선생님 요청하신 파일명 규칙 반영: stage 2, 3, 4)
-import peacockStage2 from '@/assets/images/presentation-assistant/peacock-stage-2.png';
-import peacockStage3 from '@/assets/images/presentation-assistant/peacock-stage-3.png';
-import peacockStage4 from '@/assets/images/presentation-assistant/peacock-stage-4.png';
+import peacockStage2 from '@/assets/images/presentation-assistant/peacock-stage-1.png';
+import peacockStage3 from '@/assets/images/presentation-assistant/peacock-stage-2.png';
+import peacockStage4 from '@/assets/images/presentation-assistant/peacock-stage-3.png';
 
 interface StudentCardProps {
   student: PresentationStudent;
