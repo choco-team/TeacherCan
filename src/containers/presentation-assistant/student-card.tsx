@@ -12,7 +12,7 @@ import penguinStage1 from '@/assets/images/presentation-assistant/penguin-stage-
 import penguinStage2 from '@/assets/images/presentation-assistant/penguin-stage-2.png';
 import penguinStage3 from '@/assets/images/presentation-assistant/penguin-stage-3.png';
 
-// 🦚 새로운 공작새 이미지
+// 🦚 새로운 공작새 이미지 적용
 import peacockStage2 from '@/assets/images/presentation-assistant/peacock-stage-1.png';
 import peacockStage3 from '@/assets/images/presentation-assistant/peacock-stage-2.png';
 import peacockStage4 from '@/assets/images/presentation-assistant/peacock-stage-3.png';
