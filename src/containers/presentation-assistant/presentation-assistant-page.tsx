@@ -33,6 +33,8 @@ const THEMES = [
   { value: 'chick', label: '🐣 삐약삐약 병아리' },
   { value: 'penguin', label: '🐧 뒤뚱뒤뚱 펭귄' },
   { value: 'peacock', label: '🦚 화려한 공작새' },
+  { value: 'snake', label: '🐍 스르륵 뱀' },
+  { value: 'turtle', label: '🐢 엉금엉금 거북이' },
 ];
 
 export default function PresentationAssistantPage() {

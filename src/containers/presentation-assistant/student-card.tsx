@@ -12,10 +12,20 @@ import penguinStage1 from '@/assets/images/presentation-assistant/penguin-stage-
 import penguinStage2 from '@/assets/images/presentation-assistant/penguin-stage-2.png';
 import penguinStage3 from '@/assets/images/presentation-assistant/penguin-stage-3.png';
 
-// 🦚 새로운 공작새 이미지 적용
+// 🦚 공작새 이미지
 import peacockStage2 from '@/assets/images/presentation-assistant/peacock-stage-1.png';
 import peacockStage3 from '@/assets/images/presentation-assistant/peacock-stage-2.png';
 import peacockStage4 from '@/assets/images/presentation-assistant/peacock-stage-3.png';
+
+// 🐍 뱀 이미지 (새로 추가)
+import snakeStage1 from '@/assets/images/presentation-assistant/snake-stage-1.png';
+import snakeStage2 from '@/assets/images/presentation-assistant/snake-stage-2.png';
+import snakeStage3 from '@/assets/images/presentation-assistant/snake-stage-3.png';
+
+// 🐢 거북이 이미지 (새로 추가) - 파일명을 turtle-stage-1.png 로 꼭 수정해 주세요!
+import turtleStage1 from '@/assets/images/presentation-assistant/turtle-stage-1.png';
+import turtleStage2 from '@/assets/images/presentation-assistant/turtle-stage-2.png';
+import turtleStage3 from '@/assets/images/presentation-assistant/turtle-stage-3.png';
 
 interface StudentCardProps {
   student: PresentationStudent;
@@ -24,10 +34,13 @@ interface StudentCardProps {
   onDecorate?: () => void;
 }
 
+// 💡 0단계(알)는 공통으로 사용하고, 각 테마별 진화 이미지 매핑
 const THEME_IMAGES: Record<string, any[]> = {
   chick: [chickStage0, chickStage1, chickStage2, chickStage3],
   penguin: [chickStage0, penguinStage1, penguinStage2, penguinStage3],
   peacock: [chickStage0, peacockStage2, peacockStage3, peacockStage4],
+  snake: [chickStage0, snakeStage1, snakeStage2, snakeStage3],
+  turtle: [chickStage0, turtleStage1, turtleStage2, turtleStage3],
 };
 
 export default function StudentCard({
@@ -39,6 +52,7 @@ export default function StudentCard({
   const isActive = student.count > 0;
   const canDecorate = student.count >= 3;
 
+  // 현재 선택된 테마의 이미지 배열 불러오기
   const currentImages = THEME_IMAGES[theme] || THEME_IMAGES.chick;
   const stage = Math.min(student.count, currentImages.length - 1);
   const faceImage = currentImages[stage].src;
