@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Gift, RotateCcw } from 'lucide-react'; // 👈 RotateCcw 아이콘 추가!
+import { Gift, RotateCcw } from 'lucide-react';
 import { PresentationStudent } from '@/types/presentation-assistant';
 
 // 🐣 병아리
@@ -33,7 +33,7 @@ interface StudentCardProps {
   theme?: string;
   onClick: () => void;
   onDecorate?: () => void;
-  onUndo?: () => void; // 👈 1점 빼기(실행 취소) 함수 프롭스 추가!
+  onUndo?: () => void;
 }
 
 const THEME_IMAGES: Record<string, any[]> = {
@@ -51,7 +51,7 @@ export default function StudentCard({
   theme = 'chick',
   onClick,
   onDecorate,
-  onUndo, // 👈 프롭스 받아오기
+  onUndo,
 }: StudentCardProps) {
   const [randomTheme, setRandomTheme] = useState(() => {
     const nameHash = student.fullName
@@ -84,12 +84,12 @@ export default function StudentCard({
           : 'border-border bg-card hover:border-muted-foreground/30'
       }`}
     >
-      {/* ⏪ 좌측 상단: 1점 빼기(실행 취소) 버튼 */}
+      {/* ⏪ 좌측 하단(bottom-1.5, left-1.5)으로 위치 변경: 꾸미기 아이콘과 겹치지 않게 피신! */}
       {isActive && onUndo && (
         <div
-          className="absolute left-1.5 top-1.5 z-10 rounded-lg bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200"
+          className="absolute bottom-1.5 left-1.5 z-10 rounded-lg bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200"
           onClick={(event) => {
-            event.stopPropagation(); // 👈 아주 중요! 이 버튼을 눌렀을 땐 카드의 onClick(점수 증가)이 실행되지 않도록 막아줍니다.
+            event.stopPropagation();
             onUndo();
           }}
           title="실수 취소하기 (1점 빼기)"
@@ -120,6 +120,7 @@ export default function StudentCard({
           width={128}
           height={128}
         />
+        {/* ✨ 캐릭터 좌측 상단의 꾸미기 이모지 (이제 가려지지 않습니다!) */}
         {student.decoration && (
           <span className="absolute -left-1 -top-1 text-2xl drop-shadow-sm">
             {student.decoration}
