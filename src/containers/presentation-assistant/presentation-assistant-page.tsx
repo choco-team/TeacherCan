@@ -33,6 +33,9 @@ const THEMES = [
   { value: 'chick', label: '🐣 삐약삐약 병아리' },
   { value: 'penguin', label: '🐧 뒤뚱뒤뚱 펭귄' },
   { value: 'peacock', label: '🦚 화려한 공작새' },
+  { value: 'snake', label: '🐍 스르륵 뱀' },
+  { value: 'turtle', label: '🐢 엉금엉금 거북이' },
+  { value: 'random', label: '🎲 두근두근 랜덤 뽑기' },
 ];
 
 export default function PresentationAssistantPage() {
@@ -121,11 +124,24 @@ export default function PresentationAssistantPage() {
     );
   };
 
+  // 💡 기존의 점수 1 올리기 함수
   const handleCardClick = useCallback((student: PresentationStudent) => {
     setStudents((prev) =>
       prev.map((current) =>
         current.id === student.id
           ? { ...current, count: current.count + 1 }
+          : current,
+      ),
+    );
+  }, []);
+
+  // 💡 새로 추가된 점수 1 내리기(실행 취소) 함수
+  const handleCardUndo = useCallback((student: PresentationStudent) => {
+    setStudents((prev) =>
+      prev.map((current) =>
+        current.id === student.id
+          ? // 점수가 0 이하로 내려가지 않도록 안전장치(Math.max) 설정
+            { ...current, count: Math.max(0, current.count - 1) }
           : current,
       ),
     );
@@ -221,7 +237,7 @@ export default function PresentationAssistantPage() {
               {activePresentation.title}
             </h1>
 
-            {/* 💡 추가된 부분: 테마 선택 드롭다운 */}
+            {/* 테마 선택 드롭다운 */}
             <div className="ml-auto flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
               <Wand2 className="h-4 w-4 text-muted-foreground" />
               <select
@@ -266,8 +282,9 @@ export default function PresentationAssistantPage() {
               <StudentCard
                 key={student.id}
                 student={student}
-                theme={currentTheme} // 💡 선택된 테마를 카드로 전달
+                theme={currentTheme}
                 onClick={() => handleCardClick(student)}
+                onUndo={() => handleCardUndo(student)} // 👈 취소 기능(onUndo) 프롭스 전달 추가됨!
                 onDecorate={() => setDecoratingStudent(student)}
               />
             ))}
@@ -281,7 +298,7 @@ export default function PresentationAssistantPage() {
             />
           )}
 
-          {/* 학생편집 팝업 유지 */}
+          {/* 학생편집 팝업 */}
           {showEditStudents && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-sm"
