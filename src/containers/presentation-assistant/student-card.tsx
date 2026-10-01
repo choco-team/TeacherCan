@@ -1,28 +1,29 @@
+import { useState, useEffect } from 'react'; // React 훅 추가
 import { Gift } from 'lucide-react';
 import { PresentationStudent } from '@/types/presentation-assistant';
 
-// 🐣 기존 병아리 이미지
+// 🐣 병아리
 import chickStage0 from '@/assets/images/presentation-assistant/chick-stage-0.png';
 import chickStage1 from '@/assets/images/presentation-assistant/chick-stage-1.png';
 import chickStage2 from '@/assets/images/presentation-assistant/chick-stage-2.png';
 import chickStage3 from '@/assets/images/presentation-assistant/chick-stage-3.png';
 
-// 🐧 펭귄 이미지
+// 🐧 펭귄
 import penguinStage1 from '@/assets/images/presentation-assistant/penguin-stage-1.png';
 import penguinStage2 from '@/assets/images/presentation-assistant/penguin-stage-2.png';
 import penguinStage3 from '@/assets/images/presentation-assistant/penguin-stage-3.png';
 
-// 🦚 공작새 이미지
+// 🦚 공작새
 import peacockStage2 from '@/assets/images/presentation-assistant/peacock-stage-1.png';
 import peacockStage3 from '@/assets/images/presentation-assistant/peacock-stage-2.png';
 import peacockStage4 from '@/assets/images/presentation-assistant/peacock-stage-3.png';
 
-// 🐍 뱀 이미지 (새로 추가)
+// 🐍 뱀
 import snakeStage1 from '@/assets/images/presentation-assistant/snake-stage-1.png';
 import snakeStage2 from '@/assets/images/presentation-assistant/snake-stage-2.png';
 import snakeStage3 from '@/assets/images/presentation-assistant/snake-stage-3.png';
 
-// 🐢 거북이 이미지 (새로 추가) - 파일명을 turtle-stage-1.png 로 꼭 수정해 주세요!
+// 🐢 거북이
 import turtleStage1 from '@/assets/images/presentation-assistant/turtle-stage-1.png';
 import turtleStage2 from '@/assets/images/presentation-assistant/turtle-stage-2.png';
 import turtleStage3 from '@/assets/images/presentation-assistant/turtle-stage-3.png';
@@ -34,7 +35,6 @@ interface StudentCardProps {
   onDecorate?: () => void;
 }
 
-// 💡 0단계(알)는 공통으로 사용하고, 각 테마별 진화 이미지 매핑
 const THEME_IMAGES: Record<string, any[]> = {
   chick: [chickStage0, chickStage1, chickStage2, chickStage3],
   penguin: [chickStage0, penguinStage1, penguinStage2, penguinStage3],
@@ -43,17 +43,36 @@ const THEME_IMAGES: Record<string, any[]> = {
   turtle: [chickStage0, turtleStage1, turtleStage2, turtleStage3],
 };
 
+const AVAILABLE_THEMES = ['chick', 'penguin', 'peacock', 'snake', 'turtle'];
+
 export default function StudentCard({
   student,
   theme = 'chick',
   onClick,
   onDecorate,
 }: StudentCardProps) {
+  // 🎲 1. 현재 학생의 랜덤 동물을 기억하는 state (초기값은 이름 해시로 겹치지 않게 배정)
+  const [randomTheme, setRandomTheme] = useState(() => {
+    const nameHash = student.fullName
+      .split('')
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return AVAILABLE_THEMES[nameHash % AVAILABLE_THEMES.length];
+  });
+
+  // 🎲 2. 초기화 버튼을 눌러 점수가 0이 될 때마다 새로운 동물로 몰래 다시 뽑기!
+  useEffect(() => {
+    if (student.count === 0) {
+      const randomIndex = Math.floor(Math.random() * AVAILABLE_THEMES.length);
+      setRandomTheme(AVAILABLE_THEMES[randomIndex]);
+    }
+  }, [student.count]);
+
   const isActive = student.count > 0;
   const canDecorate = student.count >= 3;
 
-  // 현재 선택된 테마의 이미지 배열 불러오기
-  const currentImages = THEME_IMAGES[theme] || THEME_IMAGES.chick;
+  // 테마가 'random'이면 방금 뽑은 동물을 적용, 아니면 선생님이 선택한 동물 적용
+  const appliedTheme = theme === 'random' ? randomTheme : theme;
+  const currentImages = THEME_IMAGES[appliedTheme] || THEME_IMAGES.chick;
   const stage = Math.min(student.count, currentImages.length - 1);
   const faceImage = currentImages[stage].src;
 

@@ -35,6 +35,7 @@ const THEMES = [
   { value: 'peacock', label: '🦚 화려한 공작새' },
   { value: 'snake', label: '🐍 스르륵 뱀' },
   { value: 'turtle', label: '🐢 엉금엉금 거북이' },
+  { value: 'random', label: '🎲 두근두근 랜덤 뽑기' },
 ];
 
 export default function PresentationAssistantPage() {
