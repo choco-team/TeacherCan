@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'; // React 훅 추가
-import { Gift } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Gift, RotateCcw } from 'lucide-react'; // 👈 RotateCcw 아이콘 추가!
 import { PresentationStudent } from '@/types/presentation-assistant';
 
 // 🐣 병아리
@@ -33,6 +33,7 @@ interface StudentCardProps {
   theme?: string;
   onClick: () => void;
   onDecorate?: () => void;
+  onUndo?: () => void; // 👈 1점 빼기(실행 취소) 함수 프롭스 추가!
 }
 
 const THEME_IMAGES: Record<string, any[]> = {
@@ -50,8 +51,8 @@ export default function StudentCard({
   theme = 'chick',
   onClick,
   onDecorate,
+  onUndo, // 👈 프롭스 받아오기
 }: StudentCardProps) {
-  // 🎲 1. 현재 학생의 랜덤 동물을 기억하는 state (초기값은 이름 해시로 겹치지 않게 배정)
   const [randomTheme, setRandomTheme] = useState(() => {
     const nameHash = student.fullName
       .split('')
@@ -59,7 +60,6 @@ export default function StudentCard({
     return AVAILABLE_THEMES[nameHash % AVAILABLE_THEMES.length];
   });
 
-  // 🎲 2. 초기화 버튼을 눌러 점수가 0이 될 때마다 새로운 동물로 몰래 다시 뽑기!
   useEffect(() => {
     if (student.count === 0) {
       const randomIndex = Math.floor(Math.random() * AVAILABLE_THEMES.length);
@@ -70,7 +70,6 @@ export default function StudentCard({
   const isActive = student.count > 0;
   const canDecorate = student.count >= 3;
 
-  // 테마가 'random'이면 방금 뽑은 동물을 적용, 아니면 선생님이 선택한 동물 적용
   const appliedTheme = theme === 'random' ? randomTheme : theme;
   const currentImages = THEME_IMAGES[appliedTheme] || THEME_IMAGES.chick;
   const stage = Math.min(student.count, currentImages.length - 1);
@@ -85,6 +84,21 @@ export default function StudentCard({
           : 'border-border bg-card hover:border-muted-foreground/30'
       }`}
     >
+      {/* ⏪ 좌측 상단: 1점 빼기(실행 취소) 버튼 */}
+      {isActive && onUndo && (
+        <div
+          className="absolute left-1.5 top-1.5 z-10 rounded-lg bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200"
+          onClick={(event) => {
+            event.stopPropagation(); // 👈 아주 중요! 이 버튼을 눌렀을 땐 카드의 onClick(점수 증가)이 실행되지 않도록 막아줍니다.
+            onUndo();
+          }}
+          title="실수 취소하기 (1점 빼기)"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+        </div>
+      )}
+
+      {/* 🎁 우측 상단: 꾸미기 버튼 */}
       {canDecorate && onDecorate && (
         <div
           className="absolute right-1.5 top-1.5 z-10 rounded-lg bg-primary/10 p-1.5 transition-colors hover:bg-primary/20"
