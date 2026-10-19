@@ -9,11 +9,12 @@ import {
   Trash2,
   UserPen,
   X,
-  Wand2, // 테마 아이콘을 위해 추가
+  Wand2,
 } from 'lucide-react';
 import DecorationPopup from '@/containers/presentation-assistant/decoration-popup';
 import SetupPage from '@/containers/presentation-assistant/setup-page';
 import StatsBar from '@/containers/presentation-assistant/stats-bar';
+// (이전에 추가했던 clearThemeMemory는 더 이상 필요 없어서 지웠습니다)
 import StudentCard from '@/containers/presentation-assistant/student-card';
 import {
   addPresentation,
@@ -28,13 +29,13 @@ import {
 } from '@/types/presentation-assistant';
 import { Button } from '@/components/button';
 
-// 💡 추가 가능한 테마 목록
 const THEMES = [
   { value: 'chick', label: '🐣 삐약삐약 병아리' },
   { value: 'penguin', label: '🐧 뒤뚱뒤뚱 펭귄' },
   { value: 'peacock', label: '🦚 화려한 공작새' },
   { value: 'snake', label: '🐍 스르륵 뱀' },
   { value: 'turtle', label: '🐢 엉금엉금 거북이' },
+  { value: 'cat', label: '🐱 야옹야옹 고양이' },
   { value: 'random', label: '🎲 두근두근 랜덤 뽑기' },
 ];
 
@@ -66,14 +67,12 @@ export default function PresentationAssistantPage() {
         ),
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [students]);
 
-  // 💡 드롭다운으로 테마를 변경했을 때 저장하는 함수
   const handleThemeChange = (newTheme: string) => {
     if (!activePresentation) return;
 
-    // @ts-ignore: 기존 SavedPresentation 타입에 theme가 없더라도 강제로 저장합니다.
+    // @ts-ignore
     const updated = { ...activePresentation, theme: newTheme };
     updatePresentation(updated);
     setPresentations((prev) =>
@@ -90,7 +89,8 @@ export default function PresentationAssistantPage() {
       students: info.students,
       createdAt: new Date().toLocaleDateString('ko-KR'),
       // @ts-ignore
-      theme: 'chick', // 기본 테마는 병아리로 생성
+      theme: 'chick',
+      randomSeed: Date.now(), // 💡 생성할 때 첫 랜덤 씨앗 부여
     };
 
     addPresentation(newPresentation);
@@ -118,13 +118,34 @@ export default function PresentationAssistantPage() {
     setPresentations(loadPresentations());
   };
 
+  // 💡 초기화 버튼 클릭 시!
   const handleReset = () => {
-    setStudents((prev) =>
-      prev.map((student) => ({ ...student, count: 0, decoration: undefined })),
+    if (!activePresentation) return;
+
+    // 점수 0점 만들기
+    const newStudents = students.map((student) => ({
+      ...student,
+      count: 0,
+      decoration: undefined,
+    }));
+
+    // 💡 초기화할 때만 새로운 '랜덤 씨앗'을 발급해서 저장합니다. (이렇게 해야 캐릭터가 바뀝니다!)
+    const newSeed = Date.now();
+    const updated = {
+      ...activePresentation,
+      students: newStudents,
+      randomSeed: newSeed,
+    };
+
+    // @ts-ignore
+    updatePresentation(updated);
+    setStudents(newStudents);
+    setPresentations((prev) =>
+      // @ts-ignore
+      prev.map((p) => (p.id === updated.id ? updated : p)),
     );
   };
 
-  // 💡 기존의 점수 1 올리기 함수
   const handleCardClick = useCallback((student: PresentationStudent) => {
     setStudents((prev) =>
       prev.map((current) =>
@@ -135,13 +156,11 @@ export default function PresentationAssistantPage() {
     );
   }, []);
 
-  // 💡 새로 추가된 점수 1 내리기(실행 취소) 함수
   const handleCardUndo = useCallback((student: PresentationStudent) => {
     setStudents((prev) =>
       prev.map((current) =>
         current.id === student.id
-          ? // 점수가 0 이하로 내려가지 않도록 안전장치(Math.max) 설정
-            { ...current, count: Math.max(0, current.count - 1) }
+          ? { ...current, count: Math.max(0, current.count - 1) }
           : current,
       ),
     );
@@ -220,8 +239,10 @@ export default function PresentationAssistantPage() {
   };
 
   if (activeId && activePresentation) {
-    // @ts-ignore - 저장된 테마 불러오기 (없으면 병아리)
+    // @ts-ignore
     const currentTheme = activePresentation.theme || 'chick';
+    // @ts-ignore 💡 현재 저장되어 있는 씨앗 정보를 가져옵니다. (없으면 0)
+    const currentSeed = activePresentation.randomSeed || 0;
 
     return (
       <div className="min-h-screen bg-background">
@@ -237,7 +258,6 @@ export default function PresentationAssistantPage() {
               {activePresentation.title}
             </h1>
 
-            {/* 테마 선택 드롭다운 */}
             <div className="ml-auto flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5">
               <Wand2 className="h-4 w-4 text-muted-foreground" />
               <select
@@ -283,8 +303,9 @@ export default function PresentationAssistantPage() {
                 key={student.id}
                 student={student}
                 theme={currentTheme}
+                randomSeed={currentSeed} // 👈 카드에 씨앗을 전달합니다!
                 onClick={() => handleCardClick(student)}
-                onUndo={() => handleCardUndo(student)} // 👈 취소 기능(onUndo) 프롭스 전달 추가됨!
+                onUndo={() => handleCardUndo(student)}
                 onDecorate={() => setDecoratingStudent(student)}
               />
             ))}
@@ -298,7 +319,6 @@ export default function PresentationAssistantPage() {
             />
           )}
 
-          {/* 학생편집 팝업 */}
           {showEditStudents && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-sm"
@@ -409,7 +429,6 @@ export default function PresentationAssistantPage() {
     );
   }
 
-  // 메인 화면 유지
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-10">

@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Gift, RotateCcw } from 'lucide-react';
 import { PresentationStudent } from '@/types/presentation-assistant';
 
@@ -28,9 +27,15 @@ import turtleStage1 from '@/assets/images/presentation-assistant/turtle-stage-1.
 import turtleStage2 from '@/assets/images/presentation-assistant/turtle-stage-2.png';
 import turtleStage3 from '@/assets/images/presentation-assistant/turtle-stage-3.png';
 
+// 🐱 고양이
+import catStage1 from '@/assets/images/presentation-assistant/cat-stage-1.png';
+import catStage2 from '@/assets/images/presentation-assistant/cat-stage-2.png';
+import catStage3 from '@/assets/images/presentation-assistant/cat-stage-3.png';
+
 interface StudentCardProps {
   student: PresentationStudent;
   theme?: string;
+  randomSeed?: number; // 👈 부모로부터 '랜덤 씨앗'을 받습니다.
   onClick: () => void;
   onDecorate?: () => void;
   onUndo?: () => void;
@@ -42,30 +47,36 @@ const THEME_IMAGES: Record<string, any[]> = {
   peacock: [chickStage0, peacockStage2, peacockStage3, peacockStage4],
   snake: [chickStage0, snakeStage1, snakeStage2, snakeStage3],
   turtle: [chickStage0, turtleStage1, turtleStage2, turtleStage3],
+  cat: [chickStage0, catStage1, catStage2, catStage3],
 };
 
-const AVAILABLE_THEMES = ['chick', 'penguin', 'peacock', 'snake', 'turtle'];
+const AVAILABLE_THEMES = [
+  'chick',
+  'penguin',
+  'peacock',
+  'snake',
+  'turtle',
+  'cat',
+];
 
 export default function StudentCard({
   student,
   theme = 'chick',
+  randomSeed = 0,
   onClick,
   onDecorate,
   onUndo,
 }: StudentCardProps) {
-  const [randomTheme, setRandomTheme] = useState(() => {
-    const nameHash = student.fullName
-      .split('')
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return AVAILABLE_THEMES[nameHash % AVAILABLE_THEMES.length];
-  });
+  // 💡 핵심: 학생 이름 + 학생 고유 ID + 랜덤 씨앗을 더해서 테마를 결정합니다.
+  // 씨앗(randomSeed)이 안 바뀌면 절대 캐릭터가 변하지 않습니다!
+  const nameHash = student.fullName
+    .split('')
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
-  useEffect(() => {
-    if (student.count === 0) {
-      const randomIndex = Math.floor(Math.random() * AVAILABLE_THEMES.length);
-      setRandomTheme(AVAILABLE_THEMES[randomIndex]);
-    }
-  }, [student.count]);
+  // 랜덤 씨앗과 계산하여 최종 테마 선택
+  const themeIndex =
+    (nameHash + student.id + randomSeed) % AVAILABLE_THEMES.length;
+  const randomTheme = AVAILABLE_THEMES[themeIndex];
 
   const isActive = student.count > 0;
   const canDecorate = student.count >= 3;
@@ -84,7 +95,6 @@ export default function StudentCard({
           : 'border-border bg-card hover:border-muted-foreground/30'
       }`}
     >
-      {/* ⏪ 좌측 하단(bottom-1.5, left-1.5)으로 위치 변경: 꾸미기 아이콘과 겹치지 않게 피신! */}
       {isActive && onUndo && (
         <div
           className="absolute bottom-1.5 left-1.5 z-10 rounded-lg bg-red-100 p-1.5 text-red-500 transition-colors hover:bg-red-200"
@@ -98,7 +108,6 @@ export default function StudentCard({
         </div>
       )}
 
-      {/* 🎁 우측 상단: 꾸미기 버튼 */}
       {canDecorate && onDecorate && (
         <div
           className="absolute right-1.5 top-1.5 z-10 rounded-lg bg-primary/10 p-1.5 transition-colors hover:bg-primary/20"
@@ -120,7 +129,6 @@ export default function StudentCard({
           width={128}
           height={128}
         />
-        {/* ✨ 캐릭터 좌측 상단의 꾸미기 이모지 (이제 가려지지 않습니다!) */}
         {student.decoration && (
           <span className="absolute -left-1 -top-1 text-2xl drop-shadow-sm">
             {student.decoration}
