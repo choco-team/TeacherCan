@@ -28,6 +28,11 @@ import turtleStage1 from '@/assets/images/presentation-assistant/turtle-stage-1.
 import turtleStage2 from '@/assets/images/presentation-assistant/turtle-stage-2.png';
 import turtleStage3 from '@/assets/images/presentation-assistant/turtle-stage-3.png';
 
+// 🐱 고양이 (새로 추가된 캐릭터!)
+import catStage1 from '@/assets/images/presentation-assistant/cat-stage-1.png';
+import catStage2 from '@/assets/images/presentation-assistant/cat-stage-2.png';
+import catStage3 from '@/assets/images/presentation-assistant/cat-stage-3.png';
+
 interface StudentCardProps {
   student: PresentationStudent;
   theme?: string;
@@ -42,9 +47,18 @@ const THEME_IMAGES: Record<string, any[]> = {
   peacock: [chickStage0, peacockStage2, peacockStage3, peacockStage4],
   snake: [chickStage0, snakeStage1, snakeStage2, snakeStage3],
   turtle: [chickStage0, turtleStage1, turtleStage2, turtleStage3],
+  cat: [chickStage0, catStage1, catStage2, catStage3], // 고양이 테마 연결
 };
 
-const AVAILABLE_THEMES = ['chick', 'penguin', 'peacock', 'snake', 'turtle'];
+// 고양이가 랜덤으로 배정될 수 있도록 목록에 추가
+const AVAILABLE_THEMES = [
+  'chick',
+  'penguin',
+  'peacock',
+  'snake',
+  'turtle',
+  'cat',
+];
 
 export default function StudentCard({
   student,
