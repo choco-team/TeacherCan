@@ -16,6 +16,7 @@ import {
   SplitIcon,
   ClockIcon,
   WatchIcon,
+  AudioLines,
   GroupIcon,
   FileTextIcon,
   UnfoldHorizontal,
@@ -36,6 +37,7 @@ export const MENU_ROUTE = {
   TIMER: '/timer',
   STOPWATCH_SOLO: '/stopwatch',
   STOPWATCH_GROUP: '/group-stopwatch',
+  NOISE_METER: '/noise-meter',
   RANDOM_PICK: '/random-pick',
   MUSIC_REQUEST: '/music-request',
   ROUTINE_TIMER: '/routine-timer',
@@ -127,6 +129,12 @@ export const MENU_PATH_DATA: PathData<MenuRoutePath> = {
     title: '그룹 스톱워치',
     Icon: GroupIcon,
     href: MENU_ROUTE.STOPWATCH_GROUP,
+  },
+  '/noise-meter': {
+    title: '소음 측정기',
+    Icon: AudioLines,
+    href: MENU_ROUTE.NOISE_METER,
+    isNew: true,
   },
   '/qr-code': {
     title: 'QR코드',
