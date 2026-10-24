@@ -21,6 +21,7 @@ import {
   BoxIcon,
   VoteIcon,
   Building2Icon,
+  AudioLines,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -128,6 +129,11 @@ const breadcrumbs: Record<
     name: '그룹 스톱워치',
     url: '/group-stopwatch',
     icon: <Users size="1rem" />,
+  },
+  'noise-meter': {
+    name: '소음 측정기',
+    url: '/noise-meter',
+    icon: <AudioLines size="1rem" />,
   },
   legal: {
     name: '약관/정책',
