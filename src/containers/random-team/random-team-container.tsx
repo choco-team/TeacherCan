@@ -24,6 +24,9 @@ export default function RandomTeamContainer() {
   const [editStudentNames, setEditStudentNames] = useState<string[]>([]);
   const [editStudentInput, setEditStudentInput] = useState('');
 
+  // 고정 배정 상태를 위장하여 보여줄지 결정하는 상태 (기본값 false)
+  const [showFixedInfo, setShowFixedInfo] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -125,11 +128,28 @@ export default function RandomTeamContainer() {
           </div>
         </div>
 
+        {/* 선생님만 알아볼 수 있도록 위장된 체크박스 */}
+        {isReady && (
+          <div className="flex justify-end max-w-5xl">
+            <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer select-none transition-opacity">
+              <input
+                type="checkbox"
+                checked={showFixedInfo}
+                onChange={(e) => setShowFixedInfo(e.target.checked)}
+                className="w-3 h-3 rounded"
+              />
+              화면 레이아웃 최적화
+            </label>
+          </div>
+        )}
+
         {isReady && (
           <div className="text-sm text-muted-foreground space-y-1 bg-gray-50 p-3 rounded border max-w-5xl">
             <p>학생 수: {settings.students.length}명</p>
             <p>모둠 수: {settings.teamCount}개</p>
-            <p>고정 배정: {settings.preAssignments?.length ?? 0}명</p>
+            {showFixedInfo && (
+              <p>고정 배정 학생 수: {settings.preAssignments?.length ?? 0}</p>
+            )}
           </div>
         )}
 
@@ -153,7 +173,7 @@ export default function RandomTeamContainer() {
             teamCount={settings.teamCount}
             preAssignments={settings.preAssignments}
             assignRef={assignRef}
-            showFixedMark={settings.showFixedMark}
+            showFixedMark={showFixedInfo}
           />
         </div>
       )}
